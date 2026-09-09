@@ -122,27 +122,42 @@ reference repo rather than its trainer.
 - `docs/` — strategy table docx, pipeline diagram, dataset download README.
 
 ## Current status
-Stage 0 — complete (see above). Stage 1 — in progress on the Prajna HPC cluster
-(GPU: A100 80GB, PyTorch 2.6.0+cu124, conda env `plant3d`):
-- DefRec_and_PCM's own bundled PointDA-10 example (ModelNet→ShapeNet, DGCNN+DefRec+PCM) runs
-  clean end-to-end via `sbatch` on the `dgx` partition — confirms the environment/CUDA/repo
-  compatibility issues above are resolved.
-- **Sequencing decision:** since DefRec_and_PCM has no PointNet++, row **C1 (DGCNN, DA-0, ALL)**
-  is being trained first as the real end-to-end validation on our data — not row A1 as originally
-  planned. PointNet++ integration (external repo, adapted to DefRec's
-  `{"cls": ..., "DefRec": ...}` output interface) is deferred to a follow-up task, then A1 trains.
-- **Known gap, scheduled to close right after C1:** every row in the strategy table specifies
-  `L_cls + L_seg`, but Crops3D (source) currently has no point-wise segmentation labels in this
-  pipeline — only the base Crops3D archive (XYZ only) was downloaded in Stage 0; `Crops3D_IS`
-  (instance segmentation annotations) was explicitly skipped. C1 is training classification-only
-  (species Tomato-vs-Maize as the `L_cls` proxy) as an interim scaffolding step — this is NOT the
-  full C1 spec. Downloading `Crops3D_IS` and extending preprocessing to carry point-wise labels
-  through to the `.npz` cache is next, before going deeper into the strategy table (C2 onward, or
-  Block B/A).
-- Real Crops3D (308 PLY files: 225 Maize + 83 Tomato) and real Pheno4D (223 files: 83 Maize +
-  140 Tomato) were downloaded and preprocessed on a separate laptop (no GPU there); only the
-  resulting `.npz` cache + CSVs were transferred to the cluster (raw PLY/txt were not — see
-  Repository layout above).
+Stage 0 — complete (see above). Stage 1 — underway on the Prajna HPC cluster
+(GPU: A100 80GB, PyTorch 2.6.0+cu124, conda env `plant3d`; jobs submitted via
+`sbatch --partition=dgx --qos=dgx --gres=gpu:1`, interactive `srun` not permitted for this
+account). Real Crops3D/Pheno4D were downloaded and preprocessed on a separate laptop (no GPU
+there); only the resulting `.npz` cache + CSVs were transferred to the cluster (raw PLY/txt
+were not — see Repository layout above).
+
+**Done:**
+- Cluster environment confirmed working end-to-end: GPU access verified via `sbatch`
+  (A100 80GB), conda env `plant3d` has PyTorch 2.6.0+cu124.
+- DefRec_and_PCM cloned as a sibling repo and integrated (see Reference codebase above for the
+  compatibility fixes this took). Its own bundled PointDA-10 example (ModelNet→ShapeNet,
+  DGCNN+DefRec+PCM) runs clean end-to-end via `sbatch` on the `dgx` partition, confirming the
+  environment/repo integration is sound before adapting it to our data.
+- **Row C1 (DGCNN, DA-0, ALL) trained and committed** (commit `7b5a139`) — classification-only
+  interim (species Tomato-vs-Maize as the `L_cls` proxy; see known gap below), using
+  `adapters/train_c1_dgcnn_da0.py`. Finding worth remembering: plain cross-entropy on Crops3D's
+  2.7:1 Maize:Tomato imbalance let the model settle into a majority-class shortcut for the first
+  several epochs (frozen at exactly the majority-baseline accuracy, `avg_acc=0.5000` — the
+  signature of a constant-class predictor); switched `L_cls` to weighted CE
+  (`w_c = (f_c+eps)^-1`, matching the `L_seg` weighting pattern already defined in the strategy
+  table). Weighted CE recovers faster (100% source val by epoch 6 vs epoch 9 unweighted) though
+  final target accuracy is comparable between the two (~89–90%, within noise for n=1 runs on a
+  63-sample eval set) — the real benefit is convergence robustness, not a final-accuracy win.
+  Both runs' logs are in `results/`.
+
+**Next (in order):**
+1. Download `Crops3D_IS` (instance segmentation annotations, skipped in Stage 0) and extend
+   preprocessing to carry point-wise labels through to the `.npz` cache, so `L_seg` can be added
+   — every row in the strategy table specifies `L_cls + L_seg`, and C1's classification-only
+   result is an interim scaffolding step, not the full spec. Do this before going deeper into
+   the strategy table (C2 onward, or Block B/A).
+2. Integrate a PointNet++ backbone (DefRec_and_PCM has none natively — only PointNet/DGCNN) into
+   the training loop, adapted to DefRec's `{"cls": ..., "DefRec": ...}` output interface, then
+   train row A1 (PointNet++, DA-0, ALL) — deferred behind C1 since DGCNN needed no extra backbone
+   work and gave a faster real-data validation.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
