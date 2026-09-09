@@ -1,0 +1,118 @@
+<mxfile host="app.diagrams.net" modified="2026-08-25T00:00:00.000Z" agent="Claude" version="24.0.0" type="device">
+  <diagram name="Domain-Invariant Growth-Aware Pipeline v6" id="pipeline6">
+    <mxGraphModel dx="1400" dy="900" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1700" pageHeight="2200" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="2" value="PROBLEM STATEMENT&lt;br&gt;Domain-Invariant, Growth-Aware Trait &amp;amp; Growth Prediction from Plant 3D Point Clouds under Cross-Sensor Domain Shift" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1F2937;fontColor=#FFFFFF;fontStyle=1;fontSize=13;strokeColor=#000000;" vertex="1" parent="1">
+          <mxGeometry x="420" y="20" width="400" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="3" value="SOURCE DOMAIN — Crops3D&lt;br&gt;Tomato + Maize | LABELED&lt;br&gt;Structured-light / RGB-D&lt;br&gt;Controlled greenhouse" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="40" y="140" width="300" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="4" value="TARGET DOMAIN — Pheno4D&lt;br&gt;Tomato + Maize | UNLABELED during adaptation&lt;br&gt;Laser triangulation scanner | Multi-temporal&lt;br&gt;Point-wise soil / stem / leaf labels (eval + Oracle only)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFE6CC;strokeColor=#D79B00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="900" y="140" width="320" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="5" value="Point Cloud Preprocessing&lt;br&gt;Outlier removal • Grid / FPS downsampling to fixed N • Normalization • Centering" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="420" y="290" width="400" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="6" value="AUGMENTATION CATEGORIES  (Global / Local taxonomy)&lt;br&gt;&lt;b&gt;G-R&lt;/b&gt; Global rigid — rotation, flip, cubic symmetry → viewpoint invariance&lt;br&gt;&lt;b&gt;G-S&lt;/b&gt; Global similarity — isotropic scaling → scale invariance&lt;br&gt;&lt;b&gt;L-N&lt;/b&gt; Local stochastic — Gaussian jitter → sensor-noise invariance&lt;br&gt;&lt;b&gt;L-D&lt;/b&gt; Local structural — RandomCrop3D, CoarseDropout3D → density / occlusion&lt;br&gt;&lt;b&gt;ALL&lt;/b&gt; = G-R + G-S + L-N + L-D applied jointly" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="400" width="400" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="7" value="BACKBONE — shared feature extractor&lt;br&gt;&lt;b&gt;Pointwise-MLP:&lt;/b&gt; PointNet++ — density sensitive (ball query)&lt;br&gt;&lt;b&gt;Convolutional:&lt;/b&gt; KPConv — density robust (grid subsampling)&lt;br&gt;&lt;b&gt;Graph:&lt;/b&gt; DGCNN — noise sensitive (dynamic kNN); field-standard UDA encoder" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;fontStyle=0;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="560" width="400" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="8" value="DOMAIN-INVARIANCE STRATEGY&lt;br&gt;&lt;b&gt;DA-0&lt;/b&gt; Source-only — lower bound&lt;br&gt;&lt;b&gt;DA-A&lt;/b&gt; Adversarial — DANN + GRL + entropy minimisation&lt;br&gt;&lt;b&gt;DA-D&lt;/b&gt; Discrepancy — Deep CORAL / MMD&lt;br&gt;&lt;b&gt;DA-S&lt;/b&gt; Self-supervised — deformation reconstruction (both domains)&lt;br&gt;&lt;b&gt;DA-O&lt;/b&gt; Oracle target-supervised — upper bound" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="700" width="400" height="120" as="geometry" />
+        </mxCell>
+
+        <mxCell id="9" value="Domain-Invariant Feature Embedding" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#DAE8FC;strokeColor=#6C8EBF;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="860" width="400" height="50" as="geometry" />
+        </mxCell>
+
+        <mxCell id="10" value="GROWTH-AWARE BRANCH  (Pheno4D, multi-temporal)&lt;br&gt;Point-wise organ segmentation (soil / stem / leaf)&lt;br&gt;→ Trait extraction: height, stem dia., leaf area, leaf count, volume&lt;br&gt;→ Per-plant temporal trait series&lt;br&gt;→ Growth-curve parameter estimation&lt;br&gt;   Logistic (raw space): ρ, K   |   Gompertz (LOG space): α, β" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="900" y="690" width="400" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="11" value="PROGRESSIVE GROWTH-AWARE FUSION&lt;br&gt;&lt;b&gt;F1&lt;/b&gt; deep geometric features only&lt;br&gt;&lt;b&gt;F2&lt;/b&gt; + growth-curve parameters&lt;br&gt;&lt;b&gt;F3&lt;/b&gt; + temporal information&lt;br&gt;&lt;b&gt;F4&lt;/b&gt; + previous growth stage = unified plant representation" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFF2CC;strokeColor=#D6B656;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="950" width="400" height="110" as="geometry" />
+        </mxCell>
+
+        <mxCell id="12" value="MULTI-TASK HEADS" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=12;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="420" y="1100" width="400" height="40" as="geometry" />
+        </mxCell>
+
+        <mxCell id="13" value="Species Classification&lt;br&gt;L_cls = CE / wCE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="20" y="1190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="14" value="Point-wise Organ Segmentation&lt;br&gt;&lt;b&gt;L_seg = L_wCE + λ_lov·L_Lovász&lt;/b&gt;&lt;br&gt;w_c = (f_c + ε)⁻¹" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="260" y="1190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="15" value="Trait Regression&lt;br&gt;&lt;b&gt;L_trait = L_Huber + λ_corr(1−ρ_Pearson)&lt;/b&gt;" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="500" y="1190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="16" value="Growth Trend Prediction&lt;br&gt;L_growth = MSE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#E1D5E7;strokeColor=#9673A6;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="740" y="1190" width="220" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="17" value="Domain Discriminator&lt;br&gt;via GRL&lt;br&gt;L_dom = BCE" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="980" y="1190" width="220" height="60" as="geometry" />
+        </mxCell>
+
+        <mxCell id="18" value="TOTAL OBJECTIVE — two-regime weighting&lt;br&gt;&lt;br&gt;&lt;b&gt;Regime 1 — LEARNED (cooperative tasks only), s = log σ²&lt;/b&gt;&lt;br&gt;  regression:      Σ [ exp(−s_i)·L_i + s_i/2 ]      over L_trait, L_growth&lt;br&gt;  classification:  Σ [ exp(−s_j)·L_j + s_j/2 ]      over L_cls, L_seg   (no ½ on loss term)&lt;br&gt;  optionally L_CORAL / L_MMD / L_defrec (cooperative)&lt;br&gt;&lt;br&gt;&lt;b&gt;Regime 2 — FIXED / SCHEDULED (never learned)&lt;/b&gt;&lt;br&gt;  + λ_p·L_dom      λ_p = 2/(1+e^(−10p)) − 1,  p = training progress&lt;br&gt;  + λ_ent·L_ent&lt;br&gt;  + λ_phys·L_phys  + λ_mono·L_mono&lt;br&gt;  + λ_KD·[ T²·KL(p_teacher^T ‖ p_student^T) + λ_feat·L_feat ]&lt;br&gt;&lt;br&gt;&lt;b&gt;WHY:&lt;/b&gt; L_dom is MAXIMISED by the extractor through the GRL. A learnable σ_dom&lt;br&gt;would let the network drive σ→∞, zeroing the weight and silently disabling&lt;br&gt;domain adaptation while lowering total loss." style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=10;align=left;spacingLeft=10;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1300" width="520" height="250" as="geometry" />
+        </mxCell>
+
+        <mxCell id="19" value="PHYSICS / GROWTH LOSS  (novelty)&lt;br&gt;&lt;br&gt;Logistic, raw space:&lt;br&gt;  ε(t) = dŷ/dt − ρ·ŷ·(1 − ŷ/K)&lt;br&gt;&lt;br&gt;Gompertz, LOG space (y = ln V):&lt;br&gt;  ε(t) = dŷ/dt − (α − β·ŷ)&lt;br&gt;&lt;br&gt;L_phys = (1/N)·Σ_j ε(t_j)²&lt;br&gt;  derivative via autodiff; ρ,K / α,β trainable&lt;br&gt;&lt;br&gt;L_mono = mean( ReLU( −(ŷ_{k+1} − ŷ_k) ) )&lt;br&gt;  ⚠ applied ONLY to height &amp;amp; stem diameter&lt;br&gt;  (leaf area / volume / count can genuinely&lt;br&gt;   decrease via senescence)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#D5E8D4;strokeColor=#82B366;fontSize=10;align=left;spacingLeft=10;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1300" width="330" height="250" as="geometry" />
+        </mxCell>
+
+        <mxCell id="20" value="EVALUATION&lt;br&gt;Classification: Accuracy, Precision, Recall, F1&lt;br&gt;Segmentation: per-point mIoU (soil / stem / leaf)&lt;br&gt;Regression: RMSE, MAE, R²&lt;br&gt;Domain invariance: t-SNE, domain-classifier accuracy, proxy A-distance&lt;br&gt;Efficiency: runtime, FLOPs, parameter count&lt;br&gt;Statistics: multi-seed ± SEM, ANOVA + Tukey-HSD" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#666666;fontSize=11;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1600" width="520" height="130" as="geometry" />
+        </mxCell>
+
+        <mxCell id="21" value="OPTIONAL — Knowledge Distillation (deployment)&lt;br&gt;Teacher: best backbone + best DA&lt;br&gt;Student: MobilePointNet&lt;br&gt;E2 Logit KD  |  E3 Feature KD" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#F8CECC;strokeColor=#B85450;fontSize=11;dashed=1;align=left;spacingLeft=10;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1600" width="330" height="90" as="geometry" />
+        </mxCell>
+
+        <mxCell id="22" value="FINAL OUTPUTS&lt;br&gt;Domain-invariant plant representations • Point-wise organ segmentation under sensor shift&lt;br&gt;Physics-constrained trait &amp;amp; growth prediction • Lightweight deployable model" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#1F2937;fontColor=#FFFFFF;strokeColor=#000000;fontSize=11;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="360" y="1780" width="520" height="80" as="geometry" />
+        </mxCell>
+
+        <mxCell id="23" value="STRATEGY BLOCKS&lt;br&gt;&lt;br&gt;&lt;b&gt;A — PointNet++&lt;/b&gt; density sensitive&lt;br&gt;A1 DA-0 ALL | A2 DA-A ALL | A3 DA-S ALL&lt;br&gt;A4 DA-A + L-D | A5 DA-O ALL&lt;br&gt;&lt;br&gt;&lt;b&gt;B — KPConv&lt;/b&gt; density robust&lt;br&gt;B1 DA-0 ALL | B2 DA-A ALL | B3 DA-D ALL&lt;br&gt;B4 DA-0 + L-D | B5 DA-O ALL&lt;br&gt;&lt;br&gt;&lt;b&gt;C — DGCNN&lt;/b&gt; noise sensitive&lt;br&gt;C1 DA-0 ALL | C2 DA-A ALL | C3 DA-S ALL&lt;br&gt;C4 DA-A + L-N | C5 DA-O ALL&lt;br&gt;&lt;br&gt;&lt;b&gt;D — Fusion&lt;/b&gt; (best config)&lt;br&gt;D1 F1 | D2 F2 | D3 F3 | D4 F4&lt;br&gt;D5 F4 + Logistic | D6 F4 + Gompertz&lt;br&gt;&lt;br&gt;&lt;b&gt;E — Deployment&lt;/b&gt;&lt;br&gt;E1 Teacher | E2 Logit KD | E3 Feature KD&lt;br&gt;&lt;br&gt;&lt;b&gt;ANCHOR:&lt;/b&gt; DA-A in A2, B2, C2&lt;br&gt;→ backbone differences attributable to&lt;br&gt;architecture, not adaptation method" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#000000;fontSize=10;align=left;spacingLeft=10;verticalAlign=top;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="290" width="330" height="420" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="2" target="3"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="2" target="4"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="3" target="5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="4" target="5"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="5" target="6"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="6" target="7"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="7" target="8"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e8" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="8" target="9"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="4" target="10"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e10" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="9" target="11"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e11" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="10" target="11"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="11" target="12"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e13" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="12" target="13"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="12" target="14"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e15" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="12" target="15"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e16" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="12" target="16"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;strokeColor=#B85450;" edge="1" parent="1" source="12" target="17"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="14" target="18"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e19" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="15" target="18"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="19" target="18"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="18" target="20"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e22" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;dashed=1;strokeColor=#B85450;" edge="1" parent="1" source="20" target="21"><mxGeometry relative="1" as="geometry" /></mxCell>
+        <mxCell id="e23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;" edge="1" parent="1" source="20" target="22"><mxGeometry relative="1" as="geometry" /></mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
