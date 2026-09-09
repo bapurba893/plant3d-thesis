@@ -1,0 +1,5 @@
+Dataset,Species,N_PointClouds,Avg_Points,Min_Points,Max_Points
+Crops3D (Source),Maize,225,81861,10161,457347
+Crops3D (Source),Tomato,83,1077631,78655,7570581
+Pheno4D (Target),Maize,83,1105438,337476,2245774
+Pheno4D (Target),Tomato,140,2458320,1403015,4502437

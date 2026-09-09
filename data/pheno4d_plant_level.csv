@@ -1,0 +1,15 @@
+species,plant_id,n_scans,n_annotated
+Maize,M01,12,7
+Maize,M02,12,7
+Maize,M03,11,7
+Maize,M04,12,7
+Maize,M05,12,7
+Maize,M06,12,7
+Maize,M07,12,7
+Tomato,T01,20,11
+Tomato,T02,20,11
+Tomato,T03,20,11
+Tomato,T04,20,11
+Tomato,T05,20,11
+Tomato,T06,20,11
+Tomato,T07,20,11

@@ -87,38 +87,62 @@ Point Clouds" (DefRec) — already implements source-only/DANN-style/self-superv
 on PointNet/DGCNN with the source-target benchmark protocol this project follows. Do not
 reimplement DANN or the training loop from scratch; adapt this repo.
 
+DefRec_and_PCM is cloned **outside** this repo, as a sibling directory
+(`../DefRec_and_PCM`, i.e. next to `plant3d-thesis/`, both under `/home/pearl/25m0301/` on
+the cluster) — pinned at commit `5cb7b797099b0d44abcd00860669a5f95812ae22`. It is used purely
+as an unmodified upstream library (imported via `PYTHONPATH`/`sys.path`, e.g. `PointDA.Models`
+for the DGCNN/PointNet backbones), the same way you'd depend on a pip package — it is not
+version-controlled as part of this repo and should never contain project-specific code. All
+project-specific code (adapters, training scripts, job configs, results) lives inside this
+repo (`plant3d-thesis/`) so the repo is self-contained and presentable on its own.
+
+**DefRec repo caveats found when integrating (2026-09-09):** requirements.txt pins
+torch==1.4.0/numpy 1.x — do NOT `pip install -e .` against it (would downgrade our
+torch 2.6.0+cu124); install missing deps (`h5py`, `scikit-learn`, `gdown`) individually
+instead. `PointDA/data/dataloader.py` used `np.int` (removed in numpy>=1.24) — patched to
+plain `int`. It only implements **PointNet and DGCNN** natively — no PointNet++, so Block A
+rows need an external PointNet++ implementation integrated before they can run (tracked as a
+task, not yet done). `trainer.py` always trains the DefRec self-supervised loss on target data
+unconditionally (that's the paper's whole point) — a true DA-0 (no adaptation) baseline can't
+use it as-is, so `adapters/train_c1_dgcnn_da0.py` is a from-scratch-but-thin training loop
+(source-only classification, target used for held-out eval only) that imports DGCNN from the
+reference repo rather than its trainer.
+
+## Repository layout
+- `data/` — CSVs/manifests + `preprocessed/` `.npz` cache (531 files), tracked in git (~25MB).
+  Raw Crops3D PLY / Pheno4D txt are NOT in this repo (too large) — see `docs/00_README_download.md`
+  to regenerate via `scripts/05_preprocess_pointclouds.py` if needed.
+- `scripts/` — Stage 0 data pipeline (numbered `01_`–`05_`, plus `data_io.py`/`augmentations.py`/
+  `preprocessing.py` shared modules).
+- `adapters/` — project-specific PyTorch `Dataset`/training code that bridges our cached data to
+  the DefRec_and_PCM reference backbones (e.g. `dataset.py`, `train_c1_dgcnn_da0.py`).
+- `jobs/` — `sbatch` scripts for the Prajna HPC cluster (`--partition=dgx --qos=dgx --gres=gpu:1`;
+  interactive `srun` is not permitted for this account).
+- `results/` — training logs/checkpoints per experiment (checkpoints gitignored, logs kept).
+- `docs/` — strategy table docx, pipeline diagram, dataset download README.
+
 ## Current status
-Stage 0 — complete. Nothing trained yet, but the full data pipeline is real, verified, and
-ready:
+Stage 0 — complete (see above). Stage 1 — in progress on the Prajna HPC cluster
+(GPU: A100 80GB, PyTorch 2.6.0+cu124, conda env `plant3d`):
+- DefRec_and_PCM's own bundled PointDA-10 example (ModelNet→ShapeNet, DGCNN+DefRec+PCM) runs
+  clean end-to-end via `sbatch` on the `dgx` partition — confirms the environment/CUDA/repo
+  compatibility issues above are resolved.
+- **Sequencing decision:** since DefRec_and_PCM has no PointNet++, row **C1 (DGCNN, DA-0, ALL)**
+  is being trained first as the real end-to-end validation on our data — not row A1 as originally
+  planned. PointNet++ integration (external repo, adapted to DefRec's
+  `{"cls": ..., "DefRec": ...}` output interface) is deferred to a follow-up task, then A1 trains.
+- **Known gap, scheduled to close right after C1:** every row in the strategy table specifies
+  `L_cls + L_seg`, but Crops3D (source) currently has no point-wise segmentation labels in this
+  pipeline — only the base Crops3D archive (XYZ only) was downloaded in Stage 0; `Crops3D_IS`
+  (instance segmentation annotations) was explicitly skipped. C1 is training classification-only
+  (species Tomato-vs-Maize as the `L_cls` proxy) as an interim scaffolding step — this is NOT the
+  full C1 spec. Downloading `Crops3D_IS` and extending preprocessing to carry point-wise labels
+  through to the `.npz` cache is next, before going deeper into the strategy table (C2 onward, or
+  Block B/A).
 - Real Crops3D (308 PLY files: 225 Maize + 83 Tomato) and real Pheno4D (223 files: 83 Maize +
-  140 Tomato) are downloaded, integrity-verified (size + MD5 against source checksums), and in
-  place under `data/crops3d/<Species>/*.ply` and `data/pheno4d/<Plant>/*.txt`. Note: Pheno4D's
-  real archive ships `.txt` files, not `.xyz` as some secondary sources describe — same column
-  layout (3/4/5 cols), `data_io.py` accepts both extensions.
-- Scripts `01_dataset_statistics.py` through `04_augmentation_sanity_check.py` all run clean
-  against the real data (previously only tested against synthetic placeholder data).
-- `05_preprocess_pointclouds.py` (new) is built and run end-to-end: statistical outlier removal
-  (k=20, std_ratio=2.0) → voxel-grid pre-decimation (deterministic, not random — only for FPS
-  speed on million-point raw scans) → true farthest-point sampling → normalize/center, cached
-  as `.npz`. Full run: 531/531 files processed, 0 failures, target_n=4096, ~3.8% mean outlier
-  removal across both datasets. Cache + manifest at `data/preprocessed/`.
-- `03_train_test_split.py` produces the leakage-safe split: Crops3D stratified train/val, and
-  Pheno4D split BY WHOLE PLANT (2 plants/species held out entirely) so no plant's time-series
-  crosses the adaptation-pool/held-out-eval boundary.
-- `02_visualize_pointclouds.py` produced a verified source-vs-target comparison image
-  (`data/comparison_tomato.png`) using maturity-matched samples from both datasets (an earlier
-  version accidentally paired a young Pheno4D seedling scan with a mature Crops3D sample,
-  conflating growth stage with sensor domain — regenerated to isolate the actual domain gap).
-
-**Hardware constraint (important):** this development machine has no NVIDIA GPU — Intel Iris Xe
-integrated graphics only, no CUDA. Fine for the CPU-bound data/preprocessing work above, but
-actual training (all 3 backbones, and especially KPConv's compiled CUDA extension) needs a
-different machine — university cluster/HPC or a cloud GPU. Decide this before DefRec setup.
-
-Immediate next steps: get the DefRec reference repo running on its own example (on whatever
-GPU machine is chosen), then adapt it to this project's cached `data/preprocessed/` arrays and
-train row A1 (PointNet++, DA-0, ALL augmentation) first as the simplest possible end-to-end
-validation before scaling to the remaining 23 rows.
+  140 Tomato) were downloaded and preprocessed on a separate laptop (no GPU there); only the
+  resulting `.npz` cache + CSVs were transferred to the cluster (raw PLY/txt were not — see
+  Repository layout above).
 
 ## Style notes
 - Documents/reports: black and white only, no color.
