@@ -17,6 +17,13 @@ scalar_sf field got there. SEG_NUM_CLASSES gives the confirmed per-species
 class count (the numeric ids are NOT confirmed to mean the same organ
 across species, so segmentation is always per-species, never a shared
 label space -- see adapters/models.py).
+
+Both datasets take an `augment_mode` ("all" [default] or "ln_only") that
+selects which augmentation pipeline `augment=True` applies -- "all" is
+the full G-R+G-S+L-N+L-D pipeline every row through C3 used; "ln_only" is
+L-N (Gaussian jitter) alone, for row C4 (DGCNN, DA-A, L-N), isolating
+DGCNN's noise weakness per CLAUDE.md's augmentation taxonomy. See
+scripts/augmentations.py's compose_pipeline_ln_only docstring.
 """
 
 import os
@@ -34,7 +41,18 @@ if str(_REPO_ROOT / "scripts") not in sys.path:
 from augmentations import (  # noqa: E402
     compose_pipeline, pad_if_needed3d,
     compose_pipeline_with_labels, pad_if_needed3d_with_labels,
+    compose_pipeline_ln_only, compose_pipeline_ln_only_with_labels,
 )
+
+# augment_mode -> (points-only pipeline, points+labels pipeline). "all" is
+# the default used by every row so far (C1/A1/C2/C3); "ln_only" is for
+# row C4 (DGCNN, DA-A, L-N), isolating DGCNN's noise weakness per
+# CLAUDE.md's augmentation taxonomy -- see scripts/augmentations.py's
+# compose_pipeline_ln_only docstring.
+_AUGMENT_PIPELINES = {
+    "all": (compose_pipeline, compose_pipeline_with_labels),
+    "ln_only": (compose_pipeline_ln_only, compose_pipeline_ln_only_with_labels),
+}
 
 SPECIES_TO_IDX = {"Tomato": 0, "Maize": 1}
 IDX_TO_SPECIES = {v: k for k, v in SPECIES_TO_IDX.items()}
@@ -71,7 +89,7 @@ class PlantSpeciesDataset(Dataset):
     """
 
     def __init__(self, split_csv: str, manifest_csv: str, augment: bool = False,
-                 target_n: int = TARGET_N, seed: int = 0):
+                 target_n: int = TARGET_N, seed: int = 0, augment_mode: str = "all"):
         split_csv = Path(split_csv)
         manifest_csv = Path(manifest_csv)
         if not split_csv.is_absolute():
@@ -101,6 +119,7 @@ class PlantSpeciesDataset(Dataset):
         self.augment = augment
         self.target_n = target_n
         self.rng = np.random.default_rng(seed)
+        self._compose_pipeline, _ = _AUGMENT_PIPELINES[augment_mode]
 
     def __len__(self):
         return len(self.samples)
@@ -111,7 +130,7 @@ class PlantSpeciesDataset(Dataset):
             pts = d["points"].astype(np.float32)
 
         if self.augment:
-            pts = compose_pipeline(pts, rng=self.rng)
+            pts = self._compose_pipeline(pts, rng=self.rng)
             pts = pad_if_needed3d(pts, self.target_n, rng=self.rng)
 
         # compose_pipeline/crop can reorder or drop points -- enforce exact N
@@ -136,7 +155,7 @@ class PlantClsSegDataset(Dataset):
     """
 
     def __init__(self, split_csv: str, manifest_csv: str, augment: bool = False,
-                 target_n: int = TARGET_N, seed: int = 0):
+                 target_n: int = TARGET_N, seed: int = 0, augment_mode: str = "all"):
         split_csv = Path(split_csv)
         manifest_csv = Path(manifest_csv)
         if not split_csv.is_absolute():
@@ -173,6 +192,7 @@ class PlantClsSegDataset(Dataset):
         self.augment = augment
         self.target_n = target_n
         self.rng = np.random.default_rng(seed)
+        _, self._compose_pipeline_with_labels = _AUGMENT_PIPELINES[augment_mode]
 
     def __len__(self):
         return len(self.samples)
@@ -184,7 +204,7 @@ class PlantClsSegDataset(Dataset):
             seg_labels = d["labels"].astype(np.int64)
 
         if self.augment:
-            pts, seg_labels = compose_pipeline_with_labels(pts, seg_labels, rng=self.rng)
+            pts, seg_labels = self._compose_pipeline_with_labels(pts, seg_labels, rng=self.rng)
         pts, seg_labels = pad_if_needed3d_with_labels(pts, seg_labels, self.target_n, rng=self.rng)
 
         # compose_pipeline/crop can reorder or drop points -- enforce exact N

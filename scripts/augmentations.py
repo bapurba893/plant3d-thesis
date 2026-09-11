@@ -178,3 +178,26 @@ def compose_pipeline_with_labels(pts: np.ndarray, labels: np.ndarray, rng=None):
 
     pts = cubic_symmetry(pts, rng=rng)
     return pts, labels
+
+
+def compose_pipeline_ln_only(pts: np.ndarray, rng=None) -> np.ndarray:
+    """L-N only (Gaussian jitter) -- for row C4 (DGCNN, DA-A, L-N), which
+    isolates DGCNN's noise weakness per CLAUDE.md's augmentation taxonomy.
+    Skips G-R (rotate/flip/cubic symmetry), G-S (scale), and L-D
+    (crop/dropout) -- only L-N is applied, on top of normalize(), which is
+    a fixed preprocessing step, not one of the 4 invariance-inducing
+    categories (same treatment CLAUDE.md gives Pad3D)."""
+    rng = rng or np.random.default_rng()
+    pts = normalize(pts)
+    pts = gaussian_noise(pts, rng=rng)
+    return pts
+
+
+def compose_pipeline_ln_only_with_labels(pts: np.ndarray, labels: np.ndarray, rng=None):
+    """Same as compose_pipeline_ln_only, but threads per-point labels
+    through unchanged -- gaussian_noise doesn't alter point count or
+    order, so no re-indexing of labels is needed (unlike crop/dropout)."""
+    rng = rng or np.random.default_rng()
+    pts = normalize(pts)
+    pts = gaussian_noise(pts, rng=rng)
+    return pts, labels
