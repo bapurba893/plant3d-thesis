@@ -47,19 +47,25 @@ def random_flip(pts: np.ndarray, axis: str = "x", rng=None) -> np.ndarray:
     return out
 
 
-def random_crop3d(pts: np.ndarray, keep_frac: float = 0.8, rng=None) -> np.ndarray:
-    """Randomly crop a contiguous spatial chunk, keeping ~keep_frac of the
-    bounding volume along a randomly chosen axis (simulates partial
-    occlusion / scan cutoff)."""
-    rng = rng or np.random.default_rng()
+def _random_crop3d_mask(pts: np.ndarray, keep_frac: float, rng) -> np.ndarray:
     axis = rng.integers(0, 3)
     lo, hi = pts[:, axis].min(), pts[:, axis].max()
     span = hi - lo
     crop_span = span * keep_frac
     start = rng.uniform(lo, hi - crop_span) if hi > lo + crop_span else lo
     mask = (pts[:, axis] >= start) & (pts[:, axis] <= start + crop_span)
-    cropped = pts[mask]
-    return cropped if len(cropped) > 0 else pts  # guard against empty result
+    if not mask.any():  # guard against empty result
+        mask = np.ones(len(pts), dtype=bool)
+    return mask
+
+
+def random_crop3d(pts: np.ndarray, keep_frac: float = 0.8, rng=None) -> np.ndarray:
+    """Randomly crop a contiguous spatial chunk, keeping ~keep_frac of the
+    bounding volume along a randomly chosen axis (simulates partial
+    occlusion / scan cutoff)."""
+    rng = rng or np.random.default_rng()
+    mask = _random_crop3d_mask(pts, keep_frac, rng)
+    return pts[mask]
 
 
 def center_crop3d(pts: np.ndarray, keep_frac: float = 0.8) -> np.ndarray:
@@ -83,10 +89,19 @@ def pad_if_needed3d(pts: np.ndarray, target_n: int, rng=None) -> np.ndarray:
     return np.concatenate([pts, pts[pad_idx]], axis=0)
 
 
-def coarse_dropout3d(pts: np.ndarray, n_holes: int = 3, hole_frac: float = 0.05, rng=None) -> np.ndarray:
-    """Remove n_holes small spherical neighborhoods from the cloud —
-    simulates sensor dropout / leaf self-occlusion."""
+def pad_if_needed3d_with_labels(pts: np.ndarray, labels: np.ndarray, target_n: int, rng=None):
+    """Same as pad_if_needed3d but duplicates the parallel per-point label
+    array with the same sampled indices, so labels stay aligned with points."""
     rng = rng or np.random.default_rng()
+    if len(pts) >= target_n:
+        return pts, labels
+    n_pad = target_n - len(pts)
+    pad_idx = rng.choice(len(pts), n_pad, replace=True)
+    return (np.concatenate([pts, pts[pad_idx]], axis=0),
+            np.concatenate([labels, labels[pad_idx]], axis=0))
+
+
+def _coarse_dropout3d_mask(pts: np.ndarray, n_holes: int, hole_frac: float, rng) -> np.ndarray:
     extent = pts.max(axis=0) - pts.min(axis=0)
     radius = float(np.linalg.norm(extent)) * hole_frac
     keep_mask = np.ones(len(pts), dtype=bool)
@@ -95,8 +110,17 @@ def coarse_dropout3d(pts: np.ndarray, n_holes: int = 3, hole_frac: float = 0.05,
         center = pts[center_idx]
         dist = np.linalg.norm(pts - center, axis=1)
         keep_mask &= dist > radius
-    result = pts[keep_mask]
-    return result if len(result) > 0 else pts
+    if not keep_mask.any():  # guard against empty result
+        keep_mask = np.ones(len(pts), dtype=bool)
+    return keep_mask
+
+
+def coarse_dropout3d(pts: np.ndarray, n_holes: int = 3, hole_frac: float = 0.05, rng=None) -> np.ndarray:
+    """Remove n_holes small spherical neighborhoods from the cloud —
+    simulates sensor dropout / leaf self-occlusion."""
+    rng = rng or np.random.default_rng()
+    mask = _coarse_dropout3d_mask(pts, n_holes, hole_frac, rng)
+    return pts[mask]
 
 
 def cubic_symmetry(pts: np.ndarray, rng=None) -> np.ndarray:
@@ -131,3 +155,26 @@ def compose_pipeline(pts: np.ndarray, rng=None) -> np.ndarray:
     pts = coarse_dropout3d(pts, n_holes=2, rng=rng)
     pts = cubic_symmetry(pts, rng=rng)
     return pts
+
+
+def compose_pipeline_with_labels(pts: np.ndarray, labels: np.ndarray, rng=None):
+    """Same pipeline as compose_pipeline, but also carries a parallel (N,)
+    int label array through the point-count-changing steps (crop, dropout)
+    so per-point segmentation labels stay aligned with their points.
+    Point-wise-only ops (rotate/scale/noise/flip/cubic symmetry) don't
+    change point count or order, so labels pass through those untouched."""
+    rng = rng or np.random.default_rng()
+    pts = normalize(pts)
+    pts = random_rotation_z(pts, rng)
+    pts = random_scale(pts, rng=rng)
+    pts = gaussian_noise(pts, rng=rng)
+    pts = random_flip(pts, axis="x", rng=rng)
+
+    mask = _random_crop3d_mask(pts, keep_frac=0.85, rng=rng)
+    pts, labels = pts[mask], labels[mask]
+
+    mask = _coarse_dropout3d_mask(pts, n_holes=2, hole_frac=0.05, rng=rng)
+    pts, labels = pts[mask], labels[mask]
+
+    pts = cubic_symmetry(pts, rng=rng)
+    return pts, labels

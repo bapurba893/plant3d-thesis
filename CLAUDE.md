@@ -136,17 +136,33 @@ were not — see Repository layout above).
   compatibility fixes this took). Its own bundled PointDA-10 example (ModelNet→ShapeNet,
   DGCNN+DefRec+PCM) runs clean end-to-end via `sbatch` on the `dgx` partition, confirming the
   environment/repo integration is sound before adapting it to our data.
-- **Row C1 (DGCNN, DA-0, ALL) trained and committed** (commit `7b5a139`) — classification-only
-  interim (species Tomato-vs-Maize as the `L_cls` proxy; see known gap below), using
-  `adapters/train_c1_dgcnn_da0.py`. Finding worth remembering: plain cross-entropy on Crops3D's
-  2.7:1 Maize:Tomato imbalance let the model settle into a majority-class shortcut for the first
-  several epochs (frozen at exactly the majority-baseline accuracy, `avg_acc=0.5000` — the
-  signature of a constant-class predictor); switched `L_cls` to weighted CE
-  (`w_c = (f_c+eps)^-1`, matching the `L_seg` weighting pattern already defined in the strategy
-  table). Weighted CE recovers faster (100% source val by epoch 6 vs epoch 9 unweighted) though
-  final target accuracy is comparable between the two (~89–90%, within noise for n=1 runs on a
-  63-sample eval set) — the real benefit is convergence robustness, not a final-accuracy win.
-  Both runs' logs are in `results/`.
+- **Row C1 (DGCNN, DA-0, ALL), full spec (`L_cls + L_seg`), trained and committed** — supersedes
+  the earlier classification-only interim result. Uses `adapters/train_c1_dgcnn_da0.py` +
+  `adapters/models.py::DGCNN_ClsSeg` (backbone from `PointDA.Models.DGCNN`, per-species seg
+  heads shaped after `PointSegDA.Models.segmentation`, both composed rather than reimplemented
+  — see that file's docstring) + `adapters/losses.py` (Lovász-softmax, `λ_lov=1.0` per the
+  strategy table docx, and Kendall uncertainty weighting combining `L_cls`/`L_seg` — both
+  classification-type per the docx's Level-2 formula, `exp(-s_j)·L_j + s_j/2`). Segmentation is
+  per-species (Tomato num_classes=3, Maize num_classes=6 — see the label-backfill entry above);
+  `L_cls` keeps the weighted-CE fix from the original interim run (plain CE let the model settle
+  into a majority-class shortcut on Crops3D's 2.7:1 imbalance).
+
+  **Final numbers** (100 epochs, best model selected by lowest combined source val loss —
+  correctly never touches target labels, matching DA-0's protocol — landed at epoch 95):
+  source val cls acc 1.0000, target (Pheno4D) cls acc 0.7460 (avg acc 0.7446), Tomato seg
+  mIoU 0.3248 (acc 0.6645), Maize seg mIoU 0.3427 (acc 0.7698).
+
+  **Target cls accuracy dropped vs. the old interim result (0.8889 → 0.7460) — investigated,
+  and it is NOT evidence that adding L_seg hurts target transfer.** Epoch 6 of this same run
+  (the epoch the old interim script happened to select) shows target acc 0.9206 — matching or
+  beating the old result. What actually happens: target accuracy drifts steadily downward over
+  the full 100 epochs (settling frozen at exactly 0.7460 for the last ~10 epochs) while source
+  val cls stays saturated at 1.0 and seg loss keeps improving the whole time. So under DA-0,
+  continued training keeps helping the only signals model-selection is allowed to see (source
+  loss), while target generalization quietly erodes in the background with nothing to detect or
+  prevent it — a real, expected DA-0 characteristic (motivates why C2's DANN anchor exists), not
+  a training bug and not a reason to change the selection criterion (selecting on target labels
+  would defeat the point of DA-0 as a lower bound).
 - **Per-point Crops3D organ segmentation labels backfilled into the `.npz` cache** (2026-09-11).
   Correction to the original plan: `Crops3D_IS` (the variant the old task list pointed at) turned
   out to be the wrong source — per the paper (Zhu et al. 2024) and the `clawCa/Crops3D` /
@@ -169,15 +185,16 @@ were not — see Repository layout above).
   `scripts/inspect_crops3d_sf.py` diagnostic, or 3D visualization colored by label).
 
 **Next (in order):**
-1. Integrate a PointNet++ backbone (DefRec_and_PCM has none natively — only PointNet/DGCNN) into
+1. Train row C2 (DGCNN, DA-A, ALL) — the adversarial anchor. Adds a domain discriminator +
+   Gradient Reversal Layer + entropy minimization on top of the now-working joint `L_cls+L_seg`
+   DGCNN adapter; `L_dom`/`L_ent` are fixed/scheduled weights, never learned (see Loss
+   architecture above) — do not route them through the Kendall uncertainty module used for
+   `L_cls+L_seg`. Natural next step on the DGCNN track: isolated, one-variable-at-a-time
+   increment on top of C1 rather than a rewrite.
+2. Integrate a PointNet++ backbone (DefRec_and_PCM has none natively — only PointNet/DGCNN) into
    the training loop, adapted to DefRec's `{"cls": ..., "DefRec": ...}` output interface, then
-   train row A1 (PointNet++, DA-0, ALL) — deferred behind C1 since DGCNN needed no extra backbone
-   work and gave a faster real-data validation.
-2. Wire `L_seg` (weighted CE + λ_lov·Lovász, per the strategy table) into the training
-   loop/dataset adapter now that per-point Crops3D organ labels are available (see Done below,
-   "Per-point Crops3D organ segmentation labels backfilled") — needed before training C2 or any
-   row beyond C1, since every strategy-table row specifies `L_cls + L_seg` and C1's
-   classification-only result was explicitly an interim scaffold, not the full spec.
+   train row A1 (PointNet++, DA-0, ALL) — deferred behind the DGCNN track since it needed no
+   extra backbone work and gave faster real-data validation.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

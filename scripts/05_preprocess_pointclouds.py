@@ -140,10 +140,20 @@ def main():
     # Merge with any existing manifest rather than overwrite it — running with
     # --dataset/--limit filters must not drop previously-cached rows for
     # datasets not touched by this invocation.
+    #
+    # Dedup on source_filepath, NOT cache_path: cache_path is derived from
+    # --out_dir, which can differ between machines/invocations (e.g. an
+    # absolute path on one machine vs a repo-relative path on another) even
+    # when both runs describe the exact same raw file. Deduping on
+    # cache_path let a later run with a different --out_dir just append a
+    # second row per file instead of replacing the first — the stale row's
+    # cache_path (from a since-transferred machine) would win on lookup if
+    # it happened to sort last, breaking every downstream Dataset that
+    # resolves this manifest (found 2026-09-11 backfilling Crops3D labels).
     if out_manifest_path.exists():
         prior = pd.read_csv(out_manifest_path)
         combined = pd.concat([prior, out_manifest], ignore_index=True)
-        out_manifest = combined.drop_duplicates(subset="cache_path", keep="last")
+        out_manifest = combined.drop_duplicates(subset="source_filepath", keep="last")
 
     out_manifest.to_csv(out_manifest_path, index=False)
 
