@@ -108,6 +108,41 @@ use it as-is, so `adapters/train_c1_dgcnn_da0.py` is a from-scratch-but-thin tra
 (source-only classification, target used for held-out eval only) that imports DGCNN from the
 reference repo rather than its trainer.
 
+DefRec_and_PCM has no PointNet++ (see caveat above), so Block A's backbone is vendored
+separately: **yanx27/Pointnet_Pointnet2_pytorch**, cloned the same way as DefRec_and_PCM — a
+sibling directory (`../Pointnet_Pointnet2_pytorch`, next to `plant3d-thesis/` and
+`DefRec_and_PCM/`, all under `/home/pearl/25m0301/` on the cluster), pinned at commit
+`eb64fe0b4c24055559cea26299cb485dcb43d8dd`, unmodified upstream, imported via
+`POINTNET2_ROOT`/`sys.path` (`adapters/models_pointnet2.py` inserts its `models/` subdirectory
+onto `sys.path` and imports `pointnet2_utils` directly — not version-controlled as part of this
+repo, never to contain project-specific code, same rules as DefRec_and_PCM.
+
+**PointNet++ repo compatibility check (2026-09-11):** unlike KPConv, this implementation is
+**pure PyTorch — no compiled CUDA extension needed**; its farthest-point-sampling/ball-query/
+feature-propagation ops in `models/pointnet2_utils.py` are plain torch tensor code, confirmed
+by running them directly against our data shape (`(B, 3, 4096)`) under torch 2.6.0+cu124 +
+numpy 2.2.6 with no errors. Its own driver scripts (`train_partseg.py`/`train_semseg.py`/
+`test_*.py`) use the removed `np.float` alias, but nothing here imports those — only
+`pointnet2_utils.py`'s two building-block classes are used directly, which have no numpy
+dependency. One integration snag: `models/` has no `__init__.py` upstream, and their own
+`from models.pointnet2_utils import ...` style collides with this repo's own flat
+`adapters/models.py` module (also named `models`) once both are on `sys.path` — worked around
+by adding the vendored repo's `models/` subdirectory itself to `sys.path` and importing
+`pointnet2_utils` by its unique name instead (see `adapters/models_pointnet2.py` docstring).
+
+`adapters/models_pointnet2.py::PointNet2_ClsSeg` composes `PointNetSetAbstraction`/
+`PointNetFeaturePropagation` from the vendored repo (3-level SSG set-abstraction encoder for
+the pooled global feature, mirroring `pointnet2_cls_ssg.py`; 3-level feature-propagation
+decoder for full-resolution per-point features, mirroring `pointnet2_sem_seg.py` — not
+`pointnet2_part_seg_ssg.py`, which conditions on a ShapeNet category label we have no
+equivalent for) with the same `PointSegDA.Models.segmentation` per-species head reused for
+`DGCNN_ClsSeg`, exposing the identical `{"cls": ..., "seg_feat": ...}` forward interface (raw
+logits, not log-softmax) so `adapters/train_a1_pointnet2_da0.py` mirrors
+`adapters/train_c1_dgcnn_da0.py` almost line-for-line — only the backbone differs. DefRec/DANN
+are not wired for this model yet (row A1 is DA-0, same scope C1 shipped with); needed when
+rows A2/A3/A4 reach the PointNet++ track. Full CPU smoke test (1 epoch, real Crops3D/Pheno4D
+data) passed end-to-end before this was considered done.
+
 ## Repository layout
 - `data/` — CSVs/manifests + `preprocessed/` `.npz` cache (531 files), tracked in git (~25MB).
   Raw Crops3D PLY / Pheno4D txt are NOT in this repo (too large) — see `docs/00_README_download.md`
@@ -115,7 +150,8 @@ reference repo rather than its trainer.
 - `scripts/` — Stage 0 data pipeline (numbered `01_`–`05_`, plus `data_io.py`/`augmentations.py`/
   `preprocessing.py` shared modules).
 - `adapters/` — project-specific PyTorch `Dataset`/training code that bridges our cached data to
-  the DefRec_and_PCM reference backbones (e.g. `dataset.py`, `train_c1_dgcnn_da0.py`).
+  the DefRec_and_PCM/Pointnet_Pointnet2_pytorch reference backbones (e.g. `dataset.py`,
+  `train_c1_dgcnn_da0.py`, `train_a1_pointnet2_da0.py`).
 - `jobs/` — `sbatch` scripts for the Prajna HPC cluster (`--partition=dgx --qos=dgx --gres=gpu:1`;
   interactive `srun` is not permitted for this account).
 - `results/` — training logs/checkpoints per experiment (checkpoints gitignored, logs kept).
@@ -183,18 +219,23 @@ were not — see Repository layout above).
   (id `0` = soil for Maize — clearly brown; each species' dominant-point-count id = leaf); the
   rest are unconfirmed by name and should not be assumed without re-deriving (e.g. the one-off
   `scripts/inspect_crops3d_sf.py` diagnostic, or 3D visualization colored by label).
+- **PointNet++ backbone integrated** (2026-09-11) — see Reference codebase above for the
+  vendored repo, compatibility check, and how `adapters/models_pointnet2.py::PointNet2_ClsSeg`
+  composes it into the same `{"cls": ..., "seg_feat": ...}` interface as `DGCNN_ClsSeg`.
+  `adapters/train_a1_pointnet2_da0.py` + `jobs/a1_pointnet2_da0.sbatch` are ready; a 1-epoch
+  CPU smoke test on real Crops3D/Pheno4D data passed end-to-end (sane non-zero cls/seg
+  metrics, no shape/gradient errors) but the row hasn't been trained for real on the GPU yet.
 
 **Next (in order):**
-1. Train row C2 (DGCNN, DA-A, ALL) — the adversarial anchor. Adds a domain discriminator +
+1. Train row A1 (PointNet++, DA-0, ALL) for real via `sbatch jobs/a1_pointnet2_da0.sbatch` —
+   the backbone integration above is done and CPU-smoke-tested but not yet run to completion on
+   the cluster GPU.
+2. Train row C2 (DGCNN, DA-A, ALL) — the adversarial anchor. Adds a domain discriminator +
    Gradient Reversal Layer + entropy minimization on top of the now-working joint `L_cls+L_seg`
    DGCNN adapter; `L_dom`/`L_ent` are fixed/scheduled weights, never learned (see Loss
    architecture above) — do not route them through the Kendall uncertainty module used for
    `L_cls+L_seg`. Natural next step on the DGCNN track: isolated, one-variable-at-a-time
    increment on top of C1 rather than a rewrite.
-2. Integrate a PointNet++ backbone (DefRec_and_PCM has none natively — only PointNet/DGCNN) into
-   the training loop, adapted to DefRec's `{"cls": ..., "DefRec": ...}` output interface, then
-   train row A1 (PointNet++, DA-0, ALL) — deferred behind the DGCNN track since it needed no
-   extra backbone work and gave faster real-data validation.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
