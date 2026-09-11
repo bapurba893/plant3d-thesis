@@ -253,3 +253,132 @@ Deleted `results/C3_dgcnn_da_s/` (the failed run's partial output) and the smoke
 
 **Resubmitted `jobs/c3_dgcnn_da_s.sbatch` (unchanged — the fix is in the Python script, not the
 job script) — job 308459.** Queue was empty. Awaiting completion.
+
+---
+**2026-09-11 (later): Job 308459 COMPLETED (~1h04m).** Full results below, including the same
+full-trajectory analysis done for C2 (not just the selected checkpoint), plus a comparison
+against the published PointDA-10 numbers found while investigating the OOM fix above.
+
+## Results
+
+**Protocol-selected checkpoint** (same protocol as C1/A1/C2 — best epoch by lowest source val
+total loss, never touching target labels) — best epoch was **95** (source val total loss
+1.0457):
+
+| Metric | C1 (DA-0) | C2 (DA-A) | C3 (DA-S) |
+|---|---|---|---|
+| Best/selected epoch | 95 | 49 | 95 |
+| Source val cls acc | 1.0000 | 1.0000 | 1.0000 |
+| Target cls acc (selected epoch) | 0.7460 | 0.9365 | **0.5714** |
+| Target cls avg acc | 0.7446 | 0.9130 | 0.6625 |
+| Tomato seg mIoU (acc) | 0.3248 (0.6645) | 0.2416 (0.5210) | 0.3306 (0.6838) |
+| Maize seg mIoU (acc) | 0.3427 (0.7698) | 0.1996 (0.5305) | 0.3774 (0.7971) |
+
+At face value: **C3's selected-checkpoint target accuracy (0.5714) is lower than C1's DA-0
+baseline (0.7460)** — self-supervised adaptation, as specified for this row (both domains, no
+PCM — see the DA-S protocol discussion above), did not help target transfer here, and looks
+like it modestly hurt it. Segmentation, on the other hand, came out slightly *better* than C1's
+on both species — expected, since epoch 95 is well-converged for seg either way (C1 and C3 both
+selected epoch 95, unlike C2's much earlier epoch 49).
+
+### Full-trajectory analysis (same method as C2 — parsing every epoch's target-acc diagnostic,
+never used for training/selection)
+
+| Quartile (epochs) | C1 mean target acc | C2 mean target acc | C3 mean target acc |
+|---|---|---|---|
+| 0–24 | 0.798 | 0.789 | 0.731 |
+| 25–49 | 0.834 | 0.683 | 0.718 |
+| 50–74 | 0.773 | 0.456 | 0.707 |
+| 75–99 | 0.760 | 0.446 | 0.657 |
+| Full-run stdev | 0.104 | 0.214 | **0.104** |
+| Full-run mean | 0.791 | 0.593 | 0.703 |
+| corr(source val loss, target acc) | −0.29 | −0.04 | **+0.22** |
+
+What this shows:
+
+- **C3's trajectory is NOT unstable the way C2's is.** Its full-run stdev (0.104) is
+  essentially identical to C1's (0.104) and half of C2's (0.214); its min/max range (0.460 to
+  0.937) never crashes down to the ~0.37 floor C1 and C2 both repeatedly hit. So self-supervised
+  adaptation, at least in this configuration, does **not** destabilize training the way
+  adversarial adaptation does — it behaves like a smoother variant of C1's own gentle DA-0
+  drift, not like C2's violent oscillation. This is a clean, useful contrast between the two
+  adaptation *mechanisms*, independent of whether either one actually helps.
+- **But it also doesn't help.** C3's quartile means (0.731 → 0.718 → 0.707 → 0.657) drift
+  downward across the run, similar in *shape* to C1's drift but sitting below C1 in every single
+  quartile — C3's full-run mean (0.703) is meaningfully lower than C1's (0.791). By both the
+  selected-checkpoint number and the full-trajectory mean, DA-S underperforms the DA-0 baseline
+  on this data as implemented.
+- **The selection protocol's own signal is actively unhelpful for C3, not just weak.**
+  `corr(source val loss, target acc)` is **positive** (+0.22) — i.e., *lower* source val loss is
+  weakly associated with *lower* target accuracy, the opposite of what you'd want a
+  model-selection criterion to track. (C1's weak negative correlation, −0.29, at least points the
+  right direction.) Concretely: epoch 95 has the single lowest source val loss of the entire run
+  (1.0457) but a below-average target accuracy (0.5714 vs. the full-run mean of 0.703) — while
+  the actual best epoch for target accuracy, epoch 15 (0.9365), has a much higher source val loss
+  (2.1173) and would never have been selected. A plausible (not confirmed) explanation: unlike
+  C1's total loss (`Kendall(cls, seg)`), C3's total loss also includes `L_defrec` on source
+  data — a self-supervised reconstruction signal that doesn't obviously track "how well does this
+  model's shared representation transfer to an unseen sensor domain," so folding it into the
+  selection criterion may be diluting or even mildly counteracting whatever weak signal
+  `L_cls`/`L_seg` alone would have carried (as seen in C1). Flagged as a hypothesis, not verified
+  by an ablation.
+
+### Comparison against published PointDA-10 numbers (DGCNN, from the DefRec paper — see the
+inference logged above, before results were in)
+
+| Setting | Published PointDA-10 avg (DGCNN) | This project (C1/C3, DGCNN) |
+|---|---|---|
+| Source-only / DA-0 | 62.2 | 74.60 (C1, selected epoch) / 79.13 (C1, full-trajectory mean) |
+| DefRec (self-supervised) | 65.8 (target-only) | 57.14 (C3, selected epoch) / 70.30 (C3, full-trajectory mean) |
+| Direction of effect | DefRec **improves** over source-only by +3.6 pts | DefRec **degrades** vs. source-only, by −17.5 pts (selected epoch) or −8.8 pts (full-trajectory mean) |
+
+**Not a numerically fair comparison** (10-class vs. 2-class, classification-only vs. joint
+cls+seg, 1024 vs. 4096 points/cloud, synthetic-CAD-vs-real-scan gap vs. sensor-vs-sensor gap,
+much smaller dataset here) — but the *direction* of the effect flipping (published: DefRec
+clearly helps; here: DefRec clearly doesn't) is worth taking seriously rather than waving away,
+and several concrete, non-exclusive candidate explanations exist, none confirmed by an ablation
+in this project yet:
+
+1. **This project's DA-S protocol runs DefRec on both domains** (CLAUDE.md's explicit spec),
+   which the very same paper's own ablation (Table 3, logged above) found underperforms
+   target-only DefRec by ~0.9 points in their own benchmark. Our result's gap (−8.8 to −17.5
+   points) is far larger than their documented ~0.9-point penalty, so this alone is unlikely to
+   be the whole story, but it's a real, paper-documented contributing factor, not a stretch.
+2. **This row also carries a joint `L_seg` loss** the paper's classification-only benchmark
+   never had to share backbone capacity with — three simultaneous objectives (`cls`+`seg`+
+   `defrec`) rather than the paper's two (`cls`+SSL) could dilute how much the self-supervised
+   signal is able to shape features specifically toward domain-general geometry.
+3. **Different domain-gap character**: the paper's benchmark is synthetic-CAD-vs-real-scan
+   (ModelNet/ShapeNet vs. ScanNet); this project's gap is sensor-vs-sensor between two real
+   greenhouse scanning setups (structured-light/RGB-D vs. laser triangulation, per CLAUDE.md).
+   DefRec's core mechanism (reconstruct a locally-deformed region from surrounding context) has
+   no guarantee of transferring the same way across a different *kind* of domain gap.
+4. **Much smaller, class-imbalanced dataset** (263 source-train samples, 2 species) vs.
+   PointDA-10's larger, balanced 10-class benchmarks — plausibly contributes to the noisier
+   per-epoch trajectory and to the selection signal's weak/perverse correlation with target
+   accuracy (point above).
+
+**Conclusion: no, DA-S (as specified: both-domain DefRec, jointly trained with `L_seg`) does not
+help target transfer over the DA-0 baseline on this data, by either the selected-checkpoint or
+full-trajectory measure — a genuine negative finding, not a wiring bug** (the CPU smoke tests,
+both before and after the OOM fix, confirmed correct DefRec/Chamfer/Kendall behavior, and the
+val/train loss curves both decrease smoothly and sensibly throughout — this is a real, converged
+training run, just one whose self-supervised signal didn't transfer the way it does in the
+published benchmark). Unlike C2, though, **C3's training dynamics themselves are stable** —
+worth remembering as a genuinely different failure mode from C2's instability: DA-S "just doesn't
+help much here," while DA-A "actively destabilizes."
+
+**Pass/fail:** training completed successfully with no errors after the OOM fix; the correct
+model-selection protocol was followed; the row is done and its numbers are trustworthy as
+reported. The result is a negative finding for DA-S on this data/protocol, not a success story —
+consistent with, though numerically more severe than, the paper's own documented penalty for
+running DefRec on both domains.
+
+## What's next
+
+Row C3 is done. Block C now has all three of its DA-A/DA-S rows compared against the DA-0
+baseline (C1). Per the project's row ordering, next is **C4** (DGCNN, DA-A, L-N — isolating the
+noise weakness with the same adversarial machinery built for C2). Per explicit user instruction,
+C4's full-trajectory analysis (not just the selected checkpoint) will be done from the start,
+not as an afterthought — this is also a direct test of whether C2's instability finding is
+fundamental to the adversarial method itself or specific to the ALL augmentation mix C2 used.

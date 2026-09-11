@@ -203,8 +203,33 @@ first attempt ran out of GPU memory partway through the very first training step
 underlying reconstruction-quality check needs a lot of memory at our point-cloud size, more than
 the published benchmark it was originally built for uses). Fixed by breaking that one step into
 smaller pieces processed one at a time instead of all at once — same math, much less memory at
-any given moment — verified with another CPU trial run, then resubmitted (job 308459). Result
-not back yet.
+any given moment — verified with another CPU trial run, then resubmitted (job 308459).
+
+## 12. Row C3 Finished — Self-Supervised Adaptation Doesn't Help Here, But Doesn't Destabilize Either — 2026-09-11
+
+Job 308459 finished. Applying the same "don't trust the headline number alone" lesson learned
+from Milestone 10, the full picture across the whole 100-epoch run was checked before drawing any
+conclusion, not just the one checkpoint the project's selection process picked.
+
+**The self-supervised approach did not close the gap — if anything it's slightly worse than doing
+nothing.** The selected checkpoint scores 0.57 target accuracy, lower than C1's plain "no
+adaptation" baseline (0.75), and looking at the whole run instead of one snapshot confirms it's
+not a fluke: averaged across every epoch, self-supervised adaptation (0.70) still comes in below
+the no-adaptation baseline (0.79). This lines up with something found while double-checking the
+published external benchmark for this exact technique: the original paper's own follow-up
+experiments found that running this self-supervised trick on *both* datasets at once (which is
+what our project's plan specifies) actually works worse than running it on the unlabeled target
+dataset only. That's a real, documented property of this specific configuration — not a bug — and
+it's now flagged clearly before anyone mistakes a future underwhelming result for a mistake.
+
+**The one genuinely good news finding: unlike the adversarial approach from Milestone 10, this
+one does NOT destabilize training.** Its epoch-to-epoch accuracy swings are just as mild as the
+no-adaptation baseline's, nothing like the wild swings the adversarial approach showed. So the two
+adaptation methods tried so far fail for two completely different reasons — one destabilizes
+training and gets worse the longer it runs; the other stays stable but just doesn't transfer the
+self-supervised signal usefully to the target dataset under this exact setup. Distinguishing
+those two failure modes clearly is itself useful groundwork for the fusion/physics-informed work
+planned later in the project.
 
 ---
 
@@ -229,15 +254,16 @@ at-a-glance status.
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — trained, but did not stabilize target accuracy (see Milestone 10) |
-| C (DGCNN) | C3 | Self-supervised | Training on cluster (job 308459, after fixing a memory issue in the first attempt) |
+| C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Not started |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** three rows (A1, C1, C2) are fully done — giving the first real
-cross-backbone comparison and a first (cautionary) look at adversarial adaptation — and the
-other 21 rows are not started yet.
+**In one sentence:** four rows (A1, C1, C2, C3) are fully done — giving the first real
+cross-backbone comparison and a first look at both adaptation methods tried so far (adversarial:
+unstable and worse; self-supervised: stable but also worse) — and the other 20 rows are not
+started yet.
 
 ---
 
