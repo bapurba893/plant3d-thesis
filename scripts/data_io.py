@@ -2,9 +2,10 @@
 data_io.py
 Core loaders for Crops3D (PLY) and Pheno4D (XYZ) point clouds.
 
-Both loaders return a plain (N, 3) numpy array of XYZ coordinates so that
-downstream code (stats, visualization, augmentation) doesn't care which
-dataset a point cloud came from.
+Both loaders return (points, labels) where points is a plain (N, 3) numpy
+array of XYZ coordinates and labels is an int array (or None if the source
+file carries no annotation), so downstream code (stats, visualization,
+augmentation) doesn't care which dataset a point cloud came from.
 """
 
 from pathlib import Path
@@ -17,26 +18,62 @@ import re
 # Crops3D (PLY)
 # ---------------------------------------------------------------------------
 
-def load_crops3d_ply(filepath: str) -> np.ndarray:
+# Property names CloudCompare/plyfile have been observed to use for the
+# per-point organ-category id in Crops3D PLYs. "scalar_sf" is what's actually
+# in the released files (confirmed 2026-09-11 by reading a raw PLY header);
+# the others are defensive fallbacks in case a differently-exported file
+# shows up.
+_CROPS3D_LABEL_PROPERTY_CANDIDATES = (
+    "scalar_sf", "sf", "scalar_Sf", "Sf", "scalar_Segment", "label",
+)
+
+
+def load_crops3d_ply(filepath: str):
     """
-    Load a single Crops3D PLY file. Returns (N, 3) float32 XYZ array.
+    Load a single Crops3D PLY file. Returns (pts, labels):
+      pts: (N, 3) float32 XYZ array.
+      labels: (N,) int32 array holding the PLY's organ-category scalar
+              field (see _CROPS3D_LABEL_PROPERTY_CANDIDATES), or None if
+              the file has none of those properties.
+
+    NOTE on label semantics: there is no published id->organ-name table for
+    Crops3D (checked the paper's Table 2, the clawCa/Crops3D and
+    harpreetsahota204/crops3d_to_fiftyone GitHub repos, and the Voxel51 HF
+    dataset card -- none give a numeric mapping, and it likely isn't even
+    consistent in meaning between species). We therefore keep the raw
+    integer id as the class label rather than renaming it -- L_seg only
+    needs consistent per-species integer ids to train, not human-readable
+    names. Empirical RGB fingerprinting (2026-09-11, 15 files/species) gives
+    high confidence for two ids: Maize id 0 = soil (clearly brown), and each
+    species' highest-point-count green id = leaf. The remaining ids are
+    unconfirmed -- do not assume a name for them without re-checking.
+
     RGB, if present, is dropped here (add it back in load if you need color).
     """
     try:
-        import open3d as o3d
-        pcd = o3d.io.read_point_cloud(str(filepath))
-        pts = np.asarray(pcd.points, dtype=np.float32)
-        if pts.size == 0:
-            raise ValueError("open3d returned 0 points, falling back to plyfile")
-        return pts
-    except Exception:
-        # Fallback: parse with plyfile directly (handles some PLY variants
-        # open3d is picky about)
         from plyfile import PlyData
         ply = PlyData.read(str(filepath))
         v = ply["vertex"]
         pts = np.stack([v["x"], v["y"], v["z"]], axis=1).astype(np.float32)
-        return pts
+        prop_names = [p.name for p in v.properties]
+        label_prop = next(
+            (c for c in _CROPS3D_LABEL_PROPERTY_CANDIDATES if c in prop_names), None
+        )
+        labels = (np.rint(np.asarray(v[label_prop])).astype(np.int32)
+                  if label_prop is not None else None)
+        return pts, labels
+    except Exception:
+        # Fallback: open3d handles some PLY variants plyfile is picky about,
+        # but read_point_cloud only exposes xyz/rgb/normals -- never custom
+        # scalar fields -- so labels are unavailable via this path.
+        import open3d as o3d
+        pcd = o3d.io.read_point_cloud(str(filepath))
+        pts = np.asarray(pcd.points, dtype=np.float32)
+        if pts.size == 0:
+            raise ValueError(f"both plyfile and open3d failed to load points from {filepath}")
+        print(f"[warn] {filepath}: loaded via open3d fallback -- organ labels "
+              f"unavailable for this file")
+        return pts, None
 
 
 def scan_crops3d_directory(root: str, species: list[str] = ("Tomato", "Maize")) -> pd.DataFrame:
@@ -55,12 +92,13 @@ def scan_crops3d_directory(root: str, species: list[str] = ("Tomato", "Maize")) 
             continue
         for f in sorted(sp_dir.glob("*.ply")):
             try:
-                pts = load_crops3d_ply(f)
+                pts, labels = load_crops3d_ply(f)
                 rows.append({
                     "dataset": "Crops3D",
                     "species": sp,
                     "filepath": str(f),
                     "n_points": len(pts),
+                    "is_annotated": labels is not None,
                 })
             except Exception as e:
                 print(f"[error] failed to load {f}: {e}")

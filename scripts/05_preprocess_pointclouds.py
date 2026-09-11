@@ -47,8 +47,7 @@ def cache_path_for(row, out_dir: Path) -> Path:
 def process_row(row, target_n, sor_k, sor_std_ratio, seed):
     filepath = row["filepath"]
     if row["dataset"] == "Crops3D":
-        pts = load_crops3d_ply(filepath)
-        labels = None
+        pts, labels = load_crops3d_ply(filepath)
     else:
         pts, labels = load_pheno4d_xyz(filepath)
 

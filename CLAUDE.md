@@ -147,17 +147,37 @@ were not — see Repository layout above).
   final target accuracy is comparable between the two (~89–90%, within noise for n=1 runs on a
   63-sample eval set) — the real benefit is convergence robustness, not a final-accuracy win.
   Both runs' logs are in `results/`.
+- **Per-point Crops3D organ segmentation labels backfilled into the `.npz` cache** (2026-09-11).
+  Correction to the original plan: `Crops3D_IS` (the variant the old task list pointed at) turned
+  out to be the wrong source — per the paper (Zhu et al. 2024) and the `clawCa/Crops3D` /
+  `harpreetsahota204/crops3d_to_fiftyone` GitHub repos, it's plot-scale *instance* segmentation
+  (which individual plant a point belongs to), covering only Maize/Potato/Rapeseed (no Tomato),
+  with no organ granularity — useless for this project's `L_seg`. What `L_seg` actually needs was
+  already sitting unused in the base `Crops3D`/`Crops3D_10k` PLYs (already downloaded, already
+  used for C1): a `scalar_sf` scalar-field property per point giving the organ category. No
+  source anywhere (paper, both GitHub repos, the Voxel51 HF dataset card) publishes a numeric
+  value→organ-name table, so the raw integer id is used directly as the class label rather than
+  a guessed name — `L_seg` only needs consistent per-species integer ids to train. Extracted it in
+  `data_io.py::load_crops3d_ply` (now returns `(pts, labels)`; switched `plyfile` to the primary
+  parser since `open3d.io.read_point_cloud` can't see custom scalar fields) and threaded it through
+  `05_preprocess_pointclouds.py`; re-ran on the laptop (raw PLYs live there, not on the cluster)
+  and transferred the regenerated cache back. Confirmed via a full scan of all 308 cached files:
+  **Tomato num_classes=3** (ids `{0,1,2}`; `2` is rare, present in only 12% of files, consistent
+  with fruit), **Maize num_classes=6** (ids `{0,...,5}`). Two ids confirmed by RGB fingerprinting
+  (id `0` = soil for Maize — clearly brown; each species' dominant-point-count id = leaf); the
+  rest are unconfirmed by name and should not be assumed without re-deriving (e.g. the one-off
+  `scripts/inspect_crops3d_sf.py` diagnostic, or 3D visualization colored by label).
 
 **Next (in order):**
-1. Download `Crops3D_IS` (instance segmentation annotations, skipped in Stage 0) and extend
-   preprocessing to carry point-wise labels through to the `.npz` cache, so `L_seg` can be added
-   — every row in the strategy table specifies `L_cls + L_seg`, and C1's classification-only
-   result is an interim scaffolding step, not the full spec. Do this before going deeper into
-   the strategy table (C2 onward, or Block B/A).
-2. Integrate a PointNet++ backbone (DefRec_and_PCM has none natively — only PointNet/DGCNN) into
+1. Integrate a PointNet++ backbone (DefRec_and_PCM has none natively — only PointNet/DGCNN) into
    the training loop, adapted to DefRec's `{"cls": ..., "DefRec": ...}` output interface, then
    train row A1 (PointNet++, DA-0, ALL) — deferred behind C1 since DGCNN needed no extra backbone
    work and gave a faster real-data validation.
+2. Wire `L_seg` (weighted CE + λ_lov·Lovász, per the strategy table) into the training
+   loop/dataset adapter now that per-point Crops3D organ labels are available (see Done below,
+   "Per-point Crops3D organ segmentation labels backfilled") — needed before training C2 or any
+   row beyond C1, since every strategy-table row specifies `L_cls + L_seg` and C1's
+   classification-only result was explicitly an interim scaffold, not the full spec.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
