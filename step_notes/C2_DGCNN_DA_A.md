@@ -317,4 +317,7 @@ end-to-end with the fix before resubmitting; `λ_ent` was confirmed ramping corr
 (`lambda_ent: 0.1000` at the end of the smoke test's single epoch — the same expected
 end-of-ramp artifact `λ_p` showed in the original C2 smoke test, not a bug).
 
+**Resubmitted `jobs/c2_dgcnn_da_a.sbatch` (unchanged — the fix is in the Python, not the job
+script) — job 308608.** Queue was empty. Awaiting completion.
+
 *(Corrected rerun numbers to be added below once the job completes.)*
