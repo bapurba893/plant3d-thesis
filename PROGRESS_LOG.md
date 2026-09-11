@@ -231,6 +231,46 @@ self-supervised signal usefully to the target dataset under this exact setup. Di
 those two failure modes clearly is itself useful groundwork for the fusion/physics-informed work
 planned later in the project.
 
+## 13. A Step Back, a Real Bug Found, and a Fix — Before Committing More GPU Time to Row C4 — 2026-09-12
+
+Before starting the next adversarial row (C4), stopped to ask a harder question: neither of the
+two adaptation methods tried so far (Milestones 10 and 12) actually beat the plain "no
+adaptation" baseline's overall behavior. Was that a real, expected finding about this data, or
+was something fixable going on under the hood? Rather than guessing, this was checked properly —
+re-reading the actual training logs and the actual class breakdown of both datasets.
+
+**Found something concrete and specific.** The two datasets have *opposite* majority species —
+Crops3D (source) is about three-quarters maize, Pheno4D (target) is about two-thirds tomato. The
+adversarial approach from Milestone 10 was, nearly a quarter of the time, collapsing to
+predicting maize on every single target plant — the source dataset's majority class winning out,
+not genuine learning. Traced this to a specific, fixable design choice: one part of the
+adversarial training recipe (a term that pushes the model toward making confident, decisive
+predictions) was applied at full strength from the very first training step, before the model
+had learned anything reliable yet — which let it lock in on the wrong, source-biased answer
+early and stay there. The code's own documentation had actually already warned about exactly
+this risk when it was first written, but the fix for that risk wasn't actually implemented at
+the time — a real inconsistency between the stated reasoning and the code, now corrected.
+
+**The fix worked, measurably.** Re-ran row C2 with that one term now phased in gradually instead
+of applied at full strength immediately. Results: the wild epoch-to-epoch swings roughly halved,
+and the "collapses to predicting one class for everyone" problem dropped from about a quarter of
+all epochs to about 1 in 20. That's strong, concrete confirmation the diagnosis was right, not
+just a plausible-sounding story.
+
+**But it's not a silver bullet.** Even fixed and much more stable, row C2's adversarial approach
+still doesn't beat the plain "no adaptation" baseline (Milestone 4) when judged across its whole
+training run, not just one snapshot. So the fix cleaned up a real, specific bug — but the
+underlying, larger finding (adversarial adaptation doesn't obviously help on this particular
+data, likely for a mix of reasons: opposite-majority class balance between the two datasets, a
+genuinely small dataset, and Pheno4D spanning growth stages Crops3D never does at all) still
+stands. Both the original (buggy) and corrected results were kept side by side in the technical
+notes, not overwritten, since the diagnosis process itself — how a subtle instability was traced
+to its actual cause — is worth keeping as a record, separate from which numbers are now "official."
+
+Row C4 (the next adversarial row, testing whether the same method holds up when only one specific
+kind of data augmentation — simulated sensor noise — is used instead of the full mix) now starts
+from this corrected, more trustworthy baseline.
+
 ---
 
 ## Current Status: the 24-Row Strategy Table
@@ -253,9 +293,9 @@ at-a-glance status.
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
-| C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — trained, but did not stabilize target accuracy (see Milestone 10) |
+| C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
 | C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
-| C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Not started |
+| C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Training on cluster (starts from the corrected C2 baseline) |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |

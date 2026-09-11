@@ -320,4 +320,78 @@ end-of-ramp artifact `λ_p` showed in the original C2 smoke test, not a bug).
 **Resubmitted `jobs/c2_dgcnn_da_a.sbatch` (unchanged — the fix is in the Python, not the job
 script) — job 308608.** Queue was empty. Awaiting completion.
 
-*(Corrected rerun numbers to be added below once the job completes.)*
+**Housekeeping note**: this rerun's `IOStream` appended to the *existing* `results/C2_dgcnn_da_a/`
+directory (never deleted before resubmitting, unlike C3's OOM retry) — `run.log` ended up with
+the v1 (buggy) run's 528 lines followed by the v2 (fixed) run's 528 lines concatenated in one
+file. The actual training/checkpoint were unaffected (`best_val_total_loss` reinitializes fresh
+each `main()` call, and `model.pt`/`domain_disc.pt` are overwritten, not appended), only the
+text log. Split by hand after the job finished: the original v1 content is now
+`results/C2_dgcnn_da_a/run_v1_unramped_entropy.log` (byte-identical to what was already
+committed at `6a70437`, preserved rather than deleted), and `run.log` now holds only the v2
+(fixed) run.
+
+## Corrected results (job 308608, ramped `λ_ent`)
+
+Same full-trajectory-first discipline as the original investigation — the selected-checkpoint
+number is reported alongside the full 100-epoch picture, not instead of it.
+
+**Protocol-selected checkpoint** (best epoch by lowest source val total loss — landed at
+**epoch 66** this time, source val total loss 0.9099):
+
+| Metric | C1 (DA-0) | C2 v1 (unramped `λ_ent`, buggy) | C2 v2 (ramped `λ_ent`, fixed) |
+|---|---|---|---|
+| Selected epoch | 95 | 49 | 66 |
+| Source val cls acc | 1.0000 | 1.0000 | 0.9556 |
+| Target cls acc (selected) | 0.7460 | 0.9365 | **0.6667** |
+| Target cls avg acc | 0.7446 | 0.9130 | 0.7005 |
+| Tomato seg mIoU (acc) | 0.3248 (0.6645) | 0.2416 (0.5210) | 0.2384 (0.4765) |
+| Maize seg mIoU (acc) | 0.3427 (0.7698) | 0.1996 (0.5305) | 0.3037 (0.7744) |
+
+**Full-trajectory comparison** (same method as before — every epoch's target-acc diagnostic,
+never used for training/selection):
+
+| | C1 (DA-0) | C2 v1 (buggy) | C2 v2 (fixed) |
+|---|---|---|---|
+| Quartile 0–24 mean | 0.798 | 0.789 | 0.691 |
+| Quartile 25–49 mean | 0.834 | 0.683 | 0.678 |
+| Quartile 50–74 mean | 0.773 | 0.456 | 0.608 |
+| Quartile 75–99 mean | 0.760 | 0.446 | 0.554 |
+| Full-run mean | 0.791 | 0.593 | **0.633** |
+| Full-run stdev | 0.104 | **0.214** | **0.117** |
+| corr(source val loss, target acc) | −0.29 | −0.04 | −0.06 |
+| Epochs collapsed to a single class (acc≈23/63 or 40/63, avg_acc≈0.5) | not re-checked for C1 | **23/100** | **5/100** |
+
+### What the fix actually did — and didn't do
+
+- **It worked, exactly as diagnosed.** Full-run stdev roughly halved (0.214 → 0.117); epochs
+  collapsed to predicting a single class dropped more than 4x (23 → 5 out of 100). The
+  mechanism identified before the fix (unramped entropy minimization reinforcing an early,
+  source-majority-biased classifier into full confidence) is directly what the fix targeted, and
+  the collapse-epoch count falling by that much is strong, concrete confirmation it was the
+  right diagnosis, not just a plausible-sounding story.
+- **It also made the selected checkpoint trustworthy again.** v1's selected checkpoint (0.9365)
+  was wildly unrepresentative of its own full-run mean (0.593) — a lucky draw from a violently
+  oscillating process. v2's selected checkpoint (0.6667) sits close to its own full-run mean
+  (0.633) — a fair, representative draw. Even though `corr(source val loss, target acc)` is
+  still weak (−0.06, barely different from v1's −0.04), a low-variance trajectory means *any*
+  checkpoint the selector lands on is now reasonably close to the trajectory's true average,
+  which practically matters more than the correlation coefficient alone suggests.
+- **It did NOT make DA-A beat DA-0.** C2 v2's full-run mean (0.633) is still well below C1's
+  (0.791), and its quartile means still drift downward across the run (0.691 → 0.678 → 0.608 →
+  0.554) — a gentler, less violent version of the same kind of decline v1 showed, not a reversal
+  of it. **The fix resolved the specific instability mechanism diagnosed before starting C4; it
+  did not resolve the more fundamental finding that vanilla adversarial adaptation underperforms
+  no-adaptation on this dataset.** That fundamental finding — consistent with the label-shift,
+  small-N, and domain-gap-structure factors discussed in the "root-cause diagnosis" section
+  above — stands.
+- Segmentation at the selected checkpoint is roughly a wash vs. v1 (Tomato mIoU essentially
+  unchanged 0.238 vs 0.242; Maize notably better, 0.304 vs 0.200, closer to C1's 0.343) —
+  consistent with a later, more-converged selected epoch (66 vs. 49).
+
+**Conclusion for going into C4**: the entropy-ramp fix is real and worth keeping (it's now part
+of `dann.py`'s standard, reused-everywhere behavior) — it makes DA-A rows behave far more
+predictably and makes their selected checkpoints trustworthy. It is not, on its own, what would
+make DA-A "work" on this dataset in the sense of beating DA-0. C4 (DGCNN, DA-A, L-N-only) now
+starts from this same, fixed baseline — any remaining instability or underperformance it shows
+is attributable to the augmentation choice or the adversarial method more broadly, not to this
+already-fixed bug.

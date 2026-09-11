@@ -264,35 +264,51 @@ were not — see Repository layout above).
   `logits["feat"]` (pooled global feature) as the discriminator's input. CPU smoke test (1 epoch,
   real data) passed before submitting.
 
-  **Protocol-selected checkpoint** (same protocol as C1/A1 — best epoch by lowest source val
-  total loss, never touching target labels — landed at epoch 49):
+  **First run (job 308389, unramped `λ_ent`) — SUPERSEDED, see fix below.** Protocol-selected
+  checkpoint (epoch 49) showed target cls acc 0.9365, but full-trajectory analysis (every
+  epoch's target-acc diagnostic, never used for training/selection) revealed this was misleading:
+  C2 was far more volatile than C1 (stdev 0.214 vs 0.104) and, once the GRL's `λ_p` schedule
+  saturated (~epoch 30-50), back-half target accuracy averaged only 0.456 — worse than C1's
+  0.77, not better. Root-caused (not just described as "adversarial instability" in the
+  abstract): **Crops3D (source, 73% Maize) and Pheno4D (target, 62-63% Tomato) have opposite
+  class majorities**, and 23 of C2's 100 epochs showed target predictions collapsed to source's
+  majority class (avg_acc≈0.5, acc≈23/63) while entropy loss fell from 0.32→0.05 — entropy
+  minimization was successfully forcing confident predictions, just often confident in the
+  source-biased direction, because `λ_ent` was applied at full fixed strength from epoch 0
+  despite `dann.py`'s own docstring already warning this was risky.
 
-  | Metric | C1 (DA-0) | C2 (DA-A) |
-  |---|---|---|
-  | Source val cls acc | 1.0000 | 1.0000 |
-  | Target cls acc | 0.7460 (avg 0.7446) | 0.9365 (avg 0.9130) |
-  | Tomato seg mIoU | 0.3248 (acc 0.6645) | 0.2416 (acc 0.5210) |
-  | Maize seg mIoU | 0.3427 (acc 0.7698) | 0.1996 (acc 0.5305) |
+  **Fix (2026-09-11) and rerun (job 308608):** `adapters/dann.py` gained
+  `lambda_ent_schedule(p, lambda_ent_max, gamma) = lambda_ent_max * lambda_p_schedule(p, gamma)`
+  — `λ_ent` now ramps alongside the GRL alpha instead of being held fixed. Since this changes
+  the anchor method itself, C2 was rerun (required before C4, which reuses the same `dann.py`,
+  per CLAUDE.md's "identical across all 3 backbones" rule) rather than left to diverge from C4.
 
-  **The headline target-accuracy number is misleading and does NOT mean DA-A closed the DA-0
-  drift.** Parsing every epoch's (never trained-on, never used for selection) target-accuracy
-  diagnostic across the full 100-epoch run shows C2 is far more volatile than C1 (stdev 0.214 vs
-  0.104) and, once the GRL's `λ_p` schedule saturates near 1.0 (~epoch 30-50, confirmed from the
-  log), target accuracy in the back half of training (epochs 50-99) averages only **0.456** —
-  *worse* than C1's 0.773/0.760 over the same epochs, not better. `corr(source val loss, target
-  acc)` across all 100 epochs is essentially zero for C2 (−0.04) vs. already-weak for C1 (−0.29)
-  — the only signal DA-0/DA-A model selection is allowed to see carries almost no information
-  about where C2's target accuracy actually is at any given epoch, so epoch 49's 0.9365 is a
-  lucky draw from a high-variance process, not a sign of a systematically better or more
-  domain-invariant model. Segmentation also came out worse at the selected checkpoint (epoch 49
-  is much earlier than C1's epoch 95, before seg loss had converged as far). **Conclusion: no,
-  vanilla adversarial adaptation does not reduce the target-accuracy drift seen in C1/A1 in this
-  run — it makes target-domain behavior more unstable and, on average, worse once the adversarial
-  term reaches full strength.** This is a known failure mode of un-stabilized DANN (not a wiring
-  bug — the smoke test already confirmed correct GRL/discriminator/entropy behavior), and no
-  stabilization tricks were added since C2 must stay the literal, unmodified anchor method for
-  cross-backbone/cross-row comparability. Full trajectory analysis and quartile breakdown in
-  `step_notes/C2_DGCNN_DA_A.md`.
+  **Corrected protocol-selected checkpoint** (epoch 66, source val total loss 0.9099):
+
+  | Metric | C1 (DA-0) | C2 v1 (unramped, buggy) | C2 v2 (ramped, fixed) |
+  |---|---|---|---|
+  | Target cls acc | 0.7460 (avg 0.7446) | 0.9365 (avg 0.9130) | 0.6667 (avg 0.7005) |
+  | Full-run mean target acc | 0.791 | 0.593 | **0.633** |
+  | Full-run stdev | 0.104 | 0.214 | **0.117** |
+  | Epochs collapsed to one class | not re-checked | 23/100 | **5/100** |
+
+  **The fix worked exactly as diagnosed — stdev roughly halved, collapse-epochs cut 4.6x — but
+  did NOT make DA-A beat DA-0's full-trajectory mean** (0.633 vs. 0.791; quartile means still
+  drift down 0.691→0.678→0.608→0.554, a gentler version of the same decline, not a reversal).
+  **Conclusion: the entropy-ramp fix resolved a real, specific, now-confirmed bug (unramped
+  entropy minimization interacting with a source/target label-prior mismatch), and makes DA-A
+  rows behave predictably with trustworthy selected checkpoints — it does not, on its own, make
+  vanilla adversarial adaptation outperform no-adaptation on this dataset.** That broader finding
+  stands, and is plausibly explained by a combination of factors verified while investigating
+  (not just asserted): the label-prior mismatch above, a small-N training regime (263
+  source-train / 160 target-adapt samples, ~800 total optimizer steps over 100 epochs — DANN's
+  schedule was validated at far larger scale), and Pheno4D being genuinely multi-temporal
+  (`scan_date` populated) while Crops3D is single-snapshot (`scan_date` empty in every row) — a
+  structurally different, arguably harder domain gap than "same shapes, different sensor."
+  Original (buggy) run kept in full at `results/C2_dgcnn_da_a/run_v1_unramped_entropy.log`
+  (not deleted) — the diagnosis process is itself a documented, correct piece of work, only the
+  numbers it explains are superseded. Full derivation, quartile breakdown, and the fix's exact
+  before/after numbers in `step_notes/C2_DGCNN_DA_A.md`.
 
 **Done (continued):**
 - **Row C3 (DGCNN, DA-S, ALL) trained on the cluster** (2026-09-11, job 308459, ~1h04m; the
@@ -337,14 +353,18 @@ were not — see Repository layout above).
   `step_notes/C3_DGCNN_DA_S.md`.
 
 **Next (in order):**
-1. C4 (DGCNN, DA-A, L-N) to isolate the noise weakness using the same adversarial machinery
-   built for C2. Per explicit user instruction, do the full-trajectory analysis (not just the
-   selected checkpoint) from the start for C4, not as an afterthought — this also directly tests
-   whether C2's instability is fundamental to the adversarial method itself or specific to the
-   ALL augmentation mix C2 used. Worth watching for the same `λ_p`-saturation-linked instability
-   documented for C2, since `adapters/dann.py` is shared unmodified. The C2 instability finding
-   is also directly relevant to A2 (PointNet++, same DA-A anchor method) whenever Block A
-   resumes.
+1. C4 (DGCNN, DA-A, L-N) to isolate the noise weakness — **submitted to the cluster, training in
+   progress** (2026-09-12). Byte-for-byte reuses C2's now-fixed `adapters/dann.py` (ramped
+   `λ_ent`); only the augmentation pipeline differs (`adapters/dataset.py` gained an
+   `augment_mode` parameter, "all"/"ln_only", additive — existing callers unaffected;
+   `scripts/augmentations.py::compose_pipeline_ln_only` applies Gaussian jitter only, skipping
+   G-R/G-S/L-D). `adapters/train_c4_dgcnn_da_a_ln.py`, `jobs/c4_dgcnn_da_a_ln.sbatch`. CPU smoke
+   test passed before submitting. Per explicit user instruction, gets the same full-trajectory
+   analysis as C2/C3 from the start, not as an afterthought — this is a direct test of whether
+   C2's remaining behavior (even after the entropy-ramp fix) is fundamental to the adversarial
+   method itself or specific to the ALL augmentation mix C2 used. The C2 diagnosis (label-prior
+   mismatch, small-N regime, multi-temporal target) is also directly relevant to A2 (PointNet++,
+   same DA-A anchor method, same `dann.py`) whenever Block A resumes.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
