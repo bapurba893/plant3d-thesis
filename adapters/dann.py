@@ -51,12 +51,30 @@ both):
     application reading.
   - L_ent's weight (lambda_ent) has no formula anywhere in the docx --
     the "adversarial, physics, and distillation terms" sentence covering
-    lambda_p does not name entropy minimization specifically. A fixed
-    constant (CLI-configurable, default 0.1) is used instead of ramping it
-    with lambda_p, because ramping entropy minimization up in lockstep
-    with a still-unreliable discriminator early in training risks
-    reinforcing confidently-wrong target pseudo-predictions -- a known
-    failure mode in the DA literature, not a novel argument invented here.
+    lambda_p does not name entropy minimization specifically.
+
+REVISED 2026-09-11, after C2's first real run: lambda_ent is now RAMPED
+alongside lambda_p (lambda_ent_schedule below), not held at a fixed
+constant. The original version of this file used a fixed, non-ramped
+lambda_ent, reasoning that ramping it up early risked "reinforcing
+confidently-wrong target pseudo-predictions." That reasoning was correct
+but the implementation didn't act on it -- a fixed lambda_ent from epoch 0
+applies exactly the risk it warned about, at full strength, before the
+shared features have any adversarial pressure behind them yet. C2's actual
+run showed this happening, verified from the log, not assumed: source
+(Crops3D) and target (Pheno4D) have OPPOSITE class majorities (source is
+73% Maize, target is 62-63% Tomato -- data/crops3d_train.csv vs.
+data/pheno4d_adaptation_pool.csv/pheno4d_heldout_eval.csv), and 23 of C2's
+100 epochs showed target predictions collapsed to source's majority class
+(avg_acc ~= 0.5000, acc ~= 0.3651 = 23/63, i.e. predicting Maize on every
+target sample) while the entropy loss fell from 0.32 to 0.05 (max possible
+for 2 classes is ln(2)=0.693) -- entropy minimization was successfully
+driving very confident predictions, just frequently confident in the
+source-biased direction, especially early before the discriminator had
+learned anything real to oppose. Full diagnosis, including how this was
+found, in step_notes/C2_DGCNN_DA_A.md (kept as a documented investigation,
+not deleted, even though the numbers it explains are superseded by the
+rerun with this fix).
 """
 
 import math
@@ -89,6 +107,18 @@ def lambda_p_schedule(p: float, gamma: float = 10.0) -> float:
     """p in [0,1] = training progress (epoch*n_batches+batch)/(epochs*n_batches).
     lambda_p = 2/(1+exp(-gamma*p)) - 1, per the strategy table docx."""
     return 2.0 / (1.0 + math.exp(-gamma * p)) - 1.0
+
+
+def lambda_ent_schedule(p: float, lambda_ent_max: float, gamma: float = 10.0) -> float:
+    """Ramped entropy-minimization weight: lambda_ent_max * lambda_p(p) --
+    rides the same DANN ramp as the GRL alpha so entropy minimization
+    doesn't apply full-strength pressure on unlabeled target predictions
+    before the shared features have had any adversarial pressure behind
+    them (see module docstring, "REVISED 2026-09-11" -- this replaced an
+    earlier fixed-constant lambda_ent after C2's first run showed target
+    predictions repeatedly collapsing to source's majority class while
+    entropy minimization drove them to high confidence early)."""
+    return lambda_ent_max * lambda_p_schedule(p, gamma)
 
 
 class DomainDiscriminator(nn.Module):

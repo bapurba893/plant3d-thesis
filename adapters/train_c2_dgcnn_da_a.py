@@ -27,11 +27,25 @@ What's new vs. C1:
     classification predictions, encouraging confident decisions on target
     without ever touching target ground truth.
   - L_dom/L_ent use fixed/scheduled coefficients (GRL alpha = lambda_p(p),
-    L_ent weight = a fixed constant) and are added on top of, not inside,
-    the Kendall({"cls","seg"}) module -- see adapters/dann.py's docstring
-    for the exact formulas and the two documented inference calls (GRL-
-    alpha-only application of lambda_p; fixed, non-ramped lambda_ent).
-    This mirrors CLAUDE.md's "Loss architecture" two-regime rule exactly.
+    L_ent weight = lambda_ent_schedule(p) = --lambda_ent * lambda_p(p),
+    ramped, not fixed -- see "REVISED 2026-09-11" below) and are added on
+    top of, not inside, the Kendall({"cls","seg"}) module -- see
+    adapters/dann.py's docstring for the exact formulas and the documented
+    inference call (GRL-alpha-only application of lambda_p). This mirrors
+    CLAUDE.md's "Loss architecture" two-regime rule exactly.
+
+REVISED 2026-09-11, after this script's first real run (job 308389): L_ent's
+weight now RAMPS alongside the GRL alpha instead of being held at a fixed
+constant from epoch 0. That first run showed source (Crops3D, 73% Maize)
+and target (Pheno4D, 62-63% Tomato) having opposite class majorities, and
+23 of 100 epochs with target predictions collapsed to source's majority
+class while entropy loss fell to near-zero -- i.e. entropy minimization
+was successfully forcing confident predictions, just often confident in
+the source-biased direction, especially before the discriminator had
+learned anything real to oppose. Full before/after numbers and the
+diagnosis process are kept in step_notes/C2_DGCNN_DA_A.md (the original
+investigation is preserved, not deleted, even though its numbers are
+superseded by this fix) and in adapters/dann.py's docstring.
 
 Model selection: same protocol as C1/A1 -- best checkpoint chosen by
 lowest source validation total loss (Kendall(cls,seg) on Crops3D val
@@ -69,7 +83,9 @@ if _DEFREC_ROOT not in sys.path:
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from models import DGCNN_ClsSeg  # noqa: E402
-from dann import DomainDiscriminator, grad_reverse, lambda_p_schedule, entropy_loss  # noqa: E402
+from dann import (  # noqa: E402
+    DomainDiscriminator, grad_reverse, lambda_p_schedule, lambda_ent_schedule, entropy_loss,
+)
 from losses import seg_loss, class_weights_from_counts, KendallUncertaintyWeighting  # noqa: E402
 from dataset import (  # noqa: E402
     PlantClsSegDataset, PlantSpeciesDataset,
@@ -108,8 +124,9 @@ def parse_args():
     p.add_argument("--gamma", type=float, default=10.0,
                     help="lambda_p(p) = 2/(1+exp(-gamma*p)) - 1, GRL alpha schedule")
     p.add_argument("--lambda_ent", type=float, default=0.1,
-                    help="fixed (non-scheduled) weight on target entropy minimization -- "
-                         "see adapters/dann.py docstring for why this isn't lambda_p-ramped")
+                    help="MAX weight on target entropy minimization -- ramped by lambda_p(p) "
+                         "via dann.lambda_ent_schedule, not applied at full strength from "
+                         "epoch 0 (see adapters/dann.py docstring, 'REVISED 2026-09-11')")
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--gpu", type=int, default=0, help="-1 for cpu")
     return p.parse_args()
@@ -320,7 +337,7 @@ def main():
         model.train()
         domain_disc.train()
         train_cls_loss, train_seg_loss, train_dom_loss, train_ent_loss, n_seen = 0.0, 0.0, 0.0, 0.0, 0
-        last_lambda_p = 0.0
+        last_lambda_p, last_lambda_ent = 0.0, 0.0
 
         trgt_iter = cycle(trgt_adapt_loader)
         for batch_idx, (src_batch, trgt_batch) in enumerate(zip(src_train_loader, trgt_iter)):
@@ -335,7 +352,8 @@ def main():
             step = epoch * n_batches_per_epoch + batch_idx
             p = step / total_steps
             lambda_p = lambda_p_schedule(p, gamma=args.gamma)
-            last_lambda_p = lambda_p
+            lambda_ent = lambda_ent_schedule(p, args.lambda_ent, gamma=args.gamma)
+            last_lambda_p, last_lambda_ent = lambda_p, lambda_ent
 
             opt.zero_grad()
 
@@ -358,10 +376,11 @@ def main():
             l_dom = dom_criterion(dom_logits, dom_labels)
 
             # L_dom weight is 1 here (GRL alpha=lambda_p already ramps the
-            # backbone's adversarial gradient); L_ent uses its own fixed,
-            # non-ramped weight. Neither goes through `kendall`. See
-            # adapters/dann.py docstring for the full reasoning.
-            total = task_total + l_dom + args.lambda_ent * l_ent
+            # backbone's adversarial gradient); L_ent uses lambda_ent_schedule
+            # (ramped by lambda_p, capped at --lambda_ent -- see "REVISED
+            # 2026-09-11" in both this file's and dann.py's docstrings).
+            # Neither goes through `kendall`.
+            total = task_total + l_dom + lambda_ent * l_ent
             total.backward()
             opt.step()
 
@@ -379,7 +398,7 @@ def main():
                   f"seg loss: {train_seg_loss / n_seen:.4f}, "
                   f"dom loss: {train_dom_loss / n_seen:.4f}, "
                   f"ent loss (target): {train_ent_loss / n_seen:.4f}, "
-                  f"lambda_p: {last_lambda_p:.4f}, "
+                  f"lambda_p: {last_lambda_p:.4f}, lambda_ent: {last_lambda_ent:.4f}, "
                   f"kendall s_cls: {s_cls:.4f}, s_seg: {s_seg:.4f}")
 
         val_cls_acc, val_cls_avg_acc, val_cls_loss, val_seg_summary, val_seg_loss = \

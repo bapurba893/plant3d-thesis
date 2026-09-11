@@ -1,5 +1,15 @@
 # Row C2: DGCNN, Adversarial Domain Adaptation (DA-A), All Augmentations
 
+> **⚠ NUMBERS BELOW SUPERSEDED 2026-09-11 — see "Root-cause diagnosis and fix" at the bottom
+> of this file for the corrected rerun.** Everything from here down through the original
+> "Pass/fail" verdict is the *first* C2 run (unramped `λ_ent`, job 308389) and its full
+> investigation, kept in full rather than deleted or rewritten — the diagnosis process (how the
+> instability was traced to a source/target label-prior mismatch interacting with unramped
+> entropy minimization) is itself a valuable, correct piece of work, and remains true as an
+> explanation of *why that run behaved the way it did*. What changed is the fix that followed
+> from it, and the corrected numbers that fix produced. Read the bottom section for the current,
+> official C2 result.
+
 ## What this is, in plain language
 
 C2 is the "anchor" adversarial row on the DGCNN backbone. Instead of training only on the
@@ -230,3 +240,81 @@ L-N/jitter-noise augmentation only, isolating the noise weakness). The instabili
 is also directly relevant to **A2** (PointNet++, same DA-A anchor method) — worth watching for
 the same `λ_p`-saturation-linked destabilization there, since `adapters/dann.py` is shared
 unmodified across both.
+
+---
+# Root-cause diagnosis and fix (2026-09-11, before starting C4)
+
+Before spending more GPU time on C4 (which reuses C2's exact adversarial machinery), the user
+asked for an honest read on why *neither* C2 (DA-A) nor C3 (DA-S) beat the DA-0 baseline's
+full-trajectory mean, and whether anything in `dann.py`/the DefRec integration was worth
+re-examining first. This section is that investigation, done by actually re-reading the logs and
+data rather than speculating.
+
+## What was verified, concretely (not assumed)
+
+1. **Source and target have opposite class majorities.** `data/crops3d_train.csv`: Maize 192 /
+   Tomato 71 (73% Maize). `data/pheno4d_adaptation_pool.csv`: Tomato 100 / Maize 60 (62%
+   Tomato). `data/pheno4d_heldout_eval.csv`: Tomato 40 / Maize 23 (63% Tomato). Source and
+   target don't just differ in sensor noise — their label priors point in opposite directions.
+   Vanilla DANN's theory only aligns marginal *feature* distributions; it has no mechanism for a
+   `P(y)` mismatch between domains, a known gap in the original formulation discussed in
+   follow-up DA literature critiquing plain DANN.
+2. **C2 (the original run) repeatedly collapsed to predicting the source's majority class on
+   target data.** Parsed every epoch's `avg_acc`: 23 of 100 epochs land within 0.02 of exactly
+   0.5 — the signature of one class at 0% recall, the other at 100%. The specific accuracy those
+   epochs show is 0.3651 = 23/63, i.e. the model was predicting **all-Maize** (source's
+   majority) on a target set where Maize is the *minority*. Not random noise — a systematic,
+   source-biased collapse, recurring throughout the run (23 epochs, not clustered only at the
+   start).
+3. **Entropy loss fell from 0.32 to 0.05 over the run** (max possible for 2 classes is
+   `ln(2)=0.693`). Entropy minimization was doing exactly what it's designed to do — forcing
+   very confident predictions — it just was frequently confident in the wrong, source-biased
+   direction. With only 2 classes, "confident" effectively means "collapsed to one class," a
+   much blunter failure mode than in a many-class benchmark (e.g. PointDA-10's 10 classes),
+   where the same entropy-minimization mechanism has more room to be selectively confident.
+4. **`dann.py`'s own original docstring already stated the risk, but the implementation didn't
+   act on it.** It reasoned that ramping entropy minimization up early "risks reinforcing
+   confidently-wrong target pseudo-predictions" — and then used a *fixed* `λ_ent` from epoch 0
+   anyway, applying exactly that risk at full strength before the shared features had any
+   adversarial pressure behind them. Points 2–3 above show this playing out, not just being a
+   hypothetical risk.
+5. **Scale**: only 263 source-train / 160 target-adapt samples, batch 32 → 8 source batches / 5
+   target batches per epoch, ~800 total optimizer steps across the full 100-epoch run. DANN's
+   `λ_p` schedule and adversarial min-max dynamics were validated in regimes with orders of
+   magnitude more steps; small-N adversarial training is independently well-known to be
+   oscillation-prone. This compounds points 1–4, it doesn't replace them.
+6. **Crops3D vs. Pheno4D structural asymmetry, checked not assumed**: `data/crops3d_train.csv`
+   has `scan_date`/`plant_id` entirely empty (single snapshot per plant); Pheno4D's manifest has
+   them populated (genuinely multi-temporal, multiple growth stages per plant, per CLAUDE.md).
+   So the target domain spans an axis of variation (developmental stage) source never has any
+   examples of at all — a structurally different, and arguably harder, gap than "same shapes,
+   different sensor," which is what DANN/DefRec were originally validated against.
+
+C3's DA-S result is separately explained by the DefRec paper's own ablation (both-domain DefRec
+underperforms target-only — see `step_notes/C3_DGCNN_DA_S.md`) plus these same small-N/label-shift
+factors; it isn't re-derived here since C3 doesn't use `dann.py` at all.
+
+## The fix
+
+Given the analysis above, the user chose (via an explicit decision, not a unilateral change) to:
+**ramp `λ_ent` alongside `λ_p` instead of holding it at a fixed constant**, matching the
+reasoning `dann.py` already stated but hadn't implemented. `adapters/dann.py` gained
+`lambda_ent_schedule(p, lambda_ent_max, gamma) = lambda_ent_max * lambda_p_schedule(p, gamma)` —
+rides the exact same DANN ramp as the GRL alpha. `adapters/train_c2_dgcnn_da_a.py` now computes
+`lambda_ent = lambda_ent_schedule(p, args.lambda_ent, gamma=args.gamma)` per batch and uses it in
+place of the old fixed `args.lambda_ent` when combining `total = task_total + l_dom + lambda_ent
+* l_ent`; `--lambda_ent` is now documented as the *max* weight, reached only once `λ_p`
+saturates, not the constant weight from batch 1. Both files' docstrings were rewritten (not just
+appended to) to state the corrected design as current, with a "REVISED 2026-09-11" note
+explaining what changed and why, per this project's style convention of flagging inferences vs.
+confirmed facts.
+
+**This changes the anchor method itself**, so per CLAUDE.md's requirement that DA-A "appears
+identically across all 3 backbones" for valid cross-backbone comparison, C2 needed to be
+**rerun** with the fix before C4 (which reuses the same `dann.py`) starts, rather than letting C2
+and C4 diverge on an unrelated methodological fix. CPU smoke test (1 epoch, real data) passed
+end-to-end with the fix before resubmitting; `λ_ent` was confirmed ramping correctly in the log
+(`lambda_ent: 0.1000` at the end of the smoke test's single epoch — the same expected
+end-of-ramp artifact `λ_p` showed in the original C2 smoke test, not a bug).
+
+*(Corrected rerun numbers to be added below once the job completes.)*
