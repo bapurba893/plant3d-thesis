@@ -137,6 +137,24 @@ interesting split shows up on the parts that are actually hard:
   for the next step: adding an adversarial domain-adaptation method (rows A2/C2) to see if it
   fixes this erosion for both architectures.
 
+## 9. Adversarial Domain Adaptation Built and Submitted — 2026-09-11
+
+Started the next milestone: teaching the model to actively make its features look the same
+regardless of which dataset they came from, instead of just hoping a plain model happens to
+generalize (which Milestones 6 and 8 showed doesn't hold up over long training). This uses a
+well-known technique (DANN — adversarial domain adaptation): a small second network tries to
+guess whether a set of features came from Crops3D or Pheno4D, while the main network is trained
+to fool it, plus a separate nudge that encourages confident (not wishy-washy) predictions on the
+unlabeled target data. None of this existed in the base reference codebase (which only
+implements a different technique, self-supervised reconstruction) — checked carefully before
+concluding that and building it from scratch, the same way the "no adaptation" baseline training
+loop had to be built from scratch in Milestone 4.
+
+Verified with a full trial run on real data (CPU, one epoch) before trusting it, same as every
+previous integration step — ran cleanly with no errors and sane numbers. Then handed off row
+**C2** (DGCNN + adversarial adaptation, the "anchor" row every other adversarial row in the table
+will copy) to the cluster GPU to train for real (job 308389). Result not back yet.
+
 ---
 
 ## Current Status: the 24-Row Strategy Table
@@ -159,7 +177,7 @@ at-a-glance status.
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
-| C (DGCNN) | C2 | Adversarial (anchor method) | Not started — next up |
+| C (DGCNN) | C2 | Adversarial (anchor method) | Training on cluster (job 308389) |
 | C (DGCNN) | C3 | Self-supervised | Not started |
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Not started |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |

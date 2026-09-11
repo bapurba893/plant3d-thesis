@@ -252,12 +252,19 @@ were not — see Repository layout above).
   reinforcing the case for the A2/C2 adversarial anchor rows.
 
 **Next (in order):**
-1. Train row C2 (DGCNN, DA-A, ALL) — the adversarial anchor. Adds a domain discriminator +
-   Gradient Reversal Layer + entropy minimization on top of the now-working joint `L_cls+L_seg`
-   DGCNN adapter; `L_dom`/`L_ent` are fixed/scheduled weights, never learned (see Loss
-   architecture above) — do not route them through the Kendall uncertainty module used for
-   `L_cls+L_seg`. Natural next step on the DGCNN track: isolated, one-variable-at-a-time
-   increment on top of C1 rather than a rewrite.
+1. Row C2 (DGCNN, DA-A, ALL) — the adversarial anchor — **submitted to the cluster, training in
+   progress** (2026-09-11, job 308389; not yet complete as of this writing). Adds a domain
+   discriminator + Gradient Reversal Layer (`adapters/dann.py`, new — confirmed nothing DANN-like
+   exists in DefRec_and_PCM to adapt, it only implements DefRec self-supervised + PCM mixup) +
+   entropy minimization on top of the now-working joint `L_cls+L_seg` DGCNN adapter
+   (`adapters/train_c2_dgcnn_da_a.py`). `L_dom`/`L_ent` are fixed/scheduled weights (GRL
+   alpha/L_dom coefficient = `λ_p = 2/(1+e^(−10p))−1` per the strategy table docx; `L_ent` uses a
+   fixed, non-ramped constant — both documented as explicit inferences, not spec text, in
+   `adapters/dann.py`'s docstring), never routed through the Kendall uncertainty module used for
+   `L_cls+L_seg`. `DGCNN_ClsSeg.forward` now also exposes `logits["feat"]` (pooled global
+   feature) as the discriminator's input — additive, doesn't affect C1's code. CPU smoke test (1
+   epoch, real data) passed before submitting. See `step_notes/C2_DGCNN_DA_A.md` for full detail;
+   results to be added here once the job finishes.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

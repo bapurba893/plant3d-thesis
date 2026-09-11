@@ -55,7 +55,11 @@ class DGCNN_ClsSeg(DGCNN):
         """Same backbone forward as DGCNN.forward, but also returns the
         per-point feature map (logits["seg_feat"]) so the caller can route
         each sample through its species' segmentation head -- see
-        seg_logits_for_species below."""
+        seg_logits_for_species below -- and the pooled global feature
+        (logits["feat"], (B, 1024), pre-classifier) for the DA-A rows'
+        domain discriminator (adapters/dann.py). Both are additive keys;
+        callers that only read logits["cls"]/["seg_feat"] (C1/A1) are
+        unaffected."""
         batch_size = x.size(0)
         num_points = x.size(2)
         logits = {}
@@ -85,6 +89,7 @@ class DGCNN_ClsSeg(DGCNN):
         x5_pooled = F.adaptive_max_pool1d(x5, 1).view(batch_size, -1)
 
         logits["cls"] = self.C(x5_pooled)
+        logits["feat"] = x5_pooled  # pooled global feature (B, 1024) -- domain discriminator input, see adapters/dann.py
         logits["seg_feat"] = torch.cat(
             (x_cat, x5_pooled.unsqueeze(2).repeat(1, 1, num_points)), dim=1)
 
