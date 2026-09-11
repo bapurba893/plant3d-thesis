@@ -50,4 +50,27 @@ because this comparison is only meaningful if both rows are read the same, caref
 
 ## What was done and how
 
-*(To be filled in as work proceeds.)*
+1. Added `augment_mode` plumbing (`adapters/dataset.py`) and
+   `compose_pipeline_ln_only`/`_with_labels` (`scripts/augmentations.py`) — see design decisions
+   above.
+2. Wrote `adapters/train_c4_dgcnn_da_a_ln.py` as a near-line-for-line copy of
+   `train_c2_dgcnn_da_a.py` (the corrected, ramped-`λ_ent` version), swapping only
+   `augment_mode="ln_only"` for the source-train and target-adaptation-pool datasets.
+3. CPU smoke test (1 epoch, batch size 8, real data, `--gpu -1`) passed end-to-end — sane
+   non-zero cls/seg/dom/ent losses, `augment_mode` confirmed logged, `λ_ent` ramp confirmed
+   working (`lambda_ent: 0.1000` at end of the single smoke-test epoch, same expected artifact
+   as C2's smoke tests). Deleted `results/_smoketest_c4/` afterward.
+4. Added `jobs/c4_dgcnn_da_a_ln.sbatch` — same cluster settings and hyperparameters as C2's
+   corrected run (100 epochs, batch 32, lr 1e-3, wd 5e-5, dropout 0.5, disc dropout 0.3, gamma
+   10.0, lambda_ent 0.1 max).
+5. Waited for C2's entropy-ramp-fix rerun (job 308608) to finish and confirm the fix actually
+   worked before spending GPU time on C4 with the same machinery — see
+   `step_notes/C2_DGCNN_DA_A.md`'s "Corrected results" section. Confirmed: fix genuinely
+   stabilizes training (stdev roughly halved, collapse-epochs cut 4.6x) but doesn't flip the
+   DA-0-vs-DA-A comparison on its own -- so C4 is testing something real, not chasing a bug that
+   was already explained by something else.
+
+---
+**2026-09-12:** Submitted `jobs/c4_dgcnn_da_a_ln.sbatch` to the `dgx` partition — job **308634**.
+Queue was empty; no pre-existing `results/C4_dgcnn_da_a_ln/` directory (avoiding the log-append
+issue hit on C2's rerun). Awaiting completion.
