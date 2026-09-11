@@ -104,12 +104,23 @@ class KendallUncertaintyWeighting(nn.Module):
             name: nn.Parameter(torch.zeros(())) for name in task_types
         })
 
+    def weighted_term(self, name: str, loss: torch.Tensor) -> torch.Tensor:
+        """Same per-task weighting formula as forward(), for a single named
+        task. Lets a caller backprop through one task's graph at a time
+        (e.g. summing several sub-batch chunks of one task's loss, each
+        immediately .backward()'d, to bound peak memory for a task whose
+        forward pass is far more memory-hungry than the others -- see
+        train_c3_dgcnn_da_s.py's DefRec chunking) while still accumulating
+        gradients into the same shared s_j parameter and backbone weights
+        that a single forward()-based call would produce, since each
+        term's contribution to the total is linear in that term's loss."""
+        s = self.log_vars[name]
+        if self.task_types[name] == "regression":
+            return torch.exp(-s) / 2.0 * loss + s / 2.0
+        return torch.exp(-s) * loss + s / 2.0
+
     def forward(self, losses: dict) -> torch.Tensor:
         total = 0.0
         for name, loss in losses.items():
-            s = self.log_vars[name]
-            if self.task_types[name] == "regression":
-                total = total + torch.exp(-s) / 2.0 * loss + s / 2.0
-            else:
-                total = total + torch.exp(-s) * loss + s / 2.0
+            total = total + self.weighted_term(name, loss)
         return total

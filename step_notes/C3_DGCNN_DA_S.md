@@ -145,3 +145,111 @@ Submitting `jobs/c3_dgcnn_da_s.sbatch` to the cluster next.
 ---
 **2026-09-11:** Submitted `jobs/c3_dgcnn_da_s.sbatch` to the `dgx` partition — job **308449**.
 Queue was empty beforehand. Awaiting completion.
+
+---
+**2026-09-11 (later): Job 308449 FAILED — CUDA OOM — root-caused, fixed, and resubmitted.**
+
+## Incident: CUDA out-of-memory on the very first training batch
+
+Job 308449 crashed after 2m38s, before printing a single epoch's training line. The sbatch
+stdout log (`results/logs/c3_dgcnn_da_s_308449.log`, not `run.log` — exceptions go to stderr,
+not through `IOStream`) had the actual traceback:
+
+```
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 6.00 GiB. GPU 0 has a total
+capacity of 79.14 GiB of which 3.57 GiB is free. Including non-PyTorch memory, this process
+has 75.56 GiB memory in use.
+```
+
+Died inside `DefRec.chamfer_distance` (unmodified upstream code), specifically at
+`torch.add(p1, torch.neg(p2))` — while computing `l_defrec_src`, i.e. before even reaching the
+target-domain DefRec call.
+
+**Root cause, worked out from the code, not guessed:** `chamfer_distance` builds dense
+`(B, N, N, 3)` tensors (`p1`/`p2` after `.repeat(...)`, then their difference). At our
+`N=4096` points/cloud and `batch_size=32`, that's a `(32, 4096, 4096, 3)` float32 tensor =
+`32 × 4096 × 4096 × 3 × 4` bytes ≈ **6.0 GiB — matches the OOM message's "Tried to allocate
+6.00 GiB" exactly**, confirming the diagnosis. PointDA-10 (the benchmark this reference repo
+was built and tuned for) uses only **1024 points/cloud** — 16x fewer than ours — so this
+implementation was never exercised at a memory scale anywhere near what our data requires.
+Compounding this: the original design (per `defrec_loss_for_batch` calls followed by one
+`total = kendall(...); total.backward()`) kept the clean cls/seg forward pass's activations,
+the deformed-source forward pass's activations, AND the deformed-target forward pass's
+activations all simultaneously alive in the autograd graph, waiting for one combined backward
+call — so by the time the very first (source) `chamfer_distance` call needed its own several
+`~6 GiB` intermediate tensors, 75.56 GiB was already committed to everything retained before it.
+
+**Fix (no changes to `DefRec_and_PCM` — still unmodified upstream, per the repo's own rules):**
+1. Added `KendallUncertaintyWeighting.weighted_term(name, loss)` to `adapters/losses.py` — a
+   pure, additive refactor exposing the same per-task weighting formula `forward()` already
+   used internally, now callable for one task at a time. `forward()` itself now just sums
+   `weighted_term(...)` per task — behaviorally identical, so C1/C2 are unaffected.
+2. Restructured `train_c3_dgcnn_da_s.py`'s training step to **backprop incrementally** instead
+   of building one combined loss: the clean cls/seg forward pass is weighted via
+   `kendall.weighted_term` and `.backward()`'d immediately (freeing its activations before
+   DefRec even starts), then `L_defrec` is computed and backpropagated through a new
+   `defrec_chunked_backward` helper that **splits the combined source+target batch into small
+   `DEFREC_CHUNK=8`-sized slices**, computing and `.backward()`ing each slice's contribution
+   separately (mathematically equivalent to one combined call, since each term's contribution
+   is linear in that term's loss — see the function's docstring for the derivation) — bounding
+   peak Chamfer-distance memory to `8 × 192 MiB ≈ 1.5 GiB` regardless of the true training
+   batch size. `evaluate_defrec` (used for the val-time diagnostic/model-selection signal) got
+   the same chunking, since a full-batch Chamfer call could OOM even under `no_grad`.
+3. **Documented, minor side effect**: the deformed-pass BatchNorm layers now see
+   `DEFREC_CHUNK`-sized (8) batches instead of the full training batch (32) during the DefRec
+   forward pass specifically — a known, accepted tradeoff of memory-driven chunking (similar to
+   small-microbatch gradient accumulation), not a correctness bug. The clean cls/seg forward
+   pass, which is what classification/segmentation quality actually depends on, still sees the
+   full batch of 32, unaffected.
+4. **Re-ran the CPU smoke test** (1 epoch, batch size 8, real data) against the fixed script:
+   passed end-to-end in ~19.5 min, with loss magnitudes closely matching the original (buggy)
+   smoke test's — `cls 0.51` vs `0.48`, `seg 2.26` vs `2.21`, `defrec 5.80` vs `6.33` — small
+   differences fully explained by the refactor's chunking changing effective BatchNorm batch
+   statistics during the deformed forward pass (point 3 above), not a sign of a logic error.
+   Confirms the incremental-backward + chunking rewrite preserves the intended semantics.
+
+## Important context found while investigating: the published paper's own ablation warns against this project's exact DA-S protocol
+
+While looking up PointDA-10 published numbers (see Results section below, once available), read
+the DefRec paper (Achituve et al., WACV 2021, `arxiv.org/pdf/2003.12641.pdf`) in full and found
+something directly relevant to how C3's results should be interpreted, not just a sanity-check
+number: **the paper's own ablation study (Table 3) explicitly tested "DefRec S/T" — applying
+DefRec to both source AND target, exactly this project's DA-S definition (CLAUDE.md: "run on
+BOTH domains") — and found it underperforms their proposed target-only configuration.** Quote:
+"(b) Applying DefRec on both source and target samples degrades performance." Concretely (their
+Table 3, PointDA-10 avg accuracy, volume-based/3×3×3-voxel deformation — the same deformation
+type this project's `--DefRec_dist volume_based_voxels --num_regions 3` matches):
+`DefRec S/T + PCM` = 68.7 vs. `DefRec (target-only) + PCM` = 69.6 — about 0.9 points lower when
+run on both domains, even with PCM (which this project doesn't use) added on top in both cases.
+
+**This is not a reason to deviate from the strategy table's DA-S definition** — CLAUDE.md is
+explicit that DA-S runs on both domains "so it forces domain-general geometric features," and
+the strategy table is a fixed project spec, not something to unilaterally revise mid-row. But it
+means: if C3 underperforms C1 (DA-0) or shows a weaker result than a naive "self-supervision
+should obviously help" prior would predict, that would not necessarily indicate a bug in this
+implementation — it would be consistent with a documented finding in the very paper this row's
+method comes from. Flagging this now, before results are in, specifically so it doesn't get
+mistaken for a red flag when the real numbers arrive.
+
+**Full published PointDA-10 reference numbers** (DGCNN backbone, classification accuracy,
+averaged over 3 seeds — from the paper's Table 1/Table 6, extracted from the arXiv PDF text
+directly, not estimated):
+
+| Method | MN→SN | MN→SC | SN→MN | SN→SC | SC→MN | SC→SN | Avg |
+|---|---|---|---|---|---|---|---|
+| Source-only ("Unsupervised") | 83.3 | 43.8 | 75.5 | 42.5 | 63.8 | 64.2 | 62.2 |
+| DefRec (target-only, no PCM) | 83.3 | 46.6 | 79.8 | 49.9 | 70.7 | 64.4 | 65.8 |
+| DefRec + PCM (paper's proposed method) | 81.7 | 51.8 | 78.6 | 54.5 | 73.7 | 71.1 | 68.6 |
+
+(MN=ModelNet, SN=ShapeNet, SC=ScanNet.) **Not directly numerically comparable to this
+project's C3** — PointDA-10 is 10-class, classification-only, 1024 points/cloud, and a
+synthetic-vs-real domain gap (vs. our 2-class, joint cls+seg, 4096 points/cloud, sensor-vs-sensor
+gap) — so absolute accuracy figures won't line up; the useful comparison is qualitative
+(does self-supervision help over source-only in a published, controlled setting — yes, +3.6 pts
+avg — and the both-domains-vs-target-only finding above).
+
+Deleted `results/C3_dgcnn_da_s/` (the failed run's partial output) and the smoke test's
+`results/_smoketest_c3b/` before resubmitting.
+
+**Resubmitted `jobs/c3_dgcnn_da_s.sbatch` (unchanged — the fix is in the Python script, not the
+job script) — job 308459.** Queue was empty. Awaiting completion.

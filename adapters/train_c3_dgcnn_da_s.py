@@ -90,6 +90,25 @@ from utils import pc_utils  # noqa: E402
 NWORKERS = 2
 LAMBDA_LOV = 1.0  # fixed per the strategy table, never learned/swept
 
+# Sub-batch size for the DefRec Chamfer-distance step ONLY -- independent of
+# args.batch_size (which stays 32, matching C1/C2, for L_cls/L_seg and for
+# the true optimizer step). DefRec_and_PCM's chamfer_distance() builds dense
+# (B, N, N, 3) tensors (6 GiB at our N=4096, batch 32 -- our point clouds
+# are far denser than PointDA-10's ~1024-2048 points the reference repo was
+# tuned for); combined with the clean cls/seg forward pass and both
+# domains' deformed forward passes all being retained for a single
+# `total.backward()`, this OOM'd an 80GB A100 on job 308449's very first
+# training batch. Fixed by chunking DefRec's forward+Chamfer+backward per
+# DEFREC_CHUNK-sized slice with an immediate backward() per chunk (see
+# defrec_chunked_backward below and step_notes/C3_DGCNN_DA_S.md) -- this
+# bounds peak memory regardless of the true training batch size, at the
+# cost of the deformed-pass BatchNorm layers now seeing smaller
+# (DEFREC_CHUNK-sized) batches than the clean pass's full batch of 32; a
+# documented, minor side effect, not a correctness bug (the clean cls/seg
+# forward pass, which is what classification/segmentation quality actually
+# depends on, is unaffected).
+DEFREC_CHUNK = 8
+
 
 class IOStream:
     def __init__(self, path):
@@ -180,6 +199,48 @@ def defrec_loss_for_batch(args, model, lookup, pts_orig, device):
     return DefRec.calc_loss(args, logits_deform, pts_orig, mask)
 
 
+def _iter_chunks(pts, chunk_size):
+    n = pts.size(0)
+    for start in range(0, n, chunk_size):
+        end = min(start + chunk_size, n)
+        yield pts[start:end], end - start
+
+
+def defrec_chunked_backward(args, model, lookup, kendall, src_pts, trgt_pts, device,
+                             chunk_size=DEFREC_CHUNK):
+    """Computes L_defrec (DefRec on both domains, sample-count-weighted
+    into one scalar per CLAUDE.md's DA-S definition -- see module
+    docstring) and immediately backprops it, one small chunk at a time, to
+    bound peak CUDA memory (see DEFREC_CHUNK above). Mathematically
+    equivalent to computing the full-batch L_defrec, passing it through
+    kendall.weighted_term("defrec", l_defrec) once, and calling .backward()
+    once: that weighted term is linear in l_defrec, and l_defrec itself is
+    a sample-count-weighted average over every chunk across both domains,
+    so summing each chunk's own weighted, backward()'d contribution gives
+    the same total gradient (accumulated into model/kendall .grad via
+    ordinary multi-call gradient accumulation) as a single combined call
+    would -- just without ever holding more than one chunk's Chamfer-
+    distance tensors in memory at once. Returns the (unweighted) raw
+    sample-count-weighted L_defrec value as a float, for logging only --
+    already detached, no graph attached, safe to use after backward.
+    """
+    bs_src, bs_trgt = src_pts.size(0), trgt_pts.size(0)
+    total_n = bs_src + bs_trgt
+    chunks = list(_iter_chunks(src_pts, chunk_size)) + list(_iter_chunks(trgt_pts, chunk_size))
+    num_chunks = len(chunks)
+    s_defrec = kendall.log_vars["defrec"]
+
+    loss_sum, n_sum = 0.0, 0
+    for chunk_pts, chunk_n in chunks:
+        chunk_loss = defrec_loss_for_batch(args, model, lookup, chunk_pts, device)
+        weighted_chunk = (torch.exp(-s_defrec) / 2.0 * chunk_loss * (chunk_n / total_n)
+                           + s_defrec / (2.0 * num_chunks))
+        weighted_chunk.backward()
+        loss_sum += chunk_loss.item() * chunk_n
+        n_sum += chunk_n
+    return loss_sum / n_sum
+
+
 def evaluate_cls_seg(model, loader, cls_criterion, seg_class_weights, device):
     model.eval()
     n_seen, cls_loss_sum = 0, 0.0
@@ -254,17 +315,19 @@ def evaluate_defrec(model, loader, args, lookup, device):
     logs / fed into Kendall for model selection (see module docstring for
     why this stays source-only). `loader` yields (pts, ...) tuples --
     works for PlantClsSegDataset's 3-tuple since only pts (index 0) is
-    used here."""
+    used here. Chunked the same way as training (DEFREC_CHUNK) -- a
+    full-batch Chamfer-distance call would risk the same CUDA OOM even
+    under no_grad (see DEFREC_CHUNK's docstring)."""
     model.eval()
     loss_sum, n_seen = 0.0, 0
     with torch.no_grad():
         for batch in loader:
             pts = batch[0]
             pts = pts.permute(0, 2, 1).to(device)
-            bs = pts.size(0)
-            l = defrec_loss_for_batch(args, model, lookup, pts, device)
-            loss_sum += l.item() * bs
-            n_seen += bs
+            for chunk_pts, chunk_n in _iter_chunks(pts, DEFREC_CHUNK):
+                l = defrec_loss_for_batch(args, model, lookup, chunk_pts, device)
+                loss_sum += l.item() * chunk_n
+                n_seen += chunk_n
     return loss_sum / n_seen
 
 
@@ -367,26 +430,33 @@ def main():
             opt.zero_grad()
 
             # Clean (undeformed) forward pass -- L_cls/L_seg, source only.
+            # Backprop immediately so this graph's activations are freed
+            # before DefRec's much larger Chamfer-distance tensors are
+            # built (see DEFREC_CHUNK's docstring for why -- job 308449's
+            # first attempt OOM'd an 80GB A100 by keeping all four forward
+            # passes' activations alive simultaneously for one combined
+            # backward() call).
             src_logits = model(src_pts, activate_DefRec=False)
             l_cls = cls_criterion(src_logits["cls"], src_species)
             l_seg = compute_seg_loss(model, src_logits["seg_feat"], src_species,
                                       src_seg, seg_class_weights)
+            (kendall.weighted_term("cls", l_cls)
+             + kendall.weighted_term("seg", l_seg)).backward()
+            del src_logits
 
             # DefRec on BOTH domains (per CLAUDE.md's DA-S definition),
-            # combined into one sample-count-weighted L_defrec scalar.
-            l_defrec_src = defrec_loss_for_batch(args, model, lookup, src_pts, device)
-            l_defrec_trgt = defrec_loss_for_batch(args, model, lookup, trgt_pts, device)
-            bs_src, bs_trgt = src_pts.size(0), trgt_pts.size(0)
-            l_defrec = (l_defrec_src * bs_src + l_defrec_trgt * bs_trgt) / (bs_src + bs_trgt)
+            # chunked + backprop'd incrementally -- see
+            # defrec_chunked_backward's docstring for why this is
+            # mathematically equivalent to one combined backward() call.
+            l_defrec = defrec_chunked_backward(args, model, lookup, kendall,
+                                                src_pts, trgt_pts, device)
 
-            total = kendall({"cls": l_cls, "seg": l_seg, "defrec": l_defrec})
-            total.backward()
             opt.step()
 
-            bs = bs_src
+            bs = src_pts.size(0)
             train_cls_loss += l_cls.item() * bs
             train_seg_loss += l_seg.item() * bs
-            train_defrec_loss += l_defrec.item() * bs
+            train_defrec_loss += l_defrec * bs
             n_seen += bs
         scheduler.step()
 
