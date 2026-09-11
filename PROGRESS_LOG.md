@@ -198,7 +198,12 @@ benchmark, which earlier rows didn't have — a useful outside sanity check once
 
 Verified with the same CPU trial-run process as every previous row before trusting it (found and
 fixed one unrelated environment hiccup along the way — a fresh work session hadn't activated the
-right software environment). Then handed off row **C3** to the cluster GPU (job 308449). Result
+right software environment). Then handed off row **C3** to the cluster GPU (job 308449) — that
+first attempt ran out of GPU memory partway through the very first training step (the technique's
+underlying reconstruction-quality check needs a lot of memory at our point-cloud size, more than
+the published benchmark it was originally built for uses). Fixed by breaking that one step into
+smaller pieces processed one at a time instead of all at once — same math, much less memory at
+any given moment — verified with another CPU trial run, then resubmitted (job 308459). Result
 not back yet.
 
 ---
@@ -224,7 +229,7 @@ at-a-glance status.
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — trained, but did not stabilize target accuracy (see Milestone 10) |
-| C (DGCNN) | C3 | Self-supervised | Training on cluster (job 308449) |
+| C (DGCNN) | C3 | Self-supervised | Training on cluster (job 308459, after fixing a memory issue in the first attempt) |
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Not started |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |

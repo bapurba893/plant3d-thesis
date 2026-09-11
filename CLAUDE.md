@@ -297,7 +297,9 @@ were not — see Repository layout above).
 **Next (in order):**
 1. Row C3 (DGCNN, DA-S, ALL) — self-supervised (DefRec-style deformation reconstruction),
    comparable to PointDA-10 published numbers — **submitted to the cluster, training in
-   progress** (2026-09-11, job 308449; not yet complete as of this writing). Unlike C2, the
+   progress** (2026-09-11, job 308459 — the first submission, job 308449, hit a CUDA OOM in
+   `DefRec_and_PCM`'s Chamfer-distance code at our point-cloud size; fixed by chunking + backprop
+   incrementally, see `step_notes/C3_DGCNN_DA_S.md`; not yet complete as of this writing). Unlike C2, the
    DefRec machinery this row needs already exists complete in `DefRec_and_PCM`
    (`DefRec.deform_input`/`.calc_loss`, plus `DGCNN`'s built-in `self.DefRec` head already
    inherited unmodified by `DGCNN_ClsSeg`) — this is a genuine "adapt this repo" row, not a
