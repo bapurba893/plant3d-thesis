@@ -153,7 +153,34 @@ loop had to be built from scratch in Milestone 4.
 Verified with a full trial run on real data (CPU, one epoch) before trusting it, same as every
 previous integration step — ran cleanly with no errors and sane numbers. Then handed off row
 **C2** (DGCNN + adversarial adaptation, the "anchor" row every other adversarial row in the table
-will copy) to the cluster GPU to train for real (job 308389). Result not back yet.
+will copy) to the cluster GPU to train for real (job 308389).
+
+## 10. Row C2 Trained — Does Adversarial Adaptation Actually Help? — 2026-09-11
+
+Job 308389 finished. The headline number looks great at first glance: the model checkpoint the
+project's (correct, hands-off-of-target-labels) selection process picked scores 0.94 accuracy on
+the unseen target dataset, way up from C1's 0.75. Taken at face value, that would mean
+adversarial adaptation fixed the "quiet erosion" problem from Milestones 6 and 8.
+
+**It doesn't hold up under closer inspection, and reporting it as a win would have been
+misleading.** Looking at target accuracy across the *entire* 100-epoch run (not just the one
+selected checkpoint) tells a different story: instead of stabilizing, target accuracy swings
+wildly throughout training — between roughly 0.37 and 0.95 — and in the second half of training
+it averages only 0.46, actually *worse* than C1's no-adaptation baseline over the same stretch
+(0.77). That instability starts almost exactly when the adversarial training pressure reaches
+full strength partway through the run. The one great-looking number the selection process landed
+on turns out to be a lucky snapshot from a highly volatile process, not evidence of a genuinely
+better or more stable model — a statistical check confirmed the model-selection signal (which
+only ever looks at source-side performance, since target labels aren't allowed) carries almost no
+information about where target accuracy actually is at any given point in this run.
+
+**So: no, this first attempt at adversarial domain adaptation does not close or reduce the
+target-accuracy drift.** If anything, it trades a slow, predictable decline (C1) for a faster,
+much more volatile one that's worse on average later in training. This is a known, well-studied
+failure mode of this class of adversarial technique when used without extra stabilization tricks
+— not a bug in the implementation (which was checked carefully before the real run, same as every
+other integration step). It's a genuine, useful negative finding, and one worth carrying into how
+the next adversarial rows (A2 on PointNet++, C4 with different augmentation) get interpreted.
 
 ---
 
@@ -177,15 +204,16 @@ at-a-glance status.
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
-| C (DGCNN) | C2 | Adversarial (anchor method) | Training on cluster (job 308389) |
+| C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — trained, but did not stabilize target accuracy (see Milestone 10) |
 | C (DGCNN) | C3 | Self-supervised | Not started |
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Not started |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** two rows (A1, C1) are fully done, giving the first real cross-backbone
-comparison, and the other 22 rows are not started yet.
+**In one sentence:** three rows (A1, C1, C2) are fully done — giving the first real
+cross-backbone comparison and a first (cautionary) look at adversarial adaptation — and the
+other 21 rows are not started yet.
 
 ---
 

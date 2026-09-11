@@ -126,3 +126,107 @@ downward over training? That comparison is the whole point of the anchor row exi
 ---
 **2026-09-11:** Submitted `jobs/c2_dgcnn_da_a.sbatch` to the `dgx` partition — job **308389**.
 Queue was empty beforehand (no conflicting jobs). Awaiting completion.
+
+---
+**2026-09-11 (later):** Job 308389 finished (~13.5 min wall time). Full results below, including
+a deeper trajectory analysis beyond just the selected checkpoint's numbers — the headline number
+alone turned out to be misleading, so both are reported.
+
+## Results
+
+**Protocol-selected checkpoint** (same protocol as C1/A1: best epoch by lowest source val total
+loss, never touching target labels) — best epoch was **49** (source val total loss 1.0958):
+
+| Metric | C1 (DGCNN, DA-0) | C2 (DGCNN, DA-A) |
+|---|---|---|
+| Best/selected epoch | 95 | 49 |
+| Source val cls acc | 1.0000 | 1.0000 |
+| Source val cls avg acc | 1.0000 | 1.0000 |
+| Target cls acc (selected epoch) | 0.7460 | **0.9365** |
+| Target cls avg acc | 0.7446 | 0.9130 |
+| Tomato seg mIoU (acc) | 0.3248 (0.6645) | 0.2416 (0.5210) |
+| Maize seg mIoU (acc) | 0.3427 (0.7698) | 0.1996 (0.5305) |
+
+Read naively, this says DA-A "worked" — the selected checkpoint's target accuracy jumped from
+0.75 to 0.94. **That naive reading does not survive looking at the full 100-epoch trajectory,
+and the honest answer to "does DA-A close the drift" is no, not in this run.**
+
+### Full-trajectory analysis (why the headline number is misleading)
+
+Parsed every epoch's `Eval(no-train) - Target` line (never used for training/selection, purely
+a diagnostic logged every epoch in both C1 and C2) from both run logs and compared the full
+trajectories, not just the one selected checkpoint:
+
+| Quartile (epochs) | C1 mean target acc | C2 mean target acc |
+|---|---|---|
+| 0–24 | 0.798 | 0.789 |
+| 25–49 | 0.834 | 0.683 |
+| 50–74 | 0.773 | **0.456** |
+| 75–99 | 0.760 | **0.446** |
+| Full-run stdev | 0.104 | **0.214** (2x C1) |
+| corr(source val loss, target acc) | −0.29 | **−0.04** (~none) |
+
+What this shows:
+
+- **C1's trajectory is the already-documented smooth drift**: peaks early (~epoch 6–9, ~0.92),
+  decays gradually, settles into a shallow plateau around 0.75–0.76 for the back half of
+  training. Relatively low variance (stdev 0.10) — it's a drift, not noise.
+- **C2's trajectory is not a smoothed/stabilized version of that — it's a substantially worse and
+  more volatile one.** Target accuracy oscillates violently throughout the entire run (between
+  ~0.37 and ~0.95, stdev more than double C1's) and never settles into any plateau. Crucially,
+  in the back half of training (epochs 50–99) — which is where C1 was still holding a
+  respectable ~0.76–0.77 — C2 averages only **0.456**, i.e. *worse than C1 in the same epoch
+  range*, not better.
+- **This instability lines up exactly with the GRL's `λ_p` schedule saturating.** Extracted
+  `λ_p` per epoch from the training log: it crosses 0.9 around epoch 30 and is ≥0.98 by epoch 50
+  — precisely where C2's target accuracy shifts from "volatile but still often high" (epochs
+  0–49, mean 0.79→0.68) to "volatile and mostly low" (epochs 50–99, mean ~0.45). Once the
+  adversarial gradient reaches full strength, training does not settle into a domain-invariant
+  equilibrium — it destabilizes.
+- **The selection protocol's own signal confirms this isn't a fluke of one bad quartile boundary
+  choice**: `corr(source val loss, target acc)` across all 100 epochs is essentially zero for C2
+  (−0.04) versus already-weak-but-present for C1 (−0.29). Source validation loss — the *only*
+  signal DA-0/DA-A's model selection is allowed to look at — carries almost no information about
+  where C2's target accuracy actually is at any given epoch. Epoch 49 happening to be both a
+  genuine local minimum in source val loss *and* a lucky spike in target accuracy is close to
+  coincidence, not a sign the selection is tracking anything real about domain alignment. (Epochs
+  84–99, for comparison, have similarly low source val loss (~1.1–1.3) but target accuracy stuck
+  at 0.36–0.62 — the same "good source loss" region the selector favors does *not* reliably mean
+  good target accuracy for C2, unlike the somewhat-more-reliable relationship in C1.)
+- **Segmentation also got worse at the selected checkpoint** (Tomato mIoU 0.24 vs C1's 0.32,
+  Maize 0.20 vs 0.34): epoch 49 is much earlier in training than C1's epoch 95, and seg loss was
+  still declining at that point (1.44 at epoch 49 vs ~1.15–1.2 by epoch 90+) — the selection
+  protocol traded segmentation convergence for a favorable, but not representative, cls/domain
+  snapshot.
+
+**Conclusion: no, the adversarial anchor does not close or reduce the target-accuracy drift seen
+in C1/A1 — in this run, under this configuration, it makes target-domain behavior markedly more
+unstable, and worse on average once the adversarial term reaches full strength.** The one
+strong-looking number (0.9365) is real (it's what the correct, target-label-blind selection
+protocol legitimately picked), but it is not evidence of a systemically better or more
+domain-invariant model — it's a high-variance process landing on a good draw. This is a known,
+well-documented failure mode of vanilla DANN-style adversarial training (the same gradient
+pressure that in principle pushes features toward domain invariance can equally destabilize the
+shared feature extractor), not a bug in this implementation — the CPU smoke test already
+confirmed the GRL/discriminator/entropy wiring itself is correct, and this behavior is consistent
+with what plain, un-stabilized DANN is known to do. No code changes were made in response to this
+finding: C2 is specified as the literal, unmodified anchor method (per the strategy table, this
+row exists specifically so cross-backbone comparisons are attributable to architecture, not
+method-level tweaks) — adding stabilization tricks (e.g. a separate/lower discriminator learning
+rate, gradient clipping, spectral normalization, slower `γ`) would deviate from that spec for
+this row. Worth flagging as a discussion point for the thesis write-up and as a candidate
+follow-up ablation, not a required fix.
+
+**Pass/fail:** training completed successfully with no errors, and the correct model-selection
+protocol was followed — the row is done and its numbers are trustworthy *as reported*, but the
+result itself is a genuine negative/cautionary finding about vanilla adversarial adaptation on
+this data, not a success story.
+
+## What's next
+
+Row C2 is done. Per the project's row ordering, block C continues with **C3** (DGCNN,
+self-supervised/DefRec, comparable to PointDA-10) next, then **C4** (DGCNN, adversarial +
+L-N/jitter-noise augmentation only, isolating the noise weakness). The instability finding above
+is also directly relevant to **A2** (PointNet++, same DA-A anchor method) — worth watching for
+the same `λ_p`-saturation-linked destabilization there, since `adapters/dann.py` is shared
+unmodified across both.

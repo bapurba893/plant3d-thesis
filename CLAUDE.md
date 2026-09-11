@@ -251,20 +251,56 @@ were not — see Repository layout above).
   kept improving) — confirms the drift is a general DA-0 characteristic, not DGCNN-specific,
   reinforcing the case for the A2/C2 adversarial anchor rows.
 
+**Done (continued):**
+- **Row C2 (DGCNN, DA-A, ALL) trained on the cluster** (2026-09-11, job 308389, ~13.5 min).
+  Adds a domain discriminator + Gradient Reversal Layer (`adapters/dann.py`, new — confirmed
+  nothing DANN-like exists in DefRec_and_PCM to adapt, it only implements DefRec self-supervised
+  + PCM mixup) + entropy minimization on top of C1's working joint `L_cls+L_seg` DGCNN adapter
+  (`adapters/train_c2_dgcnn_da_a.py`). `L_dom`/`L_ent` fixed/scheduled per the loss architecture
+  above (GRL alpha = `λ_p = 2/(1+e^(−10p))−1` per the strategy table docx, `L_dom` coefficient
+  left at 1 in the total loss to avoid double-applying `λ_p`; `L_ent` uses a fixed, non-ramped
+  constant — both flagged as explicit inferences, not literal spec text, in `adapters/dann.py`'s
+  docstring), never routed through Kendall. `DGCNN_ClsSeg.forward` now also exposes
+  `logits["feat"]` (pooled global feature) as the discriminator's input. CPU smoke test (1 epoch,
+  real data) passed before submitting.
+
+  **Protocol-selected checkpoint** (same protocol as C1/A1 — best epoch by lowest source val
+  total loss, never touching target labels — landed at epoch 49):
+
+  | Metric | C1 (DA-0) | C2 (DA-A) |
+  |---|---|---|
+  | Source val cls acc | 1.0000 | 1.0000 |
+  | Target cls acc | 0.7460 (avg 0.7446) | 0.9365 (avg 0.9130) |
+  | Tomato seg mIoU | 0.3248 (acc 0.6645) | 0.2416 (acc 0.5210) |
+  | Maize seg mIoU | 0.3427 (acc 0.7698) | 0.1996 (acc 0.5305) |
+
+  **The headline target-accuracy number is misleading and does NOT mean DA-A closed the DA-0
+  drift.** Parsing every epoch's (never trained-on, never used for selection) target-accuracy
+  diagnostic across the full 100-epoch run shows C2 is far more volatile than C1 (stdev 0.214 vs
+  0.104) and, once the GRL's `λ_p` schedule saturates near 1.0 (~epoch 30-50, confirmed from the
+  log), target accuracy in the back half of training (epochs 50-99) averages only **0.456** —
+  *worse* than C1's 0.773/0.760 over the same epochs, not better. `corr(source val loss, target
+  acc)` across all 100 epochs is essentially zero for C2 (−0.04) vs. already-weak for C1 (−0.29)
+  — the only signal DA-0/DA-A model selection is allowed to see carries almost no information
+  about where C2's target accuracy actually is at any given epoch, so epoch 49's 0.9365 is a
+  lucky draw from a high-variance process, not a sign of a systematically better or more
+  domain-invariant model. Segmentation also came out worse at the selected checkpoint (epoch 49
+  is much earlier than C1's epoch 95, before seg loss had converged as far). **Conclusion: no,
+  vanilla adversarial adaptation does not reduce the target-accuracy drift seen in C1/A1 in this
+  run — it makes target-domain behavior more unstable and, on average, worse once the adversarial
+  term reaches full strength.** This is a known failure mode of un-stabilized DANN (not a wiring
+  bug — the smoke test already confirmed correct GRL/discriminator/entropy behavior), and no
+  stabilization tricks were added since C2 must stay the literal, unmodified anchor method for
+  cross-backbone/cross-row comparability. Full trajectory analysis and quartile breakdown in
+  `step_notes/C2_DGCNN_DA_A.md`.
+
 **Next (in order):**
-1. Row C2 (DGCNN, DA-A, ALL) — the adversarial anchor — **submitted to the cluster, training in
-   progress** (2026-09-11, job 308389; not yet complete as of this writing). Adds a domain
-   discriminator + Gradient Reversal Layer (`adapters/dann.py`, new — confirmed nothing DANN-like
-   exists in DefRec_and_PCM to adapt, it only implements DefRec self-supervised + PCM mixup) +
-   entropy minimization on top of the now-working joint `L_cls+L_seg` DGCNN adapter
-   (`adapters/train_c2_dgcnn_da_a.py`). `L_dom`/`L_ent` are fixed/scheduled weights (GRL
-   alpha/L_dom coefficient = `λ_p = 2/(1+e^(−10p))−1` per the strategy table docx; `L_ent` uses a
-   fixed, non-ramped constant — both documented as explicit inferences, not spec text, in
-   `adapters/dann.py`'s docstring), never routed through the Kendall uncertainty module used for
-   `L_cls+L_seg`. `DGCNN_ClsSeg.forward` now also exposes `logits["feat"]` (pooled global
-   feature) as the discriminator's input — additive, doesn't affect C1's code. CPU smoke test (1
-   epoch, real data) passed before submitting. See `step_notes/C2_DGCNN_DA_A.md` for full detail;
-   results to be added here once the job finishes.
+1. Row C3 (DGCNN, DA-S, ALL) — self-supervised (DefRec-style deformation reconstruction),
+   comparable to PointDA-10 published numbers. Or C4 (DGCNN, DA-A, L-N) to isolate the noise
+   weakness using the same adversarial machinery just built — worth watching for the same
+   `λ_p`-saturation-linked instability documented for C2, since `adapters/dann.py` is shared
+   unmodified. The C2 instability finding is also directly relevant to A2 (PointNet++, same DA-A
+   anchor method) whenever Block A resumes.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
