@@ -182,6 +182,25 @@ failure mode of this class of adversarial technique when used without extra stab
 other integration step). It's a genuine, useful negative finding, and one worth carrying into how
 the next adversarial rows (A2 on PointNet++, C4 with different augmentation) get interpreted.
 
+## 11. Row C3 Started — Self-Supervised Adaptation, a Third Way to Try Closing the Gap — 2026-09-11
+
+Started the third domain-adaptation approach: instead of a discriminator fighting the network
+(Milestone 10) or just hoping (Milestones 6/8), this one gives the network a self-supervised
+puzzle — hide part of a plant's point cloud and make the network reconstruct it — run on *both*
+datasets at once, so the "get good at reconstructing plant geometry" pressure doesn't care which
+dataset a plant came from. Unlike the adversarial method, the machinery for this technique
+already existed ready-made in the base reference codebase (it's literally that codebase's own
+main contribution), so this was more a matter of correctly wiring it into our own
+classification+segmentation setup than building something new from scratch.
+
+This row also happens to be the one most directly comparable to a well-known external published
+benchmark, which earlier rows didn't have — a useful outside sanity check once results are in.
+
+Verified with the same CPU trial-run process as every previous row before trusting it (found and
+fixed one unrelated environment hiccup along the way — a fresh work session hadn't activated the
+right software environment). Then handed off row **C3** to the cluster GPU (job 308449). Result
+not back yet.
+
 ---
 
 ## Current Status: the 24-Row Strategy Table
@@ -205,7 +224,7 @@ at-a-glance status.
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — trained, but did not stabilize target accuracy (see Milestone 10) |
-| C (DGCNN) | C3 | Self-supervised | Not started |
+| C (DGCNN) | C3 | Self-supervised | Training on cluster (job 308449) |
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Not started |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |

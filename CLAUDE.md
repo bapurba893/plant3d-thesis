@@ -296,11 +296,21 @@ were not — see Repository layout above).
 
 **Next (in order):**
 1. Row C3 (DGCNN, DA-S, ALL) — self-supervised (DefRec-style deformation reconstruction),
-   comparable to PointDA-10 published numbers. Or C4 (DGCNN, DA-A, L-N) to isolate the noise
-   weakness using the same adversarial machinery just built — worth watching for the same
-   `λ_p`-saturation-linked instability documented for C2, since `adapters/dann.py` is shared
-   unmodified. The C2 instability finding is also directly relevant to A2 (PointNet++, same DA-A
-   anchor method) whenever Block A resumes.
+   comparable to PointDA-10 published numbers — **submitted to the cluster, training in
+   progress** (2026-09-11, job 308449; not yet complete as of this writing). Unlike C2, the
+   DefRec machinery this row needs already exists complete in `DefRec_and_PCM`
+   (`DefRec.deform_input`/`.calc_loss`, plus `DGCNN`'s built-in `self.DefRec` head already
+   inherited unmodified by `DGCNN_ClsSeg`) — this is a genuine "adapt this repo" row, not a
+   from-scratch one like C2's adversarial machinery. DefRec runs on BOTH domains per this
+   project's own DA-S definition (not the upstream default of target-only). `L_defrec` is routed
+   through Kendall as a third regression-type cooperative task alongside `L_cls`/`L_seg`
+   (`adapters/train_c3_dgcnn_da_s.py`); `--DefRec_weight 1.0` neutralizes the upstream repo's own
+   fixed between-task weight since Kendall now owns that tradeoff (documented inference — see
+   `step_notes/C3_DGCNN_DA_S.md`). CPU smoke test (1 epoch, real data) passed before submitting.
+2. Or C4 (DGCNN, DA-A, L-N) to isolate the noise weakness using the same adversarial machinery
+   built for C2 — worth watching for the same `λ_p`-saturation-linked instability documented for
+   C2, since `adapters/dann.py` is shared unmodified. The C2 instability finding is also directly
+   relevant to A2 (PointNet++, same DA-A anchor method) whenever Block A resumes.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
