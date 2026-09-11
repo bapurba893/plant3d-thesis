@@ -224,13 +224,35 @@ were not — see Repository layout above).
   composes it into the same `{"cls": ..., "seg_feat": ...}` interface as `DGCNN_ClsSeg`.
   `adapters/train_a1_pointnet2_da0.py` + `jobs/a1_pointnet2_da0.sbatch` are ready; a 1-epoch
   CPU smoke test on real Crops3D/Pheno4D data passed end-to-end (sane non-zero cls/seg
-  metrics, no shape/gradient errors) but the row hasn't been trained for real on the GPU yet.
+  metrics, no shape/gradient errors) — since trained for real on the GPU, see below.
+- **Row A1 (PointNet++, DA-0, ALL) trained on the cluster GPU** (2026-09-11, job 308286) —
+  same 100-epoch setup, data split, and DA-0 protocol as C1, giving the first real
+  cross-backbone comparison. Best model at epoch 97 (selected by lowest source val total loss,
+  same protocol as C1).
+
+  **Final numbers:** source val cls acc 1.0000 (avg acc 1.0000), target (Pheno4D) cls acc
+  0.4603 (avg acc 0.5750), Tomato seg mIoU 0.3207 (acc 0.6729), Maize seg mIoU 0.4741
+  (acc 0.9055).
+
+  **Comparison to C1 (DGCNN, DA-0, ALL):**
+
+  | Metric | C1 (DGCNN) | A1 (PointNet++) |
+  |---|---|---|
+  | Source val cls acc | 1.0000 | 1.0000 |
+  | Target cls acc | 0.7460 (avg 0.7446) | 0.4603 (avg 0.5750) |
+  | Tomato seg mIoU | 0.3248 (acc 0.6645) | 0.3207 (acc 0.6729) |
+  | Maize seg mIoU | 0.3427 (acc 0.7698) | 0.4741 (acc 0.9055) |
+
+  PointNet++ transfers markedly worse to target classification (confusion matrix shows 34/40
+  target Tomato plants misclassified as Maize — a systematic bias, not just noise), while
+  segmenting Maize distinctly better than DGCNN; Tomato seg mIoU is essentially tied between
+  the two backbones. A1 shows the same DA-0 drift pattern documented for C1 above (target acc
+  peaked ~0.92-0.94 around epoch 8-9, then eroded over the full 100 epochs while source metrics
+  kept improving) — confirms the drift is a general DA-0 characteristic, not DGCNN-specific,
+  reinforcing the case for the A2/C2 adversarial anchor rows.
 
 **Next (in order):**
-1. Train row A1 (PointNet++, DA-0, ALL) for real via `sbatch jobs/a1_pointnet2_da0.sbatch` —
-   the backbone integration above is done and CPU-smoke-tested but not yet run to completion on
-   the cluster GPU.
-2. Train row C2 (DGCNN, DA-A, ALL) — the adversarial anchor. Adds a domain discriminator +
+1. Train row C2 (DGCNN, DA-A, ALL) — the adversarial anchor. Adds a domain discriminator +
    Gradient Reversal Layer + entropy minimization on top of the now-working joint `L_cls+L_seg`
    DGCNN adapter; `L_dom`/`L_ent` are fixed/scheduled weights, never learned (see Loss
    architecture above) — do not route them through the Kendall uncertainty module used for

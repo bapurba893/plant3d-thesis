@@ -109,8 +109,33 @@ Verified the integration works correctly with a full trial run on real data (on 
 CPU, since it just needed to prove correctness, not be fast) before considering it done, then
 handed it off to the cluster to actually train for real.
 
-**Status:** integration complete and verified; the actual full training run for this row was
-just started on the cluster GPU (job 308286) and hasn't finished yet.
+## 8. Row A1 Trained — First Cross-Backbone Comparison — 2026-09-11
+
+Row A1 (PointNet++, no adaptation) finished training on the cluster GPU, same 100-epoch
+setup, same data split, same "no adaptation" strategy as row C1 — so this is the project's
+first real apples-to-apples comparison between two of the three model architectures.
+
+| Metric | C1 (DGCNN) | A1 (PointNet++) |
+|---|---|---|
+| Source classification accuracy | 1.00 | 1.00 |
+| Target (unseen dataset) classification accuracy | 0.75 | 0.46 |
+| Tomato segmentation quality (mIoU) | 0.32 | 0.32 |
+| Maize segmentation quality (mIoU) | 0.34 | 0.47 |
+
+Both architectures fit the source data perfectly (expected — that's not the hard part). The
+interesting split shows up on the parts that are actually hard:
+
+- **PointNet++ transfers noticeably worse to the unseen (target) dataset for whole-plant
+  classification** — it isn't just noisier, it's systematically biased: it misclassifies most
+  Tomato plants as Maize on the target set, something DGCNN doesn't do nearly as much.
+- **PointNet++ segments Maize plants distinctly better** than DGCNN, while the two are
+  essentially tied on Tomato segmentation.
+- The same "quiet erosion over training" pattern seen in Milestone 6 for DGCNN showed up again
+  here for PointNet++ (best target accuracy came very early in training, then declined even as
+  source-side numbers kept improving) — confirming this is a general property of "no
+  adaptation" training, not something specific to one architecture. That strengthens the case
+  for the next step: adding an adversarial domain-adaptation method (rows A2/C2) to see if it
+  fixes this erosion for both architectures.
 
 ---
 
@@ -123,7 +148,7 @@ at-a-glance status.
 
 | Block | Row | What it is | Status |
 |---|---|---|---|
-| A (PointNet++) | A1 | No adaptation (baseline) | **In progress** — training running on cluster |
+| A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed |
 | A (PointNet++) | A2 | Adversarial (anchor method) | Not started |
 | A (PointNet++) | A3 | Self-supervised | Not started |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
@@ -141,8 +166,8 @@ at-a-glance status.
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** one row (C1) is fully done, one row (A1) is training right now, and the
-other 22 rows are not started yet.
+**In one sentence:** two rows (A1, C1) are fully done, giving the first real cross-backbone
+comparison, and the other 22 rows are not started yet.
 
 ---
 
