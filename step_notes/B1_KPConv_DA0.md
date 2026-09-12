@@ -22,8 +22,9 @@ first, cheap read on how "already stable" or "already unstable" this backbone's 
 baseline is, the same diagnostic A1 vs. C1 turned out to matter for interpreting A2/C2's
 DA-A comparison and A3/C3's DA-S comparison).
 
-## Status: KPConv reference repo integrated, model/training script built, CPU smoke test passed,
-submitted to the cluster GPU (2026-09-12)
+## Status: KPConv reference repo integrated; hit and fixed a real CUDA OOM bug (uncapped
+neighbor matrices — see "Incident" section below); resubmitted to the cluster GPU with a much
+longer time budget (2026-09-12), expected to take 10-15+ hours. Awaiting completion.
 
 ## The real setup friction CLAUDE.md warned about — and what it actually was
 
@@ -97,18 +98,20 @@ synthetic data before touching any real pipeline code.
 2. **No new Dataset class needed.** `PlantClsSegDataset`/`PlantSpeciesDataset` (already used
    unchanged by every prior row) already return exactly the `(pts, species_label, seg_label)` /
    `(pts, species_label)` tuples `kpconv_collate.py`'s two collate functions expect — only a new
-   `collate_fn` was needed, not a new dataset. `NWORKERS=0` for this row specifically (every
-   other row uses 2): the collate function calls into the compiled C++ extensions per batch, and
-   multi-worker safety with these particular compiled modules wasn't verified — a candidate
-   speed-up for later, not a correctness concern for this first baseline.
-3. **`neighborhood_limits` left uncalibrated (empty list).** The reference repo's own dataset
-   classes run a calibration pass (histogram-based percentile estimation over many batches) to
-   cap each layer's neighbor-matrix width for memory/compute efficiency. Skipped here as a
-   deliberate simplification: `PointCloudDataset.big_neighborhood_filter` treats an empty list as
-   a no-op (returns neighbor matrices uncapped, not incorrect), and this project's point clouds
-   (fixed N=4096, whole small objects) are far smaller than the reference repo's typical
-   scene-segmentation crops (10k-100k+ points) where calibration matters most for memory. Flagged
-   as a candidate follow-up if runtime/memory become a problem, not assumed to be needed.
+   `collate_fn` was needed, not a new dataset. `--num_workers` defaults to 0 for this row
+   specifically (every other row uses 2): the collate function calls into the compiled C++
+   extensions per batch, and multi-worker safety with these particular compiled modules wasn't
+   verified. **This flag was later tried at 4 and reverted** — see the "Incident" section below;
+   the caution here turned out to be justified, not just conservative.
+3. **`neighborhood_limits` left uncalibrated (empty list) — ORIGINALLY, since corrected.** The
+   original reasoning here (this project's point clouds, fixed N=4096 whole small objects, are
+   far smaller than the reference repo's typical scene-segmentation crops of 10k-100k+ points,
+   so skipping calibration seemed like a safe simplification, flagged only as "a candidate
+   follow-up if runtime/memory become a problem, not assumed to be needed") **turned out to be
+   wrong in practice** — see the "Incident" section below for the full story: leaving this
+   uncapped caused a job to stall for over an hour and a follow-up debug run to hit a 31.86 GiB
+   CUDA OOM. Real calibration (`adapters/kpconv_collate.py::calibrate_neighborhood_limits`) is
+   now run once at the start of every training run.
 4. **Joint cls+seg model built by mirroring `KPFCNN.__init__`/`.forward`'s encoder/decoder
    block-construction loop line-for-line** (same `block_decider` calls, same skip-connection
    bookkeeping) in a new `KPConv_ClsSeg` class — neither `KPCNN` (cls-only) nor `KPFCNN` (seg-only)
@@ -187,3 +190,94 @@ synthetic data before touching any real pipeline code.
 ---
 **2026-09-12:** Submitted `jobs/b1_kpconv_da0.sbatch` to the `dgx` partition — job **308845**
 (running on `cn14-dgx`). Queue was empty beforehand. Awaiting completion.
+
+---
+## Incident (2026-09-12): job 308845 stalled, root-caused to uncapped neighbor matrices, fixed
+
+**Symptom.** Job 308845 showed no training progress for over an hour (`squeue` still `RUNNING`,
+but `run.log` had nothing past the one-time setup lines — data loading, class weights — and
+`sacct`'s live CPU-time accounting stayed near zero across repeated samples a few minutes apart).
+The training loop only logs once per epoch (`Trn - Source {epoch}, ...`), so there was no
+per-batch visibility into whether it was working slowly or actually stuck. Given every other
+row in this project finished its full 100-epoch run in 13 min–1h04m, and this hadn't logged even
+one epoch after 70+ minutes, the job was cancelled (`scancel 308845`) rather than left to
+potentially run for the full 4h limit for nothing.
+
+**Diagnosis.** Added a `--verbose_batches` flag (per-batch collate/step timing, gated so normal
+runs stay at the established one-line-per-epoch log convention) and ran a short, time-bounded
+debug job (job 308884, `--epochs 1`, 25 min cap) to get direct visibility. It crashed on the
+**3rd training batch** with:
+```
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 31.86 GiB. ...
+File "KPConv-PyTorch/models/blocks.py", line 301, in forward
+    sq_distances = torch.sum(differences ** 2, dim=3)
+```
+Back-calculating from the allocation size (31.86 GiB / (n_points≈65536 × 15 kernel points × 3
+dims × 4 bytes)) gives an average of **~2900 neighbors per point** for whatever batch triggered
+this — confirming the exact risk flagged (but left unaddressed) in this file's original design
+decision #3: leaving `neighborhood_limits` as an empty list makes
+`PointCloudDataset.big_neighborhood_filter` a no-op, so neighbor index matrices are never capped.
+A small fraction of augmented batches produce local point clusters dense enough to blow this up.
+This also retroactively explains job 308845's "hang": with no per-batch logging, a batch whose
+CPU-side neighbor search (or eventual GPU tensor construction) is this pathologically expensive
+is indistinguishable from a genuine deadlock — it likely wasn't stuck, just extremely slow on
+whichever specific batch it drew, then probably would have crashed the same way eventually.
+
+**Fix: real neighbor-count calibration**, matching how the reference repo's own dataset classes
+(`datasets/ModelNet40.py::calibration`, etc.) are meant to be used, minus their point-budget/
+dynamic-batch-size machinery (irrelevant here — every sample is already a fixed N=4096, so a
+plain fixed-`batch_size` DataLoader is used for calibration too). Added
+`calibrate_neighborhood_limits()` to `adapters/kpconv_collate.py`: runs the SAME uncapped collate
+over ~10 real training batches, builds a per-layer neighbor-count histogram (same method as the
+reference repo's own calibration code), and sets each layer's limit to the 90th-percentile count
+(`untouched_ratio=0.9`, the reference repo's own default — at most ~10% of points get their
+neighbor list truncated). Calibration itself never touches the GPU (pure CPU/numpy), so it's safe
+from the same OOM even if it happens to sample a pathological batch.
+
+**A real bug caught while wiring this in**: `neighborhood_limits` lives on the
+`PointCloudDataset`/`KPConvBatchBuilder` *instance* (`self.neighborhood_limits`), not on
+`self.config` — confirmed by reading `datasets/common.py::PointCloudDataset.__init__` (always
+resets `self.neighborhood_limits = []`) and `big_neighborhood_filter` (reads `self.
+neighborhood_limits` directly) rather than assuming config was the right place to store it. The
+first version of this fix set `config.neighborhood_limits` and would have silently done nothing.
+Fixed in `KPConvBatchBuilder.__init__`, applied after `super().__init__()` runs (which is what
+resets it).
+
+**Verified on the CPU (login node), not GPU** — three separate GPU debug/validation attempts
+(jobs 308884's follow-up 308889, and 308943) landed on a node with highly variable timing
+(data loading alone ranged from 9 seconds to 10 minutes across otherwise-identical runs; one
+timed out at its 30/40-min bound mid-calibration with no error, just node/NFS-load variability
+unrelated to this code) — GPU debug runs stopped being a reliable way to validate quickly.
+Switched to the same low-risk method used for every prior row's initial validation: a bounded
+CPU run on the login node (`timeout 550 python ... --gpu -1 --verbose_batches`). This completed
+calibration cleanly in ~4.6 min, producing `neighborhood_limits = [499, 45, 31]`, then ran 4
+batches with bounded, non-crashing per-batch costs (collate 24-39s, fwd+bwd+step 10-16s on CPU)
+before the timeout cut it off deliberately — confirms the fix prevents the OOM.
+
+**A second attempted fix, tried and reverted**: since collate (CPU-bound, single-threaded — no
+OpenMP in the vendored `cpp_wrappers/` source, checked directly) dominates per-batch cost, tried
+parallelizing it via `DataLoader(num_workers=4)` (added a `--num_workers` CLI flag). This made
+things *worse*, not better: a CPU debug run with `--num_workers 4` produced no output at all
+(not even the calibration line) within a 550s bound, versus `num_workers=0`'s clean 4.6 min
+calibration — consistent with this file's original, now-vindicated caution that "multi-worker
+safety with these compiled modules wasn't verified." Left the `--num_workers` flag in place
+(defaults to 0, the safe/verified setting) for future investigation, but the production job does
+NOT use it.
+
+**Real, accepted cost: this row is much slower than every other row in the project, not a bug.**
+At ~30-50s/batch (collate-dominated, CPU-bound, unaffected by GPU) × 17 batches/epoch × 100
+epochs, a full run is expected to take on the order of **10-15+ hours** — vs. every other row's
+13 min–1h04m. Checked whether the project's own 4h-per-job convention was a hard cluster limit
+before accepting this: it is not (`scontrol show partition dgx` → `MaxTime=6-00:00:00`; `sacctmgr
+show qos dgx` → no `MaxWall` set) — the 4h budget in every prior `jobs/*.sbatch` was this
+project's own convention, sized to match the other backbones' actual runtimes, not a cluster
+policy. `jobs/b1_kpconv_da0.sbatch` raised to `--time=24:00:00` accordingly (`--cpus-per-task=4`
+also added, though collate is single-threaded so this mainly guards against node-level CPU
+oversubscription, not a parallelism win). `--verbose_batches` is kept ON for the real production
+run (unlike a normal row) specifically so this run stays observable rather than repeating
+308845's silent-stall failure mode if node variability recurs.
+
+**2026-09-12:** Cleared the stale partial `results/B1_kpconv_da0/run.log` left by cancelled job
+308845 (would otherwise have been appended to, not overwritten — `IOStream` opens in append
+mode) and submitted the fixed job — **308956**, running on `cn14-dgx`. This is expected to run
+for many hours; results to follow once it completes.

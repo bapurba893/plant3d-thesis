@@ -471,6 +471,50 @@ it kept going unattended and finished cleanly on its own — no work lost.
 
 ---
 
+## 19. Row B1 Hits a Real Bug, Gets Root-Caused, Fixed, and Restarted — 2026-09-12
+
+The real training run handed off at the end of Milestone 18 (job 308845) didn't behave like any
+previous row: it sat for over an hour without printing a single epoch's worth of progress, while
+every other row so far had finished its *entire* 100-epoch run in well under that time. Rather
+than assume it would eventually catch up, or restart blindly and hope, this was treated as a real
+problem worth diagnosing properly — the same standard applied to every unusual result so far.
+
+Added a small amount of extra logging (per-training-step timing, not just once-per-epoch) and ran
+a short, deliberately time-boxed trial. That trial crashed almost immediately with a clear error:
+the GPU ran out of memory trying to allocate a single 32-gigabyte block. That's a very specific,
+useful clue — tracing it back led straight to the actual cause: a setting that controls how many
+"neighboring points" the model is allowed to consider for each point in the cloud had been left
+unbounded, on the reasoning (made when this row was first built, and explicitly flagged as
+unproven at the time) that this project's point clouds are small enough not to need that safety
+limit. That reasoning turned out to be wrong for a small fraction of cases — some individual
+training batches happen to contain unusually dense clusters of points, and without a cap, the
+model tried to consider thousands of neighbors for those points at once, which is what blew up
+the GPU's memory. This also explains the earlier hour-long "hang" — it likely wasn't frozen, just
+grinding through one of these unusually expensive batches before it would have eventually failed
+the same way.
+
+Fixed properly, not worked around: added the same kind of calibration step the original external
+codebase itself normally does (but which had been skipped) — sample a handful of real batches
+up front, measure how many neighbors points typically have, and pick a sensible cap from that
+measurement rather than leaving it unbounded. Caught and fixed a second, related bug while
+building this (the setting was being stored in the wrong place internally and would have been
+silently ignored) by reading the external library's own source code carefully rather than
+assuming. Also tried one extra speed idea — spreading this neighbor-finding work across multiple
+CPU threads at once, since it was clearly the bottleneck — but that made things worse, not
+better, matching a caution already written down (but not yet tested) when this row was first
+built. That attempt was reverted.
+
+One more real, unglamorous finding: even after the fix, this backbone's per-batch cost is
+genuinely much higher than the other two architectures' — a property of the external code itself
+(the neighbor-search step runs on a single CPU thread, not the GPU), not a bug. A full 100-epoch
+run is expected to take somewhere in the range of half a day, compared to well under two hours
+for every row trained so far. Checked first whether the cluster itself would even allow a job to
+run that long (it does — the previous 4-hour budget was just this project's own convention,
+sized around the other, much faster architectures, not a hard limit) before simply giving this
+row the time it legitimately needs and restarting it.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -485,7 +529,7 @@ at-a-glance status.
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
-| B (KPConv) | B1 | No adaptation (baseline) | Training on cluster (job 308845), not yet finished |
+| B (KPConv) | B1 | No adaptation (baseline) | Hit and fixed a real CUDA memory bug; retraining on cluster (job 308956, expect ~half a day) |
 | B (KPConv) | B2 | Adversarial (anchor method) | Not started |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |

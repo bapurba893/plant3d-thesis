@@ -38,18 +38,20 @@ alongside the per-point `labels` segmentation targets already returned
 by `segmentation_inputs`) -- since every row in this project needs joint
 cls+seg, unlike the reference repo's own single-task datasets.
 
-`neighborhood_limits` is left as an empty list (skips the reference
-repo's neighbor-count calibration pass -- see `PointCloudDataset.
-big_neighborhood_filter`: an empty list makes it a no-op, returning
-neighbor index matrices uncapped/unfiltered rather than incorrect).
-This is a deliberate simplification for this row's first baseline, not a
-correctness issue -- calibration only bounds memory/compute by trimming
-each neighbor matrix to its needed width; skipping it just means those
-matrices may be wider than strictly necessary. Documented as a candidate
-follow-up in step_notes/B1_KPConv_DA0.md if runtime/memory become a
-problem, since our clouds (N=4096, whole small objects) are far smaller
-than this repo's typical scene-segmentation crops (10k-100k+ points),
-where calibration matters much more.
+`neighborhood_limits` is NOT left uncapped -- see `calibrate_neighborhood_limits` below.
+An earlier version of this module left it as an empty list (`PointCloudDataset.
+big_neighborhood_filter` treats that as a no-op, returning neighbor index matrices
+uncapped/unfiltered), reasoning this was a safe simplification since our clouds (N=4096,
+whole small objects) are far smaller than this repo's typical scene-segmentation crops
+(10k-100k+ points) where calibration matters most. **That reasoning was wrong in practice**:
+job 308845 (batch_size=16, no calibration) stalled for over an hour with zero progress, and a
+follow-up debug run crashed with a CUDA OOM (`Tried to allocate 31.86 GiB`) 3 batches in --
+some augmented batches have a small fraction of points with pathologically large neighbor
+counts even at N=4096. Fixed by calling `calibrate_neighborhood_limits` once at the start of
+training and assigning its result to `config.neighborhood_limits` before building any real
+DataLoader -- see that function's docstring for the full incident and calibration method (a
+simplified version of the reference repo's own `datasets/*.py::calibration` routines). Full
+incident writeup in `step_notes/B1_KPConv_DA0.md`.
 """
 
 import os
@@ -77,6 +79,14 @@ class KPConvBatchBuilder(PointCloudDataset):
     def __init__(self, config):
         super().__init__(config.dataset if hasattr(config, "dataset") else "plant3d")
         self.config = config
+        # PointCloudDataset.__init__ (just ran, via super()) unconditionally resets
+        # self.neighborhood_limits to [] -- big_neighborhood_filter reads THIS attribute
+        # directly, not self.config.neighborhood_limits, so it must be re-applied here after
+        # the super().__init__() call, not just stored on config. Caught via a real CUDA OOM
+        # (see calibrate_neighborhood_limits' docstring) -- confirmed by reading
+        # datasets/common.py::PointCloudDataset.__init__/big_neighborhood_filter directly
+        # rather than assuming config was the right place to store it.
+        self.neighborhood_limits = getattr(config, "neighborhood_limits", [])
 
 
 class KPConvBatch:
@@ -116,6 +126,66 @@ def reshape_seg_labels(batch: "KPConvBatch") -> torch.Tensor:
     B = batch.species_labels.shape[0]
     N = int(batch.lengths[0][0].item())
     return batch.labels.view(B, N)
+
+
+def calibrate_neighborhood_limits(config, dataset, batch_size, num_batches=10, untouched_ratio=0.9,
+                                   num_workers=0):
+    """Computes per-layer neighbor-count caps the same way the reference repo's own dataset
+    classes do (e.g. `datasets/ModelNet40.py::calibration`), minus the point-budget/dynamic
+    batch-size machinery those use (irrelevant here -- every sample is already a fixed N=4096,
+    so a plain fixed `batch_size` DataLoader is used for calibration too, not their custom
+    point-budget sampler).
+
+    Why this exists: leaving `neighborhood_limits` empty (this module's original approach, see
+    module docstring) makes `PointCloudDataset.big_neighborhood_filter` a no-op, returning
+    neighbor index matrices uncapped. Flagged as a "candidate follow-up if runtime/memory become
+    a problem" in step_notes/B1_KPConv_DA0.md -- it became one: job 308845 (batch_size=16)
+    appeared to hang for over an hour with zero visible progress (no per-batch logging existed
+    yet), and a follow-up debug run with per-batch timing added (job 308884) crashed with a CUDA
+    OOM (`Tried to allocate 31.86 GiB`) inside `KPConv.forward`'s `sq_distances = torch.sum(
+    differences ** 2, dim=3)` on only the 3rd training batch -- a small fraction of points in
+    some augmented batches have uncapped neighbor counts large enough to blow up that tensor.
+    Both symptoms trace to the same missing safeguard: an unbounded neighbor matrix width, either
+    slow to construct on CPU (many-neighbor pathological batches) or too large to use on GPU.
+
+    Uses the SAME uncapped collate function to gather a neighbor-count histogram per layer over
+    `num_batches` real (augmented) training batches, then sets each layer's limit to the count at
+    the `untouched_ratio` (default 0.9, matching the reference repo's own default) percentile of
+    the observed distribution -- i.e. at most ~10% of points have their neighbor list truncated,
+    the same accepted tradeoff every one of the reference repo's own example configs makes.
+    Building the histogram itself never touches the GPU (pure CPU/numpy), so it is safe from the
+    same OOM even if a pathological batch is sampled during calibration -- worst case, one
+    particular batch's neighbor-matrix construction is slow, not GPU-fatal.
+
+    Returns a plain Python list of per-layer ints, meant to be assigned to
+    `config.neighborhood_limits` before building the REAL training/val/eval DataLoaders (so every
+    subsequent collate call reuses these fixed caps, not just the calibration pass)."""
+    from torch.utils.data import DataLoader
+
+    calib_config = type(config)()
+    calib_config.__dict__.update(config.__dict__)
+    calib_config.neighborhood_limits = []  # uncapped, for measuring the true distribution
+
+    calib_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers,
+                               collate_fn=make_kpconv_collate_fn(calib_config))
+
+    hist_n = 500  # generous upper bound on neighbors/point for this project's dense point clouds
+    neighb_hists = None
+    batches_seen = 0
+    for batch in calib_loader:
+        counts = [np.sum(neighb_mat.numpy() < neighb_mat.shape[0], axis=1)
+                  for neighb_mat in batch.neighbors]
+        if neighb_hists is None:
+            neighb_hists = np.zeros((len(counts), hist_n), dtype=np.int64)
+        hists = [np.bincount(np.clip(c, 0, hist_n - 1), minlength=hist_n) for c in counts]
+        neighb_hists += np.vstack(hists)
+        batches_seen += 1
+        if batches_seen >= num_batches:
+            break
+
+    cumsum = np.cumsum(neighb_hists.T, axis=0)
+    percentiles = np.sum(cumsum < (untouched_ratio * cumsum[hist_n - 1, :]), axis=0)
+    return percentiles.tolist()
 
 
 def make_kpconv_collate_fn(config):

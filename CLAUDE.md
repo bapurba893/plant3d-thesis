@@ -517,17 +517,42 @@ were not — see Repository layout above).
   `train_c1_dgcnn_da0.py`'s DA-0 training loop. CPU smoke test (1 epoch, real data) passed with
   sane, non-degenerate numbers before submitting. Full integration detail, the exact compiler
   errors/fixes, and design decisions in `step_notes/B1_KPConv_DA0.md`.
-- **Row B1 (KPConv, DA-0, ALL) submitted to the cluster** (2026-09-12, job 308845). Block B's
-  own DA-0 baseline, same protocol as C1/A1. Awaiting completion.
+- **Row B1 (KPConv, DA-0, ALL) hit a real CUDA OOM bug, root-caused and fixed, resubmitted**
+  (2026-09-12). First submission (job 308845) appeared to hang for over an hour with zero
+  per-batch visibility; a follow-up debug run with added per-batch timing crashed with a CUDA
+  OOM (`Tried to allocate 31.86 GiB`) inside KPConv's neighbor-distance computation on only the
+  3rd training batch. Root cause: `neighborhood_limits` (caps each layer's neighbor-matrix
+  width) was left uncalibrated/empty, a design choice originally reasoned as safe for this
+  project's small N=4096 clouds — wrong in practice, since a small fraction of augmented batches
+  produce pathologically dense local point clusters (back-calculated to ~2900 neighbors/point for
+  the batch that OOM'd). Fixed by implementing real calibration
+  (`adapters/kpconv_collate.py::calibrate_neighborhood_limits`, run once at training start,
+  mirroring the reference repo's own `datasets/*.py::calibration` routines) — caught and fixed a
+  second bug while wiring it in (`neighborhood_limits` lives on the dataset/batch-builder
+  instance, not `config`, confirmed by reading the reference repo's source rather than assuming).
+  Tried parallelizing KPConv's CPU-bound, single-threaded collate via `DataLoader(num_workers=4)`
+  as a speed lever — made things worse (no output at all vs. `num_workers=0`'s clean run),
+  consistent with this row's original, now-vindicated caution flagging multi-worker safety as
+  unverified; reverted, kept at the safe default. **Real, accepted cost**: at ~30-50s/batch
+  (CPU-bound, GPU-independent), a full 100-epoch run is expected to take 10-15+ hours, vs. every
+  other row's 13min-1h04m — confirmed this isn't a cluster-imposed limit (`dgx` partition/QOS has
+  no MaxWall, `scontrol show partition dgx` → `MaxTime=6-00:00:00`) before raising
+  `jobs/b1_kpconv_da0.sbatch`'s time budget from 4h (this project's own convention, not a policy)
+  to 24h. Resubmitted as job **308956**, `--verbose_batches` left on for observability given the
+  prior silent-stall failure mode. Full incident writeup in `step_notes/B1_KPConv_DA0.md`.
+  Awaiting completion.
 
 **Next (in order):**
-1. Row B1 (KPConv, DA-0) is training on the cluster (job 308845) — read its full-trajectory
-   result the same way as every prior row once it finishes, then continue Block B (B2 DA-A, B3
-   DA-D, B4 DA-0/L-D, B5 DA-O) alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B1's own
-   baseline stability (collapse-epoch rate, stdev) is a first, cheap read on whether KPConv's
-   claimed density-robustness shows up as a more stable untouched baseline than A1's (PointNet++,
-   unstable) or closer to C1's (DGCNN, stable) — directly relevant background for A3's
-   still-unverified density-sensitivity hypothesis logged in `step_notes/A3_PointNet2_DA_S.md`.
+1. Row B1 (KPConv, DA-0) is training on the cluster (job 308956, expected 10-15+ hours) — read
+   its full-trajectory result the same way as every prior row once it finishes, then continue
+   Block B (B2 DA-A, B3 DA-D, B4 DA-0/L-D, B5 DA-O) alongside remaining Block A rows (A4 DA-A/L-N,
+   A5 Oracle). B1's own baseline stability (collapse-epoch rate, stdev) is a first, cheap read on
+   whether KPConv's claimed density-robustness shows up as a more stable untouched baseline than
+   A1's (PointNet++, unstable) or closer to C1's (DGCNN, stable) — directly relevant background
+   for A3's still-unverified density-sensitivity hypothesis logged in
+   `step_notes/A3_PointNet2_DA_S.md`. KPConv's much slower per-epoch cost (CPU-bound collate) is
+   also itself worth remembering when scheduling B2-B5 — each will likely take a similar 10-15+
+   hours unless a genuine speed fix is found later.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

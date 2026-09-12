@@ -37,6 +37,7 @@ import copy
 import datetime
 import os
 import sys
+import time
 from pathlib import Path
 
 import numpy as np
@@ -57,6 +58,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from models_kpconv import KPConv_ClsSeg, PlantKPConvConfig  # noqa: E402
 from kpconv_collate import (  # noqa: E402
     make_kpconv_collate_fn, make_kpconv_collate_fn_cls_only, reshape_seg_labels,
+    calibrate_neighborhood_limits,
 )
 from losses import seg_loss, class_weights_from_counts, KendallUncertaintyWeighting  # noqa: E402
 from dataset import (  # noqa: E402
@@ -64,9 +66,6 @@ from dataset import (  # noqa: E402
     IDX_TO_SPECIES, SPECIES_TO_IDX, SEG_NUM_CLASSES,
 )
 
-NWORKERS = 0  # KPConv's collate calls into C++ extensions per-batch; keep in the main
-              # process for a first baseline (multi-worker safety with these compiled
-              # modules wasn't verified) -- a candidate speed-up, not a correctness need.
 LAMBDA_LOV = 1.0  # fixed per the strategy table, never learned/swept
 
 
@@ -95,6 +94,17 @@ def parse_args():
     p.add_argument("--dropout", type=float, default=0.5)
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--gpu", type=int, default=0, help="-1 for cpu")
+    p.add_argument("--verbose_batches", action="store_true",
+                    help="log per-batch collate/step timing (diagnostic; job 308845 stalled "
+                         "on epoch 0 with no per-batch visibility -- see step_notes/B1_KPConv_DA0.md)")
+    p.add_argument("--num_workers", type=int, default=0,
+                    help="DataLoader worker processes for KPConv's CPU-bound collate (grid "
+                         "subsampling/radius search via the compiled C++ extensions). Each "
+                         "worker is a separate process with its own copy of the compiled "
+                         "module (no shared mutable state), so this is safe to parallelize -- "
+                         "unlike the original default of 0, which serializes every collate call "
+                         "in the main process and was found to make a full 100-epoch run take "
+                         "far longer than the 4h SLURM limit (see step_notes/B1_KPConv_DA0.md).")
     return p.parse_args()
 
 
@@ -251,14 +261,22 @@ def main():
     config = PlantKPConvConfig()
     config.dropout = args.dropout
 
+    # Cap per-layer neighbor-matrix width (see calibrate_neighborhood_limits' docstring):
+    # leaving this uncapped caused job 308845 to stall for 1+ hour with no progress and a
+    # follow-up debug run to hit a CUDA OOM (31.86 GiB single allocation) 3 batches in.
+    config.neighborhood_limits = calibrate_neighborhood_limits(
+        config, src_train_set, args.batch_size, num_workers=args.num_workers)
+    io.cprint(f"Calibrated neighborhood_limits (per layer, 90th-percentile cap): "
+              f"{config.neighborhood_limits}")
+
     src_train_loader = DataLoader(src_train_set, batch_size=args.batch_size, shuffle=True,
-                                   num_workers=NWORKERS, drop_last=True,
+                                   num_workers=args.num_workers, drop_last=True,
                                    collate_fn=make_kpconv_collate_fn(config))
     src_val_loader = DataLoader(src_val_set, batch_size=args.test_batch_size, shuffle=False,
-                                 num_workers=NWORKERS,
+                                 num_workers=args.num_workers,
                                  collate_fn=make_kpconv_collate_fn(config))
     trgt_eval_loader = DataLoader(trgt_eval_set, batch_size=args.test_batch_size, shuffle=False,
-                                   num_workers=NWORKERS,
+                                   num_workers=args.num_workers,
                                    collate_fn=make_kpconv_collate_fn_cls_only(config))
 
     model = KPConv_ClsSeg(config, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
@@ -277,7 +295,9 @@ def main():
     for epoch in range(args.epochs):
         model.train()
         train_cls_loss, train_seg_loss, n_seen = 0.0, 0.0, 0
-        for batch in src_train_loader:
+        t_batch_start = time.time()
+        for batch_idx, batch in enumerate(src_train_loader):
+            t_collate_done = time.time()
             batch = batch.to(device)
             species_labels = batch.species_labels
             seg_labels = reshape_seg_labels(batch)
@@ -295,6 +315,12 @@ def main():
             train_cls_loss += l_cls.item() * bs
             train_seg_loss += l_seg.item() * bs
             n_seen += bs
+            if args.verbose_batches:
+                t_step_done = time.time()
+                io.cprint(f"  epoch {epoch} batch {batch_idx}: collate wait "
+                          f"{t_collate_done - t_batch_start:.1f}s, fwd+bwd+step "
+                          f"{t_step_done - t_collate_done:.1f}s")
+                t_batch_start = t_step_done
         scheduler.step()
 
         s_cls = kendall.log_vars["cls"].item()
