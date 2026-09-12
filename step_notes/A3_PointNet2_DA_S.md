@@ -191,3 +191,71 @@ DA-S run didn't show at anywhere near this severity. Both directions are worth r
 this is not a case where one backbone's result can be assumed to generalize to the other, for
 either the direction or the magnitude of DA-S's effect — a materially different conclusion than
 A2 found for DA-A (same direction, different magnitude only).
+
+### Proposed mechanism for the reversal (2026-09-12) — NOT VERIFIED, logged as a hypothesis only
+
+Discussed with the user after this row landed; captured here so it isn't lost, but explicitly
+flagged per CLAUDE.md's "flag inferences vs. confirmed facts" rule — nothing below was tested by
+an ablation, only reasoned from existing project facts plus one new data check (the raw density
+numbers).
+
+**The hypothesis**: DefRec's region-deformation-reconstruction pretext (redraw a region's points
+from a local Gaussian, train the backbone to reconstruct clean geometry from context) is
+fundamentally a "learn features robust to locally perturbed point density/arrangement" exercise.
+CLAUDE.md names a different specific architectural weakness for each backbone: PointNet++'s is
+"fixed-radius ball query is density-sensitive," DGCNN's is "unrestricted k-NN lets noisy points
+become spurious graph edges." DefRec's pretext task maps far more directly onto fixing the first
+than the second — a dynamic k-NN graph always finds exactly k neighbors regardless of local
+density, so it's comparatively insensitive to exactly the kind of perturbation DefRec practices
+against, while a fixed real-world-radius ball query (radius=0.2/0.4 in
+`adapters/models_pointnet2.py`) is precisely the kind of operation that perturbation would
+stress-test and improve. On this view, DefRec has a real architectural weakness to fix on
+PointNet++ and comparatively little to fix on DGCNN — consistent with A1's baseline being far
+less stable to begin with (17/100 collapse epochs vs. C1's 3/100) and DefRec both stabilizing it
+(A3) and, on DGCNN's already-stable baseline, only diluting the selection signal without a
+compensating gain (C3's `corr` flipping from C1's −0.286 to +0.222).
+
+**Supporting data point checked, not merely asserted**: `data/dataset_statistics.csv` shows a
+real, large RAW point-density gap between domains before any downsampling — Crops3D Maize
+averages ~82K points vs. Pheno4D Maize's ~1.1M (~13x), Tomato is smaller but still a 2-3x gap.
+This is concrete evidence the sensor/domain gap has a real density component for this dataset,
+not just a hypothetical one.
+
+**Caveat that keeps this at "plausible," not "likely confirmed"**: checked `scripts/
+preprocessing.py` and found both domains go through voxel pre-decimation *then* true
+farthest-point sampling (FPS) down to the shared target_n=4096 — FPS specifically maximizes
+spatial coverage, which partially (not necessarily fully) equalizes local point spacing
+regardless of the original raw density. So the 13x raw gap likely overstates how different the
+final *cached* N=4096 clouds actually are; FPS may not fully erase sensor-specific fine-scale
+sampling artifacts (structured-light/RGB-D grid-like patterns vs. laser-triangulation scan lines),
+but this wasn't measured directly.
+
+**One thing this hypothesis rules out**: it cannot be merely "DA-S exposes the backbone to
+target points during training that DA-0 never sees" as the differentiator, since C3 (DGCNN) runs
+the identical both-domains DefRec protocol and shows no comparable benefit — the target-domain
+exposure is identical in both C3 and A3, so whatever differs has to be about *which* weakness the
+pretext task happens to counteract, not mere exposure.
+
+**The "PointNet++ had more room to be stabilized" framing (the user's own alternative/companion
+hypothesis) is treated here as the statistical symptom of the same mechanism, not a competing
+explanation** — if A1's instability is itself caused by ball-query behaving inconsistently under
+whatever residual density/sampling difference survives FPS, then "more room to improve" and "DefRec
+fixes PointNet++'s specific weakness" are the same explanation at two different levels (statistical
+vs. mechanistic), not two alternatives to choose between.
+
+**Future work, not run now (deprioritized in favor of starting Block B — breadth over depth given
+the deadline)**:
+1. Measure actual local neighbor-spacing/density statistics directly on the final cached N=4096
+   point clouds, per domain and per species, to check whether a real residual density-texture
+   difference survives the voxel+FPS pipeline (would directly test the "supporting data point"
+   above rather than relying on pre-downsampling raw counts).
+2. An ablation swapping PointNet++'s fixed-radius ball-query grouping for a k-NN-based grouping
+   (matching DGCNN's neighbor-selection strategy) and rerunning A3, to see whether the DA-S
+   benefit shrinks or disappears once the specific named weakness this hypothesis targets is
+   removed.
+
+Block B (KPConv) is a natural, complementary angle on the same question without spending more
+budget on dedicated ablations: KPConv's own claimed strength is density robustness via
+grid-subsampled neighborhoods rather than a fixed point count (see CLAUDE.md's Backbones
+section) — directly relevant to this hypothesis, and worth observing organically as Block B
+proceeds rather than as a purpose-built test.
