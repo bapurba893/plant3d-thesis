@@ -24,8 +24,12 @@ growth-curve-informed features — not just species classification.
 - **PointNet++** — pointwise-MLP, hierarchical set abstraction. Known weakness: fixed-radius
   ball query is density-sensitive (this is why its own authors proposed multi-scale grouping).
 - **KPConv** — convolutional, kernel point convolution. Claimed strength: density-robust due
-  to grid-subsampled neighborhoods (not fixed point count). Needs a compiled CUDA extension —
-  expect real setup friction here, budget time for it.
+  to grid-subsampled neighborhoods (not fixed point count). Needs compiled C++ extensions for
+  grid subsampling/radius neighbor search — CPU-only, not CUDA, confirmed while integrating
+  (2026-09-11): they built and ran fine on the cluster login node with no GPU present; the
+  KPConv convolution itself is plain PyTorch. Still expect real setup friction (numpy/setuptools
+  version incompatibilities in the vendored repo's ~2020-era C-extension code), just not a CUDA
+  one — see `step_notes/B1_KPConv_DA0.md`.
 - **DGCNN** — graph-based, EdgeConv on dynamic k-NN. Known weakness: unrestricted k-NN lets
   noisy points become spurious graph edges. Also the field-standard encoder in point-cloud UDA
   benchmark literature (PointDA-10) — use it when comparability to published numbers matters.
@@ -491,14 +495,39 @@ were not — see Repository layout above).
   actively hurting DGCNN's, and its PointNet++ benefit is not free (a real segmentation
   tradeoff).** Full trajectory tables and the segmentation-collapse detail in
   `step_notes/A3_PointNet2_DA_S.md`.
+- **KPConv backbone integrated, Block B started** (2026-09-12) — third and last backbone
+  architecture family. Vendored `HuguesTHOMAS/KPConv-PyTorch` as a sibling repo (pinned at
+  commit `d19c575d3fa9fcfd5a74845b5b27aac7e50472c7`), same convention as DefRec_and_PCM/
+  Pointnet_Pointnet2_pytorch. Required patching two compiled C++ extensions
+  (`cpp_wrappers/cpp_subsampling`, `cpp_wrappers/cpp_neighbors` — grid subsampling + radius
+  neighbor search) for numpy>=2/modern-setuptools incompatibilities in the vendored repo's own
+  ~2020-era build files (`numpy.distutils` removal, `PyArray_DATA`/`_NDIM`/`_DIM` signature
+  tightening) — minimal compatibility patches to the vendored repo, same category as the
+  `np.int` fix already documented for DefRec_and_PCM, not project-specific logic. Confirmed
+  along the way that these extensions are CPU-only (not CUDA, correcting the Backbones section
+  above) — they compiled and ran on the cluster login node with no GPU present.
+  `adapters/kpconv_collate.py` builds KPConv's "stacked batch" format (all samples'
+  points/neighbors/pools concatenated per layer, not a fixed `(B,3,N)` tensor) by reusing the
+  reference repo's own `PointCloudDataset.segmentation_inputs` unmodified.
+  `adapters/models_kpconv.py::KPConv_ClsSeg` mirrors `KPFCNN`'s encoder/decoder block
+  construction line-for-line (3 layers, 2 stridings, no deformable blocks — matching
+  `PointNet2_ClsSeg`'s depth for a comparable cross-backbone architecture) plus a classification
+  head off the pooled bottleneck feature, exposing the same `{"cls", "feat", "seg_feat"}`
+  interface as the other two backbones' models. `adapters/train_b1_kpconv_da0.py` mirrors
+  `train_c1_dgcnn_da0.py`'s DA-0 training loop. CPU smoke test (1 epoch, real data) passed with
+  sane, non-degenerate numbers before submitting. Full integration detail, the exact compiler
+  errors/fixes, and design decisions in `step_notes/B1_KPConv_DA0.md`.
+- **Row B1 (KPConv, DA-0, ALL) submitted to the cluster** (2026-09-12, job 308845). Block B's
+  own DA-0 baseline, same protocol as C1/A1. Awaiting completion.
 
 **Next (in order):**
-1. Block C is fully done (C1-C5); Block A has A1/A2/A3 done. Next candidates: A4 (PointNet++,
-   DA-A/L-N) to continue the cross-backbone comparison, or starting Block B (KPConv) once its
-   CUDA extension is set up. A3's finding (DA-S helps PointNet++ classification but costs Tomato
-   segmentation) and A2's finding (DA-A's underperformance direction is shared but magnitude is
-   backbone-dependent) are both directly relevant background for whichever comes next, alongside
-   C5's confirmed-headroom finding.
+1. Row B1 (KPConv, DA-0) is training on the cluster (job 308845) — read its full-trajectory
+   result the same way as every prior row once it finishes, then continue Block B (B2 DA-A, B3
+   DA-D, B4 DA-0/L-D, B5 DA-O) alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B1's own
+   baseline stability (collapse-epoch rate, stdev) is a first, cheap read on whether KPConv's
+   claimed density-robustness shows up as a more stable untouched baseline than A1's (PointNet++,
+   unstable) or closer to C1's (DGCNN, stable) — directly relevant background for A3's
+   still-unverified density-sensitivity hypothesis logged in `step_notes/A3_PointNet2_DA_S.md`.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

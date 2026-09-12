@@ -445,6 +445,32 @@ tables, the segmentation-tradeoff detail, and the reasoning behind the likely me
 
 ---
 
+## 18. Third Backbone Integrated: KPConv, and Block B Started — 2026-09-12
+
+With Block A (PointNet++) and Block C (DGCNN) both well underway, started integrating the third
+and last model architecture: KPConv, a convolutional approach whose whole selling point is being
+less sensitive to how densely packed the points in a scan are — directly relevant to the sensor
+gap between the two datasets (structured-light/RGB-D vs. laser scanning naturally produce
+different point densities).
+
+The setup notes had warned this one would need a compiled GPU extension and be the most
+troublesome of the three to integrate. Turned out to be half right: it does need compiled code,
+but it's compiled *CPU* code (for a preprocessing step, not the actual neural network layer),
+confirmed by successfully building and running it on the cluster's login node, which has no GPU
+at all. The real friction was different: the external code was written around 2020 and needed a
+handful of small, well-understood compatibility fixes to work with today's numpy/Python tooling —
+the same kind of minor patching already needed once before for the DGCNN reference codebase.
+
+Built the model and training script the same way as the other two backbones (mirroring their
+"no adaptation" baseline setup), verified it with a one-epoch trial run on real data before
+trusting it — same process every previous integration went through — and handed off row **B1**
+(KPConv, no adaptation, Block B's own starting baseline) to the cluster GPU to train for real
+(job 308845). One bit of good luck along the way: a local connection hiccup interrupted the
+trial run partway through, but because it was running directly on the cluster (not the laptop),
+it kept going unattended and finished cleanly on its own — no work lost.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -459,7 +485,7 @@ at-a-glance status.
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
-| B (KPConv) | B1 | No adaptation (baseline) | Not started |
+| B (KPConv) | B1 | No adaptation (baseline) | Training on cluster (job 308845), not yet finished |
 | B (KPConv) | B2 | Adversarial (anchor method) | Not started |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
@@ -477,7 +503,8 @@ PointNet++ — giving a real cross-backbone comparison showing adversarial adapt
 underperformance is a shared (dataset-driven) pattern of differing magnitude, self-supervised
 adaptation's effect is architecture-dependent enough to actually flip direction (hurts DGCNN,
 helps PointNet++ with a segmentation tradeoff), and a confirmed Oracle ceiling showing real
-headroom exists — the other 17 rows are not started yet.
+headroom exists — the third backbone (KPConv, Block B) is now integrated and its own baseline
+(B1) is training on the cluster, with the other 16 rows not started yet.
 
 ---
 
