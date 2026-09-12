@@ -400,6 +400,51 @@ separate from noise that was already there. Full trajectory tables and the four-
 
 ---
 
+## 17. Row A3 Finished — The First Adaptation Method That Actually Wins, But Not for Free — 2026-09-12
+
+Every domain-adaptation attempt so far (adversarial on both backbones, self-supervised on
+DGCNN) has underperformed its own backbone's plain no-adaptation baseline. Row A3 asks whether
+that holds for self-supervised adaptation on PointNet++ too — the DGCNN version of this method
+(row C3) was the least-bad result seen so far (only about 9 points below no-adaptation, versus
+roughly 16-18 points for the adversarial attempts), so the question was whether that "least bad"
+pattern would repeat on a different backbone.
+
+**It didn't just repeat — it reversed, dramatically.** Read across the full 100-epoch training
+run, this method's average target-domain accuracy (0.800) came in about 20 points *above* the
+no-adaptation baseline (0.599) — the first clear win by any adaptation method attempted in this
+project so far. Read from the single best checkpoint the protocol selects, the gain is even
+larger: about 43 points (0.889 versus 0.460). The improvement also came with a big stability
+gain: the no-adaptation baseline collapsed to guessing one plant species for the whole target
+test set in 17 of 100 training epochs; this run did that only twice.
+
+Given how different this is from every prior result, the numbers were checked carefully before
+being trusted: no target labels were used anywhere in training (confirmed the same
+never-touch-target-labels code path already used safely in the DGCNN version of this method),
+model selection never touched target data, and the improvement holds up across nearly the
+entire training run rather than being a lucky single checkpoint.
+
+**But it's not a clean win — there's a real cost, on a different metric.** Reading the organ
+segmentation quality on the labeled source data (Crops3D) that this row also tracks: Tomato
+segmentation quality collapsed early in training and stayed collapsed for the rest of the run,
+while Maize segmentation stayed healthy and even improved. The likely reason (not confirmed by
+a dedicated experiment): Tomato is already the smaller, harder-to-segment species in the
+training data, and the extra self-supervised training signal seems to have crowded out Tomato's
+already-fragile segmentation quality in favor of the classification task, which improved
+dramatically.
+
+**What this means for the bigger picture:** the adversarial method's underperformance (rows C2,
+C4, A2) looks like a property of the dataset that shows up on both backbones, just more clearly
+on one than the other. The self-supervised method (rows C3 now vs. A3) is different — it
+actively hurts one backbone and actively helps the other, a much stronger kind of
+architecture-dependence than anything seen before it. Whichever backbone eventually gets carried
+forward into later stages of this project, this result is a reminder that a domain-adaptation
+method's effect — not just how strong it is, but which direction it points — can flip entirely
+between architectures, and needs to be checked on each one rather than assumed. Full trajectory
+tables, the segmentation-tradeoff detail, and the reasoning behind the likely mechanism are in
+`step_notes/A3_PointNet2_DA_S.md`.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -411,7 +456,7 @@ at-a-glance status.
 |---|---|---|---|
 | A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed |
 | A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
-| A (PointNet++) | A3 | Self-supervised | Not started |
+| A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | Not started |
@@ -427,12 +472,12 @@ at-a-glance status.
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1 and A2 on
+**In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1/A2/A3 on
 PointNet++ — giving a real cross-backbone comparison showing adversarial adaptation's
-underperformance is a shared (dataset-driven) pattern but a DGCNN-specific magnitude (PointNet++'s
-own baseline is too noisy for the effect to show up as cleanly), and a confirmed Oracle ceiling
-showing real headroom was left unclaimed by every adaptation method tried so far — the other 18
-rows are not started yet.
+underperformance is a shared (dataset-driven) pattern of differing magnitude, self-supervised
+adaptation's effect is architecture-dependent enough to actually flip direction (hurts DGCNN,
+helps PointNet++ with a segmentation tradeoff), and a confirmed Oracle ceiling showing real
+headroom exists — the other 17 rows are not started yet.
 
 ---
 

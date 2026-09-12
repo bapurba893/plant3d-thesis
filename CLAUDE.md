@@ -453,12 +453,52 @@ were not — see Repository layout above).
   capacity competing between `L_seg` and the adversarial/entropy terms). Full trajectory tables
   and reasoning in `step_notes/A2_PointNet2_DA_A.md`.
 
+**Done (continued):**
+- **Row A3 (PointNet++, DA-S, ALL) trained on the cluster** (2026-09-12, job 308789, ~33 min).
+  Ports C3's DefRec self-supervised reconstruction to PointNet++, to test whether "DA-S was
+  DGCNN's least-bad adaptation result" (C1 0.791 → C3 0.703, an 8.8-point full-run-mean decline)
+  is a backbone-general property. Required adding a DefRec reconstruction head to
+  `PointNet2_ClsSeg` (`PointDA.Models.RegionReconstruction` — the same generic per-point Conv1d
+  stack `DGCNN_ClsSeg` already uses via inheritance — composed unmodified, fed the
+  already-computed `seg_feat` tensor). DefRec's core machinery (`deform_input`/`calc_loss`,
+  chunked-Chamfer-distance OOM workaround) is fully backbone-agnostic and reused unchanged.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | A1 (DA-0) | A3 (DA-S) | C1 (DA-0, ref) | C3 (DA-S, ref) |
+  |---|---|---|---|---|
+  | Full-run mean | 0.599 | **0.800** | 0.791 | 0.703 |
+  | Full-run stdev | 0.196 | 0.158 | 0.104 | 0.104 |
+  | corr(selection-loss, target acc) | −0.165 | −0.009 | −0.286 | +0.222 |
+  | Collapse epochs | 17/100 | **2/100** | 3/100 | not re-checked |
+  | Selected-checkpoint acc | 0.4603 | **0.8889** | 0.7460 | 0.5714 |
+
+  **This is the first row where an adaptation method clearly beats its own backbone's DA-0
+  baseline — it does not just fail to replicate C1→C3's decline, it reverses direction
+  entirely** (A1→A3 gains ~20 points full-run mean / ~43 points selected checkpoint, vs.
+  C1→C3's ~9/17.5-point loss). Checked for target-label leakage/selection-signal contamination
+  before trusting this (none found — same vetted code path as C3) and confirmed the gain holds
+  across nearly the whole trajectory (all quartiles but Q2 improve), not one lucky checkpoint.
+  **But it comes with a real, sustained cost**: per-epoch Tomato seg mIoU (source val) collapses
+  from ~0.27 to a ~0.02-0.09 floor within the first few epochs and stays there (FINAL 0.0594 vs.
+  A1's 0.3207), while Maize seg mIoU steadily improves to ~0.34-0.39 (FINAL 0.3404, close to
+  A1's 0.4741) — plausibly because Tomato is already the minority/harder-imbalanced species and
+  the added `cls`+`defrec` training pressure (Kendall's learned weights end up favoring `cls`
+  heavily by epoch 99) crowds out its already-fragile segmentation, an inference not verified by
+  ablation. **Conclusion: unlike DA-A (same underperformance direction on both backbones, just
+  different magnitude — A2 above), DA-S's effect is genuinely architecture-dependent in
+  direction, not just degree — it actively helps PointNet++ classification transfer while
+  actively hurting DGCNN's, and its PointNet++ benefit is not free (a real segmentation
+  tradeoff).** Full trajectory tables and the segmentation-collapse detail in
+  `step_notes/A3_PointNet2_DA_S.md`.
+
 **Next (in order):**
-1. Block C is fully done (C1-C5); Block A has A1/A2 done. Next candidates: A3 (PointNet++,
-   DA-S) or A4 (PointNet++, DA-A/L-N) to continue the cross-backbone comparison, or starting
-   Block B (KPConv) once its CUDA extension is set up. The C2/A2 diagnosis (label-prior
-   mismatch, small-N regime, multi-temporal target, now confirmed cross-backbone) and C5's
-   confirmed-headroom finding are both directly relevant to whichever comes next.
+1. Block C is fully done (C1-C5); Block A has A1/A2/A3 done. Next candidates: A4 (PointNet++,
+   DA-A/L-N) to continue the cross-backbone comparison, or starting Block B (KPConv) once its
+   CUDA extension is set up. A3's finding (DA-S helps PointNet++ classification but costs Tomato
+   segmentation) and A2's finding (DA-A's underperformance direction is shared but magnitude is
+   backbone-dependent) are both directly relevant background for whichever comes next, alongside
+   C5's confirmed-headroom finding.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

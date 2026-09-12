@@ -81,3 +81,113 @@ current two-backbone picture is still incomplete on this specific question.
 ---
 **2026-09-12:** Submitted `jobs/a3_pointnet2_da_s.sbatch` to the `dgx` partition — job **308789**.
 Queue was empty beforehand. Awaiting completion.
+
+---
+## Results (2026-09-12, job 308789, ~33 min wall time)
+
+**This is the first row in the entire project where a domain-adaptation method clearly beats its
+own backbone's no-adaptation baseline, on the full-trajectory reading, not just a lucky
+checkpoint.** Given how much this differs from every prior adaptation result (C2, C3, C4, A2 all
+underperformed their DA-0 baseline), the numbers below were checked for leakage/bugs before being
+taken at face value — see the "Sanity checks" section.
+
+**Protocol-selected checkpoint** (best epoch by lowest source val total loss) — best epoch was
+**95** (source val total loss 1.5076):
+
+| Metric | A1 (DA-0) | A3 (DA-S) |
+|---|---|---|
+| Target cls acc | 0.4603 (avg acc 0.5750) | **0.8889** (avg acc 0.9033) |
+| Tomato seg mIoU (source val) | 0.3207 (acc 0.6729) | **0.0594** (acc 0.0853) |
+| Maize seg mIoU (source val) | 0.4741 (acc 0.9055) | 0.3404 (acc 0.7015) |
+
+**Full-trajectory analysis** (all 100 epochs' target-eval numbers, same methodology as
+A2/C2/C3/C4):
+
+| Metric | A1 (DA-0) | A3 (DA-S) | C1 (DA-0, ref) | C3 (DA-S, ref) |
+|---|---|---|---|---|
+| Full-run mean target acc | 0.599 | **0.800** | 0.791 | 0.703 |
+| Full-run stdev | 0.196 | 0.158 | 0.104 | 0.104 |
+| corr(source val loss, target acc) | −0.165 | −0.009 | −0.286 | +0.222 |
+| Quartile means (Q1→Q4) | .676/.717/.507/.495 | **.851/.683/.780/.885** | .798/.834/.773/.760 | .731/.718/.707/.657 |
+| Epochs collapsed to one class | 17/100 | **2/100** [24, 30] | 3/100 | not re-checked |
+| Min / max target acc | 0.365 / 0.968 | 0.365 / 0.968 | 0.365 / 0.921 | — |
+
+### Sanity checks (given how surprising this result is)
+
+- **No target-label leakage**: `train_a3_pointnet2_da_s.py` discards target species labels the
+  same way C3/A2 do (`_trgt_species_unused = trgt_batch[1]`, never referenced again) — this is
+  the same, already-vetted code path C3 used without producing a similarly dramatic result, so
+  the mechanism isn't new or untested.
+- **Model selection never touches target data**: `val_total_loss` combines
+  `Kendall(cls, seg, defrec)` computed entirely on Crops3D val (source); `evaluate_defrec` is
+  also called with `src_val_loader` only, matching C3's protocol exactly.
+- **The improvement is not a single-epoch fluke**: full-run mean (0.800) is close to the
+  selected-checkpoint number (0.8889) and every quartile except Q2 is well above A1's
+  corresponding quartile (Q1 0.851 vs 0.676, Q3 0.780 vs 0.507, Q4 0.885 vs 0.495) — a real,
+  mostly-consistent improvement across nearly the whole run, not a spike right before the
+  selected epoch.
+- **Collapse-epoch count corroborates it independently**: A3 collapses to predicting one class
+  in only 2/100 epochs vs. A1's 17/100 — a large, structural stability improvement that doesn't
+  depend on how accuracy itself is read.
+
+### A genuine, real tradeoff found alongside the improvement: Tomato segmentation collapses
+
+Reading the full per-epoch Tomato seg mIoU trajectory (not just the FINAL line): it starts around
+0.25-0.28 in the first 2-3 epochs, then collapses to a 0.02-0.09 range for essentially the entire
+rest of training (mean well under 0.1) — a real, sustained degradation, not a selected-checkpoint
+artifact. **Maize segmentation does NOT show this pattern** — it starts low (~0.03-0.16) and
+steadily *improves* to a 0.34-0.39 range by the end (mean 0.277), a healthy training curve.
+
+So A3's story is not simple "DA-S is unambiguously better on PointNet++" — it is
+**a real classification-transfer improvement bought at a real cost to Tomato-species
+segmentation specifically.** Plausible contributing factor, flagged as an inference (not verified
+by ablation): Tomato is already the minority species in Crops3D training data (71/263 = 27%) and
+has a severely imbalanced organ-label distribution (the "fruit" class is present in only 12% of
+Tomato files, per CLAUDE.md's Crops3D labeling note) — under joint training with strong,
+competing `cls`+`defrec` gradients (and Kendall's learned weighting visibly favoring `cls`: by
+epoch 99, `s_cls=-0.415` (heavily up-weighted) vs. `s_seg=0.243`/`s_defrec=0.192`, both
+down-weighted relative to `cls`), Tomato's already-fragile segmentation may be the first casualty
+of DefRec's added training pressure. Maize (73% of training data, better-represented organ
+classes) doesn't show the same fragility.
+
+### Answering the user's question: does "DA-S is DGCNN's least-bad result" hold on PointNet++?
+
+**No — it doesn't just fail to hold, it flips direction entirely, and dramatically so.** On
+DGCNN, DA-S underperforms DA-0 (C1 0.791 → C3 0.703, an 8.8-point full-run-mean decline; 17.5
+points at the selected checkpoint). On PointNet++, DA-S substantially *improves* over DA-0 (A1
+0.599 → A3 0.800, a 20.1-point full-run-mean gain; 42.9 points at the selected checkpoint) — the
+opposite direction, and a much larger swing.
+
+This is a genuinely different finding from A2's (DA-A): A2 showed the *same direction* as C2 on
+both backbones, just a smaller magnitude on PointNet++ (see `step_notes/A2_PointNet2_DA_A.md`).
+A3 shows the *opposite direction* from C3. **DA-A's underperformance looks like a
+dataset-general property (shows up on both backbones, differing only in how clearly the
+already-noisy PointNet++ baseline lets it show); DA-S's effect looks architecture-dependent in a
+much stronger sense — it actively helps one backbone and actively hurts the other.**
+
+A plausible (unverified) explanation: A1's baseline instability (17/100 collapse epochs,
+systematic Maize-bias documented in CLAUDE.md's A1 entry) may stem from PointNet++'s
+farthest-point-sampling/ball-query set-abstraction encoder learning geometric features that are
+less robust to the sensor-domain shift than DGCNN's dynamic-graph features are by default. DefRec's
+self-supervised reconstruction task, forced on both domains, directly trains the encoder to
+recover clean geometry from deformed input — plausibly compensating for exactly the kind of
+representational fragility that made A1 so unstable in the first place. DGCNN's C1 baseline had
+much less of that fragility to begin with (stdev 0.104, 3/100 collapse epochs), so DefRec had
+less room to help and, per C3's own investigation, instead diluted the model-selection signal
+(`corr(source val loss, target acc)` flipped from C1's −0.286 to C3's +0.222 — actively wrong
+direction) without a compensating stability gain. This mirrors, in reverse, A2's finding that a
+noisier baseline changes how a DA method's effect shows up — here, PointNet++'s noisier baseline
+is precisely what DA-S has room to fix, whereas DGCNN's stabler baseline gives DA-S nothing to
+fix and only a diluted selection signal to pay for it. **This is an inference about mechanism, not
+a verified one** — no ablation isolates "DefRec's contribution to feature robustness" from other
+factors.
+
+### Conclusion
+
+DA-S's usefulness is real but strongly architecture-dependent on this dataset — it substantially
+improves classification transfer on PointNet++ (reversing C3's DGCNN-track finding entirely) while
+also introducing a genuine, sustained cost to Tomato-species segmentation quality that DGCNN's
+DA-S run didn't show at anywhere near this severity. Both directions are worth reporting together:
+this is not a case where one backbone's result can be assumed to generalize to the other, for
+either the direction or the magnitude of DA-S's effect — a materially different conclusion than
+A2 found for DA-A (same direction, different magnitude only).
