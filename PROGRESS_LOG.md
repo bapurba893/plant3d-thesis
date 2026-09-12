@@ -513,6 +513,21 @@ run that long (it does — the previous 4-hour budget was just this project's ow
 sized around the other, much faster architectures, not a hard limit) before simply giving this
 row the time it legitimately needs and restarting it.
 
+**The half-a-day estimate itself turned out to be too optimistic.** Checking back on the
+restarted run after about two hours, it had only gotten through 4 of its 100 training rounds,
+and those four rounds took wildly different amounts of time from each other (some many times
+longer than others) — a telltale sign of the shared GPU being busy with other people's work at
+the time, not anything wrong on this project's end. Doing the math on the actual pace observed
+pointed to something closer to two full days, not half a day. Since the job would almost
+certainly have been killed by the cluster partway through — and worse, this particular training
+script only writes out its final summary at the very end, so a run killed early would leave
+nothing usable, not even a partial result — the run was stopped early on purpose (checked with
+the user first, since it meant discarding two hours of GPU time already spent) and restarted a
+second time with a much larger, safely-oversized time allowance. Per the user's request, that
+same larger allowance now applies to every remaining KPConv row from the outset, not just this
+one, since the underlying cause (a shared, sometimes-busy GPU) will affect all of them equally —
+so this won't need rediscovering four more times.
+
 ---
 
 ## Current Status: the 24-Row Strategy Table
@@ -529,7 +544,7 @@ at-a-glance status.
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
-| B (KPConv) | B1 | No adaptation (baseline) | Hit and fixed a real CUDA memory bug; retraining on cluster (job 308956, expect ~half a day) |
+| B (KPConv) | B1 | No adaptation (baseline) | Hit and fixed two real bugs (a memory bug, then a too-small time budget); retraining on cluster (job 309015, expect ~1-2 days) |
 | B (KPConv) | B2 | Adversarial (anchor method) | Not started |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |

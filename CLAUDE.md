@@ -30,6 +30,14 @@ growth-curve-informed features — not just species classification.
   KPConv convolution itself is plain PyTorch. Still expect real setup friction (numpy/setuptools
   version incompatibilities in the vendored repo's ~2020-era C-extension code), just not a CUDA
   one — see `step_notes/B1_KPConv_DA0.md`.
+  **IMPORTANT — wall-clock budget: every Block B (KPConv) `sbatch` job needs `--time=60:00:00`
+  (not the ~4h that suffices for DGCNN/PointNet++ rows), from the start, not discovered per row.**
+  KPConv's collate step (grid subsampling + radius neighbor search) is CPU-bound and
+  single-threaded (no OpenMP in the vendored code; a `DataLoader(num_workers>0)` parallelization
+  attempt made things worse, not better — reverted, see B1's incident below), and B1 additionally
+  hit real GPU/node contention on the shared `dgx` partition (per-batch fwd+bwd swung 0.2s-86s;
+  a first attempt at 24h was itself too small and had to be killed and resubmitted). This is a
+  backbone-specific cost, not a bug — budget for it on B2-B5 up front rather than re-deriving it.
 - **DGCNN** — graph-based, EdgeConv on dynamic k-NN. Known weakness: unrestricted k-NN lets
   noisy points become spurious graph edges. Also the field-standard encoder in point-cloud UDA
   benchmark literature (PointDA-10) — use it when comparability to published numbers matters.
@@ -533,26 +541,32 @@ were not — see Repository layout above).
   Tried parallelizing KPConv's CPU-bound, single-threaded collate via `DataLoader(num_workers=4)`
   as a speed lever — made things worse (no output at all vs. `num_workers=0`'s clean run),
   consistent with this row's original, now-vindicated caution flagging multi-worker safety as
-  unverified; reverted, kept at the safe default. **Real, accepted cost**: at ~30-50s/batch
-  (CPU-bound, GPU-independent), a full 100-epoch run is expected to take 10-15+ hours, vs. every
-  other row's 13min-1h04m — confirmed this isn't a cluster-imposed limit (`dgx` partition/QOS has
-  no MaxWall, `scontrol show partition dgx` → `MaxTime=6-00:00:00`) before raising
-  `jobs/b1_kpconv_da0.sbatch`'s time budget from 4h (this project's own convention, not a policy)
-  to 24h. Resubmitted as job **308956**, `--verbose_batches` left on for observability given the
-  prior silent-stall failure mode. Full incident writeup in `step_notes/B1_KPConv_DA0.md`.
-  Awaiting completion.
+  unverified; reverted, kept at the safe default. **Real, accepted cost, revised upward twice**:
+  first estimated 10-15h (CPU-only extrapolation) and raised the time budget from 4h to 24h
+  (confirmed this isn't a cluster-imposed limit first — `dgx` partition/QOS has no MaxWall,
+  `scontrol show partition dgx` → `MaxTime=6-00:00:00`); job 308845's resubmission (308956) then
+  showed real GPU/node contention on the shared A100 (4 epochs in ~1h55m, per-epoch time ranging
+  14-51 min, per-batch fwd+bwd swinging 0.2s-86s) putting it on pace for ~48h — job killed at
+  4/100 epochs (before more compute was sunk into a run that would've been killed by SLURM
+  mid-trajectory anyway) and resubmitted a second time at `--time=60:00:00`, job **309015**.
+  `--verbose_batches` left on for observability given the original silent-stall failure mode.
+  **This contention risk applies to every Block B row, not just B1** — see the Backbones section
+  above, now flagged so B2-B5 start with the 60h budget rather than rediscovering this. Full
+  incident writeup in `step_notes/B1_KPConv_DA0.md`. Awaiting completion.
 
 **Next (in order):**
-1. Row B1 (KPConv, DA-0) is training on the cluster (job 308956, expected 10-15+ hours) — read
-   its full-trajectory result the same way as every prior row once it finishes, then continue
-   Block B (B2 DA-A, B3 DA-D, B4 DA-0/L-D, B5 DA-O) alongside remaining Block A rows (A4 DA-A/L-N,
-   A5 Oracle). B1's own baseline stability (collapse-epoch rate, stdev) is a first, cheap read on
+1. Row B1 (KPConv, DA-0) is training on the cluster (job 309015, `--time=60:00:00`) — read its
+   full-trajectory result the same way as every prior row once it finishes, then continue Block B
+   (B2 DA-A, B3 DA-D, B4 DA-0/L-D, B5 DA-O — **use `--time=60:00:00` for all of these from the
+   start**, per the Backbones section above) alongside remaining Block A rows (A4 DA-A/L-N, A5
+   Oracle). B1's own baseline stability (collapse-epoch rate, stdev) is a first, cheap read on
    whether KPConv's claimed density-robustness shows up as a more stable untouched baseline than
    A1's (PointNet++, unstable) or closer to C1's (DGCNN, stable) — directly relevant background
    for A3's still-unverified density-sensitivity hypothesis logged in
-   `step_notes/A3_PointNet2_DA_S.md`. KPConv's much slower per-epoch cost (CPU-bound collate) is
-   also itself worth remembering when scheduling B2-B5 — each will likely take a similar 10-15+
-   hours unless a genuine speed fix is found later.
+   `step_notes/A3_PointNet2_DA_S.md`. KPConv's much slower per-epoch cost (CPU-bound collate,
+   compounded by shared-GPU contention) is also itself worth remembering when scheduling B2-B5 —
+   each will likely need a similar multi-day wall-clock budget unless a genuine speed fix is
+   found later.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

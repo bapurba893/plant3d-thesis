@@ -23,8 +23,9 @@ baseline is, the same diagnostic A1 vs. C1 turned out to matter for interpreting
 DA-A comparison and A3/C3's DA-S comparison).
 
 ## Status: KPConv reference repo integrated; hit and fixed a real CUDA OOM bug (uncapped
-neighbor matrices — see "Incident" section below); resubmitted to the cluster GPU with a much
-longer time budget (2026-09-12), expected to take 10-15+ hours. Awaiting completion.
+neighbor matrices), then a real GPU/node-contention timing problem (24h budget too small) — see
+the two "Incident" sections below. Running on the cluster as job 309015 (`--time=60:00:00`,
+2026-09-12). Awaiting completion.
 
 ## The real setup friction CLAUDE.md warned about — and what it actually was
 
@@ -281,3 +282,37 @@ run (unlike a normal row) specifically so this run stays observable rather than 
 308845 (would otherwise have been appended to, not overwritten — `IOStream` opens in append
 mode) and submitted the fixed job — **308956**, running on `cn14-dgx`. This is expected to run
 for many hours; results to follow once it completes.
+
+---
+## Second incident (2026-09-12): job 308956's 24h budget also too small — real GPU/node contention
+
+Checked on 308956 after ~2 hours: 4/100 epochs done, with striking per-epoch variance (14-51
+min/epoch) and per-batch `fwd+bwd+step` timing swinging from 0.2s to 86.4s within the same
+epoch. Averaging the 4 observed epochs (~28.75 min/epoch) and extrapolating to 100 epochs gives
+**~48 hours** — roughly double the 24h budget set after the first incident, which was sized from
+a CPU-only extrapolation that couldn't see this GPU-side variance. `scontrol update
+JobId=308956 TimeLimit=...` was tried and refused ("Access/permission denied") — this account
+can't extend a running job's time limit, only set it at submission.
+
+**Why this matters more than it might look:** `train_b1_kpconv_da0.py` only writes its final
+summary (`Best model at epoch...`, `FINAL best-model source val...`, `FINAL target test
+accuracy...`, confusion matrix) *after* the full epoch loop completes — checked directly
+(`grep -n "torch.save\|checkpoint\|best_model"` shows the periodic `model.pt` save happens
+inside the loop, but the final-summary `io.cprint` calls are all after it). A 24h timeout at the
+observed pace would have killed the job somewhere around epoch 50 with only per-epoch
+`Trn`/`Val`/`Eval` lines and a stale `model.pt`, not the full 100-epoch trajectory this analysis
+needs to be comparable to A1/C1.
+
+**Decision (confirmed with the user rather than assumed):** kill 308956 now, while only ~2h/4
+epochs are sunk, rather than let it run the full 24h for a guaranteed-incomplete result. Archived
+the partial run for reference (`results/B1_kpconv_da0/run_v1_killed_at_epoch4_slow_node.log`,
+`model_v1_killed.pt` — same "keep, don't delete" convention as C2's buggy v1 run) and resubmitted
+with `--time=60:00:00` (25% margin over the ~48h extrapolation) — job **309015**, on `cn17-dgx`
+(different node than 308845/308956's `cn14-dgx`, for whatever that's worth against a
+contention-driven explanation).
+
+**Per the user's explicit instruction, this 60h budget now applies to every future Block B row
+(B2-B5) from the start, not just B1** — the underlying cause (KPConv's CPU-bound collate,
+compounded by shared-A100 contention on the `dgx` partition) is not B1-specific, so there is no
+reason to expect B2-B5 to be faster. Flagged in `CLAUDE.md`'s Backbones section so this doesn't
+need rediscovering when B2 starts.

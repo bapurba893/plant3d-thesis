@@ -4,16 +4,20 @@
 #SBATCH --qos=dgx
 #SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=4
-#SBATCH --time=24:00:00
+#SBATCH --time=60:00:00
 # KPConv's collate (grid subsampling + radius neighbor search, via the compiled C++
 # extensions) is CPU-bound and single-threaded (no OpenMP in the vendored code, and
 # multi-worker DataLoader parallelism showed signs of a deadlock/severe slowdown when
 # tried -- reverted, see step_notes/B1_KPConv_DA0.md). Unlike every other row's ~13min-1h04m
-# full 100-epoch runtime, this one is expected to take on the order of 10-15+ hours --
-# NOT a bug, a real, backbone-specific cost. dgx partition/QOS has no MaxWall limit
-# (confirmed via `scontrol show partition dgx`: MaxTime=6-00:00:00) -- the previous 4h
-# budget here was just this project's own convention copied from the other backbones,
-# not a cluster policy, so raising it is safe.
+# full 100-epoch runtime, this one is expected to take much longer -- NOT a bug, a real,
+# backbone-specific cost, further inflated by observed GPU/node contention (job 308956's
+# first 4 epochs ranged 14-51 min each, per-batch fwd+bwd swinging 0.2s-86s -- consistent
+# with other users' jobs sharing this A100, not something in our control). Raised from an
+# initial 24h estimate (proved too small -- 308956 was on pace for ~48h and was killed and
+# resubmitted here rather than let SLURM kill it mid-trajectory) to 60h for real margin.
+# dgx partition/QOS has no MaxWall limit (confirmed via `scontrol show partition dgx`:
+# MaxTime=6-00:00:00) -- the original 4h budget here was just this project's own convention
+# copied from the other backbones, not a cluster policy, so raising it is safe.
 #SBATCH --output=/home/pearl/25m0301/plant3d-thesis/results/logs/b1_kpconv_da0_%j.log
 
 source /home/pearl/25m0301/exit/etc/profile.d/conda.sh
