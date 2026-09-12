@@ -108,6 +108,9 @@ class PointNet2_ClsSeg(nn.Module):
 
     def forward(self, x, activate_DefRec: bool = False):
         """x: (B, 3, N) xyz. Returns {"cls": (B, num_class) raw logits,
+        "feat": (B, 1024) pooled global feature (pre-classifier -- domain
+        discriminator input for row A2, added when that row was built; C1/A1
+        callers that only read logits["cls"]/["seg_feat"] are unaffected),
         "seg_feat": (B, 1152, N) per-point features} -- matches
         DGCNN_ClsSeg.forward's interface exactly (raw logits, not
         log-softmax, since the training scripts feed this straight into
@@ -134,6 +137,7 @@ class PointNet2_ClsSeg(nn.Module):
         c = self.drop1(F.relu(self.bn1(self.fc1(global_feat))))
         c = self.drop2(F.relu(self.bn2(self.fc2(c))))
         logits["cls"] = self.fc3(c)
+        logits["feat"] = global_feat  # pooled global feature (B, 1024) -- domain discriminator input, see adapters/dann.py (row A2)
         logits["seg_feat"] = torch.cat(
             (l0_points, global_feat.unsqueeze(2).repeat(1, 1, num_points)), dim=1)
         return logits
