@@ -22,10 +22,10 @@ first, cheap read on how "already stable" or "already unstable" this backbone's 
 baseline is, the same diagnostic A1 vs. C1 turned out to matter for interpreting A2/C2's
 DA-A comparison and A3/C3's DA-S comparison).
 
-## Status: KPConv reference repo integrated; hit and fixed a real CUDA OOM bug (uncapped
+## Status: DONE. KPConv reference repo integrated; hit and fixed a real CUDA OOM bug (uncapped
 neighbor matrices), then a real GPU/node-contention timing problem (24h budget too small) — see
-the two "Incident" sections below. Running on the cluster as job 309015 (`--time=60:00:00`,
-2026-09-12). Awaiting completion.
+the two "Incident" sections below. Job 309015 completed in 2h15m (2026-09-13) — see "Results"
+below for the full-trajectory comparison against A1/C1.
 
 ## The real setup friction CLAUDE.md warned about — and what it actually was
 
@@ -316,3 +316,119 @@ contention-driven explanation).
 compounded by shared-A100 contention on the `dgx` partition) is not B1-specific, so there is no
 reason to expect B2-B5 to be faster. Flagged in `CLAUDE.md`'s Backbones section so this doesn't
 need rediscovering when B2 starts.
+
+---
+## Results (2026-09-12/13, job 309015, 2h15m — far faster than the 48-60h feared)
+
+**Job 309015 landed on `cn17-dgx` instead of `cn14-dgx` and saw none of 308956's contention**:
+epoch 0 finished in under 4 minutes (collate ~2.6-3.5s/batch, fwd+bwd 0.2-0.9s/batch, vs.
+308956's 14-51 min/epoch). All 100 epochs completed in 2h15m total — this is now hard evidence
+the earlier slowdown really was transient shared-GPU contention on that specific node, not a
+structural property of every KPConv run. The 60h budget stays the standing convention for B2-B5
+regardless (a real risk that materialized once already, cheap to keep budgeting for, expensive
+to get caught by again), but it may turn out to be conservative rather than exactly-needed most
+of the time.
+
+**Protocol-selected checkpoint** (best epoch by lowest source val total loss) — best epoch was
+**99, the literal last epoch** (source val total loss 0.3317, still monotonically improving
+through the end of training, unlike C1's epoch 95 or A1's epoch 97):
+
+| Metric | A1 (PointNet++, DA-0) | C1 (DGCNN, DA-0) | B1 (KPConv, DA-0) |
+|---|---|---|---|
+| Source val cls acc | 1.0000 | 1.0000 | 1.0000 |
+| Target cls acc | 0.4603 (avg 0.5750) | 0.7460 (avg 0.7446) | **0.4444 (avg 0.5625)** |
+| Tomato seg mIoU (source val) | 0.3207 (acc 0.6729) | 0.3248 (acc 0.6645) | **0.3808** (acc 0.7551) |
+| Maize seg mIoU (source val) | 0.4741 (acc 0.9055) | 0.3427 (acc 0.7698) | 0.4414 (acc 0.8801) |
+
+**Full-trajectory analysis** (all 100 epochs' target-eval numbers, same methodology as
+A1-A3/C1-C5 — `avg_acc == 0.5` exactly identifies a total-collapse-to-one-class epoch on this
+63-sample, Tomato=40/Maize=23 target set):
+
+| Metric | A1 (DA-0) | C1 (DA-0) | B1 (DA-0) |
+|---|---|---|---|
+| Full-run mean target acc | 0.599 | 0.791 | **0.629** |
+| Full-run stdev | **0.196** | 0.104 | **0.203** |
+| corr(selection-loss, target acc) | −0.165 | −0.286 | **+0.316** |
+| Collapse epochs (all-one-class) | 17/100 | 3/100 | **3/100** |
+| Quartile means (Q1→Q4) | 0.676/0.717/0.507/0.495 | 0.798/0.834/0.773/0.760 | 0.750/0.617/0.667/0.484 |
+| Selected-checkpoint acc | 0.4603 | 0.7460 | 0.4444 |
+
+### Answering the user's question: does KPConv's claimed density-robustness show up as a stable baseline like DGCNN, or something else?
+
+**Mixed — it does not cleanly confirm the density-robustness-implies-stability hypothesis.**
+Two different stability measures point in different directions:
+
+- **By collapse-epoch count, B1 looks DGCNN-like**: 3/100 epochs collapsed to predicting one
+  class for the whole target set, matching C1 exactly and far better than A1's 17/100. On this
+  specific, coarse measure, KPConv's baseline is as stable as DGCNN's, not as unstable as
+  PointNet++'s.
+- **By full-run stdev, B1 is the LEAST stable of the three backbones**: 0.203, slightly *higher*
+  than even A1's 0.196 (which is itself far more volatile than C1's 0.104). So on the
+  continuous, finer-grained measure of epoch-to-epoch swing, KPConv's claimed density-robustness
+  does not translate into a calmer trajectory — if anything the opposite.
+- **By selection-signal correlation, B1 is worst of the three, and in the "actively
+  counterproductive" category** (only C3's DGCNN/DA-S row showed this before): `corr(source val
+  loss, target acc) = +0.316` — positive, meaning epochs with a *better* (lower) source-domain
+  validation loss tend to have *worse* target accuracy, the wrong direction for the
+  model-selection protocol to be useful. A1 and C1 are both negative (informative, if weakly for
+  A1); B1 is the only DA-0 row across three backbones where the selection signal actively points
+  the wrong way. Directly visible in the outcome: the protocol selected epoch 99 (last epoch,
+  lowest source loss) and got target acc 0.4444 — near the *bottom* of B1's own trajectory
+  (full-run mean 0.629), not a representative or lucky-high pick.
+
+**So KPConv's baseline is not simply "the stable one" or "the unstable one" — it has its own,
+distinct instability signature**: resistant to total class-collapse (like DGCNN) but with high
+continuous variance and an actively misleading selection signal (worse than either other
+backbone in that specific respect). This complicates rather than confirms the working hypothesis
+from `step_notes/A3_PointNet2_DA_S.md` (that DefRec helped PointNet++ specifically because of a
+named density-sensitivity weakness KPConv shouldn't share) — B1 doesn't show the kind of clean
+DGCNN-like stability that hypothesis would most naturally predict for a density-robust backbone,
+though it also doesn't show A1's specific *systematic* failure mode (see below) in quite the same
+form. Since B1 is DA-0 (no adaptation method at all), this is a baseline-only data point; whether
+KPConv's DA-S row (not currently planned in the strategy table's Block B slot) would behave more
+like A3 or C3 remains untested and out of scope here.
+
+### Same DA-0 drift pattern as every prior backbone, but settling at a lower floor
+
+The last ~20 epochs oscillate tightly in a narrow band (0.43-0.52), a clear "freeze" — the same
+qualitative pattern CLAUDE.md documents for C1 ("settling frozen... for the last ~10 epochs") and
+the erosion pattern noted for A1, except **B1 freezes at a much lower floor** (~0.46-0.48 vs.
+C1's 0.746). Q4's stdev (0.037) is the tightest of any quartile in this run, confirming the
+freeze is real and not noise. This is now the third backbone showing the identical qualitative
+shape (source metrics keep improving; target accuracy rises early, then erodes, then plateaus low
+while nothing in the training signal can detect or prevent it) — strengthening the case that this
+is a general DA-0 property of this dataset, independent of architecture, motivating every DA-A/
+DA-S/DA-O row already built.
+
+### A shared systematic bias with A1, worth flagging
+
+B1's final confusion matrix: Tomato 5/40 correct (35 misclassified as Maize), Maize 23/23
+correct — precision/recall highly lopsided (Tomato precision 1.00/recall 0.125; Maize precision
+0.40/recall 1.00). This is the same *systematic* Maize-leaning bias CLAUDE.md documents for A1
+("34/40 target Tomato plants misclassified as Maize"), not the milder, more balanced error
+pattern C1 shows. Two of the three backbones (A1, B1) share this specific failure mode; DGCNN
+does not — a plausible, unverified hypothesis is that this tracks Crops3D's 73%-Maize source
+majority combined with something DGCNN's dynamic-graph features do differently from both
+ball-query (PointNet++) and kernel-point (KPConv) approaches, but this is not tested here.
+
+### One genuinely positive finding: segmentation quality is competitive-to-best
+
+Despite the weak classification-transfer story, B1's source-val segmentation is strong relative
+to the other two DA-0 baselines: **Tomato mIoU 0.3808 is the highest of the three** (vs. A1's
+0.3207, C1's 0.3248), and Maize mIoU 0.4414 is close to A1's best-of-three 0.4741 and clearly
+above C1's 0.3427. So KPConv's per-point segmentation head, despite sharing this row's
+classification-transfer weaknesses, produces the best/near-best organ-segmentation quality of the
+three backbones under DA-0 — a real, separate finding worth carrying forward independent of the
+stability story above.
+
+### Conclusion
+
+Block B's own DA-0 baseline (B1) is now established. It does **not** cleanly validate "KPConv is
+density-robust → stable baseline" — collapse-epoch count says yes, continuous variance and
+selection-signal correlation say no, and it shares A1's systematic Maize-bias failure mode rather
+than showing something new. It does, however, produce the best segmentation quality of the three
+backbones under DA-0, and (once run on an uncontended node) trains just as fast as DGCNN/
+PointNet++ in practice, not meaningfully slower despite the CPU-bound collate concern. Full
+trajectory data in `results/B1_kpconv_da0/run.log`; the killed first attempt's partial data is in
+`results/B1_kpconv_da0/run_v1_killed_at_epoch4_slow_node.log` for reference only, not used in
+any of the numbers above.

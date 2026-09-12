@@ -552,21 +552,51 @@ were not — see Repository layout above).
   `--verbose_batches` left on for observability given the original silent-stall failure mode.
   **This contention risk applies to every Block B row, not just B1** — see the Backbones section
   above, now flagged so B2-B5 start with the 60h budget rather than rediscovering this. Full
-  incident writeup in `step_notes/B1_KPConv_DA0.md`. Awaiting completion.
+  incident writeup in `step_notes/B1_KPConv_DA0.md`.
+- **Row B1 (KPConv, DA-0, ALL) finished — Block B's own baseline established** (2026-09-13, job
+  309015, 2h15m — landed on `cn17-dgx` with none of 308956's contention, hard evidence the
+  earlier slowdown was transient/node-specific, not structural; the 60h budget stays the standing
+  Block B convention regardless, since it's cheap insurance against a risk that already
+  materialized once). Best epoch **99** (the literal last epoch — source val loss was still
+  monotonically improving through the end of training).
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | A1 (DA-0) | C1 (DA-0) | B1 (DA-0) |
+  |---|---|---|---|
+  | Full-run mean | 0.599 | 0.791 | 0.629 |
+  | Full-run stdev | 0.196 | 0.104 | **0.203** |
+  | corr(selection-loss, target acc) | −0.165 | −0.286 | **+0.316** |
+  | Collapse epochs (all-one-class) | 17/100 | 3/100 | 3/100 |
+  | Selected-checkpoint acc | 0.4603 | 0.7460 | 0.4444 |
+
+  **Answering the motivating question (does KPConv's claimed density-robustness show up as a
+  stable baseline like DGCNN?): mixed, does not cleanly confirm the hypothesis.** By
+  collapse-epoch count B1 looks DGCNN-like (3/100, matching C1, far better than A1's 17/100). But
+  by full-run stdev B1 is the *least* stable of the three backbones (0.203, even above A1's
+  0.196), and its selection-signal correlation is *positive* (+0.316) — the only DA-0 row across
+  three backbones where a better source-domain loss actively predicts *worse* target accuracy,
+  the wrong direction for model selection to be useful (only C3's DGCNN/DA-S row showed this
+  pattern before, never a DA-0 baseline). So KPConv's baseline has its own distinct instability
+  signature — resistant to total class-collapse, but with the highest continuous variance and the
+  most misleading selection signal of the three. This complicates, rather than confirms, the
+  density-sensitivity hypothesis from A3's investigation. Two more findings: B1 shares A1's exact
+  systematic Maize-bias failure mode (Tomato recall 0.125, Maize recall 1.00 — DGCNN doesn't show
+  this), and B1's Q4 settles into the same "frozen at a low floor" DA-0 drift pattern as C1/A1,
+  just at a lower floor (~0.46-0.48 vs. C1's 0.746). One genuinely positive, separate finding:
+  **B1's source-val segmentation is the best of the three DA-0 baselines** — Tomato mIoU 0.3808
+  (vs. A1 0.3207, C1 0.3248), Maize mIoU 0.4414 (close to A1's best-of-three 0.4741, clearly above
+  C1's 0.3427). Full trajectory tables and reasoning in `step_notes/B1_KPConv_DA0.md`.
 
 **Next (in order):**
-1. Row B1 (KPConv, DA-0) is training on the cluster (job 309015, `--time=60:00:00`) — read its
-   full-trajectory result the same way as every prior row once it finishes, then continue Block B
-   (B2 DA-A, B3 DA-D, B4 DA-0/L-D, B5 DA-O — **use `--time=60:00:00` for all of these from the
-   start**, per the Backbones section above) alongside remaining Block A rows (A4 DA-A/L-N, A5
-   Oracle). B1's own baseline stability (collapse-epoch rate, stdev) is a first, cheap read on
-   whether KPConv's claimed density-robustness shows up as a more stable untouched baseline than
-   A1's (PointNet++, unstable) or closer to C1's (DGCNN, stable) — directly relevant background
-   for A3's still-unverified density-sensitivity hypothesis logged in
-   `step_notes/A3_PointNet2_DA_S.md`. KPConv's much slower per-epoch cost (CPU-bound collate,
-   compounded by shared-GPU contention) is also itself worth remembering when scheduling B2-B5 —
-   each will likely need a similar multi-day wall-clock budget unless a genuine speed fix is
-   found later.
+1. Block B has its own DA-0 baseline (B1) established — continue Block B (B2 DA-A, B3 DA-D, B4
+   DA-0/L-D, B5 DA-O — **use `--time=60:00:00` for all of these from the start**, per the
+   Backbones section above, even though B1 itself ran fast once node contention cleared) alongside
+   remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B1's mixed stability signature (DGCNN-like
+   collapse resistance, but the highest variance and most misleading selection signal of the
+   three backbones) is directly relevant background for B2's DA-A anchor — worth watching whether
+   B2 shows the same C2/A2 underperformance-vs-DA-0 pattern, and whether B1's positive
+   selection-signal correlation (unique among DA-0 rows so far) recurs or was baseline-specific.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

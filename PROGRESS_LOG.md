@@ -530,6 +530,46 @@ so this won't need rediscovering four more times.
 
 ---
 
+## 20. Row B1 Finishes — the Third Backbone's Own Baseline, and a More Complicated Answer Than Expected — 2026-09-13
+
+The restarted run finished in just over two hours — far faster than the half-day-to-two-days
+range feared in Milestone 19. It landed on a different, apparently much less busy shared GPU,
+which is good evidence the earlier slowdown really was other people's work competing for the
+same hardware, not something wrong with this project's own setup. (The extra-generous time
+allowance stays in place for the remaining KPConv rows anyway — cheap insurance against a
+problem that has already happened once, even if it turns out not to happen again every time.)
+
+This backbone (KPConv) was specifically chosen, in part, because its designers claim it handles
+point clouds of varying density better than the other two architectures — directly relevant
+here, since the two datasets this project compares come from different kinds of 3D scanners with
+different point densities. So a natural first question, before any adaptation method is even
+added, is whether that claimed strength shows up as a calmer, more stable "no adaptation"
+baseline than the other two backbones — the same way it's already visible that PointNet++'s
+baseline is noticeably shakier than DGCNN's.
+
+**The answer turned out to be more complicated than a simple yes or no.** Looked at one way
+(how often the model gives up entirely and predicts the same single species for every plant in
+the unseen test set), KPConv does look as steady as DGCNN — both rarely do this, while PointNet++
+does it often. But looked at another way (how much the accuracy number itself bounces around from
+one training round to the next), KPConv is actually the *most* erratic of the three, slightly
+more than even PointNet++. And on a third measure — whether the internal signal used to pick the
+"best" version of the model actually lines up with real performance on the unseen data — KPConv
+is the worst of the three: for this run, a *better*-looking internal signal actually tended to
+go with *worse* real-world performance, the opposite of what you'd want and a pattern not seen in
+any other "no adaptation" baseline so far in this project. So rather than confirming or
+disproving the density-robustness idea cleanly, this result complicates it — KPConv has its own,
+distinct kind of instability, not simply a calmer or shakier version of the other two.
+
+Two more findings worth keeping: this run made the exact same specific mistake PointNet++'s
+baseline made (systematically guessing "maize" for tomato plants it wasn't sure about, far more
+than the other backbone does) — a shared weak spot between two of the three architectures worth
+watching as more rows are trained. On a brighter note, this backbone's per-point organ
+segmentation (telling leaf from stem from soil) came out as good as or better than both other
+backbones' baselines — a genuinely positive, separate result worth carrying forward regardless of
+the classification-transfer story above.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -544,7 +584,7 @@ at-a-glance status.
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
-| B (KPConv) | B1 | No adaptation (baseline) | Hit and fixed two real bugs (a memory bug, then a too-small time budget); retraining on cluster (job 309015, expect ~1-2 days) |
+| B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | Not started |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
@@ -562,8 +602,9 @@ PointNet++ — giving a real cross-backbone comparison showing adversarial adapt
 underperformance is a shared (dataset-driven) pattern of differing magnitude, self-supervised
 adaptation's effect is architecture-dependent enough to actually flip direction (hurts DGCNN,
 helps PointNet++ with a segmentation tradeoff), and a confirmed Oracle ceiling showing real
-headroom exists — the third backbone (KPConv, Block B) is now integrated and its own baseline
-(B1) is training on the cluster, with the other 16 rows not started yet.
+headroom exists — the third backbone (KPConv, Block B) is now integrated with its own baseline
+(B1) done, showing a distinct third stability pattern rather than confirming a simple
+density-robust-means-stable story, with the other 15 rows not started yet.
 
 ---
 
