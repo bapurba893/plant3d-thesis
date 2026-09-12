@@ -104,3 +104,89 @@ versus how much is just an artifact of DA-0 never having seen a single real targ
 ---
 **2026-09-12:** Submitted `jobs/c5_dgcnn_da_o.sbatch` to the `dgx` partition — job **308716**.
 Queue was empty beforehand. Awaiting completion.
+
+---
+## Results (2026-09-12, job 308716, ~24 min wall time)
+
+**Protocol-selected checkpoint** (best epoch by lowest *oracle* val total loss — the direct
+analog of every other row's "lowest source val total loss," just with Pheno4D's own labeled
+data playing the "source" role here — never touching the held-out target test set) — best
+epoch was **89** (oracle val total loss 0.5666):
+
+| Metric | Value |
+|---|---|
+| Oracle val cls acc | 1.0000 (avg acc 1.0000) |
+| Oracle val Tomato seg | mIoU 0.8510 (acc 0.9603) |
+| Oracle val Maize seg | mIoU 0.5745 (acc 0.8269) |
+| **Target test cls acc (same file/metric as C1-C4)** | **1.0000 (avg acc 1.0000)** — perfect, 63/63 |
+| Target test seg (annotated subset, Oracle-only metric) Tomato | mIoU 0.8330 (acc 0.9632) |
+| Target test seg (annotated subset, Oracle-only metric) Maize | mIoU 0.5217 (acc 0.7974) |
+
+**Full-trajectory analysis** (all 100 epochs' target-test cls acc, same methodology as every
+other row — see `step_notes/C4_DGCNN_DA_A_LN.md` for the parsing approach reused here):
+
+| Metric | C1 (DA-0) | C2 v2 (DA-A ALL) | C3 (DA-S) | C4 (DA-A L-N) | **C5 (DA-O, Oracle)** |
+|---|---|---|---|---|---|
+| Full-run mean target acc | 0.791 | 0.633 | 0.703 | 0.613 | **0.925** |
+| Full-run stdev | 0.104 | 0.117 | 0.104 | 0.138 | **0.133** |
+| corr(selection-loss, target acc) | −0.286 | −0.061 | +0.222 | +0.041 | **−0.823** |
+| Quartile means (Q1→Q4) | .798/.834/.773/.760 | .691/.678/.608/.554 | .731/.718/.707/.657 | .646/.664/.582/.559 | **.827/.923/.951/.999** |
+| Selected-checkpoint target acc | 0.7460 | 0.6667 | 0.5714 | 0.5556 | **1.0000** |
+| Epochs collapsed to one class | 3/100 | 3/100 | not re-checked | 4/100 | 3/100 (early epochs only) |
+| First epoch reaching acc ≥ 0.999 | never | never | never | never | epoch 23 |
+
+**C5 is qualitatively different from every DA-0/DA-A/DA-S row in a way that matters a lot.**
+Every prior row's quartile means *decline* across training (Q4 lower than Q1) and the
+correlation between the model-selection signal and target accuracy is weak-to-actively-wrong
+(C1: −0.29, weak; C2/C4: near zero, uninformative; C3: +0.22, actively wrong direction). C5's
+quartiles *rise* monotonically (0.827→0.923→0.951→0.999) and its selection-signal correlation is
+strongly negative (−0.823) — meaning that when the model has real target labels to train and
+select against, more training reliably helps, and the loss the protocol watches for model
+selection is actually a trustworthy proxy for target performance. That's the expected, healthy
+shape for ordinary supervised learning; C1-C4 never show it, because none of them ever see a
+real target label of any kind.
+
+### Answering the user's question: how big is the gap, and what does it mean?
+
+**The gap between C1's DA-0 baseline and C5's Oracle ceiling is large and real — C1 was NOT
+already near the ceiling.**
+
+- Reading full-run means (the fairer, trajectory-aware comparison this project has used
+  throughout): **C5 0.925 vs. C1 0.791 — a 13.4-point gap.**
+- Reading the protocol-selected checkpoints (what would typically get quoted as "the" number):
+  **C5 1.0000 vs. C1 0.7460 — a 25.4-point gap**, with C5 reaching a perfect 63/63 on the target
+  test set (both species, 100% precision/recall/F1).
+- Either way, **substantial headroom exists.** This reframes C2/C3/C4's results: their failure
+  to beat C1 is not "the task was already solved, nothing left to gain" — there was real,
+  double-digit-point improvement available in principle, and none of the three domain-adaptation
+  methods tried so far captured any of it (all three landed *below* C1, not just short of C5).
+- **The limitation is a transfer problem, not a capacity or task-difficulty problem.** DGCNN
+  itself is clearly capable of near-perfect target-domain species classification and reasonably
+  good target-domain organ segmentation (Tomato mIoU 0.83, Maize mIoU 0.52 on Pheno4D's own real
+  labels) when given actual target-domain supervision — the ~72-sample Oracle training set is
+  smaller than Crops3D's 263-sample source-train set by more than 3x, and it still reaches a
+  ceiling C1-C4 never approach. The sensor/acquisition-setup domain gap (see CLAUDE.md's Datasets
+  section) is doing all of the damage in C1-C4, not model capacity or an intrinsically hard task.
+- **Caveat on N:** the Oracle's own labeled pool is small (72 train / 18 val, 10 total plants) —
+  same small-N regime flagged for C2's diagnosis. The target test set (63 scans, 4 plants) is
+  also modest. A perfect 1.0000 on 63 samples is a strong result but not statistically
+  bulletproof at this sample size; still, it's a genuine held-out number (the same protocol
+  discipline as every other row — these 4 plants were never touched during Oracle training or
+  model selection), not an artifact of leakage.
+- **The target segmentation numbers (Tomato 0.83 / Maize 0.52 mIoU) are Oracle-only and not
+  directly comparable to C1-C4's source-val seg mIoU** (different domain, different collapsed
+  label space — see design decision 3 above) — included for completeness, not as a second
+  "headroom" data point on the same axis as the classification comparison above.
+
+### Conclusion
+
+Block C is now complete (C1-C5). The Oracle ceiling (0.925 full-run mean / 1.0000 selected) sits
+well above the DA-0 baseline (0.791 / 0.7460), confirming meaningful headroom exists for
+domain-adaptation methods to claim on this task — none of DA-A (C2, C4) or DA-S (C3) claimed any
+of it under the settings tried here; all three underperformed the no-adaptation baseline instead
+of approaching the Oracle ceiling. Combined with C2/C4's shared diagnosis (adversarial adaptation
+degrades over training regardless of augmentation mix) and C3's (self-supervised reconstruction
+stays stable but doesn't transfer usefully either), the strongest current explanation is that
+this project's specific domain-adaptation implementations aren't yet extracting the real,
+Oracle-confirmed transferable signal that does exist between Crops3D and Pheno4D — not that no
+such signal exists to extract.

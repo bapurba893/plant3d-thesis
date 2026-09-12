@@ -312,6 +312,57 @@ comparison are in `step_notes/C4_DGCNN_DA_A_LN.md`.
 
 ---
 
+## 15. Row C5 Finished — The Oracle Ceiling, and How Much Headroom Was Really There — 2026-09-12
+
+Row C5 closes out Block C by asking the question everything before it was building toward: if a
+model got to train directly on real, labeled examples from the target sensor/greenhouse setup
+(Pheno4D) instead of only ever seeing the source dataset (Crops3D), how well could it possibly
+do? This isn't a method anyone would actually deploy — getting labeled data from every new sensor
+defeats the whole purpose of domain adaptation — it's a ceiling, a way of finding out how much
+room for improvement genuinely exists before concluding that a domain-adaptation method's
+disappointing result (Milestones 10, 12, 14) means "nothing more was achievable anyway."
+
+The training data itself needed care: Pheno4D's labeled subset is small (90 labeled scans across
+only 10 plants) and multi-temporal, so the split into a training set and a validation set was
+done by plant, not by individual scan, to avoid near-duplicate scans of the same plant leaking
+across the split. The held-out test set used for the final, most important number is the exact
+same one every other row in Block C (C1 through C4) reports against — so the number that comes
+out is directly comparable, not a different yardstick.
+
+**The result: a near-perfect ceiling, and a real, substantial gap above the no-adaptation
+baseline.** Read across the model's full 100-epoch training run (the same careful,
+whole-trajectory reading applied to every row so far, not just a single snapshot), the Oracle's
+average target-domain accuracy came in at 0.925 — compared to 0.791 for the plain "no
+adaptation" baseline (Milestone 4), a 13-point gap. Read from the single best checkpoint each
+protocol selects, the gap is even larger: a perfect 1.0000 (63 out of 63 correct, both plant
+species) for the Oracle versus 0.746 for no-adaptation — a 25-point gap.
+
+**This changes how to read every adversarial and self-supervised result so far.** All three
+adaptation attempts tried in this block (adversarial with full augmentation, self-supervised
+reconstruction, adversarial with noise-only augmentation) landed *below* the no-adaptation
+baseline, not just short of the Oracle ceiling. Because the ceiling sits well above the
+baseline, that's not "the task was already maxed out, nothing to gain" — there was real,
+double-digit-point improvement sitting on the table, and none of the three methods tried so far
+captured any of it. The underlying model architecture (DGCNN) is clearly capable of learning
+this task well when given real target-domain labels, even from a small amount of them — so the
+recurring problem documented in Milestones 10-14 is a *transfer* problem specific to how these
+domain-adaptation methods interact with this dataset, not a sign that the task itself, or the
+model's capacity to learn it, is the bottleneck.
+
+One more contrast worth naming: every no-adaptation/adversarial/self-supervised run so far showed
+target accuracy *declining* over the second half of training, with the training signal available
+for model selection (accuracy on labeled source data) telling a misleading or unhelpful story
+about what was actually happening on target data. The Oracle run shows the opposite: accuracy
+climbs steadily the longer it trains, and the val-loss signal used to pick the best checkpoint
+tracks target performance closely and reliably. That's the ordinary, healthy shape supervised
+learning is supposed to have — a shape none of the adaptation methods have shown yet, because
+none of them have ever had a real target label to learn from.
+
+Full trajectory tables, the complete C1-C5 comparison, and caveats (small sample sizes on both
+the Oracle's own training data and the held-out test set) are in `step_notes/C5_DGCNN_DA_O.md`.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -335,15 +386,15 @@ at-a-glance status.
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
 | C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | **Done** — same underperformance vs. no-adaptation as C2, confirming it's not an augmentation-mix artifact (Milestone 14) |
-| C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
+| C (DGCNN) | C5 | Oracle (upper-bound reference) | **Done** — Block C complete. Near-perfect ceiling (0.925 full-run mean / 1.0000 selected) confirms real, ~13-25 point headroom above the no-adaptation baseline (Milestone 15) |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** five rows (A1, C1, C2, C3, C4) are fully done — giving the first real
-cross-backbone comparison and a consistent picture across both adaptation methods and two
-different augmentation mixes tried so far (adversarial: underperforms no-adaptation regardless of
-augmentation mix; self-supervised: stable but also worse) — and the other 19 rows are not started
-yet.
+**In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1 on PointNet++ —
+giving the first real cross-backbone comparison, a consistent picture across three different
+adaptation attempts (all underperform no-adaptation, regardless of method or augmentation mix),
+and now a confirmed Oracle ceiling showing real headroom was left unclaimed by every method tried
+so far — and the other 19 rows are not started yet.
 
 ---
 

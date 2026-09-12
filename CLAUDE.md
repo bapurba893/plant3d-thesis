@@ -384,11 +384,47 @@ were not — see Repository layout above).
   a verified ablation. Full trajectory/quartile tables and reasoning in
   `step_notes/C4_DGCNN_DA_A_LN.md`.
 
+**Done (continued):**
+- **Row C5 (DGCNN, DA-O, Oracle) trained on the cluster** (2026-09-12, job 308716, ~24 min).
+  **Block C is now complete (C1-C5).** Trains directly on a small labeled Pheno4D subset
+  (plant-level train/val split: 72/18 scans across 10 plants, disjoint from the 4 held-out test
+  plants) instead of adapting from Crops3D, then evaluates on the SAME `pheno4d_heldout_eval.csv`
+  file/metric C1-C4 all report against, for a directly comparable number. Required a new,
+  explicitly-flagged-as-inferred label scheme for Pheno4D's own per-point annotations (raw ids
+  grow over the growing season, consistent with per-leaf instance ids folded into the label
+  column rather than a flat 3-class scheme; collapsed to `{0: soil, 1: stem, 2: leaf}` — see
+  `adapters/dataset.py::PHENO4D_SEG_NUM_CLASSES`/`pheno4d_collapse_organ_labels` docstrings for
+  the full histogram-based reasoning). `PlantClsSegDataset` gained optional
+  `label_transform`/`num_classes` args (additive, C1-C4 unaffected).
+
+  **Full-trajectory comparison across all of Block C** (target held-out cls acc):
+
+  | Metric | C1 (DA-0) | C2 v2 (DA-A ALL) | C3 (DA-S) | C4 (DA-A L-N) | C5 (DA-O, Oracle) |
+  |---|---|---|---|---|---|
+  | Full-run mean | 0.791 | 0.633 | 0.703 | 0.613 | **0.925** |
+  | corr(selection-loss, target acc) | −0.286 | −0.061 | +0.222 | +0.041 | **−0.823** |
+  | Quartile means (Q1→Q4) | rising→falling | falling | falling | falling | **rising** (.827→.999) |
+  | Selected-checkpoint acc | 0.7460 | 0.6667 | 0.5714 | 0.5556 | **1.0000** |
+
+  **Conclusion: the Oracle ceiling (0.925 full-run mean / 1.0000 selected) sits well above the
+  DA-0 baseline (0.791 / 0.7460) — a real ~13-25 point gap, so C1 was NOT already near the
+  ceiling.** This means C2/C3/C4's failure to beat C1 reflects genuine unclaimed headroom, not an
+  already-saturated task — all three landed below C1, not just short of C5. C5 is also
+  qualitatively different in kind: its quartile means rise monotonically over training (the
+  opposite of every DA-0/DA-A/DA-S row) and its selection-loss-vs-target-acc correlation is
+  strongly negative (informative signal), confirming DGCNN itself is fully capable of
+  near-perfect target-domain classification (and reasonably good target segmentation, Tomato
+  mIoU 0.83/Maize mIoU 0.52 on Pheno4D's own real labels — an Oracle-only metric, not comparable
+  to C1-C4's source-val seg mIoU, different label space) given real target supervision — the
+  sensor/domain gap, not model capacity or task difficulty, is what's defeating C1-C4. Full
+  trajectory tables and caveats (small-N on both the Oracle's 90-scan labeled pool and the
+  63-scan target test set) in `step_notes/C5_DGCNN_DA_O.md`.
+
 **Next (in order):**
-1. C5 (DGCNN, DA-O, ALL) — Oracle upper bound, trains directly on labeled target data. Completes
-   Block C (C1-C5 all done after this). The C2 diagnosis (label-prior mismatch, small-N regime,
-   multi-temporal target) is directly relevant to A2 (PointNet++, same DA-A anchor method, same
-   `dann.py`) whenever Block A resumes.
+1. Block C is done. The C2 diagnosis (label-prior mismatch, small-N regime, multi-temporal
+   target) and now C5's confirmed-headroom finding are both directly relevant to A2/A3/A4
+   (PointNet++, same DA-A/DA-S methods, same `dann.py`) whenever Block A resumes, and to Block B
+   (KPConv) once its CUDA extension is set up.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
