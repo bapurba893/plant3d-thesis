@@ -273,6 +273,45 @@ from this corrected, more trustworthy baseline.
 
 ---
 
+## 14. Row C4 Finished — Noise-Only Augmentation Doesn't Rescue Adversarial Adaptation Either — 2026-09-12
+
+Row C4 asked a narrow, direct question: does the adversarial adaptation method's disappointing
+result in Milestone 13 (fixed but still underperforming plain no-adaptation) have anything to do
+with the specific mix of augmentations C2 used (rotation, scaling, flipping, cropping, dropout,
+and jitter, all together)? C4 reruns the exact same, now-corrected adversarial machinery, but
+with every augmentation removed except simulated sensor noise (jitter) — a direct test of whether
+narrowing the augmentation to the one kind DGCNN is supposedly most vulnerable to changes the
+picture.
+
+**It doesn't, in any way that matters.** Read across the full 100-epoch training run (not just
+one snapshot — the same careful reading applied to every adversarial row so far), C4's average
+target-domain accuracy (0.613) lands close to C2's corrected result (0.633) and both sit well
+below the plain no-adaptation baseline's average (0.791). The shape of the decline over training
+is also the same in both: an early rise, then a steady fall across the back half of training —
+the same pattern, just with a different augmentation mix underneath it. Whether the model's
+predictions on unseen target data track the training signal it's allowed to watch (accuracy on
+the labeled source data) is also equally uninformative in both cases — essentially no
+correlation either way.
+
+**One place the augmentation choice did matter a lot: how well the model segments plant organs.**
+C4's segmentation quality (mIoU) came in noticeably higher than either C1 or C2 for both Tomato
+and Maize. The most likely explanation isn't anything about noise-robustness — it's that the full
+augmentation mix used elsewhere includes random cropping and dropout, which physically remove
+points from the cloud and make the per-point segmentation task harder regardless of domain
+adaptation; jitter-only never removes points. This is a plausible explanation, not a confirmed
+one — no experiment isolates cropping/dropout removal specifically as the cause.
+
+**Bottom line:** the disappointing adversarial-adaptation result from Milestone 13 isn't an
+artifact of which augmentations were used — it shows up again, in the same shape, under a
+completely different augmentation mix. This strengthens the case that something about the
+adversarial method itself, interacting with this particular pair of datasets (small sample
+sizes, opposite class majorities between source and target, and a target dataset that spans
+plant growth stages the source dataset never does), is the real driver — not a fixable detail of
+augmentation choice. Full trajectory tables, quartile breakdowns, and the segmentation-mIoU
+comparison are in `step_notes/C4_DGCNN_DA_A_LN.md`.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -295,15 +334,16 @@ at-a-glance status.
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
 | C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
-| C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | Training on cluster (starts from the corrected C2 baseline) |
+| C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | **Done** — same underperformance vs. no-adaptation as C2, confirming it's not an augmentation-mix artifact (Milestone 14) |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | Not started |
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** four rows (A1, C1, C2, C3) are fully done — giving the first real
-cross-backbone comparison and a first look at both adaptation methods tried so far (adversarial:
-unstable and worse; self-supervised: stable but also worse) — and the other 20 rows are not
-started yet.
+**In one sentence:** five rows (A1, C1, C2, C3, C4) are fully done — giving the first real
+cross-backbone comparison and a consistent picture across both adaptation methods and two
+different augmentation mixes tried so far (adversarial: underperforms no-adaptation regardless of
+augmentation mix; self-supervised: stable but also worse) — and the other 19 rows are not started
+yet.
 
 ---
 

@@ -74,3 +74,98 @@ because this comparison is only meaningful if both rows are read the same, caref
 **2026-09-12:** Submitted `jobs/c4_dgcnn_da_a_ln.sbatch` to the `dgx` partition — job **308634**.
 Queue was empty; no pre-existing `results/C4_dgcnn_da_a_ln/` directory (avoiding the log-append
 issue hit on C2's rerun). Awaiting completion.
+
+---
+## Results (2026-09-12, job 308634, ~13 min wall time)
+
+Parsed the full 100-epoch log the same way C2's corrected rerun was analyzed (`Val - Source N,
+... total loss` for the selection signal, `Eval(no-train) - Target N, acc/avg acc` for the
+domain-gap indicator on every epoch, never touched by training) so C4 and C2-v2 are read by an
+identical, reproducible method — see the parsing done inline in this session, not a separate
+script committed to the repo.
+
+**Protocol-selected checkpoint** (same protocol as every other row: best epoch by lowest source
+val total loss, never touching target labels) — best epoch was **80** (source val total loss
+0.5009):
+
+| Metric | C1 (DA-0) | C2 v2 (DA-A, ALL, fixed) | C4 (DA-A, L-N only) |
+|---|---|---|---|
+| Selected epoch | 95 | 66 | 80 |
+| Target cls acc | 0.7460 (avg 0.7446) | 0.6667 (avg 0.7005) | 0.5556 (avg 0.6500) |
+| Tomato seg mIoU (source val) | 0.3248 (acc 0.6645) | 0.2384 (acc 0.4765) | **0.4514** (acc 0.8216) |
+| Maize seg mIoU (source val) | 0.3427 (acc 0.7698) | 0.3037 (acc 0.7744) | **0.4378** (acc 0.8813) |
+
+**Full-trajectory analysis** (all 100 epochs' target-eval numbers, exactly as required before
+trusting any single checkpoint — this is the comparison that actually answers the question):
+
+| Metric | C1 (DA-0) | C2 v2 (DA-A, ALL, fixed) | C4 (DA-A, L-N only) |
+|---|---|---|---|
+| Full-run mean target acc | 0.791 | 0.633 | **0.613** |
+| Full-run stdev (population) | 0.104 | 0.117 | **0.138** |
+| corr(source val loss, target acc) | −0.286 | −0.061 | **+0.041** |
+| Quartile means (Q1→Q4) | 0.798 / 0.834 / 0.773 / 0.760 | 0.691 / 0.678 / 0.608 / 0.554 | 0.646 / 0.664 / 0.582 / 0.559 |
+| Min / max target acc over the run | 0.365 / 0.921 | 0.365 / 0.921 | 0.365 / 0.936 |
+| Epochs collapsed to one class (acc≈23/63 or 40/63, avg_acc≈0.5, ±0.02 tol) | 3/100 | 3/100* | 4/100 |
+
+*Recomputing C2-v2's collapse count with this session's exact tolerance (±0.02 on both `acc` and
+`avg_acc`) gives 3/100, not the 5/100 figure in `step_notes/C2_DGCNN_DA_A.md` — the two counts
+were produced independently and the earlier one wasn't reproduced verbatim; a plausible
+explanation is a slightly different tolerance/rounding was used at the time, but this wasn't
+re-derived from that session's exact code, so flagging as an unresolved minor discrepancy rather
+than silently overwriting the earlier number. It doesn't change any conclusion below either way
+(3 vs 5 out of 100 is noise at this sample size).
+
+### Does noise-only augmentation help, hurt, or make no difference vs. ALL, given identical (fixed) adversarial machinery?
+
+**Essentially no meaningful difference on classification transfer — both variants underperform
+the DA-0 baseline by a similar, large margin, and both show the same qualitative failure shape.**
+
+- Full-run mean target acc is close between the two DA-A variants (0.633 for ALL vs. 0.613 for
+  L-N-only) and both sit well below C1's DA-0 mean (0.791) — a ~16-18 point gap regardless of
+  which augmentation mix is used. Compared to the spread *within* either single trajectory (min
+  0.365, max 0.92-0.94 — a ~55-57 point swing epoch to epoch), the ~2-point gap between the two
+  DA-A variants' means is not a meaningful difference.
+- The quartile pattern is qualitatively identical: both variants rise slightly then decline
+  through Q3/Q4 (C2-v2: 0.691→0.678→0.608→0.554; C4: 0.646→0.664→0.582→0.559) — the same
+  "early promise, later erosion" shape documented for C2, now reproduced under a completely
+  different augmentation pipeline. This is evidence the decline is a property of the adversarial
+  method (plus the label-prior-mismatch / small-N regime already root-caused in
+  `step_notes/C2_DGCNN_DA_A.md`) rather than an artifact of the ALL augmentation mix C2 happened
+  to use.
+- `corr(source val loss, target acc)` is near-zero for both (−0.061 for C2-v2, +0.041 for C4) —
+  in both cases the only selection signal DA-0/DA-A protocol is allowed to use (source val loss)
+  carries essentially no information about target transfer. Neither augmentation choice fixes
+  this.
+- C4's single-checkpoint number (0.5556) looks much worse than C2-v2's (0.6667), but this is
+  exactly the kind of misleading snapshot the full-trajectory analysis exists to catch (per
+  C2's own diagnosis) — epoch 80 happens to land in a locally low patch of a trajectory whose
+  full-run mean (0.613) is much closer to C2-v2's (0.633). Read the mean, not the selected
+  checkpoint, for this comparison.
+- C4's stdev is somewhat higher than C2-v2's (0.138 vs. 0.117) — L-N-only is not more stable;
+  if anything marginally less stable epoch-to-epoch, though both are far more stable than the
+  original unramped-entropy C2 run (0.214) discussed in `step_notes/C2_DGCNN_DA_A.md`.
+
+**One place the augmentation choice clearly does matter: segmentation quality.** C4's source-val
+seg mIoU is substantially better than both C1 and C2-v2 (Tomato 0.4514 vs. 0.3248/0.2384, Maize
+0.4378 vs. 0.3427/0.3037). This is most plausibly explained by a confound, not by anything about
+noise-robustness: ALL includes L-D (RandomCrop3D/CoarseDropout3D), which removes points from the
+cloud, making the per-point segmentation task strictly harder regardless of domain adaptation;
+L-N-only (jitter) perturbs point positions but never removes points. This is an inference about
+mechanism, not a verified ablation (no run isolates "L-N-only, no adversarial" or "ALL minus L-D
+only" to confirm point-removal specifically, rather than something else about the augmentation
+mix, is the cause) — flagged as such rather than stated as fact.
+
+### Conclusion
+
+Restricting augmentation to noise-only (L-N), with the same (entropy-ramp-fixed) adversarial
+machinery as C2, does **not** rescue adversarial adaptation's classification-transfer
+underperformance vs. DA-0, and does not meaningfully change its qualitative failure pattern
+(early-epoch peak, declining quartiles, near-zero correlation between the source-loss selection
+signal and target accuracy). This is evidence that C2's post-fix behavior reflects something
+about the adversarial method itself interacting with this dataset (small N, opposite
+source/target class majorities, multi-temporal target — see `step_notes/C2_DGCNN_DA_A.md`),
+not an artifact specific to the ALL augmentation mix C2 happened to test with. The augmentation
+choice does have a real, large effect on segmentation quality, but that is best explained by
+point-count preservation (no cropping/dropout in L-N-only) rather than by DGCNN's noise-weakness
+narrative this row was originally designed to probe — the classification-transfer question this
+row was built to answer comes back essentially a null result: no meaningful difference from ALL.

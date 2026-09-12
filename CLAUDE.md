@@ -352,19 +352,43 @@ were not — see Repository layout above).
   Full trajectory/quartile/correlation breakdown and PointDA-10 comparison in
   `step_notes/C3_DGCNN_DA_S.md`.
 
+**Done (continued):**
+- **Row C4 (DGCNN, DA-A, L-N) trained on the cluster** (2026-09-12, job 308634, ~13 min).
+  Byte-for-byte reuses C2's fixed `adapters/dann.py` (ramped `λ_ent`); only the augmentation
+  pipeline differs (`adapters/dataset.py` gained an `augment_mode` parameter, "all"/"ln_only",
+  additive — existing callers unaffected; `scripts/augmentations.py::compose_pipeline_ln_only`
+  applies Gaussian jitter only, skipping G-R/G-S/L-D). Given the same full-trajectory analysis as
+  C2/C3 per explicit user instruction, comparing against corrected C2 (v2, job 308608) — not the
+  original buggy run.
+
+  **Full-trajectory comparison** (all 100 epochs, target held-out cls accuracy):
+
+  | Metric | C1 (DA-0) | C2 v2 (DA-A, ALL, fixed) | C4 (DA-A, L-N only) |
+  |---|---|---|---|
+  | Full-run mean target acc | 0.791 | 0.633 | 0.613 |
+  | Full-run stdev | 0.104 | 0.117 | 0.138 |
+  | corr(source val loss, target acc) | −0.286 | −0.061 | +0.041 |
+  | Quartile means (Q1→Q4) | 0.798/0.834/0.773/0.760 | 0.691/0.678/0.608/0.554 | 0.646/0.664/0.582/0.559 |
+
+  **Conclusion: narrowing augmentation to noise-only makes no meaningful difference to
+  classification transfer relative to ALL** — both DA-A variants underperform DA-0 by a similar
+  large margin (~16-18 pts on full-run mean) and show the identical qualitative failure shape
+  (early rise, declining quartiles, near-zero correlation between the source-loss selection
+  signal and target accuracy). This is evidence C2's post-fix underperformance vs. DA-0 reflects
+  the adversarial method interacting with this dataset (label-prior mismatch, small-N, multi-
+  temporal target — see C2 above), not an artifact of the ALL augmentation mix. **One clear
+  augmentation effect found: C4's source-val seg mIoU is substantially higher than C1/C2**
+  (Tomato 0.4514 vs. 0.3248/0.2384, Maize 0.4378 vs. 0.3427/0.3037) — most plausibly because
+  ALL's L-D component (RandomCrop3D/CoarseDropout3D) removes points and makes segmentation
+  strictly harder, while L-N (jitter) never removes points; flagged as a plausible mechanism, not
+  a verified ablation. Full trajectory/quartile tables and reasoning in
+  `step_notes/C4_DGCNN_DA_A_LN.md`.
+
 **Next (in order):**
-1. C4 (DGCNN, DA-A, L-N) to isolate the noise weakness — **submitted to the cluster, training in
-   progress** (2026-09-12). Byte-for-byte reuses C2's now-fixed `adapters/dann.py` (ramped
-   `λ_ent`); only the augmentation pipeline differs (`adapters/dataset.py` gained an
-   `augment_mode` parameter, "all"/"ln_only", additive — existing callers unaffected;
-   `scripts/augmentations.py::compose_pipeline_ln_only` applies Gaussian jitter only, skipping
-   G-R/G-S/L-D). `adapters/train_c4_dgcnn_da_a_ln.py`, `jobs/c4_dgcnn_da_a_ln.sbatch`. CPU smoke
-   test passed before submitting. Per explicit user instruction, gets the same full-trajectory
-   analysis as C2/C3 from the start, not as an afterthought — this is a direct test of whether
-   C2's remaining behavior (even after the entropy-ramp fix) is fundamental to the adversarial
-   method itself or specific to the ALL augmentation mix C2 used. The C2 diagnosis (label-prior
-   mismatch, small-N regime, multi-temporal target) is also directly relevant to A2 (PointNet++,
-   same DA-A anchor method, same `dann.py`) whenever Block A resumes.
+1. C5 (DGCNN, DA-O, ALL) — Oracle upper bound, trains directly on labeled target data. Completes
+   Block C (C1-C5 all done after this). The C2 diagnosis (label-prior mismatch, small-N regime,
+   multi-temporal target) is directly relevant to A2 (PointNet++, same DA-A anchor method, same
+   `dann.py`) whenever Block A resumes.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
