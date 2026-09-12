@@ -24,6 +24,12 @@ the full G-R+G-S+L-N+L-D pipeline every row through C3 used; "ln_only" is
 L-N (Gaussian jitter) alone, for row C4 (DGCNN, DA-A, L-N), isolating
 DGCNN's noise weakness per CLAUDE.md's augmentation taxonomy. See
 scripts/augmentations.py's compose_pipeline_ln_only docstring.
+
+PlantClsSegDataset also takes optional `label_transform`/`num_classes` for
+row C5 (DGCNN, DA-O): Pheno4D's own annotated files carry a different raw
+per-point label scheme than Crops3D's (see PHENO4D_SEG_NUM_CLASSES and
+pheno4d_collapse_organ_labels below), so C5 passes those in rather than
+relying on the Crops3D-shaped defaults every prior row used.
 """
 
 import os
@@ -62,6 +68,46 @@ TARGET_N = 4096
 # see CLAUDE.md. Not necessarily stable if more raw files are added later
 # without re-scanning.
 SEG_NUM_CLASSES = {"Tomato": 3, "Maize": 6}
+
+# Pheno4D's OWN per-point organ labels (used only for row C5, DA-O -- see
+# CLAUDE.md "point-wise soil/stem/leaf labels available for evaluation and
+# the Oracle upper-bound only"). This is a DIFFERENT label space than
+# Crops3D's SEG_NUM_CLASSES above -- do not conflate the two; there is no
+# shared semantics or class-id correspondence between them, they're just two
+# separate per-domain segmentation tasks.
+#
+# Raw label layout (per CLAUDE.md's Datasets section): Tomato annotated
+# files carry one label column, Maize carry two ("label1,label2"). A full
+# scan of all 126 annotated Pheno4D files (2026-09-12, both the adaptation
+# pool's 90 and the held-out eval's 36) found the raw ids are NOT a flat
+# soil/stem/leaf 3-class scheme -- they grow over the growing season (up to
+# 42 distinct ids for Tomato, 5 for Maize's label1), consistent with
+# per-leaf INSTANCE ids being folded into the same column (id 0 dominates
+# every file by a wide margin in point count, consistent with "soil"; id 1
+# is the next-largest and far bigger than any higher id in both species,
+# consistent with "stem"; every id >= 2 is a much smaller, roughly
+# similarly-sized class, consistent with individual leaf instances).
+# INFERENCE, not confirmed against Pheno4D's original publication in this
+# session: raw id 0 -> soil, id 1 -> stem, id >= 2 -> collapsed into a
+# single "leaf" class, giving a 3-class organ scheme for both species
+# comparable in kind (not in exact class count or id semantics) to
+# Crops3D's per-species organ segmentation. For Maize's two label columns,
+# label1 (the first of the two) is used and label2 is unused -- CLAUDE.md's
+# own text doesn't say which is the organ-semantic column and which is a
+# leaf-instance-only column, and both showed the same soil-dominant/
+# stem-next/many-small-rest histogram shape, so this is a default choice,
+# not a verified one. See `pheno4d_collapse_organ_labels` below.
+PHENO4D_SEG_NUM_CLASSES = {"Tomato": 3, "Maize": 3}
+
+
+def pheno4d_collapse_organ_labels(raw_labels: np.ndarray) -> np.ndarray:
+    """Collapses Pheno4D's raw per-point label column(s) into the 3-class
+    {0: soil, 1: stem, 2: leaf} scheme documented above. Maize's (N, 2)
+    labels use column 0 only; Tomato's (N,) or (N, 1) labels are used as-is.
+    Flagged as an inference, not a confirmed id->organ mapping -- see the
+    PHENO4D_SEG_NUM_CLASSES docstring above."""
+    raw = raw_labels[:, 0] if raw_labels.ndim == 2 else raw_labels.reshape(-1)
+    return np.where(raw == 0, 0, np.where(raw == 1, 1, 2)).astype(np.int64)
 
 
 def _strip_leading_dotdot(rel_path: str) -> str:
@@ -152,10 +198,25 @@ class PlantClsSegDataset(Dataset):
     Samples whose cache entry has no 'labels' key are skipped (e.g. the
     rare file that fell back to the open3d loader -- see
     data_io.py::load_crops3d_ply).
+
+    `label_transform` (optional): applied to each sample's raw cached
+    'labels' array right after loading, before augmentation/padding --
+    e.g. `pheno4d_collapse_organ_labels` for row C5 (DA-O), which needs a
+    different raw-id-to-class-id mapping than Crops3D's labels (already
+    flat per-species integer ids, no transform needed). Default None is a
+    no-op, so every existing caller (C1-C4, all Crops3D-based) is
+    unaffected.
+
+    `num_classes` (optional): per-species class-count dict used by
+    `seg_class_histogram` (and by callers building segmentation heads/
+    class weights) instead of the module-level Crops3D-specific
+    SEG_NUM_CLASSES -- e.g. PHENO4D_SEG_NUM_CLASSES for row C5. Default
+    None falls back to SEG_NUM_CLASSES, preserving old behavior.
     """
 
     def __init__(self, split_csv: str, manifest_csv: str, augment: bool = False,
-                 target_n: int = TARGET_N, seed: int = 0, augment_mode: str = "all"):
+                 target_n: int = TARGET_N, seed: int = 0, augment_mode: str = "all",
+                 label_transform=None, num_classes: dict = None):
         split_csv = Path(split_csv)
         manifest_csv = Path(manifest_csv)
         if not split_csv.is_absolute():
@@ -192,6 +253,8 @@ class PlantClsSegDataset(Dataset):
         self.augment = augment
         self.target_n = target_n
         self.rng = np.random.default_rng(seed)
+        self.label_transform = label_transform
+        self.num_classes = num_classes if num_classes is not None else SEG_NUM_CLASSES
         _, self._compose_pipeline_with_labels = _AUGMENT_PIPELINES[augment_mode]
 
     def __len__(self):
@@ -201,7 +264,10 @@ class PlantClsSegDataset(Dataset):
         cache_path, species_label = self.samples[idx]
         with np.load(cache_path) as d:
             pts = d["points"].astype(np.float32)
-            seg_labels = d["labels"].astype(np.int64)
+            seg_labels = d["labels"]
+        if self.label_transform is not None:
+            seg_labels = self.label_transform(seg_labels)
+        seg_labels = seg_labels.astype(np.int64)
 
         if self.augment:
             pts, seg_labels = self._compose_pipeline_with_labels(pts, seg_labels, rng=self.rng)
@@ -222,7 +288,7 @@ class PlantClsSegDataset(Dataset):
         """Point-level class counts for one species' segmentation labels,
         pooled across every training sample of that species -- used to
         build L_seg's w_c = (f_c+eps)^-1 per-class weights."""
-        n_classes = SEG_NUM_CLASSES[species]
+        n_classes = self.num_classes[species]
         species_idx = SPECIES_TO_IDX[species]
         hist = np.zeros(n_classes, dtype=np.int64)
         for cache_path, label in self.samples:
@@ -230,5 +296,7 @@ class PlantClsSegDataset(Dataset):
                 continue
             with np.load(cache_path) as d:
                 seg_labels = d["labels"]
+            if self.label_transform is not None:
+                seg_labels = self.label_transform(seg_labels)
             hist += np.bincount(seg_labels, minlength=n_classes)[:n_classes]
         return hist
