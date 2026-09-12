@@ -420,11 +420,45 @@ were not — see Repository layout above).
   trajectory tables and caveats (small-N on both the Oracle's 90-scan labeled pool and the
   63-scan target test set) in `step_notes/C5_DGCNN_DA_O.md`.
 
+**Done (continued):**
+- **Row A2 (PointNet++, DA-A, ALL) trained on the cluster** (2026-09-12, job 308754, ~13.5 min).
+  Ports C2's adversarial DANN machinery (`adapters/dann.py`, reused byte-for-byte — already
+  backbone-agnostic by design) to PointNet++, to directly test whether C2/C3/C4's
+  underperformance-vs-DA-0 pattern is DGCNN-specific or a general property of this dataset's
+  source/target label-prior mismatch and small-N regime. `PointNet2_ClsSeg.forward` gained
+  `logits["feat"]` (pooled global feature, domain discriminator input — additive, A1 unaffected).
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | A1 (DA-0) | A2 (DA-A) | C1 (DA-0, for reference) | C2 v2 (DA-A) |
+  |---|---|---|---|---|
+  | Full-run mean | 0.599 | 0.554 | 0.791 | 0.633 |
+  | Full-run stdev | 0.196 | 0.193 | 0.104 | 0.117 |
+  | corr(selection-loss, target acc) | −0.165 | +0.086 | −0.286 | −0.061 |
+  | Epochs collapsed to one class | 17/100 | 15/100 | 3/100 | 3/100 |
+  | Selected-checkpoint acc | 0.4603 | 0.4444 | 0.7460 | 0.6667 |
+
+  **Conclusion: the underperformance pattern is real on both backbones but much smaller/less
+  decisive on PointNet++.** A1→A2's full-run mean drops only 4.5 points (vs. C1→C2's 15.8) and
+  the selected-checkpoint gap is under 2 points (essentially a tie, vs. C1→C2's 7.9-point gap).
+  The direction still replicates (DA-A doesn't beat DA-0; the selection-loss-vs-target-acc
+  correlation gets less informative under DA-A on both backbones), supporting the dataset-level
+  explanation (label-prior mismatch, small-N — see C2 above) as a real, shared contributor. But
+  **A1's own DA-0 baseline is already highly unstable independent of any DA method** (stdev
+  0.196, 17/100 collapse epochs — vs. C1's 0.104/3-of-100), matching/sharpening the earlier
+  systematic-Maize-bias finding logged for A1 above — this pre-existing noise is why DGCNN's
+  C1→C2 comparison isolates the adversarial-training effect more cleanly than PointNet++'s does,
+  not because the effect is absent on PointNet++. One consistent cross-backbone side finding:
+  segmentation mIoU is worse under DA-A than DA-0 on both backbones (plausibly shared backbone
+  capacity competing between `L_seg` and the adversarial/entropy terms). Full trajectory tables
+  and reasoning in `step_notes/A2_PointNet2_DA_A.md`.
+
 **Next (in order):**
-1. Block C is done. The C2 diagnosis (label-prior mismatch, small-N regime, multi-temporal
-   target) and now C5's confirmed-headroom finding are both directly relevant to A2/A3/A4
-   (PointNet++, same DA-A/DA-S methods, same `dann.py`) whenever Block A resumes, and to Block B
-   (KPConv) once its CUDA extension is set up.
+1. Block C is fully done (C1-C5); Block A has A1/A2 done. Next candidates: A3 (PointNet++,
+   DA-S) or A4 (PointNet++, DA-A/L-N) to continue the cross-backbone comparison, or starting
+   Block B (KPConv) once its CUDA extension is set up. The C2/A2 diagnosis (label-prior
+   mismatch, small-N regime, multi-temporal target, now confirmed cross-backbone) and C5's
+   confirmed-headroom finding are both directly relevant to whichever comes next.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

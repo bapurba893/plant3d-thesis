@@ -363,6 +363,43 @@ the Oracle's own training data and the held-out test set) are in `step_notes/C5_
 
 ---
 
+## 16. Row A2 Finished — Same Pattern, Smaller Effect, on a Different Backbone — 2026-09-12
+
+With Block C's story clear (no-adaptation beats every adaptation method tried so far, on
+DGCNN), the natural next question was whether that's a fact about DGCNN specifically, or about
+this pair of datasets more generally. Row A2 tests this directly: it takes the exact same
+adversarial adaptation machinery used for row C2, changes nothing about the method, and swaps
+in the PointNet++ backbone instead — comparing against A1 (PointNet++'s own no-adaptation
+baseline) the same way C2 was compared against C1.
+
+**The same basic pattern shows up again, but much less dramatically.** Read across the full
+100-epoch training run, adversarial adaptation's average target accuracy (0.554) came in below
+plain no-adaptation's (0.599) — the same direction as the DGCNN result — but the gap is much
+smaller (about 4-5 points, versus roughly 16 points on DGCNN) and, read from the single best
+checkpoint each protocol selects, the two are close enough to call a tie (a difference of under
+2 points).
+
+**The reason the effect looks smaller here is itself informative.** PointNet++'s own
+no-adaptation baseline (row A1) turns out to be considerably less stable than DGCNN's — even
+with no adversarial training involved at all, it collapses to predicting a single plant species
+for the whole target test set in 17 out of 100 training epochs, compared to DGCNN's 3 out of
+100. Against a baseline already that noisy, adding adversarial adaptation's further ~4-5 point
+average drop is a much smaller, harder-to-be-sure-about effect than the same method's clear,
+sharp degradation of DGCNN's otherwise very stable baseline.
+
+**Bottom line:** this doesn't fully settle whether the underperformance is "about the dataset"
+or "about the backbone" — it's some of both. The same basic shape (adaptation doesn't help,
+and the loss signal used to pick a checkpoint becomes less trustworthy once adaptation is
+turned on) shows up on both backbones, supporting the idea that something about this specific
+pair of datasets (opposite class balance, small sample sizes) is a real, shared headwind. But
+DGCNN's result is the clean, decisive version of that story specifically because DGCNN's
+baseline had so little pre-existing noise to blur the comparison — PointNet++'s baseline was
+already unstable on its own, so the additional damage from adaptation is real but harder to
+separate from noise that was already there. Full trajectory tables and the four-way comparison
+(A1, A2, C1, C2) are in `step_notes/A2_PointNet2_DA_A.md`.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -373,7 +410,7 @@ at-a-glance status.
 | Block | Row | What it is | Status |
 |---|---|---|---|
 | A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed |
-| A (PointNet++) | A2 | Adversarial (anchor method) | Not started |
+| A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
 | A (PointNet++) | A3 | Self-supervised | Not started |
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
@@ -390,11 +427,12 @@ at-a-glance status.
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1 on PointNet++ —
-giving the first real cross-backbone comparison, a consistent picture across three different
-adaptation attempts (all underperform no-adaptation, regardless of method or augmentation mix),
-and now a confirmed Oracle ceiling showing real headroom was left unclaimed by every method tried
-so far — and the other 19 rows are not started yet.
+**In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1 and A2 on
+PointNet++ — giving a real cross-backbone comparison showing adversarial adaptation's
+underperformance is a shared (dataset-driven) pattern but a DGCNN-specific magnitude (PointNet++'s
+own baseline is too noisy for the effect to show up as cleanly), and a confirmed Oracle ceiling
+showing real headroom was left unclaimed by every adaptation method tried so far — the other 18
+rows are not started yet.
 
 ---
 
