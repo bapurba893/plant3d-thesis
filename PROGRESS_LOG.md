@@ -570,6 +570,37 @@ the classification-transfer story above.
 
 ---
 
+## 21. Row B2 Started — Does the Third Backbone's Selection-Signal Problem Get Worse Under Adversarial Training? — 2026-09-13
+
+With KPConv's own "no adaptation" baseline (B1) showing an unusual and slightly concerning
+property — the internal signal used to pick the best training checkpoint was actually the least
+trustworthy of any backbone tested so far, occasionally pointing in the wrong direction entirely
+— the natural next step was to add the project's adversarial adaptation method (the same one
+already tried on the other two architectures) and see whether that problem gets worse, the same
+way it did for the other two backbones, or plays out differently.
+
+Building this row surfaced two real, backbone-specific details that a careless copy from the
+other two architectures' versions would have gotten wrong. First, the small network that tries to
+guess "which dataset did this come from" needs to know the size of the feature vector it's
+reading — this backbone's internal feature vector turned out to be a different size than the
+other two, checked directly in the code rather than assumed. Second, and more interesting: a
+safety limit added after Milestone 19's investigation (capping how many "neighboring points" the
+model considers, to avoid the earlier out-of-memory crash) had only ever been measured using
+labeled source-dataset examples, because the "no adaptation" row never showed the model any
+target-dataset data during training. This row does show it target data during training (that's
+the whole point of adaptation), so relying on a safety limit measured only from the other dataset
+could, in principle, repeat exactly the kind of crash Milestone 19 already fixed once. Checked
+this directly rather than assuming it would be fine: measuring the same safety limit separately
+on each dataset showed they really do come out slightly different from each other, confirming
+this was a real risk worth covering, not just a hypothetical one — fixed by measuring both and
+using whichever is more generous.
+
+Verified with the same CPU trial-run process as every previous row before trusting it — ran
+cleanly with no errors. Handed off to the cluster GPU (job 309232) with the same extra-generous
+time allowance now standard for this backbone.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -585,7 +616,7 @@ at-a-glance status.
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
-| B (KPConv) | B2 | Adversarial (anchor method) | Not started |
+| B (KPConv) | B2 | Adversarial (anchor method) | Training on cluster (job 309232), not yet finished |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |

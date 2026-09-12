@@ -129,12 +129,20 @@ def reshape_seg_labels(batch: "KPConvBatch") -> torch.Tensor:
 
 
 def calibrate_neighborhood_limits(config, dataset, batch_size, num_batches=10, untouched_ratio=0.9,
-                                   num_workers=0):
+                                   num_workers=0, collate_fn_factory=None):
     """Computes per-layer neighbor-count caps the same way the reference repo's own dataset
     classes do (e.g. `datasets/ModelNet40.py::calibration`), minus the point-budget/dynamic
     batch-size machinery those use (irrelevant here -- every sample is already a fixed N=4096,
     so a plain fixed `batch_size` DataLoader is used for calibration too, not their custom
     point-budget sampler).
+
+    `collate_fn_factory` defaults to `make_kpconv_collate_fn` (cls+seg 3-tuples, e.g.
+    `PlantClsSegDataset`/Crops3D). Pass `make_kpconv_collate_fn_cls_only` to calibrate against a
+    cls-only 2-tuple dataset instead (e.g. `PlantSpeciesDataset`/Pheno4D's adaptation pool) --
+    added for DA-A rows (B2+), where target-domain batches also flow through the same encoder
+    and neighbor caps calibrated on source data ALONE could under-cover target-domain density
+    characteristics (see `combine_neighborhood_limits` below and the row's own step_notes for
+    why source-only calibration was judged insufficient once a second domain enters training).
 
     Why this exists: leaving `neighborhood_limits` empty (this module's original approach, see
     module docstring) makes `PointCloudDataset.big_neighborhood_filter` a no-op, returning
@@ -162,12 +170,14 @@ def calibrate_neighborhood_limits(config, dataset, batch_size, num_batches=10, u
     subsequent collate call reuses these fixed caps, not just the calibration pass)."""
     from torch.utils.data import DataLoader
 
+    collate_fn_factory = collate_fn_factory or make_kpconv_collate_fn
+
     calib_config = type(config)()
     calib_config.__dict__.update(config.__dict__)
     calib_config.neighborhood_limits = []  # uncapped, for measuring the true distribution
 
     calib_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers,
-                               collate_fn=make_kpconv_collate_fn(calib_config))
+                               collate_fn=collate_fn_factory(calib_config))
 
     hist_n = 500  # generous upper bound on neighbors/point for this project's dense point clouds
     neighb_hists = None
@@ -186,6 +196,16 @@ def calibrate_neighborhood_limits(config, dataset, batch_size, num_batches=10, u
     cumsum = np.cumsum(neighb_hists.T, axis=0)
     percentiles = np.sum(cumsum < (untouched_ratio * cumsum[hist_n - 1, :]), axis=0)
     return percentiles.tolist()
+
+
+def combine_neighborhood_limits(*limits_lists):
+    """Elementwise max across two or more `calibrate_neighborhood_limits` results (same number
+    of layers each) -- used by DA-A/DA-D/DA-O rows (any row where target-domain batches flow
+    through the same encoder as source) to make sure the applied cap is wide enough for whichever
+    domain has the wider neighbor distribution at each layer, not just source. Cheap: this only
+    changes which (already bounded) cap gets used, never re-introduces the uncapped-by-default
+    risk `calibrate_neighborhood_limits` exists to fix."""
+    return [max(vals) for vals in zip(*limits_lists)]
 
 
 def make_kpconv_collate_fn(config):

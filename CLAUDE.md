@@ -587,15 +587,32 @@ were not — see Repository layout above).
   **B1's source-val segmentation is the best of the three DA-0 baselines** — Tomato mIoU 0.3808
   (vs. A1 0.3207, C1 0.3248), Maize mIoU 0.4414 (close to A1's best-of-three 0.4741, clearly above
   C1's 0.3427). Full trajectory tables and reasoning in `step_notes/B1_KPConv_DA0.md`.
+- **Row B2 (KPConv, DA-A, ALL) submitted to the cluster** (2026-09-13, job 309232 on `cn19-dgx`,
+  `--time=60:00:00`). Ports the DANN anchor method (`adapters/dann.py`, reused byte-for-byte) to
+  KPConv, per explicit user instruction, to test whether B1's already-worst-of-three
+  selection-signal reliability (`corr = +0.316`, the only DA-0 row with a positive correlation)
+  gets worse under adversarial training the way it did for DGCNN (C1→C2) and PointNet++ (A1→A2),
+  or behaves differently. Two real KPConv-specific details, not copy-paste from A2/C2: (1)
+  `DomainDiscriminator(in_dim=256)`, not 1024 — traced KPConv_ClsSeg's actual pooled-feature
+  width directly rather than assuming DGCNN/PointNet2's value carries over; (2) `neighborhood_
+  limits` now calibrated over BOTH domains (new `collate_fn_factory` param on `calibrate_
+  neighborhood_limits` + new `combine_neighborhood_limits` helper in `adapters/kpconv_collate.py`,
+  both additive/backward-compatible with B1's existing call), since DA-A pushes target batches
+  through the same encoder every step and source-only calibration risks under-covering
+  target-domain neighbor counts — exactly B1's original OOM failure mode. Verified this wasn't
+  theoretical: the CPU smoke test's actual calibration found target-only differed from
+  source-only at layer 2 (29 vs 28), a real measured instance, not hypothetical. CPU smoke test
+  (1 epoch, real data) passed cleanly before submitting. Full design decisions in
+  `step_notes/B2_KPConv_DA_A.md`. Awaiting completion.
 
 **Next (in order):**
-1. Block B has its own DA-0 baseline (B1) established — continue Block B (B2 DA-A, B3 DA-D, B4
-   DA-0/L-D, B5 DA-O — **use `--time=60:00:00` for all of these from the start**, per the
-   Backbones section above, even though B1 itself ran fast once node contention cleared) alongside
+1. Row B2 (KPConv, DA-A) is training on the cluster (job 309232, `--time=60:00:00`) — read its
+   full-trajectory result the same way as every prior DA-A row once it finishes, then continue
+   Block B (B3 DA-D, B4 DA-0/L-D, B5 DA-O — **use `--time=60:00:00` for all of these**) alongside
    remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B1's mixed stability signature (DGCNN-like
    collapse resistance, but the highest variance and most misleading selection signal of the
-   three backbones) is directly relevant background for B2's DA-A anchor — worth watching whether
-   B2 shows the same C2/A2 underperformance-vs-DA-0 pattern, and whether B1's positive
+   three backbones) is directly relevant background for reading B2 — worth watching whether B2
+   shows the same C2/A2 underperformance-vs-DA-0 pattern, and whether B1's positive
    selection-signal correlation (unique among DA-0 rows so far) recurs or was baseline-specific.
 
 ## Style notes
