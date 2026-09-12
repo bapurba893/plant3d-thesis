@@ -49,10 +49,19 @@ NOT pointnet2_part_seg_ssg.py's architecture, which conditions its FP
 decoder on a one-hot ShapeNet category label -- we have no equivalent input
 (species is our "cls" target, not something to feed back in as an input).
 
-DefRec/DANN hooks are intentionally not wired here yet -- row A1 is DA-0
-(source-only, no adaptation), the same scope adapters/models.py::
-DGCNN_ClsSeg shipped with for row C1. They'll be added when rows
-A2/A3/A4 need adversarial/self-supervised training, same as the DGCNN track.
+DANN hooks were added for row A2 (see logits["feat"] below). DefRec (row
+A3, self-supervised) added `self.DefRec = RegionReconstruction(...)`
+(imported from `PointDA.Models`, the SAME class `DGCNN_ClsSeg` inherits
+via its base `DGCNN` class in the reference repo -- it is a generic
+per-point Conv1d stack over an arbitrary input feature width, exactly
+like `PointSegDA.Models.segmentation` already reused for the seg heads
+above, so it composes onto PointNet2's features unmodified, the same
+"adapt this repo" pattern as everything else here). Fed the SAME
+`seg_feat` tensor (per-point features concatenated with the pooled global
+feature) already computed for segmentation -- DGCNN's own `forward` builds
+an identical `DefRec_input` tensor from scratch as a literal duplicate of
+its `seg_feat` computation; reusing the already-computed tensor here is
+just avoiding that redundant duplication, not a behavioral difference.
 """
 
 import os
@@ -72,6 +81,7 @@ if _POINTNET2_MODELS_DIR not in sys.path:
 
 from pointnet2_utils import PointNetSetAbstraction, PointNetFeaturePropagation  # noqa: E402
 from PointSegDA.Models import segmentation as SegmentationHead  # noqa: E402
+from PointDA.Models import RegionReconstruction  # noqa: E402
 
 
 class PointNet2_ClsSeg(nn.Module):
@@ -105,22 +115,22 @@ class PointNet2_ClsSeg(nn.Module):
             species: SegmentationHead(args, input_size=seg_input_size, num_classes=n)
             for species, n in seg_num_classes.items()
         })
+        # Row A3 (DA-S): reconstruction head, fed the same per-point-features
+        # + pooled-global-feature tensor as the seg heads -- see module
+        # docstring for why this is the identical class DGCNN_ClsSeg uses,
+        # composed here rather than reimplemented.
+        self.DefRec = RegionReconstruction(args, seg_input_size)
 
     def forward(self, x, activate_DefRec: bool = False):
         """x: (B, 3, N) xyz. Returns {"cls": (B, num_class) raw logits,
         "feat": (B, 1024) pooled global feature (pre-classifier -- domain
-        discriminator input for row A2, added when that row was built; C1/A1
-        callers that only read logits["cls"]/["seg_feat"] are unaffected),
-        "seg_feat": (B, 1152, N) per-point features} -- matches
-        DGCNN_ClsSeg.forward's interface exactly (raw logits, not
-        log-softmax, since the training scripts feed this straight into
-        nn.CrossEntropyLoss / the L_seg helpers). activate_DefRec is
-        accepted for call-site compatibility but not implemented -- see
-        module docstring; row A1 never sets it True."""
-        if activate_DefRec:
-            raise NotImplementedError(
-                "DefRec is not wired for PointNet2_ClsSeg yet -- row A1 is "
-                "DA-0, which never activates it (see module docstring).")
+        discriminator input for row A2), "seg_feat": (B, 1152, N) per-point
+        features, and, when activate_DefRec=True, "DefRec": (B, N, 3)
+        reconstructed xyz for row A3 (DA-S)} -- matches DGCNN_ClsSeg.forward's
+        interface exactly (raw logits, not log-softmax, since the training
+        scripts feed this straight into nn.CrossEntropyLoss / the L_seg/
+        DefRec.calc_loss helpers). C1/A1/A2 callers that never set
+        activate_DefRec=True are unaffected."""
         batch_size, _, num_points = x.shape
 
         l1_xyz, l1_points = self.sa1(x, None)
@@ -140,6 +150,10 @@ class PointNet2_ClsSeg(nn.Module):
         logits["feat"] = global_feat  # pooled global feature (B, 1024) -- domain discriminator input, see adapters/dann.py (row A2)
         logits["seg_feat"] = torch.cat(
             (l0_points, global_feat.unsqueeze(2).repeat(1, 1, num_points)), dim=1)
+
+        if activate_DefRec:
+            logits["DefRec"] = self.DefRec(logits["seg_feat"])
+
         return logits
 
     def seg_logits_for_species(self, seg_feat: torch.Tensor, species: str) -> torch.Tensor:
