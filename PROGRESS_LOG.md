@@ -639,6 +639,44 @@ built around from the start.
 
 ---
 
+## 23. A Planning Mix-Up Caught Before It Caused Wasted Work, Then a New Row Added — 2026-09-13
+
+Before starting the next row for the third backbone, a mismatch surfaced: the plan had assumed
+the next self-supervised-method row for this backbone would slot in at a specific position in
+the master table, but checking the actual documented plan showed that position was reserved for
+a different method entirely (a "how different are the two datasets' overall feature
+distributions" approach, never tried on this backbone yet, still scheduled for later). Rather
+than silently guess which one was intended, or silently overwrite the documented plan, this was
+flagged and clarified directly before writing a single line of training code — cheap to check,
+expensive to discover after a multi-hour training run had already used the wrong recipe.
+
+The resolution: add the self-supervised method as a genuinely new, explicitly-labeled row (not
+a substitute for the one already reserved), specifically so the third backbone's results stay
+comparable to the same method already tried on the other two. The master plan document was
+updated on the spot to record this addition and why it exists, so the reasoning survives past
+this conversation rather than living only in a chat log.
+
+Building it surfaced one real, backbone-specific engineering wrinkle: the self-supervised
+method's whole trick is to deform part of a plant's point cloud and have the model try to
+recover the original shape. For the other two architectures, "feed the deformed shape back
+through the model" just works, because those architectures recompute all their internal
+geometric bookkeeping fresh, automatically, every time they process a point cloud. This third
+architecture doesn't work that way — it precomputes that bookkeeping once, upfront, as a
+separate preparation step, so simply swapping in deformed coordinates after the fact would have
+left the model reasoning about the ORIGINAL, undeformed shape's neighbor relationships while
+looking at deformed positions — not simply wrong, but not a fair test of the method either. Fixed
+by adding a small "rebuild the bookkeeping from scratch" step specifically for the deformed
+version, so this backbone gets the same fair treatment the other two get automatically.
+
+Caught a second, more ordinary bug the same way every other bug this project has hit has been
+caught: by reading the exact expectations of the borrowed external code rather than guessing, and
+fixing it before it could waste a training run on a crash. Also learned, from a first trial run,
+that this particular combination is going to be noticeably slower than anything trained on this
+backbone so far — expected, given how much more bookkeeping-rebuilding it now requires, and
+already accounted for by the generous time allowance already in place for this backbone.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -656,6 +694,7 @@ at-a-glance status.
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
+| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | Training on cluster (job 309416), not yet finished |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |

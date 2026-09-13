@@ -69,7 +69,21 @@ growth-curve-informed features — not just species classification.
 - **Block A (PointNet++)**: A1 DA-0/ALL, A2 DA-A/ALL (anchor), A3 DA-S/ALL, A4 DA-A/L-D
   (isolates density weakness), A5 DA-O/ALL (upper bound)
 - **Block B (KPConv)**: B1 DA-0/ALL, B2 DA-A/ALL (anchor), B3 DA-D/ALL, B4 DA-0/L-D
-  (deliberately unadapted — confirms claimed density robustness), B5 DA-O/ALL
+  (deliberately unadapted — confirms claimed density robustness), B5 DA-O/ALL. **B3b DA-S/ALL
+  — ADDED 2026-09-13, outside the original 25-row count, per explicit user instruction.** Block
+  B was originally specced without a DA-S row (unlike Block A/C, where the third row IS DA-S) —
+  B4 was meant to be Block B's own density-robustness check instead. B3b exists specifically to
+  test cross-backbone comparability with A3/C3: A3 showed DA-S's effect on target-classification
+  transfer flips direction entirely between PointNet++ (helps) and DGCNN (hurts) — see
+  `step_notes/A3_PointNet2_DA_S.md` — and B2 then showed DA-A's effect *also* doesn't generalize
+  cleanly to KPConv (DANN hurts DGCNN/PointNet++ but not KPConv overall — see
+  `step_notes/B2_KPConv_DA_A.md`). B3b asks whether DA-S flips for KPConv the same way DA-A did,
+  or behaves like one of the other two backbones. Does NOT replace B3 (DA-D), which stays in the
+  plan as originally specified and runs separately. See `step_notes/B3b_KPConv_DA_S.md` for full
+  design decisions, including the real KPConv-specific engineering problem this row required
+  solving (rebuilding a fresh multi-layer neighbor structure for DefRec's deformed points, since
+  unlike DGCNN/PointNet2, KPConv precomputes that structure outside the model rather than
+  recomputing it automatically inside `forward`).
 - **Block C (DGCNN)**: C1 DA-0/ALL (also reproduces published baseline), C2 DA-A/ALL (anchor),
   C3 DA-S/ALL (comparable to PointDA-10), C4 DA-A/L-N (isolates noise weakness), C5 DA-O/ALL
 - **Block D (fusion, on best backbone+DA+aug from A-C)**: D1 deep features only, D2 +growth
@@ -637,17 +651,39 @@ were not — see Repository layout above).
   magnitude"** — DA-A's underperformance, previously read (after A2) as a shared, dataset-driven
   property appearing on both backbones to different degrees, does not extend to KPConv at all.
   Full trajectory tables and reasoning in `step_notes/B2_KPConv_DA_A.md`.
+- **Row B3b (KPConv, DA-S, ALL) submitted to the cluster** (2026-09-13, job 309416 on `cn19-dgx`,
+  `--time=60:00:00`). See the strategy-table Backbones-section entry above for why this row is
+  labeled B3b (an addition to the documented plan, not the originally-planned B3=DA-D) and its
+  purpose: testing whether KPConv also flips DA-S's effect the way it flipped DA-A's (B2), given
+  A3 already showed DA-S flips between PointNet++ (helps) and DGCNN (hurts). Required adding a
+  DefRec reconstruction head to `KPConv_ClsSeg` (`PointDA.Models.RegionReconstruction`, same
+  class DGCNN/PointNet2 already use, composed unmodified) plus two new helpers in
+  `adapters/kpconv_collate.py` (`batch_points_bcn`, `build_batch_from_points`) to solve a real
+  KPConv-specific problem: unlike DGCNN/PointNet2 (which recompute their geometric structure
+  automatically inside `forward` from whatever coordinates they're given), KPConv precomputes
+  its multi-layer neighbor structure OUTSIDE the model via collate — so DefRec's deformed points
+  need a genuine batch rebuild, not just a value swap, to be faithfully processed through the
+  encoder. Caught a real bug before it could crash a run: `DefRec.calc_loss` expects the *full*
+  logits dict (reads `logits['DefRec']` internally), not a pre-extracted tensor — found by
+  reading the reference repo's source directly and comparing against A3's exact call pattern,
+  fixed before resubmitting the smoke test. CPU smoke test then passed cleanly, but measured a
+  real, substantial cost: per-batch times (collate 12-120s, fwd+bwd 53-236s at batch_size=4) are
+  far higher than B1/B2's, from needing ~5 collate calls per training step (1 clean + 4 deformed-
+  chunk rebuilds) instead of 1-2 — expected to use much more of the 60h budget than B1/B2 did,
+  though still comfortably inside it barring contention. Full design decisions and the bug
+  writeup in `step_notes/B3b_KPConv_DA_S.md`. Awaiting completion.
 
 **Next (in order):**
-1. Block B now has both its DA-0 baseline (B1) and DA-A anchor (B2) done, with a genuinely
-   surprising finding (KPConv doesn't show the DA-A-underperforms-DA-0 pattern the other two
-   backbones share). Continue Block B (B3 DA-D, B4 DA-0/L-D — deliberately unadapted, the row
-   most directly testing claimed density-robustness, now extra interesting given B1/B2's mixed
-   signals — B5 DA-O — **use `--time=60:00:00` for all of these**) alongside remaining Block A
-   rows (A4 DA-A/L-N, A5 Oracle). B2's result (DANN doesn't hurt KPConv the way it hurts DGCNN/
-   PointNet++, but does cost segmentation quality same as both) is directly relevant background
-   for B3 (a different, non-adversarial DA method) and for eventually deciding which
-   backbone/DA/augmentation combination Block D's fusion work builds on.
+1. Row B3b (KPConv, DA-S) is training on the cluster (job 309416, `--time=60:00:00`, expected to
+   run notably longer than B1/B2 given its higher collate-call count per step — see above) —
+   read its full-trajectory result the same way as every prior DA-S row once it finishes, then
+   run B3 (DA-D, the originally-planned row this addition does not replace), B4 (DA-0/L-D —
+   deliberately unadapted, the row most directly testing claimed density-robustness, now extra
+   interesting given B1/B2/B3b's mixed signals), B5 (DA-O) — **use `--time=60:00:00` for all of
+   these** — alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B2's result (DANN
+   doesn't hurt KPConv the way it hurts DGCNN/PointNet++, but does cost segmentation quality
+   same as both) and B3b's result (once in) are directly relevant background for B3 and for
+   eventually deciding which backbone/DA/augmentation combination Block D's fusion work builds on.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

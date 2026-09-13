@@ -85,6 +85,7 @@ if _KPCONV_MODELS_DIR not in sys.path:
 from blocks import block_decider, global_average  # noqa: E402
 from utils.config import Config  # noqa: E402
 from PointSegDA.Models import segmentation as SegmentationHead  # noqa: E402
+from PointDA.Models import RegionReconstruction  # noqa: E402
 
 
 class PlantKPConvConfig(Config):
@@ -214,7 +215,16 @@ class KPConv_ClsSeg(nn.Module):
             for species, n in seg_num_classes.items()
         })
 
-    def forward(self, batch):
+        # DefRec (DA-S, row B3b) reconstruction head -- same generic per-point Conv1d stack
+        # DGCNN_ClsSeg/PointNet2_ClsSeg both already use via PointDA.Models.RegionReconstruction,
+        # fed the same already-computed seg_feat tensor (already exactly DefRec's expected
+        # (B, C, N) input shape), mirroring PointNet2_ClsSeg's composition exactly (see
+        # adapters/train_b3b_kpconv_da_s.py's docstring for why KPConv additionally needs a
+        # batch-rebuild step DGCNN/PointNet2 don't -- this head itself is identical either way).
+        # RegionReconstruction only reads `config.dropout`, already present on PlantKPConvConfig.
+        self.DefRec = RegionReconstruction(config, seg_feat_dim)
+
+    def forward(self, batch, activate_DefRec: bool = False):
         """batch: adapters.kpconv_collate.KPConvBatch. Returns
         {"cls": (B, num_class) raw logits, "feat": (B, bottleneck_dim)
         pooled global feature (pre-classifier, for future DA-A rows on
@@ -222,7 +232,11 @@ class KPConv_ClsSeg(nn.Module):
         backbones), "seg_feat": (B, seg_feat_dim, N) per-point features,
         reshaped from KPConv's native stacked (total_points, C) layout --
         see module docstring for why this reshape is exact, not
-        approximate, given our fixed N per sample}."""
+        approximate, given our fixed N per sample, and, when
+        activate_DefRec=True, "DefRec": (B, N, 3) reconstructed points
+        (RegionReconstruction's own output convention -- permuted to
+        (B, N, 3) internally). B1/B2 callers that never set
+        activate_DefRec=True are unaffected."""
         x = batch.features.clone().detach()
 
         skip_x = []
@@ -249,6 +263,9 @@ class KPConv_ClsSeg(nn.Module):
         B = n_per_cloud.shape[0]
         N = int(n_per_cloud[0].item())
         logits["seg_feat"] = x.view(B, N, -1).permute(0, 2, 1).contiguous()  # (B, C, N)
+
+        if activate_DefRec:
+            logits["DefRec"] = self.DefRec(logits["seg_feat"])
 
         return logits
 

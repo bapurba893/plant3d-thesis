@@ -234,6 +234,65 @@ def make_kpconv_collate_fn(config):
     return collate_fn
 
 
+def batch_points_bcn(batch: "KPConvBatch") -> torch.Tensor:
+    """Extracts a batch's layer-0 (finest, full-resolution) points as a plain `(B, 3, N)`
+    tensor -- the counterpart to `build_batch_from_points` below, and the same fixed-N,
+    order-preserving reshape `models_kpconv.py::KPConv_ClsSeg.forward` already relies on for its
+    `(B, C, N)` seg_feat reshape (see that module's docstring for why this is exact, not
+    approximate, given this project's fixed N=4096 per sample)."""
+    pts_flat = batch.points[0]  # (B*N, 3)
+    B = batch.lengths[0].shape[0]
+    N = int(batch.lengths[0][0].item())
+    return pts_flat.view(B, N, 3).permute(0, 2, 1).contiguous()  # (B, 3, N)
+
+
+def build_batch_from_points(config, points_bcn: torch.Tensor, batch_builder=None) -> "KPConvBatch":
+    """Rebuilds a fresh `KPConvBatch` (full multi-layer neighbor/pool/upsample structure,
+    via the same `segmentation_inputs` call every other collate function here uses) from a
+    plain `(B, 3, N)` point tensor -- e.g. the output of `DefRec_and_PCM.DefRec.deform_input`,
+    which operates on raw `(B, C, N)` tensors and knows nothing about KPConv's batch format.
+
+    Why this exists (DA-S / row B3b only): DGCNN/PointNet2 take a raw `(B, 3, N)` tensor
+    directly as their `forward` input, so DefRec's "deform, then feed through the model" recipe
+    needs no extra plumbing for those two backbones -- the model's own forward pass internally
+    recomputes whatever geometric structure it needs (farthest-point sampling, ball query, k-NN)
+    from the deformed coordinates automatically, every call. KPConv is architecturally different:
+    its multi-layer neighbor/pool/upsample structure is precomputed OUTSIDE the model, by this
+    module's collate functions, from a specific set of point coordinates -- feeding deformed
+    points into an already-built `KPConvBatch` would silently reuse the ORIGINAL (undeformed)
+    geometry's neighbor structure, not a bug exactly, but not a faithful analogue of what
+    happens automatically for the other two backbones. This helper makes the KPConv path do the
+    same thing DGCNN/PointNet2 do implicitly: rebuild geometric structure from whatever
+    coordinates are being reconstructed, every time.
+
+    Uses `config.neighborhood_limits` (already calibrated, whatever the caller set it to) via
+    `KPConvBatchBuilder` -- no separate calibration needed for deformed geometry: since
+    `PointCloudDataset.big_neighborhood_filter` always hard-slices `neighbors[:, :limit]`
+    regardless of the true underlying count, this is safe from the same CUDA OOM `calibrate_
+    neighborhood_limits` exists to prevent even if deformation happens to produce locally denser
+    configurations than calibration observed (an inference, not measured directly, but load-
+    bearing: the slice is unconditional, not a probabilistic percentile guarantee).
+
+    `stacked_labels`/`species_labels` are dummy placeholders (never read) -- same convention as
+    `make_kpconv_collate_fn_cls_only` -- since DefRec only needs `batch.points/neighbors/pools/
+    upsamples/lengths/features` for the forward pass, confirmed by reading `KPConv_ClsSeg.
+    forward` directly (it never touches `batch.labels`/`batch.species_labels`)."""
+    batch_builder = batch_builder or KPConvBatchBuilder(config)
+
+    points_bnc = points_bcn.permute(0, 2, 1).contiguous()  # (B, N, 3)
+    B, N, _ = points_bnc.shape
+    stack_lengths = np.full((B,), N, dtype=np.int32)
+    stacked_points = points_bnc.reshape(B * N, 3).detach().cpu().numpy().astype(np.float32)
+    stacked_labels = np.zeros((B * N,), dtype=np.int64)  # placeholder, never read
+    stacked_features = np.ones((B * N, 1), dtype=np.float32)
+
+    input_list = batch_builder.segmentation_inputs(
+        stacked_points, stacked_features, stacked_labels, stack_lengths)
+
+    species_labels = np.zeros((B,), dtype=np.int64)  # placeholder, never read
+    return KPConvBatch(input_list, species_labels)
+
+
 def make_kpconv_collate_fn_cls_only(config):
     """Same as `make_kpconv_collate_fn`, but for a classification-only
     Dataset (e.g. `PlantSpeciesDataset`, used for Pheno4D held-out eval --
