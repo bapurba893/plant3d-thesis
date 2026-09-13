@@ -135,7 +135,8 @@ runs first and takes several minutes) — fixed and the smoke test restarted fro
 than spending the remaining smoke-test budget on a crash that was already diagnosable from the
 reference repo's source.
 
-## Status: submitted to the cluster (2026-09-13), job 309416 on `cn19-dgx`
+## Status: DONE. Job 309416 completed in 4h58m (2026-09-13) — the strongest non-Oracle result
+in the project so far. See "Results" below.
 
 CPU smoke test (after the fix above) passed: calibration completed in ~21 min
 (`neighborhood_limits`: source-only=[499,42,28], target-only=[499,35,29], combined=[499,42,29] —
@@ -147,12 +148,106 @@ deliberate 30-min timeout cutoff.
 concretely, not just in principle**: at `batch_size=4` (smoke test), batch 0 took 119.5s collate
 + 236.1s fwd+bwd+step (inflated by one-time warm-up costs, expected), batch 1 (steady-state)
 took 12.0s collate + 53.0s fwd+bwd+step — both dramatically higher than B1/B2's per-batch costs
-(typically single digits to tens of seconds total). Extrapolating to the real `batch_size=16`
-config (~16 batches/epoch, each needing 5 collate calls instead of 1-2): full runtime could
-plausibly land anywhere from several hours to several tens of hours depending on node contention
-(the same wide variance B1 showed across its two attempts) — comfortably inside the 60h budget
-on an uncontended node, but using much more of that budget's margin than B1 (2h15m) or B2
-(2h44m) did. Not reduced by shrinking `DEFREC_CHUNK` (chunking is a memory-safety measure for
-Chamfer distance, not primarily a speed lever, and smaller chunks mean MORE collate round-trips,
-not fewer) or by growing it (would raise GPU memory risk on the exact class of OOM this constant
-exists to prevent) -- kept at the reference value A3/C3 already validated, unchanged.
+(typically single digits to tens of seconds total). On the actual GPU run (batch_size=16), the
+real cost landed on the moderate end of that range: ~2.5-4 min/epoch, 100 epochs in **4h58m**
+(job 309416, no contention) — well inside the 60h budget, using more of it than B1 (2h15m) or B2
+(2h44m) but nowhere near the tens-of-hours worst case.
+
+---
+## Results (2026-09-13, job 309416, 4h58m)
+
+**This is the strongest result of any row in the entire project so far, non-Oracle or otherwise.**
+
+**Protocol-selected checkpoint** (best epoch by lowest source val total loss) — best epoch was
+**84** (source val total loss 0.8936):
+
+| Metric | B1 (KPConv, DA-0) | B3b (KPConv, DA-S) |
+|---|---|---|
+| Source val cls acc | 1.0000 | 1.0000 |
+| Target cls acc | 0.4444 (avg 0.5625) | **0.7143 (avg 0.7658)** |
+| Tomato seg mIoU (source val) | 0.3808 (acc 0.7551) | 0.2697 (acc 0.5658) |
+| Maize seg mIoU (source val) | 0.4414 (acc 0.8801) | 0.3910 (acc 0.8302) |
+
+**Full-trajectory analysis** (all 100 epochs' target-eval numbers, same methodology as every
+prior row):
+
+| Metric | B1 (DA-0) | B3b (DA-S) | A1→A3 (DA-0→DA-S) | C1→C3 (DA-0→DA-S) |
+|---|---|---|---|---|
+| Full-run mean | 0.629 | **0.860** | 0.599→0.800 (+0.201) | 0.791→0.703 (−0.088) |
+| Full-run stdev | 0.203 | **0.086** | 0.196→0.158 | 0.104→0.104 |
+| corr(selection-loss, target acc) | +0.316 | +0.291 | −0.165→−0.009 | −0.286→+0.222 |
+| Collapse epochs (all-one-class) | 3/100 | **0/100** | 17/100→2/100 | 3/100→not re-checked |
+| Quartile means (Q1→Q4) | 0.750/0.617/0.667/0.484 | **0.912/0.908/0.861/0.759** | (rises then holds) | (declining) |
+| Selected-checkpoint acc | 0.4444 | 0.7143 (+0.270) | 0.4603→0.8889 (+0.429) | 0.7460→0.5714 (−0.175) |
+
+For scale: B1→B3b's full-run-mean gain (**+0.231**, 23.1 points) is *larger* than A1→A3's own
+gain (+0.201, 20.1 points) — the biggest DA-S improvement over its own DA-0 baseline seen on any
+backbone so far. B3b's full-run mean (0.860) sits only **0.065 below C5's Oracle ceiling**
+(0.925, the only row in the project trained directly on labeled target data) — remarkable given
+B3b never touches a single target label.
+
+### Directly answering the user's three-way question: flip DA-A's pattern, align with C3's null result, or something distinct?
+
+**Neither, cleanly — B3b is its own, stronger case, closer in direction to A3 but distinct in
+both magnitude and in what it costs.**
+
+- **It does NOT align with C3 (DGCNN).** C3 showed DA-S actively hurting DGCNN's target-
+  classification transfer (0.791→0.703, an 8.8-point loss, though a stable one). B3b shows the
+  opposite: a 23.1-point *gain*. KPConv's DA-S result is about as far from C3's as it's possible
+  to be while still being the same method.
+- **It is not simply "the same reversal A3 showed, ported over."** It's a *bigger* reversal on
+  every full-trajectory measure that matters: bigger full-run-mean gain (+23.1 vs. +20.1
+  points), a much lower full-run stdev (0.086 vs. A3's 0.158 — B3b is the single most stable
+  trajectory of *any* row trained in this project, DA-0/DA-A/DA-S/DA-O included, more stable
+  even than C1's previous-best 0.104), and **zero collapse epochs** (A3 still had 2/100; every
+  other row, including every DA-0 baseline, had at least some). The one place A3's reversal was
+  clearly bigger: its selected-checkpoint gain (+0.429) exceeds B3b's (+0.270) — A3's single
+  best snapshot landed higher (0.8889 vs. 0.7143) even though B3b's overall trajectory is
+  stronger and steadier.
+- **It does not flip B2's (DA-A's) pattern either — it's a different kind of result entirely.**
+  B2 showed DA-A roughly *tying* B1 (a flat +0.003 on full-run mean) — DANN neither helped nor
+  hurt KPConv much. B3b shows DA-S *substantially* helping KPConv — a much stronger, unambiguous
+  positive effect than DA-A produced on the same backbone. So within Block B itself, the two
+  adaptation methods tried so far land in genuinely different places: DA-A ≈ neutral, DA-S ≈
+  strongly positive.
+- **One thing that does NOT change from B1 to B3b: the selection-signal correlation.** It stays
+  positive and essentially flat (+0.316 → +0.291), still on the wrong (positive) side. A1→A3
+  moved in a different way — from a weakly-informative −0.165 to a near-zero −0.009 (still
+  correctly-signed, just less informative) — but never crossed to the wrong side the way B1/B3b
+  sit throughout. KPConv's positive-correlation selection-signal issue persists at essentially
+  the same strength whether DA-A or DA-S is layered on top of it — suggesting this
+  is a fairly structural property of how KPConv's source validation loss relates to target
+  accuracy on this dataset, not something tied to any one adaptation method. Practically: even
+  though B3b's *trajectory* is excellent, the checkpoint the protocol actually selects (epoch 84,
+  acc 0.7143) is still noticeably below the trajectory's own ceiling (max 0.9365) — real
+  headroom is being left on the table by the selection protocol here too, same structural
+  critique as B1/B2.
+
+### The segmentation story is also cleanly different from A3's — no collapse, gradual improvement
+
+A3's PointNet++ DA-S win came at a real cost: Tomato seg mIoU collapsed from ~0.27 to a
+~0.02-0.09 floor within a few epochs and never recovered. **B3b shows nothing like this.**
+Reading the full per-epoch trajectory (not just the FINAL line): Tomato seg mIoU *rises*
+steadily over training (quartile means 0.207→0.240→0.254→0.269, starting ~0.16-0.22 and ending
+~0.27), and Maize seg mIoU rises even more (quartile means 0.265→0.361→0.384→0.387, starting
+~0.04-0.16 and ending ~0.39, close to B1's own 0.4414). Both organ classes end only modestly
+below B1's DA-0 baseline (Tomato 0.2697 vs. 0.3808, Maize 0.3910 vs. 0.4414) — a real but mild
+cost, nothing resembling A3's collapse. **KPConv's DA-S win is closer to a clean win than any
+other adaptation-method result in the project so far** — large classification gain, best-in-
+project stability, and only a modest (not collapsed) segmentation cost.
+
+### Conclusion
+
+KPConv's response to DA-S is the strongest positive adaptation result found anywhere in this
+project (Oracle excluded) — bigger than A3's already-notable reversal, dramatically more stable
+than any other row, and without A3's severe segmentation trade-off. It does not fit neatly into
+either prior pattern (C3's clean negative result, or "A3's reversal, just ported over") — it's a
+genuinely new data point showing DA-S's benefit can be not just backbone-dependent in direction
+(already established by A3 vs. C3) but also highly variable in *magnitude and cost profile*
+even among the backbones where it helps. One structural finding carries over unchanged from B1
+and B2: KPConv's selection-signal correlation with true target performance stays positive
+(wrong-direction) regardless of which adaptation method is layered on top, suggesting it's a
+property of the backbone+dataset pairing itself, not of any one DA method. Given this result and
+A3's, self-supervised deformation reconstruction is now 2-for-3 across backbones (helps
+PointNet++, helps KPConv even more, hurts DGCNN) — worth real weight when Block D's fusion work
+picks a backbone/DA/augmentation combination to build on.

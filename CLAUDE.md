@@ -671,19 +671,53 @@ were not — see Repository layout above).
   far higher than B1/B2's, from needing ~5 collate calls per training step (1 clean + 4 deformed-
   chunk rebuilds) instead of 1-2 — expected to use much more of the 60h budget than B1/B2 did,
   though still comfortably inside it barring contention. Full design decisions and the bug
-  writeup in `step_notes/B3b_KPConv_DA_S.md`. Awaiting completion.
+  writeup in `step_notes/B3b_KPConv_DA_S.md`.
+- **Row B3b (KPConv, DA-S, ALL) finished — the strongest non-Oracle result in the whole
+  project** (2026-09-13, job 309416, 4h58m, no contention). Best epoch 84.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | B1 (DA-0) | B3b (DA-S) | A1→A3 (DA-0→DA-S) | C1→C3 (DA-0→DA-S) |
+  |---|---|---|---|---|
+  | Full-run mean | 0.629 | **0.860** | 0.599→0.800 (+0.201) | 0.791→0.703 (−0.088) |
+  | Full-run stdev | 0.203 | **0.086** | 0.196→0.158 | 0.104→0.104 |
+  | corr(selection-loss, target acc) | +0.316 | +0.291 | −0.165→−0.009 | −0.286→+0.222 |
+  | Collapse epochs | 3/100 | **0/100** | 17/100→2/100 | 3/100→n/a |
+  | Selected-checkpoint acc | 0.4444 | 0.7143 (+0.270) | 0.4603→0.8889 (+0.429) | 0.7460→0.5714 (−0.175) |
+
+  **Answering the motivating three-way question (flip DA-A's pattern like B2, align with C3's
+  null result, or something distinct?): distinct from both, and stronger than either.** It
+  clearly does NOT align with C3 (DGCNN: DA-S hurts by 8.8 points; KPConv: DA-S helps by 23.1
+  points — about as far apart as two results on the same method can be). It is NOT simply "A3's
+  reversal ported over" either — B1→B3b's full-run-mean gain (+23.1 points) actually *exceeds*
+  A1→A3's (+20.1 points), and B3b's stdev (0.086) and collapse count (0/100) both beat every
+  other row trained in this project so far, DA-0/DA-A/DA-S/DA-O included — the single most
+  stable trajectory seen yet. (A3 still wins on selected-checkpoint magnitude: +0.429 vs. B3b's
+  +0.270 — A3's best single snapshot lands higher even though B3b's overall trajectory is
+  stronger and steadier.) It does not mirror B2 (DA-A) either — B2 was roughly a tie with B1
+  (+0.003 full-run mean), while B3b is a decisive win — so within Block B, DA-A and DA-S land in
+  genuinely different places on the same backbone. **B3b's full-run mean (0.860) sits only 0.065
+  below C5's Oracle ceiling (0.925)** — remarkable for a method that never touches a target
+  label. Unlike A3, this win is NOT bought with a segmentation collapse: reading the full
+  per-epoch trajectory, both Tomato and Maize seg mIoU *rise* steadily over training (no
+  collapse-and-floor pattern at all), ending only modestly below B1's baseline (Tomato
+  0.2697 vs. 0.3808, Maize 0.3910 vs. 0.4414) — the cleanest win of any adaptation-method result
+  in the project. One thing that does NOT change from B1: the selection-signal correlation stays
+  positive and essentially flat (+0.316→+0.291, still wrong-signed) — this specific KPConv
+  quirk appears structural to the backbone+dataset pairing, independent of which adaptation
+  method sits on top of it. Full trajectory tables and reasoning in
+  `step_notes/B3b_KPConv_DA_S.md`.
 
 **Next (in order):**
-1. Row B3b (KPConv, DA-S) is training on the cluster (job 309416, `--time=60:00:00`, expected to
-   run notably longer than B1/B2 given its higher collate-call count per step — see above) —
-   read its full-trajectory result the same way as every prior DA-S row once it finishes, then
-   run B3 (DA-D, the originally-planned row this addition does not replace), B4 (DA-0/L-D —
-   deliberately unadapted, the row most directly testing claimed density-robustness, now extra
-   interesting given B1/B2/B3b's mixed signals), B5 (DA-O) — **use `--time=60:00:00` for all of
-   these** — alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B2's result (DANN
-   doesn't hurt KPConv the way it hurts DGCNN/PointNet++, but does cost segmentation quality
-   same as both) and B3b's result (once in) are directly relevant background for B3 and for
-   eventually deciding which backbone/DA/augmentation combination Block D's fusion work builds on.
+1. Block B now has B1 (DA-0), B2 (DA-A), and B3b (DA-S) done — B3b is the strongest non-Oracle
+   result in the project (see above), worth real weight when Block D's fusion work picks a
+   backbone/DA/augmentation combination. Next: B3 (DA-D, the originally-planned row B3b did not
+   replace), B4 (DA-0/L-D — deliberately unadapted, the row most directly testing claimed
+   density-robustness, now extra interesting given B1/B2/B3b's mixed-to-strong signals), B5
+   (DA-O) — **use `--time=60:00:00` for all of these** — alongside remaining Block A rows (A4
+   DA-A/L-N, A5 Oracle). Self-supervised deformation reconstruction is now 2-for-3 across
+   backbones (helps PointNet++, helps KPConv even more, hurts DGCNN) — a real, cross-backbone
+   pattern worth keeping in mind for Block D even before B3/B4/B5 are in.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

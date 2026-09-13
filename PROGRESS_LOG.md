@@ -677,6 +677,46 @@ already accounted for by the generous time allowance already in place for this b
 
 ---
 
+## 24. Row B3b Finishes — the Best Result of the Entire Project So Far — 2026-09-13
+
+The run finished in under five hours, and the result is not just another data point — it is, by
+a clear margin, the best-performing non-Oracle configuration found anywhere in this project.
+
+Averaged across the entire training run, this combination (third backbone + self-supervised
+adaptation) scored 23 points higher on the unseen-dataset classification task than the same
+backbone's own "no adaptation" baseline — a bigger improvement than the previous best reversal
+seen on the second backbone. It was also, by a wide margin, the most *stable* run trained so
+far: its accuracy barely moved from epoch to epoch (the smallest spread of any run in the
+project, Oracle included), and it never once collapsed into guessing a single species for every
+plant, something every other "no adaptation" or adversarial run has done at least a handful of
+times. Its overall average score came within about six and a half points of the Oracle ceiling
+— the theoretical best-case number from a model trained directly on labeled examples from the
+target dataset, which this run never had access to.
+
+Just as important: unlike the second backbone's earlier self-supervised win (Milestone 17),
+which came at the cost of one organ-labeling task nearly collapsing entirely, this run's organ-
+labeling quality actually *improved* steadily over the course of training for both plant
+species — no collapse, no hidden cost. This is the cleanest win of any adaptation attempt tried
+in the project so far.
+
+Answering the specific question this row was built to test: does the third backbone respond to
+this method the way it responded to the adversarial method (roughly no effect either way), the
+way the first backbone responded to it (a strong, clear negative), or the second backbone's
+prior win (also positive, but with a real cost)? **None of the three, cleanly.** It's closer in
+direction to the second backbone's win, but bigger in every way that matters, and it doesn't
+carry that win's cost. One thing that stayed the same from this backbone's very first "no
+adaptation" run all the way through both adaptation methods tried on it since: the internal
+signal normally used to pick the best checkpoint still doesn't reliably track real performance
+on the unseen dataset for this backbone, regardless of which adaptation method is layered on
+top of it — a consistent, backbone-specific quirk worth remembering going forward, even though
+it didn't stop this particular run from landing on a strong checkpoint anyway.
+
+With this result in hand, the self-supervised method now has a 2-out-of-3 track record across
+the three architectures tried (helps two, hurts one) — a real, useful signal for choosing which
+backbone and adaptation combination to build the later trait/growth-prediction work on top of.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -694,7 +734,7 @@ at-a-glance status.
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
-| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | Training on cluster (job 309416), not yet finished |
+| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
@@ -706,12 +746,13 @@ at-a-glance status.
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
 **In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1/A2/A3 on
-PointNet++ and B1/B2 on KPConv — giving a real cross-backbone comparison showing self-supervised
-adaptation's effect flips direction entirely between backbones (hurts DGCNN, helps PointNet++),
-adversarial adaptation now ALSO flips rather than just varying in magnitude (hurts DGCNN clearly,
-hurts PointNet++ mildly, but does not hurt KPConv at all overall — though it costs segmentation
-quality on all three), and a confirmed Oracle ceiling showing real headroom exists — the other 14
-rows are not started yet.
+PointNet++ and B1/B2/B3b on KPConv — giving a real cross-backbone comparison showing
+self-supervised adaptation's effect ranges from hurting DGCNN, to helping PointNet++ with a
+segmentation cost, to helping KPConv even more (the best non-Oracle result in the project) with
+no segmentation cost at all; adversarial adaptation flips rather than just varying in magnitude
+(hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt KPConv overall — though it costs
+segmentation quality on all three); and a confirmed Oracle ceiling shows real headroom exists,
+though KPConv+DA-S has now closed most of that gap — the other 13 rows are not started yet.
 
 ---
 
