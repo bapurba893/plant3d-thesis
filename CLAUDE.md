@@ -603,17 +603,51 @@ were not — see Repository layout above).
   theoretical: the CPU smoke test's actual calibration found target-only differed from
   source-only at layer 2 (29 vs 28), a real measured instance, not hypothetical. CPU smoke test
   (1 epoch, real data) passed cleanly before submitting. Full design decisions in
-  `step_notes/B2_KPConv_DA_A.md`. Awaiting completion.
+  `step_notes/B2_KPConv_DA_A.md`.
+- **Row B2 (KPConv, DA-A, ALL) finished — the first backbone where DANN does NOT show a clear
+  DA-0→DA-A underperformance pattern** (2026-09-13, job 309232, 2h44m, no contention). Best
+  epoch 65.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | B1 (DA-0) | B2 (DA-A) | A1→A2 (DA-0→DA-A) | C1→C2 v2 (DA-0→DA-A) |
+  |---|---|---|---|---|
+  | Full-run mean | 0.629 | **0.632** | 0.599→0.554 (−0.045) | 0.791→0.633 (**−0.158**) |
+  | Full-run stdev | 0.203 | **0.141** | 0.196→0.193 (flat) | 0.104→0.117 (+0.013) |
+  | corr(selection-loss, target acc) | +0.316 | +0.238 | −0.165→+0.086 (worse) | −0.286→−0.061 (worse) |
+  | Collapse epochs | 3/100 | 2/100 | 17/100→15/100 | 3/100→5/100 |
+  | Selected-checkpoint acc | 0.4444 | **0.5714 (+0.127)** | 0.4603→0.4444 (−0.016) | 0.7460→0.6667 (−0.079) |
+
+  **Answering the motivating question directly: B1's poor selection-signal reliability does NOT
+  get worse under DANN — it improves marginally (+0.316→+0.238) but stays on the wrong
+  (positive) side, the same general unreliability rather than a deepened one.** More broadly,
+  KPConv responds to DANN on almost every axis differently from both other backbones: full-run
+  mean is essentially unchanged (not the clear decline C1→C2 shows or the smaller decline A1→A2
+  shows), the selected checkpoint actually *improved* (+12.7 points, the opposite direction from
+  both other backbones), and full-run stdev *decreased* (DANN stabilized KPConv's baseline,
+  unlike DGCNN where it rose slightly). The quartile shape also differs qualitatively — B2 dips
+  in Q2 then partially recovers through Q3/Q4 (ending on a low-variance, moderately-good
+  plateau), instead of the monotonic "erode to a low floor" pattern every other DA-0/DA-A row
+  shows. B1's systematic Maize-bias also eased under DANN (Tomato recall 0.125→0.375), not
+  worsened. **The one place DA-A costs KPConv something real, matching both other backbones: source-val
+  segmentation mIoU drops** (Tomato 0.3808→0.2730, Maize 0.4414→0.3889) — plausibly the same
+  shared-capacity competition between `L_seg` and the adversarial/entropy terms documented for
+  A2/C2. **This is now the second row (after A3's DA-S reversal) where an adaptation method's
+  effect is genuinely architecture-dependent in a way that isn't just "same direction, different
+  magnitude"** — DA-A's underperformance, previously read (after A2) as a shared, dataset-driven
+  property appearing on both backbones to different degrees, does not extend to KPConv at all.
+  Full trajectory tables and reasoning in `step_notes/B2_KPConv_DA_A.md`.
 
 **Next (in order):**
-1. Row B2 (KPConv, DA-A) is training on the cluster (job 309232, `--time=60:00:00`) — read its
-   full-trajectory result the same way as every prior DA-A row once it finishes, then continue
-   Block B (B3 DA-D, B4 DA-0/L-D, B5 DA-O — **use `--time=60:00:00` for all of these**) alongside
-   remaining Block A rows (A4 DA-A/L-N, A5 Oracle). B1's mixed stability signature (DGCNN-like
-   collapse resistance, but the highest variance and most misleading selection signal of the
-   three backbones) is directly relevant background for reading B2 — worth watching whether B2
-   shows the same C2/A2 underperformance-vs-DA-0 pattern, and whether B1's positive
-   selection-signal correlation (unique among DA-0 rows so far) recurs or was baseline-specific.
+1. Block B now has both its DA-0 baseline (B1) and DA-A anchor (B2) done, with a genuinely
+   surprising finding (KPConv doesn't show the DA-A-underperforms-DA-0 pattern the other two
+   backbones share). Continue Block B (B3 DA-D, B4 DA-0/L-D — deliberately unadapted, the row
+   most directly testing claimed density-robustness, now extra interesting given B1/B2's mixed
+   signals — B5 DA-O — **use `--time=60:00:00` for all of these**) alongside remaining Block A
+   rows (A4 DA-A/L-N, A5 Oracle). B2's result (DANN doesn't hurt KPConv the way it hurts DGCNN/
+   PointNet++, but does cost segmentation quality same as both) is directly relevant background
+   for B3 (a different, non-adversarial DA method) and for eventually deciding which
+   backbone/DA/augmentation combination Block D's fusion work builds on.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

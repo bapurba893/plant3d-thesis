@@ -601,6 +601,44 @@ time allowance now standard for this backbone.
 
 ---
 
+## 22. Row B2 Finishes — the Third Backbone Doesn't Follow the Other Two's Script — 2026-09-13
+
+The run finished in under three hours, no shared-GPU slowdown this time. The result is the most
+surprising one yet, and genuinely reshapes how this project should think about the adversarial
+adaptation method going forward.
+
+On both other architectures tried so far (Milestone 10 and its follow-ups for one, and the
+PointNet++ counterpart for the other), adding this adversarial adaptation method made things
+measurably *worse* than doing nothing — one architecture took a big hit, the other a smaller one,
+but both moved the same direction. The working assumption became: this is mostly a property of
+the *data* (the two datasets disagree on which plant species is more common, and there isn't much
+data to learn from), not the specific model architecture, so it should probably show up on the
+third architecture too, just to some degree.
+
+**That assumption turned out to be wrong.** On this third backbone, adding the adversarial method
+did not hurt overall accuracy at all — it came out essentially tied with "no adaptation," and the
+specific checkpoint the automated selection process picked was actually noticeably *better* than
+the one it picked without adaptation. The training process also became *more* stable, not less,
+which is the opposite of what happened on the first architecture tested. And the specific,
+lopsided mistake this backbone's plain baseline kept making (guessing "maize" too often) got
+measurably less severe with adversarial training added, not worse.
+
+The one place this backbone did pay a real price, matching both of the others: its ability to
+label individual points as leaf/stem/soil got noticeably worse once the adversarial method was
+added, plausibly because the model has to split its attention between that task and the new
+adversarial one. So it isn't a free win — just a different, more favorable trade than the other
+two architectures got.
+
+This is now the second time (after the self-supervised method's earlier reversal on a different
+backbone, Milestone 17) that a technique's real-world effect flips or disappears entirely
+depending on which architecture it's paired with, rather than just getting weaker or stronger by
+degree. That's an important, reportable finding on its own: it means no single "this technique
+works" or "doesn't work" conclusion can be trusted without checking it against more than one
+architecture — exactly the kind of cross-architecture comparison this project's whole design was
+built around from the start.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -616,7 +654,7 @@ at-a-glance status.
 | A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
-| B (KPConv) | B2 | Adversarial (anchor method) | Training on cluster (job 309232), not yet finished |
+| B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
@@ -629,13 +667,12 @@ at-a-glance status.
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
 **In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1/A2/A3 on
-PointNet++ — giving a real cross-backbone comparison showing adversarial adaptation's
-underperformance is a shared (dataset-driven) pattern of differing magnitude, self-supervised
-adaptation's effect is architecture-dependent enough to actually flip direction (hurts DGCNN,
-helps PointNet++ with a segmentation tradeoff), and a confirmed Oracle ceiling showing real
-headroom exists — the third backbone (KPConv, Block B) is now integrated with its own baseline
-(B1) done, showing a distinct third stability pattern rather than confirming a simple
-density-robust-means-stable story, with the other 15 rows not started yet.
+PointNet++ and B1/B2 on KPConv — giving a real cross-backbone comparison showing self-supervised
+adaptation's effect flips direction entirely between backbones (hurts DGCNN, helps PointNet++),
+adversarial adaptation now ALSO flips rather than just varying in magnitude (hurts DGCNN clearly,
+hurts PointNet++ mildly, but does not hurt KPConv at all overall — though it costs segmentation
+quality on all three), and a confirmed Oracle ceiling showing real headroom exists — the other 14
+rows are not started yet.
 
 ---
 
