@@ -717,6 +717,39 @@ backbone and adaptation combination to build the later trait/growth-prediction w
 
 ---
 
+## 25. Row B3 Started — Is the Third Backbone's Big Win Specific to One Method, or General? — 2026-09-14
+
+The third backbone's self-supervised-adaptation result (Milestone 24) was so strong that it
+raised an obvious follow-up question: is this backbone just unusually receptive to domain
+adaptation in general, or did it specifically click with that one method's particular trick
+(reconstructing a deliberately distorted version of the input)? The cleanest way to find out is
+to try a third, genuinely different adaptation technique on the same backbone — one that works
+by a completely different mechanism (nudging the two datasets' internal feature statistics to
+look alike, rather than fighting a discriminator or solving a reconstruction puzzle) — and see
+whether it also helps, or not.
+
+This technique had no ready-made version to borrow from the external codebase this project
+builds on, the same situation the adversarial method was in originally — so it was built from
+scratch, choosing the simpler of two standard variants (the one with fewer tuning knobs) and
+documenting that choice explicitly rather than treating it as an obvious default. Structurally,
+this new attempt is much simpler to run than either of the previous two adaptation methods for
+this backbone — it needs no adversarial back-and-forth and no expensive rebuild-the-geometry
+step the reconstruction method required — so it's expected to run in a similar amount of time to
+the very first "no adaptation" and adversarial rows on this backbone (a few hours), not the
+longer run the reconstruction method needed.
+
+One operational hiccup along the way, unrelated to the actual method: the routine trial run
+before committing real GPU time to this got cut short when the local working session itself was
+unexpectedly interrupted and restarted mid-run — not a bug in the new code. Checked the trial
+run's partial output directly before deciding how to proceed: it had already worked through the
+overwhelming majority of a full pass through the data (60 out of 65 batches) with no errors and
+reasonable, consistent timing, which was judged as more than enough evidence to trust the code
+without repeating the trial a third time. The real run was then handed off to the cluster GPU,
+which — unlike the quick local trial — keeps running independently of this working session even
+if it gets interrupted again.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -733,7 +766,7 @@ at-a-glance status.
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
-| B (KPConv) | B3 | Discrepancy-based adaptation | Not started |
+| B (KPConv) | B3 | Discrepancy-based adaptation | Training on cluster (job 310284), not yet finished |
 | B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |

@@ -707,17 +707,37 @@ were not — see Repository layout above).
   quirk appears structural to the backbone+dataset pairing, independent of which adaptation
   method sits on top of it. Full trajectory tables and reasoning in
   `step_notes/B3b_KPConv_DA_S.md`.
+- **Row B3 (KPConv, DA-D, ALL) submitted to the cluster** (2026-09-14, job 310284 on
+  `cn11-dgx`, `--time=60:00:00`). The row CLAUDE.md's strategy table actually specifies as B3
+  (discrepancy-based, not self-supervised) — see the Backbones/strategy-table entries above for
+  the B3-vs-B3b naming distinction this project already caught and corrected once. Per explicit
+  user instruction: tests whether B3b's dramatic KPConv+DA-S win (+23.1 points full-run mean,
+  the project's best non-Oracle result) is specific to the self-supervised reconstruction
+  mechanism, or whether KPConv responds well to domain-adaptation pressure generally, using a
+  mechanistically distinct method (Deep CORAL feature-covariance alignment — no discriminator,
+  no reconstruction pretext) as the test. No reference implementation existed to adapt
+  (DefRec_and_PCM implements DefRec+PCM only, confirmed by grep, same as `dann.py`'s situation)
+  — new `adapters/coral.py` implements standard Deep CORAL from scratch, chosen over MMD for
+  having no kernel-bandwidth hyperparameter to select (an explicit, flagged choice, not a spec
+  mandate). Per CLAUDE.md's loss architecture, `L_CORAL` is Kendall-weighted (a cooperative DA
+  loss, unlike DA-A's fixed/scheduled `L_dom`/`L_ent`) — a real, substantive difference from B2's
+  loss combination, not just a different loss function. Structurally much simpler than both B2
+  (no discriminator/GRL/entropy schedule) and B3b (no deformed-batch rebuilds at all) — expected
+  per-epoch cost close to B1/B2's real runtimes (a few hours), not B3b's ~5h. CPU smoke test was
+  interrupted by a session/environment issue (not a code bug) after 60/65 batches had already
+  run cleanly with sane, bounded per-batch costs — judged sufficient to proceed without a third
+  attempt; see `step_notes/B3_KPConv_DA_D.md` for the full reasoning. Awaiting completion.
 
 **Next (in order):**
-1. Block B now has B1 (DA-0), B2 (DA-A), and B3b (DA-S) done — B3b is the strongest non-Oracle
-   result in the project (see above), worth real weight when Block D's fusion work picks a
-   backbone/DA/augmentation combination. Next: B3 (DA-D, the originally-planned row B3b did not
-   replace), B4 (DA-0/L-D — deliberately unadapted, the row most directly testing claimed
-   density-robustness, now extra interesting given B1/B2/B3b's mixed-to-strong signals), B5
-   (DA-O) — **use `--time=60:00:00` for all of these** — alongside remaining Block A rows (A4
-   DA-A/L-N, A5 Oracle). Self-supervised deformation reconstruction is now 2-for-3 across
-   backbones (helps PointNet++, helps KPConv even more, hurts DGCNN) — a real, cross-backbone
-   pattern worth keeping in mind for Block D even before B3/B4/B5 are in.
+1. Row B3 (KPConv, DA-D) is training on the cluster (job 310284, `--time=60:00:00`) — read its
+   full-trajectory result the same way as every prior row once it finishes (comparing against B1
+   DA-0, and against B2/B3b to see where DA-D lands relative to KPConv's other two adaptation
+   results), then run B4 (DA-0/L-D — deliberately unadapted, the row most directly testing
+   claimed density-robustness, now extra interesting given B1/B2/B3b's mixed-to-strong signals),
+   B5 (DA-O) — **use `--time=60:00:00` for all of these** — alongside remaining Block A rows (A4
+   DA-A/L-N, A5 Oracle). Self-supervised deformation reconstruction is 2-for-3 across backbones
+   (helps PointNet++, helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth
+   keeping in mind for Block D regardless of B3's result.
 
 ## Style notes
 - Documents/reports: black and white only, no color.
