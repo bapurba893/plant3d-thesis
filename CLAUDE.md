@@ -726,18 +726,59 @@ were not — see Repository layout above).
   per-epoch cost close to B1/B2's real runtimes (a few hours), not B3b's ~5h. CPU smoke test was
   interrupted by a session/environment issue (not a code bug) after 60/65 batches had already
   run cleanly with sane, bounded per-batch costs — judged sufficient to proceed without a third
-  attempt; see `step_notes/B3_KPConv_DA_D.md` for the full reasoning. Awaiting completion.
+  attempt; see `step_notes/B3_KPConv_DA_D.md` for the full reasoning.
+- **Row B3 (KPConv, DA-D, ALL) finished — KPConv's SECOND clear adaptation win, landing next to
+  B3b (DA-S) not B2 (DA-A)** (2026-09-14/15, job 310284, 10h12m — a confirmed real GPU-contention
+  episode mid-run, ~15x slowdown for several hours around epochs 69-79, checked directly via
+  per-epoch timestamps, not guessed; absorbed fine by the 60h budget, second independent
+  confirmation of this cluster-level risk after B1's original incident). Best epoch 94.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | B1 (DA-0) | B2 (DA-A) | B3 (DA-D) | B3b (DA-S) |
+  |---|---|---|---|---|
+  | Full-run mean | 0.629 | 0.632 (+0.003) | **0.808 (+0.179)** | 0.860 (+0.231) |
+  | Full-run stdev | 0.203 | 0.141 | **0.094** | 0.086 |
+  | corr(selection-loss, target acc) | +0.316 | +0.238 | +0.268 | +0.291 |
+  | Collapse epochs | 3/100 | 2/100 | **0/100** | 0/100 |
+  | Selected-checkpoint acc | 0.4444 | 0.5714 (+0.127) | **0.6825 (+0.238)** | 0.7143 (+0.270) |
+
+  **Answering the motivating question directly: Deep CORAL lands clearly and unambiguously on
+  the "large win" side, much closer to B3b than to B2.** B3's full-run-mean gain (+17.9 points)
+  is nearly 60x B2's (+0.3 points) and reaches 77% of B3b's own gain — the second-most-stable
+  trajectory of any row in the entire project (stdev 0.094, beaten only by B3b's 0.086, below
+  even C1's previous best of 0.104), with zero collapse epochs matching B3b exactly. **This
+  clarifies the broader question in a specific, informative way**: DA-D (CORAL) and DA-S
+  (DefRec) sit on OPPOSITE ends of the "exposes the model to real target-domain geometry"
+  spectrum — CORAL only ever touches abstract pooled feature-covariance statistics, never
+  reconstructs or aligns actual target point coordinates, while DefRec's whole mechanism IS
+  reconstructing deformed target geometry — yet both produce large wins, while DA-A (also
+  mechanistically distinct from both) is the one outlier. If "needs real target-domain geometry
+  exposure" were the operative explanation, CORAL should have looked more like DA-A's tepid
+  result; it didn't. **The best-supported read: what predicts success for KPConv here is
+  specifically whether the DA loss is cooperative/directly-minimized (DA-D and DA-S are both
+  Kendall-weighted per CLAUDE.md's loss architecture) rather than adversarial (DA-A's `L_dom`/
+  `L_ent` are fixed/scheduled precisely because of their min-max structure) — not "any
+  adaptation helps" and not "needs geometry exposure specifically."** Flagged as the
+  best-supported reading, not a proven causal mechanism — a competing, equally-consistent
+  explanation (KPConv is just generally adaptation-receptive, with DA-A being its weakest form
+  of help rather than categorically different) isn't ruled out by this row alone; see
+  `step_notes/B3_KPConv_DA_D.md` for the full reasoning on why neither B4 nor B5 will resolve
+  this either. One place B3 differs from B3b: **Tomato seg mIoU (0.2482) is the lowest of any
+  DA method** (vs. B2's 0.2730, B3b's 0.2697), while **Maize mIoU (0.4150) is the highest of the
+  three** (vs. B2's 0.3889, B3b's 0.3910) — no collapse in either case, both rise steadily over
+  training. Full trajectory tables and reasoning in `step_notes/B3_KPConv_DA_D.md`.
 
 **Next (in order):**
-1. Row B3 (KPConv, DA-D) is training on the cluster (job 310284, `--time=60:00:00`) — read its
-   full-trajectory result the same way as every prior row once it finishes (comparing against B1
-   DA-0, and against B2/B3b to see where DA-D lands relative to KPConv's other two adaptation
-   results), then run B4 (DA-0/L-D — deliberately unadapted, the row most directly testing
-   claimed density-robustness, now extra interesting given B1/B2/B3b's mixed-to-strong signals),
-   B5 (DA-O) — **use `--time=60:00:00` for all of these** — alongside remaining Block A rows (A4
-   DA-A/L-N, A5 Oracle). Self-supervised deformation reconstruction is 2-for-3 across backbones
-   (helps PointNet++, helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth
-   keeping in mind for Block D regardless of B3's result.
+1. Block B now has three of five rows done (B1 DA-0, B2 DA-A, B3 DA-D, B3b DA-S added) — two of
+   three real adaptation methods tried (DA-D, DA-S) are clear wins, one (DA-A) is roughly
+   neutral, a pattern now read as "cooperative losses help KPConv, adversarial doesn't" (see
+   above, flagged as best-supported not proven). Next: B4 (DA-0/L-D — deliberately unadapted,
+   the row most directly testing claimed density-robustness), B5 (DA-O) — **use
+   `--time=60:00:00` for both** — alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle).
+   Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
+   helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
+   for Block D, now joined by CORAL's similarly strong KPConv-specific result.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

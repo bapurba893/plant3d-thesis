@@ -750,6 +750,55 @@ if it gets interrupted again.
 
 ---
 
+## 26. Row B3 Finishes — the Third Backbone's Second Clear Win, and a Cleaner Answer to "Why" — 2026-09-15
+
+The run took much longer than expected — about ten hours instead of the two or three hours the
+other simple runs on this backbone had taken. Checked directly rather than shrugged off: the
+slowdown wasn't spread evenly across the whole run. The first roughly six in ten training rounds
+went at completely normal speed, then there was a stretch of several hours where progress
+slowed to about a fifteenth of the normal pace, before recovering back to something close to
+normal for the rest of the run. That shape — fast, then a sustained slow patch, then fast again
+— is the signature of someone else's work competing for the same shared graphics card partway
+through, the same phenomenon already documented once for this backbone's very first row. The
+generous time allowance already in place easily absorbed it without needing to intervene.
+
+The result itself is the second clear success story for this backbone's adaptation attempts.
+Averaged across the whole run, this technique (matching the overall statistical "shape" of the
+two datasets' internal features, without ever directly working with actual 3D point positions
+from the unseen dataset) improved target-dataset accuracy by nearly 18 points over the "no
+adaptation" baseline — not quite matching the self-supervised method's earlier 23-point win, but
+in the same league, and nowhere near the adversarial method's roughly break-even result from
+earlier. It was also, like the self-supervised win, extremely stable — the second-steadiest run
+of anything trained in this entire project so far, and it never once collapsed into guessing a
+single species for every plant.
+
+This result does real, useful work answering the open question from the self-supervised win:
+was that earlier success just a lucky match between this one specific technique and this one
+specific backbone, or does this backbone generally respond well to being nudged toward the
+unseen dataset by more or less any method? The new technique tried here works completely
+differently from the self-supervised one — it never looks at or tries to reconstruct any actual
+3D geometry from the unseen dataset at all, it only tries to make two abstract summary numbers
+(covariance statistics of the model's internal features) match between the two datasets. If the
+backbone's earlier win had been specifically about exposure to real unseen-dataset geometry, this
+new technique — which gets none of that — should have looked much more like the adversarial
+method's weak result. It didn't; it looked far more like the self-supervised method's strong
+result. That rules out "needs real geometry" as the explanation and points instead toward a
+simpler, cleaner one: this backbone seems to specifically dislike the tug-of-war training
+dynamic the adversarial method uses (a discriminator actively trying to defeat the main network),
+while it works well with methods that just directly, cooperatively pull the two datasets'
+representations closer together — regardless of whether that pull happens through raw geometry
+or through abstract statistics. This is flagged as the best-supported reading of the evidence
+gathered so far, not a fully proven explanation — a full proof would need a second, different
+adversarial method to test against, which isn't part of the current plan.
+
+One place this run's result differs from the self-supervised win: it costs a bit more on one of
+the two organ-labeling tasks (tomato) than either other adaptation method did, while doing
+noticeably better than the other two methods at preserving the second organ-labeling task
+(maize) — a real, specific trade-off worth remembering rather than a simple "this technique is
+strictly better or worse."
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -766,7 +815,7 @@ at-a-glance status.
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
-| B (KPConv) | B3 | Discrepancy-based adaptation | Training on cluster (job 310284), not yet finished |
+| B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
 | B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
@@ -779,13 +828,16 @@ at-a-glance status.
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
 **In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1/A2/A3 on
-PointNet++ and B1/B2/B3b on KPConv — giving a real cross-backbone comparison showing
+PointNet++ and B1/B2/B3/B3b on KPConv — giving a real cross-backbone comparison showing
 self-supervised adaptation's effect ranges from hurting DGCNN, to helping PointNet++ with a
 segmentation cost, to helping KPConv even more (the best non-Oracle result in the project) with
 no segmentation cost at all; adversarial adaptation flips rather than just varying in magnitude
 (hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt KPConv overall — though it costs
-segmentation quality on all three); and a confirmed Oracle ceiling shows real headroom exists,
-though KPConv+DA-S has now closed most of that gap — the other 13 rows are not started yet.
+segmentation quality on all three); a second, mechanistically distinct adaptation method
+(discrepancy-based) also lands as a clear KPConv win, together pointing at "cooperative losses
+help this backbone, adversarial doesn't" rather than "needs real target geometry" as the
+explanation; and a confirmed Oracle ceiling shows real headroom exists, though KPConv's two
+winning methods have now closed most of that gap — the other 12 rows are not started yet.
 
 ---
 
