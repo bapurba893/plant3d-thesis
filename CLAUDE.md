@@ -787,18 +787,52 @@ were not — see Repository layout above).
   smoke test passed cleanly (26 batches, fast/consistent per-batch costs matching B1's own
   original smoke-test profile) — launched detached (`nohup`/`disown`) from the start this time
   given B3's smoke test was lost to a session-teardown issue, though not needed here (no
-  interruption). Full design decisions in `step_notes/B4_KPConv_DA0_LD.md`. Awaiting completion.
+  interruption). Full design decisions in `step_notes/B4_KPConv_DA0_LD.md`.
+- **Row B4 (KPConv, DA-0, L-D only) finished — a mixed result that SHARPENS rather than
+  resolves KPConv's selection-signal problem** (2026-09-15, job 311004, 2h10m, no contention).
+  Best epoch 73.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | B1 (DA-0, ALL) | B4 (DA-0, L-D only) |
+  |---|---|---|
+  | Full-run mean | 0.629 | 0.649 (+0.020) |
+  | Full-run stdev | 0.203 | 0.168 |
+  | corr(selection-loss, target acc) | +0.316 | **+0.470 (worse)** |
+  | Collapse epochs | 3/100 | 1/100 |
+  | Selected-checkpoint acc | 0.4444 | 0.5556 (+0.111) |
+
+  **Answering the motivating question (does isolating L-D with zero adaptation cleanly confirm
+  KPConv's claimed density-robustness?): no.** Raw trajectory numbers look like a mild
+  improvement (mean +2 points, stdev down, collapse epochs down, selected checkpoint +11.1
+  points), but `corr(selection-loss, target acc)` gets meaningfully WORSE, not better — +0.316→
+  +0.470, **the single most positive (most actively misleading) correlation of any row trained
+  in this project so far**, surpassing B1's own previous project-worst. The quartile trend still
+  shows the same "early peak, then erode" DA-0 shape every prior DA-0/DA-A row has shown — L-D
+  alone doesn't change the qualitative drift pattern, only its magnitude. This adds to, rather
+  than resolves, B1's own finding that KPConv's baseline has a distinct instability signature
+  that complicates the density-sensitivity hypothesis — even the cleanest possible test (density-
+  focused augmentation, zero adaptation-method interference) makes the backbone's
+  selection-signal reliability problem worse, not better. **One real, KPConv-specific
+  augmentation effect found**: segmentation mIoU improves on BOTH organ classes (Tomato 0.3808→
+  0.4286, Maize 0.4414→0.4624) despite B4 still including the same point-removing L-D
+  augmentation B1's ALL mix has — since point-removal can't explain this (unlike C4's DGCNN-
+  specific mechanism), the more likely driver is that the REMOVED augmentations (G-R/G-S/L-N)
+  were themselves making KPConv's segmentation harder, flagged as an inference, not verified by
+  ablation. The systematic Maize-bias eases somewhat (Tomato recall 0.125→0.300) but doesn't
+  disappear. Full trajectory tables and reasoning in `step_notes/B4_KPConv_DA0_LD.md`.
 
 **Next (in order):**
-1. Row B4 (KPConv, DA-0, L-D only) is training on the cluster (job 311004, `--time=60:00:00`) —
-   read its full-trajectory result the same way as every prior row once it finishes, comparing
-   against B1 (DA-0, ALL) to isolate the effect of narrowing augmentation to L-D alone, and
-   against B2/B3/B3b to see how a purely-unadapted density-robustness test fits alongside
-   KPConv's cooperative-vs-adversarial adaptation pattern. Then B5 (DA-O) — **use
-   `--time=60:00:00`** — alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle).
+1. Block B has four of five rows done (B1 DA-0, B2 DA-A, B3 DA-D, B3b DA-S added, B4 DA-0/L-D) —
+   only B5 (DA-O, the Oracle ceiling) remains for a complete Block B picture. **Use
+   `--time=60:00:00`** for B5, alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle).
    Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
    helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
-   for Block D, now joined by CORAL's similarly strong KPConv-specific result.
+   for Block D, now joined by CORAL's similarly strong KPConv-specific result. KPConv's
+   selection-signal reliability has now been measured across FIVE configurations (B1/B2/B3/B3b/
+   B4) and stayed positive/wrong-signed in every single one (+0.238 to +0.470) — worth carrying
+   into B5's own reading, and into any future write-up of this project's results, as a
+   backbone-level caveat independent of DA method or augmentation choice.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

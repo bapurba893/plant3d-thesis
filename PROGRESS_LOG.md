@@ -825,6 +825,39 @@ backbone, though this one is expected to run about as fast as that very first ro
 
 ---
 
+## 28. Row B4 Finishes — the Density Test Doesn't Give a Clean Answer, and Sharpens an Old Concern — 2026-09-15
+
+The run finished quickly, just over two hours, no shared-GPU slowdown this time — as expected
+for a row with no adaptation method's extra machinery.
+
+The result itself doesn't give the clean yes-or-no answer this row was hoping for. Looked at
+purely in terms of average accuracy on the unseen dataset, things look a little better with only
+the density/coverage-focused augmentation than with the full four-part mix — a small, real
+improvement, plus noticeably fewer total-collapse epochs and a better-performing selected
+checkpoint. If that were the whole story, it would read as mild support for this backbone's
+claimed density-handling strength.
+
+But the single most useful diagnostic this project has been tracking across every row on this
+backbone — whether the automatic "pick the best checkpoint" process can actually be trusted —
+got WORSE here, not better, and by a real margin: it's now the single least trustworthy
+selection signal of any row trained in this entire project so far, on any backbone. A better-
+looking internal validation score is, if anything, a slightly more reliable predictor of *worse*
+real-world performance here than it was even in this backbone's very first, already-flagged-as-
+concerning baseline. So this row doesn't resolve the open question about this backbone's
+selection-signal reliability — it adds a fifth data point (across five very different training
+recipes tried on it now) showing the same problem in every single one, regardless of which
+adaptation method or augmentation mix was used.
+
+One genuinely interesting side finding: the ability to label individual points correctly (leaf
+vs. stem vs. soil) improved for BOTH plant species compared to the full-augmentation baseline —
+even though the specific augmentation known to remove points from the scan (the same one blamed
+for a similar effect found earlier in the project) is present in both versions being compared
+here. That rules out the earlier explanation and points to a different, not-yet-confirmed one:
+it may be the augmentations that were REMOVED (rotation, scaling, added noise) that were making
+this particular backbone's point-labeling task harder, not the ones that were kept.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -843,7 +876,7 @@ at-a-glance status.
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
 | B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
-| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Training on cluster (job 311004), not yet finished |
+| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
@@ -854,16 +887,20 @@ at-a-glance status.
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
 **In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1/A2/A3 on
-PointNet++ and B1/B2/B3/B3b on KPConv — giving a real cross-backbone comparison showing
-self-supervised adaptation's effect ranges from hurting DGCNN, to helping PointNet++ with a
-segmentation cost, to helping KPConv even more (the best non-Oracle result in the project) with
-no segmentation cost at all; adversarial adaptation flips rather than just varying in magnitude
-(hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt KPConv overall — though it costs
-segmentation quality on all three); a second, mechanistically distinct adaptation method
-(discrepancy-based) also lands as a clear KPConv win, together pointing at "cooperative losses
-help this backbone, adversarial doesn't" rather than "needs real target geometry" as the
-explanation; and a confirmed Oracle ceiling shows real headroom exists, though KPConv's two
-winning methods have now closed most of that gap — the other 12 rows are not started yet.
+PointNet++ and B1/B2/B3/B3b/B4 on KPConv (four of five Block B rows) — giving a real
+cross-backbone comparison showing self-supervised adaptation's effect ranges from hurting DGCNN,
+to helping PointNet++ with a segmentation cost, to helping KPConv even more (the best non-Oracle
+result in the project) with no segmentation cost at all; adversarial adaptation flips rather
+than just varying in magnitude (hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt
+KPConv overall — though it costs segmentation quality on all three); a second, mechanistically
+distinct adaptation method (discrepancy-based) also lands as a clear KPConv win, together
+pointing at "cooperative losses help this backbone, adversarial doesn't" rather than "needs real
+target geometry" as the explanation; a deliberately-unadapted density-only test (B4) gives a
+mixed verdict, but sharpens rather than resolves a real, recurring finding that KPConv's
+model-selection signal is unreliable regardless of DA method or augmentation mix (now confirmed
+across five different configurations); and a confirmed Oracle ceiling shows real headroom
+exists, though KPConv's two winning methods have now closed most of that gap — the other 11
+rows are not started yet.
 
 ---
 
