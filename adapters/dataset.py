@@ -18,12 +18,13 @@ class count (the numeric ids are NOT confirmed to mean the same organ
 across species, so segmentation is always per-species, never a shared
 label space -- see adapters/models.py).
 
-Both datasets take an `augment_mode` ("all" [default] or "ln_only") that
-selects which augmentation pipeline `augment=True` applies -- "all" is
-the full G-R+G-S+L-N+L-D pipeline every row through C3 used; "ln_only" is
-L-N (Gaussian jitter) alone, for row C4 (DGCNN, DA-A, L-N), isolating
-DGCNN's noise weakness per CLAUDE.md's augmentation taxonomy. See
-scripts/augmentations.py's compose_pipeline_ln_only docstring.
+Both datasets take an `augment_mode` ("all" [default], "ln_only", or "ld_only") that selects
+which augmentation pipeline `augment=True` applies -- "all" is the full G-R+G-S+L-N+L-D pipeline
+every row through C3 used; "ln_only" is L-N (Gaussian jitter) alone, for row C4 (DGCNN, DA-A,
+L-N), isolating DGCNN's noise weakness per CLAUDE.md's augmentation taxonomy; "ld_only" is L-D
+(RandomCrop3D, CoarseDropout3D) alone, for row B4 (KPConv, DA-0, L-D), isolating KPConv's claimed
+density-robustness with no adaptation method's help. See scripts/augmentations.py's
+compose_pipeline_ln_only/compose_pipeline_ld_only docstrings.
 
 PlantClsSegDataset also takes optional `label_transform`/`num_classes` for
 row C5 (DGCNN, DA-O): Pheno4D's own annotated files carry a different raw
@@ -48,16 +49,20 @@ from augmentations import (  # noqa: E402
     compose_pipeline, pad_if_needed3d,
     compose_pipeline_with_labels, pad_if_needed3d_with_labels,
     compose_pipeline_ln_only, compose_pipeline_ln_only_with_labels,
+    compose_pipeline_ld_only, compose_pipeline_ld_only_with_labels,
 )
 
 # augment_mode -> (points-only pipeline, points+labels pipeline). "all" is
 # the default used by every row so far (C1/A1/C2/C3); "ln_only" is for
 # row C4 (DGCNN, DA-A, L-N), isolating DGCNN's noise weakness per
 # CLAUDE.md's augmentation taxonomy -- see scripts/augmentations.py's
-# compose_pipeline_ln_only docstring.
+# compose_pipeline_ln_only docstring. "ld_only" is for row B4 (KPConv,
+# DA-0, L-D), isolating KPConv's claimed density-robustness -- see
+# compose_pipeline_ld_only's docstring.
 _AUGMENT_PIPELINES = {
     "all": (compose_pipeline, compose_pipeline_with_labels),
     "ln_only": (compose_pipeline_ln_only, compose_pipeline_ln_only_with_labels),
+    "ld_only": (compose_pipeline_ld_only, compose_pipeline_ld_only_with_labels),
 }
 
 SPECIES_TO_IDX = {"Tomato": 0, "Maize": 1}

@@ -799,6 +799,32 @@ strictly better or worse."
 
 ---
 
+## 27. Row B4 Started — Testing the Third Backbone's Claimed Strength With No Help At All — 2026-09-15
+
+With two of the third backbone's three adaptation attempts now landing as clear wins and one as
+roughly a wash, the next question set that story aside entirely: this backbone's architecture is
+specifically marketed (by its original authors) as handling uneven point density better than the
+other two. Every row trained on it so far has always had either the full mix of four augmentation
+types, or some adaptation method's help, or both. This row strips both of those away as much as
+possible — no adaptation method at all, and only the one augmentation type that most directly
+stresses density and coverage (randomly cropping part of the scan and punching small holes in
+it, simulating occlusion or sensor dropout) rather than the full four-part mix every other "no
+adaptation" row used. It's the cleanest test yet of whether the architecture's own claimed
+strength holds up on its own merits, without anything else propping it up or obscuring the
+result.
+
+Building it needed one small, genuinely new addition — a version of the training recipe that
+applies just that one kind of augmentation, the same kind of surgical change already made once
+before for a noise-only test earlier in the project (the discovery for the very first backbone
+that isolated a different weakness). Verified the new piece worked correctly on its own with a
+tiny throwaway test before touching the full training pipeline, then ran the usual local trial
+run to confirm everything worked together — clean pass, with per-step timing matching the very
+first, fastest run on this backbone (no adaptation method's extra machinery to slow it down).
+Handed off to the cluster GPU with the same generous time allowance now standard for this
+backbone, though this one is expected to run about as fast as that very first row did.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -817,7 +843,7 @@ at-a-glance status.
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
 | B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
-| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Not started |
+| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | Training on cluster (job 311004), not yet finished |
 | B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |

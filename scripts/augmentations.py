@@ -201,3 +201,36 @@ def compose_pipeline_ln_only_with_labels(pts: np.ndarray, labels: np.ndarray, rn
     pts = normalize(pts)
     pts = gaussian_noise(pts, rng=rng)
     return pts, labels
+
+
+def compose_pipeline_ld_only(pts: np.ndarray, rng=None) -> np.ndarray:
+    """L-D only (RandomCrop3D, CoarseDropout3D) -- for row B4 (KPConv, DA-0, L-D), which
+    deliberately runs with NO adaptation method, isolating whether KPConv's claimed
+    density-robustness (CLAUDE.md's Backbones section: "density-robust due to grid-subsampled
+    neighborhoods, not fixed point count") holds up against local-structural augmentation alone,
+    without any adaptation method's help. Skips G-R (rotate/flip/cubic symmetry), G-S (scale),
+    and L-N (noise) -- only L-D is applied, on top of normalize(), the same fixed-preprocessing
+    treatment given to Pad3D and to compose_pipeline_ln_only's own normalize() call. Same
+    keep_frac/n_holes/hole_frac defaults as the L-D steps inside compose_pipeline (0.85, 2, 0.05)
+    -- isolating which augmentation is applied, not changing the augmentation's own parameters."""
+    rng = rng or np.random.default_rng()
+    pts = normalize(pts)
+    pts = random_crop3d(pts, keep_frac=0.85, rng=rng)
+    pts = coarse_dropout3d(pts, n_holes=2, rng=rng)
+    return pts
+
+
+def compose_pipeline_ld_only_with_labels(pts: np.ndarray, labels: np.ndarray, rng=None):
+    """Same as compose_pipeline_ld_only, but threads per-point labels through the
+    point-count-changing crop/dropout steps -- same mask-and-reindex pattern
+    compose_pipeline_with_labels already uses for its own L-D steps."""
+    rng = rng or np.random.default_rng()
+    pts = normalize(pts)
+
+    mask = _random_crop3d_mask(pts, keep_frac=0.85, rng=rng)
+    pts, labels = pts[mask], labels[mask]
+
+    mask = _coarse_dropout3d_mask(pts, n_holes=2, hole_frac=0.05, rng=rng)
+    pts, labels = pts[mask], labels[mask]
+
+    return pts, labels
