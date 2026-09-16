@@ -889,6 +889,39 @@ though given how small this particular training set is, it should finish quickly
 
 ---
 
+## 30. Row B5 Finishes — the Third Backbone's Selection-Signal Mystery Is Finally Solved — 2026-09-16
+
+The last row for the third backbone finished quickly (under an hour) and gives a clear, direct
+answer to the question that had been building since that backbone's very first row.
+
+To recap the mystery: across all five earlier versions of this backbone's row — with no
+adaptation, with adversarial adaptation, with two different cooperative adaptation methods, and
+with a density-only augmentation test — the internal signal normally used to pick the best
+training checkpoint had never once reliably pointed toward better real-world performance. A
+better-looking internal score never predicted a better real result; if anything, the two tracked
+in step with each other in the wrong direction, five times in a row.
+
+This final "ceiling" row — train directly on a small amount of real labeled data from the unseen
+dataset, no adaptation problem to solve at all — answers it cleanly: **the problem completely
+disappears.** The same internal signal that misled every other version of this backbone's row
+becomes strongly, reliably informative once there's no sensor/dataset mismatch left to cross. This
+is the exact same resolution the very first backbone showed when it went through its own version
+of this test. So the mistrust in the internal signal wasn't a flaw in this backbone itself, or in
+how it was being measured — it was specifically a symptom of the domain-mismatch problem that
+adaptation methods exist to solve. Once that mismatch is removed, the signal becomes trustworthy
+again, on both backbones tested this way so far.
+
+One more nice surprise: this backbone's "ceiling" score, when trained directly on real target-
+dataset labels, is even very slightly higher than the first backbone's own ceiling from last
+month — the best result seen anywhere in the project. This backbone was never behind on raw
+capability; it was specifically behind on having a trustworthy way to pick a good checkpoint
+without already having target labels, which is exactly the problem real domain adaptation
+(no target labels available) has to solve blind.
+
+**This completes the third backbone's full five-row story (all Block B rows now done).**
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -908,7 +941,7 @@ at-a-glance status.
 | B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
 | B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project |
-| B (KPConv) | B5 | Oracle (upper-bound reference) | Training on cluster (job 311262), not yet finished |
+| B (KPConv) | B5 | Oracle (upper-bound reference) | **Done** — Block B complete. Resolves the selection-signal mystery: the misleading signal disappears entirely under real target supervision, and the ceiling (0.9425 full-run mean) edges past DGCNN's own Oracle ceiling (Milestone 30) |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
 | C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
@@ -917,21 +950,22 @@ at-a-glance status.
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** Block C (all five DGCNN rows: C1-C5) is fully done, plus A1/A2/A3 on
-PointNet++ and B1/B2/B3/B3b/B4 on KPConv (four of five Block B rows) — giving a real
-cross-backbone comparison showing self-supervised adaptation's effect ranges from hurting DGCNN,
-to helping PointNet++ with a segmentation cost, to helping KPConv even more (the best non-Oracle
-result in the project) with no segmentation cost at all; adversarial adaptation flips rather
-than just varying in magnitude (hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt
+**In one sentence:** Block C (all five DGCNN rows: C1-C5) and Block B (all five KPConv rows:
+B1-B5, including the added B3b) are now both fully done, plus A1/A2/A3 on PointNet++ — giving a
+real cross-backbone comparison showing self-supervised adaptation's effect ranges from hurting
+DGCNN, to helping PointNet++ with a segmentation cost, to helping KPConv even more (the best
+non-Oracle result in the project) with no segmentation cost at all; adversarial adaptation flips
+rather than just varying in magnitude (hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt
 KPConv overall — though it costs segmentation quality on all three); a second, mechanistically
 distinct adaptation method (discrepancy-based) also lands as a clear KPConv win, together
 pointing at "cooperative losses help this backbone, adversarial doesn't" rather than "needs real
-target geometry" as the explanation; a deliberately-unadapted density-only test (B4) gives a
-mixed verdict, but sharpens rather than resolves a real, recurring finding that KPConv's
-model-selection signal is unreliable regardless of DA method or augmentation mix (now confirmed
-across five different configurations); and a confirmed Oracle ceiling shows real headroom
-exists, though KPConv's two winning methods have now closed most of that gap — the other 11
-rows are not started yet.
+target geometry" as the explanation; KPConv's recurring, misleading model-selection signal (wrong
+direction in all four adapted/unadapted configurations) is now confirmed to be a domain-gap
+artifact, not a backbone flaw — it disappears entirely, and becomes the most reliable signal seen
+yet, once real target labels are available (B5), mirroring DGCNN's own Oracle row exactly; and
+KPConv's Oracle ceiling (0.9425 full-run mean) is now the highest ceiling found in the project so
+far, edging past DGCNN's (0.925) — the other 11 rows (Block A's remaining two, all of Block D,
+all of optional Block E) are not started yet.
 
 ---
 

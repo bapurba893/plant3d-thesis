@@ -840,17 +840,38 @@ were not — see Repository layout above).
   samples). `neighborhood_limits` calibrated on the Oracle train set only, not both domains —
   correct here since this row never touches Crops3D at all, unlike B2/B3/B3b. CPU smoke test
   passed cleanly (full single-epoch pass, 18/18 batches, no errors; dataset sizes matched C5's
-  exactly). Full design decisions in `step_notes/B5_KPConv_DA_O.md`. Awaiting completion.
+  exactly). Full design decisions in `step_notes/B5_KPConv_DA_O.md`.
+- **Row B5 (KPConv, DA-O, Oracle) finished — Block B is now complete, and the wrong-signed
+  selection-correlation question is resolved** (2026-09-15/16, job 311262, 45 min, no
+  contention). Best epoch 97.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | B1 (DA-0) | B2 (DA-A) | B3 (DA-D) | B3b (DA-S) | B4 (DA-0/L-D) | B5 (DA-O) | C5 (DGCNN DA-O) |
+  |---|---|---|---|---|---|---|---|
+  | Full-run mean | 0.629 | 0.632 | 0.808 | 0.860 | 0.649 | **0.9425** | 0.925 |
+  | Full-run stdev | 0.203 | 0.141 | 0.094 | 0.086 | 0.168 | **0.0815** | n/a |
+  | corr(selection-loss, target acc) | +0.316 | +0.238 | +0.268 | +0.291 | +0.470 | **−0.858** | −0.823 |
+  | Selected-checkpoint acc | 0.4444 | 0.5714 | 0.6825 | 0.7143 | 0.5556 | **0.9841** | 1.0000 |
+
+  **Answering the motivating question directly: the wrong-signed selection correlation does NOT
+  persist under Oracle conditions — it flips to strongly negative (−0.858), resolving exactly
+  the way DGCNN's did in C5 (−0.823), and slightly exceeds it in magnitude.** Every KPConv
+  configuration with a domain gap to cross (B1/B2/B3/B3b/B4) showed a positive, wrong-signed
+  correlation (a better-looking validation loss never reliably predicted better target accuracy);
+  this is confirmed to be a domain-adaptation-specific artifact, not a fundamental property of the
+  KPConv backbone or this dataset — it disappears entirely once the model is trained and selected
+  directly on labeled target data. **B5's full-run mean (0.9425) also edges out C5's own Oracle
+  ceiling (0.925)**, and its target confusion matrix shows the systematic Maize-bias seen in
+  every other Block B row (B1 Tomato recall 0.125) essentially gone (Tomato recall 0.975) — real
+  target supervision resolves both the selection-signal problem and the class-bias problem at
+  once. Full derivation, quartile tables, and caveats (small-N Oracle pool, same as C5) in
+  `step_notes/B5_KPConv_DA_O.md`.
 
 **Next (in order):**
-1. Row B5 (KPConv, DA-O) is training on the cluster (job 311262, `--time=60:00:00`) — read its
-   full-trajectory result the same way as every prior row once it finishes, comparing against C5
-   (does KPConv's selection-signal problem resolve under Oracle conditions the way DGCNN's did?)
-   and against B1-B4 (where does the Oracle ceiling sit relative to KPConv's other four
-   configurations, especially B3b's already-strong DA-S result). This completes Block B — all
-   five rows done. Then remaining Block A rows (A4 DA-A/L-N, A5 Oracle) — the `--time=60:00:00`
-   convention is Block B (KPConv)-specific and does not apply to Block A (PointNet++'s own
-   runtimes are the ~4h every non-KPConv row so far has used).
+1. **Block B is complete (B1-B5, all five rows done).** Next: remaining Block A rows (A4 DA-A/
+   L-N, A5 Oracle) — the `--time=60:00:00` convention is Block B (KPConv)-specific and does not
+   apply to Block A (PointNet++'s own runtimes are the ~4h every non-KPConv row so far has used).
    Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
    helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
    for Block D, now joined by CORAL's similarly strong KPConv-specific result.
