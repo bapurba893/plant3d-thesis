@@ -821,18 +821,39 @@ were not — see Repository layout above).
   were themselves making KPConv's segmentation harder, flagged as an inference, not verified by
   ablation. The systematic Maize-bias eases somewhat (Tomato recall 0.125→0.300) but doesn't
   disappear. Full trajectory tables and reasoning in `step_notes/B4_KPConv_DA0_LD.md`.
+- **Row B5 (KPConv, DA-O, Oracle, ALL) submitted to the cluster** (2026-09-15, job 311262 on
+  `cn12-dgx`, `--time=60:00:00`). The KPConv-track counterpart of `train_c5_dgcnn_da_o.py`,
+  completing Block B (B1-B5 all done after this row). Per explicit user instruction: directly
+  tests whether KPConv's wrong-signed selection-signal correlation — positive in EVERY
+  configuration tried so far (B1 +0.316, B2 +0.238, B3 +0.268, B3b +0.291, B4 +0.470) — is
+  specifically a domain-adaptation artifact (should flip/resolve once trained and selected
+  directly on labeled target data, no domain gap to cross) or a more fundamental
+  backbone+dataset property that persists even under Oracle conditions. C5 already answered this
+  for DGCNN: `corr` flips to strongly negative (−0.823) under Oracle training, the most
+  informative selection signal of any Block C row — B5 checks whether KPConv matches that
+  resolution or becomes the first row where even direct target supervision doesn't fix it.
+  Mirrors C5's Oracle protocol exactly (domain roles swapped: trains on Pheno4D's own annotated
+  subset, `data/pheno4d_oracle_train.csv`/`pheno4d_oracle_val.csv` — C5's exact plant-disjoint
+  split, reused unchanged, not re-derived — evaluated on the SAME held-out target test file
+  B1-B4 all report against) with KPConv's batch/collate mechanics substituted for DGCNN's
+  raw-tensor forward pass. `batch_size=8` (same data-driven necessity as C5 — 72 training
+  samples). `neighborhood_limits` calibrated on the Oracle train set only, not both domains —
+  correct here since this row never touches Crops3D at all, unlike B2/B3/B3b. CPU smoke test
+  passed cleanly (full single-epoch pass, 18/18 batches, no errors; dataset sizes matched C5's
+  exactly). Full design decisions in `step_notes/B5_KPConv_DA_O.md`. Awaiting completion.
 
 **Next (in order):**
-1. Block B has four of five rows done (B1 DA-0, B2 DA-A, B3 DA-D, B3b DA-S added, B4 DA-0/L-D) —
-   only B5 (DA-O, the Oracle ceiling) remains for a complete Block B picture. **Use
-   `--time=60:00:00`** for B5, alongside remaining Block A rows (A4 DA-A/L-N, A5 Oracle).
+1. Row B5 (KPConv, DA-O) is training on the cluster (job 311262, `--time=60:00:00`) — read its
+   full-trajectory result the same way as every prior row once it finishes, comparing against C5
+   (does KPConv's selection-signal problem resolve under Oracle conditions the way DGCNN's did?)
+   and against B1-B4 (where does the Oracle ceiling sit relative to KPConv's other four
+   configurations, especially B3b's already-strong DA-S result). This completes Block B — all
+   five rows done. Then remaining Block A rows (A4 DA-A/L-N, A5 Oracle) — the `--time=60:00:00`
+   convention is Block B (KPConv)-specific and does not apply to Block A (PointNet++'s own
+   runtimes are the ~4h every non-KPConv row so far has used).
    Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
    helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
-   for Block D, now joined by CORAL's similarly strong KPConv-specific result. KPConv's
-   selection-signal reliability has now been measured across FIVE configurations (B1/B2/B3/B3b/
-   B4) and stayed positive/wrong-signed in every single one (+0.238 to +0.470) — worth carrying
-   into B5's own reading, and into any future write-up of this project's results, as a
-   backbone-level caveat independent of DA method or augmentation choice.
+   for Block D, now joined by CORAL's similarly strong KPConv-specific result.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

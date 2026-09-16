@@ -858,6 +858,37 @@ this particular backbone's point-labeling task harder, not the ones that were ke
 
 ---
 
+## 29. Row B5 Started — the Last Piece of the Third Backbone's Story — 2026-09-15
+
+The last row for the third backbone is the same kind of "ceiling" test already run once for the
+first backbone: instead of trying to adapt from the labeled dataset to the unseen one, just
+train directly on a small amount of real labeled data from the unseen dataset itself, and see
+how well the architecture can possibly do. This isn't a method anyone would actually use in
+practice — if you already have labeled examples from every new sensor setup, the whole point of
+domain adaptation goes away — but it answers a different, useful question: how much of the gap
+seen in every other row on this backbone is really about the sensor/dataset mismatch, versus
+just being a limit of what the architecture itself can learn.
+
+This particular version of the test carries an extra, specific question this time. Every single
+one of this backbone's four previous rows — regardless of which adaptation method was used, or
+whether one was used at all — has shown the same odd pattern: the internal signal normally
+trusted to pick the best training checkpoint has never once reliably pointed toward better
+real-world performance on the unseen dataset. When the very first backbone went through this
+same "ceiling" test earlier in the project, that exact problem (which was much milder for that
+backbone to begin with) completely disappeared — once the model could see real labeled examples
+from the target dataset directly, the internal signal became trustworthy again, in fact the most
+trustworthy of any row tried on that backbone. This run checks whether the same fix happens here,
+or whether this backbone is the first case where even that doesn't help.
+
+Building it needed no new machinery — it reuses the exact same small labeled subset and
+train/validation split already carved out for the very first backbone's own version of this test
+last month, just swapped onto this project's third architecture. Verified with the usual local
+trial run first (a full pass through all the training data, no errors) before handing it to the
+cluster GPU with the same generous time allowance used for the rest of this backbone's rows,
+though given how small this particular training set is, it should finish quickly.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -877,7 +908,7 @@ at-a-glance status.
 | B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
 | B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
 | B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project |
-| B (KPConv) | B5 | Oracle (upper-bound reference) | Not started |
+| B (KPConv) | B5 | Oracle (upper-bound reference) | Training on cluster (job 311262), not yet finished |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
 | C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
