@@ -922,6 +922,37 @@ without already having target labels, which is exactly the problem real domain a
 
 ---
 
+## 31. Row A4 Started — Checking Whether Narrowing the Augmentation Mix Changes the First Backbone's Story Too — 2026-09-16
+
+The first backbone (the one with the fixed-radius density weakness) already went through the
+adversarial-adaptation test once (that was the second row on this backbone) and showed a small,
+somewhat inconclusive underperformance compared to no adaptation at all — much smaller than the
+same test showed on the second backbone tested (DGCNN), and partly explained by that first
+backbone's own baseline already being noisy to begin with, independent of any adaptation method.
+
+Separately, the second backbone already checked a related question: does that same
+underperformance change if the training images are only lightly perturbed with random noise,
+instead of the full mix of rotations, scaling, cropping, and noise together? For that backbone,
+narrowing down to noise-only made no real difference — the result stayed just as underwhelming
+either way.
+
+This new row repeats that same noise-only narrowing test, but now on the first backbone, to see
+whether the same "no real difference" finding holds there too, or whether this backbone reacts
+differently. One thing worth flagging plainly: the original experiment plan actually called for
+this particular row to isolate a *different* kind of augmentation (cropping/dropout, which
+targets this backbone's own known density weakness specifically) rather than noise. This run
+deliberately substitutes noise-only instead, on explicit instruction, so that it lines up
+cell-for-cell with the second backbone's own noise-only test for a clean side-by-side comparison
+— the cropping/dropout version of this test has not been run and remains open.
+
+Built as a near-exact copy of the existing adversarial-adaptation script for this backbone, with
+only the augmentation setting changed — verified with the usual local trial run first (a full
+pass through all the training data, no errors) before handing it to the cluster GPU with the
+normal ~4-hour time allowance (this backbone doesn't need the third backbone's much larger
+budget).
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -934,7 +965,7 @@ at-a-glance status.
 | A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed |
 | A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
-| A (PointNet++) | A4 | Adversarial, cropping/dropout augmentation only | Not started |
+| A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | Training on cluster (job 311737), not yet finished |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |

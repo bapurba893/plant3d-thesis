@@ -868,10 +868,24 @@ were not — see Repository layout above).
   once. Full derivation, quartile tables, and caveats (small-N Oracle pool, same as C5) in
   `step_notes/B5_KPConv_DA_O.md`.
 
+- **Row A4 (PointNet++, DA-A, L-N only) submitted to the cluster** (2026-09-16, job 311737 on
+  `cn18-dgx`, `--time=04:00:00`). Per explicit user instruction, run as DA-A/L-N (not the
+  strategy table's literal DA-A/L-D spec for this row — flagged explicitly, see the file's
+  docstring/step_notes for the reasoning) to mirror C4's exact augmentation isolation for a
+  same-shaped cross-backbone comparison. Tests whether A2's already-smaller-than-C2 DA-A
+  underperformance (A1→A2 −4.5 pts vs. C1→C2 −15.8 pts full-run mean) is sensitive to the
+  augmentation mix, the way C4 already showed it isn't for DGCNN (C2 ALL vs. C4 L-N landed within
+  ~2 points). Near-line-for-line copy of `train_a2_pointnet2_da_a.py` with exactly one variable
+  changed (`augment_mode="ln_only"` on the two training-time datasets, mirroring the C2→C4 diff
+  pattern exactly) — `dann.py` reused completely unmodified. CPU smoke test (1 epoch, real data)
+  passed cleanly before submitting. Full design decisions in
+  `step_notes/A4_PointNet2_DA_A_LN.md`.
+
 **Next (in order):**
-1. **Block B is complete (B1-B5, all five rows done).** Next: remaining Block A rows (A4 DA-A/
-   L-N, A5 Oracle) — the `--time=60:00:00` convention is Block B (KPConv)-specific and does not
-   apply to Block A (PointNet++'s own runtimes are the ~4h every non-KPConv row so far has used).
+1. Row A4 (PointNet++, DA-A, L-N) is training on the cluster (job 311737, `--time=04:00:00`) —
+   read its full-trajectory result once it finishes, comparing against A2 (ALL augmentation) and
+   C4 (DGCNN, same DA-A/L-N cell). Then A5 (PointNet++, DA-O, Oracle) — completes Block A. The
+   `--time=60:00:00` convention is Block B (KPConv)-specific and does not apply to Block A.
    Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
    helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
    for Block D, now joined by CORAL's similarly strong KPConv-specific result.
