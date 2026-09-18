@@ -880,15 +880,45 @@ were not — see Repository layout above).
   pattern exactly) — `dann.py` reused completely unmodified. CPU smoke test (1 epoch, real data)
   passed cleanly before submitting. Full design decisions in
   `step_notes/A4_PointNet2_DA_A_LN.md`.
+- **Row A4 (PointNet++, DA-A, L-N only) finished — narrowing augmentation genuinely changes
+  PointNet++'s DA-A story, unlike DGCNN's C2→C4** (2026-09-16, job 311737, 52 min, no
+  contention). Best epoch 46.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | A1 (DA-0) | A2 (DA-A, ALL) | A4 (DA-A, L-N only) | C2 v2 (DA-A, ALL, ref) | C4 (DA-A, L-N, ref) |
+  |---|---|---|---|---|---|
+  | Full-run mean | 0.599 | 0.554 | **0.586** | 0.633 | 0.613 |
+  | Full-run stdev | 0.196 | 0.193 | **0.170** | 0.117 | 0.138 |
+  | corr(selection-loss, target acc) | −0.165 | +0.086 | **−0.167** | −0.061 | +0.041 |
+  | Collapse epochs (±0.02 tol) | 17/100 | 15/100 | **4/100** | 3/100 | 4/100 |
+  | Selected-checkpoint acc | 0.4603 | 0.4444 | **0.5397 (+0.095)** | 0.6667 | 0.5556 |
+
+  **Answering the motivating question directly: unlike DGCNN (C2→C4: essentially no difference,
+  both underperform DA-0 by a similar margin), narrowing DA-A's augmentation to L-N-only produces
+  a real, multi-axis improvement on PointNet++.** Full-run mean rises, nearly closing the gap to
+  A1's own DA-0 baseline (−0.013 vs. A2's −0.045); collapse-epoch count drops nearly 4x
+  (15/100→4/100, now even beating A1's own 17/100); and the selection-signal correlation flips
+  from wrong-signed (A2 +0.086) to correctly-signed (A4 −0.167, nearly matching A1's −0.165) — the
+  same kind of correlation-restoring effect B5 showed under full Oracle training, but here
+  achieved just by dropping the point-removing/geometry-distorting augmentations (G-R/G-S/L-D)
+  from the mix, with the domain gap still fully present. **This is evidence PointNet++'s DA-A
+  instability is at least partly an augmentation-interaction effect** (plausibly its
+  density-sensitive ball-query set abstraction interacting badly with L-D's density/coverage
+  perturbation under adversarial training — an inference, not verified by ablation), not purely
+  the dataset-level label-prior-mismatch/small-N story that explained DGCNN's augmentation-
+  insensitive C2/C4 pair. Segmentation improves too, not traded off: Tomato seg mIoU (0.3743)
+  actually exceeds A1's own DA-0 baseline (0.3207), matching C4's same "removing L-D helps seg"
+  pattern found on DGCNN. Full trajectory tables and reasoning in
+  `step_notes/A4_PointNet2_DA_A_LN.md`.
 
 **Next (in order):**
-1. Row A4 (PointNet++, DA-A, L-N) is training on the cluster (job 311737, `--time=04:00:00`) —
-   read its full-trajectory result once it finishes, comparing against A2 (ALL augmentation) and
-   C4 (DGCNN, same DA-A/L-N cell). Then A5 (PointNet++, DA-O, Oracle) — completes Block A. The
+1. Row A5 (PointNet++, DA-O, Oracle) — completes Block A (A1-A5 all done after this row). The
    `--time=60:00:00` convention is Block B (KPConv)-specific and does not apply to Block A.
    Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
    helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
-   for Block D, now joined by CORAL's similarly strong KPConv-specific result.
+   for Block D, now joined by CORAL's similarly strong KPConv-specific result, and by A4's finding
+   that PointNet++'s DA-A picture is itself augmentation-dependent in a way DGCNN's isn't.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

@@ -953,6 +953,35 @@ budget).
 
 ---
 
+## 32. Row A4 Finishes — Narrowing the Augmentation Mix Turns Out to Matter a Lot on This Backbone — 2026-09-16
+
+This row's result is a genuine surprise, and a useful one: when the second backbone (DGCNN) went
+through this exact same test earlier — narrowing the training-time image perturbations down to
+noise-only, instead of the full mix of rotations, scaling, cropping, and noise — it made almost no
+difference at all. Adversarial adaptation still underperformed no-adaptation by roughly the same
+margin either way.
+
+On the first backbone (the one with the known density-sensitivity weakness), the opposite
+happened. Narrowing to noise-only produced a real, multi-sided improvement: the average result
+across the whole training run got noticeably better, the number of training epochs where the
+model gave up and predicted only one class dropped by nearly a factor of four, and — most
+notably — the internal signal used to pick the best checkpoint, which had been actively
+misleading under the full augmentation mix, became trustworthy again, closely matching how
+reliable it is under no adaptation at all.
+
+The most likely explanation, though not proven outright: this backbone's known weakness is
+specifically about how it handles uneven point density, and two of the four removed
+augmentations (random cropping and random dropout) are exactly the kind of perturbation that
+creates uneven density. Combine that pre-existing weak spot with the extra instability adversarial
+training already introduces, and the result may be a backbone-specific bad interaction — one the
+second backbone, whose core mechanism doesn't care about density the same way, simply doesn't
+have. Segmentation quality also improved with the narrower mix, matching what was already found
+on the second backbone for a similar likely reason (removing the point-thinning augmentations
+makes the segmentation task strictly easier) — but unlike an earlier row's big classification win
+on this backbone, this one doesn't come at any segmentation cost at all; both improve together.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -965,7 +994,7 @@ at-a-glance status.
 | A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed |
 | A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
-| A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | Training on cluster (job 311737), not yet finished |
+| A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | **Done** — unlike the second backbone, narrowing the augmentation mix genuinely helps here: better average result, far fewer collapsed epochs, and a fixed selection-signal problem (Milestone 32) |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
