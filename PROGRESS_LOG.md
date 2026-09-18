@@ -982,6 +982,39 @@ on this backbone, this one doesn't come at any segmentation cost at all; both im
 
 ---
 
+## 33. Row A5 Started — the Last Piece of the First Backbone's Story, and the Final Ceiling to Measure — 2026-09-18
+
+The first backbone now gets the same "ceiling" test already run once for each of the other two
+backbones: instead of trying to adapt from the labeled dataset to the unseen one, train directly
+on a small amount of real labeled data from the unseen dataset itself, and see how well the
+architecture can possibly do. As with the earlier two versions of this test, this isn't a method
+anyone would use in practice — it only exists to measure how much of the gap seen in every other
+row on this backbone is really about the sensor/dataset mismatch, versus a limit of what the
+architecture itself can learn.
+
+This version carries the same extra question the other two backbones' ceiling tests already
+answered. One of the earlier rows on this backbone showed the internal signal normally trusted to
+pick the best training checkpoint pointing in the wrong direction — a better-looking result on
+the labeled data actually predicted a worse result on the unseen one. A later row already found
+that this particular problem goes away just by trimming down which random perturbations get
+applied during training, without needing real labels from the unseen dataset at all. This new row
+checks whether the problem also goes away under the more extreme "give it real answers directly"
+condition, the same question already asked and answered for the other two backbones.
+
+Separately, and just as importantly: once this row finishes, all three architectures will have
+completed their own version of this ceiling test, making it possible to line up all three
+best-possible-performance numbers side by side for the first time — a comparison directly useful
+for deciding which architecture, adaptation method, and augmentation combination should carry
+forward into the project's next major phase (combining trait/growth prediction on top of the best
+setup found so far).
+
+Built by reusing the exact same small labeled subset and train/validation split already carved
+out for the first version of this test, just swapped onto this project's first architecture.
+Verified with the usual local trial run first (a full pass through all the training data, no
+errors) before handing it to the cluster GPU with the normal ~4-hour time allowance.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -995,7 +1028,7 @@ at-a-glance status.
 | A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | **Done** — unlike the second backbone, narrowing the augmentation mix genuinely helps here: better average result, far fewer collapsed epochs, and a fixed selection-signal problem (Milestone 32) |
-| A (PointNet++) | A5 | Oracle (upper-bound reference) | Not started |
+| A (PointNet++) | A5 | Oracle (upper-bound reference) | Training on cluster (job 313635), not yet finished |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |

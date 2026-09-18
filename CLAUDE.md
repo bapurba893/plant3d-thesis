@@ -912,9 +912,26 @@ were not — see Repository layout above).
   pattern found on DGCNN. Full trajectory tables and reasoning in
   `step_notes/A4_PointNet2_DA_A_LN.md`.
 
+- **Row A5 (PointNet++, DA-O, Oracle) submitted to the cluster** (2026-09-18, job 313635 on
+  `cn19-dgx`, `--time=04:00:00`). The PointNet++-track counterpart of `train_c5_dgcnn_da_o.py`
+  and `train_b5_kpconv_da_o.py`, completing Block A (A1-A5 all done after this row) and giving
+  the third and final cross-backbone Oracle ceiling. Per explicit user instruction: tests whether
+  A2's wrong-signed selection-signal correlation (+0.086 — the only Block A DA-A configuration
+  with a misleading correlation; A4 already showed this resolves WITHOUT Oracle supervision, just
+  by narrowing augmentation to L-N) also resolves under full Oracle conditions, and where
+  PointNet++'s ceiling lands relative to DGCNN's (C5: 0.925 full-run mean, corr −0.823) and
+  KPConv's (B5: 0.9425, corr −0.858). Mirrors C5's Oracle protocol exactly (reuses C5's exact
+  plant-disjoint split unchanged, same as B5) with PointNet++'s batch mechanics substituted for
+  DGCNN's. `batch_size=8` (same data-driven necessity as B5/C5 — 72 training samples). CPU smoke
+  test passed cleanly before submitting. Full design decisions in
+  `step_notes/A5_PointNet2_DA_O.md`.
+
 **Next (in order):**
-1. Row A5 (PointNet++, DA-O, Oracle) — completes Block A (A1-A5 all done after this row). The
-   `--time=60:00:00` convention is Block B (KPConv)-specific and does not apply to Block A.
+1. Row A5 (PointNet++, DA-O, Oracle) is training on the cluster (job 313635, `--time=04:00:00`)
+   — read its full-trajectory result the same way as every prior row once it finishes, comparing
+   against A1-A4 and against B5/C5 for the full three-backbone Oracle ceiling comparison. This
+   completes Block A — all five rows done, and all three backbones will have their Oracle rows
+   finished, enabling Block D planning (backbone/DA/augmentation selection for the fusion block).
    Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
    helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
    for Block D, now joined by CORAL's similarly strong KPConv-specific result, and by A4's finding
