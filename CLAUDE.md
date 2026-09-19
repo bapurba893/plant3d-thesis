@@ -925,17 +925,91 @@ were not — see Repository layout above).
   DGCNN's. `batch_size=8` (same data-driven necessity as B5/C5 — 72 training samples). CPU smoke
   test passed cleanly before submitting. Full design decisions in
   `step_notes/A5_PointNet2_DA_O.md`.
+- **Row A5 (PointNet++, DA-O, Oracle) finished — Block A is now complete, and ALL 15 ROWS
+  ACROSS ALL THREE BACKBONES ARE DONE** (2026-09-18, job 313635, 8.5 min, no contention — the
+  fastest row in the whole project). Best epoch 96.
+
+  **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+  | Metric | A1 (DA-0) | A2 (DA-A) | A3 (DA-S) | A4 (DA-A, L-N) | A5 (DA-O) | B5 (KPConv DA-O) | C5 (DGCNN DA-O) |
+  |---|---|---|---|---|---|---|---|
+  | Full-run mean | 0.599 | 0.554 | 0.800 | 0.586 | **0.9156** | 0.9425 | 0.925 |
+  | corr(selection-loss, target acc) | −0.165 | +0.086 | −0.009 | −0.167 | **−0.9096** | −0.858 | −0.823 |
+  | Selected-checkpoint acc | 0.4603 | 0.4444 | 0.8889 | 0.5397 | **1.0000** | 0.9841 | 1.0000 |
+
+  **Answering the motivating question directly: the wrong-signed correlation does NOT persist
+  under Oracle conditions — it flips to the STRONGEST negative correlation of any Oracle row
+  across all three backbones (−0.9096, vs. B5's −0.858 and C5's −0.823).** This is the third and
+  final backbone to show this exact resolution, completing a clean three-for-three result: every
+  backbone's selection-signal reliability problem (A2's, all of B1-B4's, C2-C4's) is confirmed to
+  be a domain-adaptation artifact, never a fundamental backbone/dataset property that Oracle
+  training fails to fix. **Where PointNet++'s ceiling lands: lowest full-run mean of the three
+  (0.9156), but ties DGCNN for a perfect 1.0000 selected-checkpoint accuracy** — the lower mean
+  is driven entirely by a high-variance Q1 (0.731) before training stabilizes; by Q4 (0.999) it's
+  essentially tied with the other two backbones. Target Maize segmentation mIoU (0.6607) is the
+  best of the three Oracle rows (vs. B5's 0.6222, C5's 0.52), matching A1's own earlier
+  best-of-three Maize-segmentation finding. Full trajectory tables in
+  `step_notes/A5_PointNet2_DA_O.md`.
+
+## FINAL SUMMARY: all 15 strategy-table rows across Blocks A/B/C complete (2026-09-18)
+
+Every backbone (PointNet++/A, KPConv/B, DGCNN/C) has now completed its full row set (5 rows
+each, +B3b as an explicit addition = 16 rows trained total). This is the complete cross-backbone
+picture, extracted from the individual row entries above rather than re-analyzed:
+
+**Non-Oracle full-run mean target accuracy, by backbone (DA-0 baseline vs. best adaptation
+method found):**
+
+| Backbone | DA-0 baseline | Best adaptation result | Method | Gain |
+|---|---|---|---|---|
+| A (PointNet++) | 0.599 (A1) | 0.800 (A3, DA-S) | Self-supervised | +0.201 |
+| B (KPConv) | 0.629 (B1) | 0.860 (B3b, DA-S) | Self-supervised | +0.231 |
+| C (DGCNN) | 0.791 (C1) | 0.791 (C1 itself — no adaptation method beat it) | — | 0.000 |
+
+**Oracle ceilings** (upper bound, never a candidate strategy): A5 0.9156, B5 0.9425 (highest),
+C5 0.925. All three land in a tight 0.92-0.94 band, confirming the sensor/domain gap — not model
+capacity — is what limits every non-Oracle row on every backbone.
+
+**Cross-backbone adaptation-method patterns, the project's central findings:**
+1. **DA-A (adversarial/DANN), the anchor method appearing identically on all 3 backbones,
+   underperforms or ties DA-0 everywhere — never a clear win on any backbone.** DGCNN: hurts
+   badly (C1→C2 −0.158). PointNet++: hurts mildly, and the effect is itself augmentation-
+   dependent (A1→A2 −0.045 under ALL, but A1→A4 −0.013 i.e. nearly a tie under L-N only).
+   KPConv: roughly a tie (B1→B2 +0.003).
+2. **DA-S (self-supervised/DefRec) and DA-D (discrepancy/CORAL) are architecture-dependent in
+   DIRECTION, not just magnitude — the project's most important qualitative finding.** DA-S hurts
+   DGCNN (C1→C3 −0.088) but helps PointNet++ (A1→A3 +0.201) and helps KPConv even more (B1→B3b
+   +0.231, the best non-Oracle result in the project). DA-D (only tested on KPConv, B3) also
+   produced a large win (+0.179) — best-supported reading (see B3's entry above): what predicts
+   success on KPConv is whether the DA loss is cooperative/Kendall-weighted (DA-S, DA-D) rather
+   than adversarial (DA-A) — not "any adaptation helps."
+3. **Augmentation-mix sensitivity is itself architecture-dependent.** DGCNN's DA-A story is
+   insensitive to narrowing ALL→L-N (C2≈C4). PointNet++'s is NOT — narrowing to L-N substantially
+   helps DA-A (A2→A4), evidence its density-sensitive ball-query mechanism interacts badly with
+   L-D's density-perturbing augmentations under adversarial training specifically.
+4. **Every backbone's model-selection signal is unreliable under domain adaptation, and every
+   backbone's signal is fully restored under Oracle training** — the strongest, most consistent
+   pattern across all 15 rows. KPConv's baseline showed this worst (wrong-signed in all 5 of its
+   non-Oracle configs, up to +0.470), but Oracle training fixes it completely on every backbone
+   (A5 −0.910, B5 −0.858, C5 −0.823) — confirming this is a domain-gap artifact throughout, not a
+   backbone-specific flaw.
+5. **Segmentation and classification tradeoffs vary by mechanism, not just backbone.** A3's
+   PointNet++/DA-S win costs a real Tomato-segmentation collapse; B3b's KPConv/DA-S win (same
+   method) costs nothing. A4's PointNet++ augmentation-narrowing win improves both classification
+   AND segmentation together, no tradeoff.
+
+**Implication for Block D** (fusion, "best backbone+DA+aug from A-C"): KPConv + DA-S (B3b) is the
+strongest non-Oracle candidate found (0.860 full-run mean, most stable trajectory in the project,
+0 collapse epochs, no segmentation cost), with KPConv + DA-D (B3) a close, mechanistically
+distinct second (0.808). This is the natural default to carry into Block D unless a different
+consideration (e.g. compute cost — B3b's per-epoch cost is real, ~5h vs. B1's ~2h) argues
+otherwise.
 
 **Next (in order):**
-1. Row A5 (PointNet++, DA-O, Oracle) is training on the cluster (job 313635, `--time=04:00:00`)
-   — read its full-trajectory result the same way as every prior row once it finishes, comparing
-   against A1-A4 and against B5/C5 for the full three-backbone Oracle ceiling comparison. This
-   completes Block A — all five rows done, and all three backbones will have their Oracle rows
-   finished, enabling Block D planning (backbone/DA/augmentation selection for the fusion block).
-   Self-supervised deformation reconstruction is 2-for-3 across backbones (helps PointNet++,
-   helps KPConv even more, hurts DGCNN) — a real, cross-backbone pattern worth keeping in mind
-   for Block D, now joined by CORAL's similarly strong KPConv-specific result, and by A4's finding
-   that PointNet++'s DA-A picture is itself augmentation-dependent in a way DGCNN's isn't.
+1. Block D (fusion) planning: pick backbone+DA+augmentation to carry forward (see FINAL SUMMARY
+   above — KPConv+DA-S/B3b is the current strongest candidate), then start D1 (deep features
+   only). Growth-curve/trait data integration has not yet been scoped for Block D and needs
+   review before D1 can be built.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

@@ -1015,6 +1015,46 @@ errors) before handing it to the cluster GPU with the normal ~4-hour time allowa
 
 ---
 
+## 34. Row A5 Finishes — the First Backbone's Ceiling Test Confirms the Same Story, and All Three Backbones Are Now Complete — 2026-09-18
+
+This was the fastest single training run of the entire project — under nine minutes, because the
+training set for this "ceiling" test is small and there's no adaptation machinery slowing things
+down. The result: a perfect score on the held-out test data (every single unseen plant correctly
+classified), and the internal signal used to pick the best checkpoint turned out to be the most
+trustworthy one seen anywhere in the project so far — even more reliable than the same test
+already showed for the other two backbones.
+
+That settles the question this row was built to answer, and settles it the same way for all
+three architectures now: the internal signal used to pick a good checkpoint becomes unreliable
+specifically because of the sensor/dataset mismatch domain adaptation is trying to bridge — not
+because of anything wrong with a particular backbone. Give any of the three architectures real
+labeled examples from the unseen dataset, and that signal becomes trustworthy again, every time.
+
+**With this row done, all three backbones have now completed their full planned set of tests —
+15 rows in total, the entire first phase of the strategy table finished.** All three "ceiling"
+numbers land in a tight, similar band (roughly 92-94% on a held-out unseen-sensor test), which
+confirms something important for the rest of the project: the sensor/dataset mismatch is the real
+bottleneck holding back every non-ceiling result, not a shortage of raw model capability. The
+project's headline cross-architecture finding stands out clearly now that all three are done: the
+adversarial adaptation approach (the "anchor" method used identically across all three
+architectures, modeled after literature's most standard technique) never clearly wins on any of
+them, while two other approaches — one self-supervised, one that only aligns statistical
+summaries of the two datasets rather than any real geometry — produce the project's best results,
+but only on two of the three architectures; the third architecture actively does worse with the
+same self-supervised approach. This means the best strategy is not one-size-fits-all across
+architectures, and the project's own results are the reason a straightforward "pick a method for
+everyone" attempt would have picked wrong for two of the three architectures.
+
+The strongest non-ceiling result overall, out of every combination tried across all three
+architectures, was the third architecture (the one whose selling point is being less sensitive to
+uneven point density) paired with the self-supervised approach — the best-performing setup found
+without any real labeled examples from the unseen dataset at all, and also the steadiest training
+run of the entire project. That combination is the natural first candidate to carry forward into
+the project's next phase, which moves from "can the model tell tomato from maize across sensors"
+to combining that groundwork with actual growth-curve and trait prediction.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -1028,7 +1068,7 @@ at-a-glance status.
 | A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
 | A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
 | A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | **Done** — unlike the second backbone, narrowing the augmentation mix genuinely helps here: better average result, far fewer collapsed epochs, and a fixed selection-signal problem (Milestone 32) |
-| A (PointNet++) | A5 | Oracle (upper-bound reference) | Training on cluster (job 313635), not yet finished |
+| A (PointNet++) | A5 | Oracle (upper-bound reference) | **Done** — Block A complete. Ceiling test confirms the same story as the other two architectures: the selection-signal problem is a sensor-mismatch artifact, not a backbone flaw (Milestone 34) |
 | B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
 | B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
 | B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
@@ -1043,22 +1083,25 @@ at-a-glance status.
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
 
-**In one sentence:** Block C (all five DGCNN rows: C1-C5) and Block B (all five KPConv rows:
-B1-B5, including the added B3b) are now both fully done, plus A1/A2/A3 on PointNet++ — giving a
-real cross-backbone comparison showing self-supervised adaptation's effect ranges from hurting
-DGCNN, to helping PointNet++ with a segmentation cost, to helping KPConv even more (the best
-non-Oracle result in the project) with no segmentation cost at all; adversarial adaptation flips
-rather than just varying in magnitude (hurts DGCNN clearly, hurts PointNet++ mildly, doesn't hurt
-KPConv overall — though it costs segmentation quality on all three); a second, mechanistically
-distinct adaptation method (discrepancy-based) also lands as a clear KPConv win, together
-pointing at "cooperative losses help this backbone, adversarial doesn't" rather than "needs real
-target geometry" as the explanation; KPConv's recurring, misleading model-selection signal (wrong
-direction in all four adapted/unadapted configurations) is now confirmed to be a domain-gap
-artifact, not a backbone flaw — it disappears entirely, and becomes the most reliable signal seen
-yet, once real target labels are available (B5), mirroring DGCNN's own Oracle row exactly; and
-KPConv's Oracle ceiling (0.9425 full-run mean) is now the highest ceiling found in the project so
-far, edging past DGCNN's (0.925) — the other 11 rows (Block A's remaining two, all of Block D,
-all of optional Block E) are not started yet.
+**In one sentence:** All three architecture blocks (A/PointNet++, B/KPConv, C/DGCNN — 15 rows
+plus the added B3b, 16 total) are now fully done: self-supervised adaptation's effect ranges from
+hurting DGCNN, to helping PointNet++ with a segmentation cost, to helping KPConv even more (the
+best non-Oracle result in the project) with no segmentation cost at all; adversarial adaptation
+never clearly wins on any of the three (hurts DGCNN clearly, hurts PointNet++ mildly — and that
+mild PointNet++ effect turns out to be partly an augmentation-mix artifact that mostly disappears
+once the perturbation mix is narrowed — and roughly ties on KPConv, though it costs segmentation
+quality everywhere); a second, mechanistically distinct adaptation method (discrepancy-based)
+also lands as a clear KPConv-only win, together pointing at "cooperative losses help this
+backbone, adversarial doesn't" rather than "needs real target geometry" as the explanation; every
+architecture's recurring, misleading model-selection signal under domain adaptation is now
+confirmed, on all three, to be a sensor-mismatch artifact rather than a backbone flaw — it
+disappears entirely, becoming the most reliable signal of any row trained, once real target
+labels are available; and all three architectures' "ceiling" scores (given real target labels)
+land in a tight, similar band (roughly 92-94%), with the third architecture (KPConv) reaching the
+highest of the three. The strongest practical, non-ceiling result across the whole comparison —
+KPConv paired with the self-supervised method — is the natural first candidate for the project's
+next phase (Block D, combining this groundwork with real growth-curve/trait prediction); Block D
+(6 rows) and the optional Block E (3 rows) have not started.
 
 ---
 

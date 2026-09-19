@@ -1,0 +1,530 @@
+18-09-26 19:28:59: Namespace(exp_name='A5_pointnet2_da_o', out_path='/home/pearl/25m0301/plant3d-thesis/results', epochs=100, batch_size=8, test_batch_size=16, lr=0.001, wd=5e-05, dropout=0.5, seed=1, gpu=0)
+18-09-26 19:29:00: Using GPU 0: NVIDIA A100-SXM4-80GB
+18-09-26 19:29:03: Pheno4D oracle train: 72 {'Tomato': 44, 'Maize': 28}
+18-09-26 19:29:03: Pheno4D oracle val:   18 {'Tomato': 11, 'Maize': 7}
+18-09-26 19:29:03: Pheno4D held-out eval (target test, never trained on, cls): 63 {'Tomato': 40, 'Maize': 23}
+18-09-26 19:29:03: Pheno4D held-out eval (target test, annotated subset, seg): 36 {'Tomato': 22, 'Maize': 14}  <- Oracle-only metric, NOT comparable to A1-A4's source-val seg mIoU (different domain/label space, see PHENO4D_SEG_NUM_CLASSES docstring)
+18-09-26 19:29:07: L_cls class weights (w_c=(f_c+eps)^-1, normalized): {'Tomato': 0.7777782082557678, 'Maize': 1.2222217321395874}
+18-09-26 19:29:07: L_seg class weights for Tomato (counts=[109997, 11181, 59046]): [0.23620915412902832, 2.323756694793701, 0.4400342106819153]
+18-09-26 19:29:07: L_seg class weights for Maize (counts=[65914, 25156, 23618]): [0.4679434299468994, 1.2261066436767578, 1.3059500455856323]
+18-09-26 19:30:11: Trn - Oracle 0, cls loss: 0.5976, seg loss: 1.6125, kendall s_cls: 0.0058, s_seg: 0.0088
+18-09-26 19:30:12: Val - Oracle 0, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 0.9818, seg loss: 2.8304, total loss: 3.7889
+18-09-26 19:30:12: Val - Oracle 0, Tomato seg: loss=3.5300, mIoU=0.2001, acc=0.6003
+18-09-26 19:30:12: Val - Oracle 0, Maize seg: loss=1.7310, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:13: Eval(no-train) - Target 'test' 0, acc: 0.3651, avg acc: 0.5000, cls loss: 1.1732  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:15: Trn - Oracle 1, cls loss: 0.2280, seg loss: 1.3077, kendall s_cls: 0.0024, s_seg: 0.0171
+18-09-26 19:30:16: Val - Oracle 1, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 2.3120, seg loss: 5.1851, total loss: 7.4135
+18-09-26 19:30:16: Val - Oracle 1, Tomato seg: loss=7.1685, mIoU=0.2001, acc=0.6003
+18-09-26 19:30:16: Val - Oracle 1, Maize seg: loss=2.0684, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:16: Eval(no-train) - Target 'test' 1, acc: 0.3651, avg acc: 0.5000, cls loss: 2.8717  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:18: Trn - Oracle 2, cls loss: 0.1402, seg loss: 1.1144, kendall s_cls: -0.0058, s_seg: 0.0244
+18-09-26 19:30:19: Val - Oracle 2, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 2.9039, seg loss: 4.8344, total loss: 7.6478
+18-09-26 19:30:19: Val - Oracle 2, Tomato seg: loss=5.3725, mIoU=0.2001, acc=0.6003
+18-09-26 19:30:19: Val - Oracle 2, Maize seg: loss=3.9889, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:20: Eval(no-train) - Target 'test' 2, acc: 0.3651, avg acc: 0.5000, cls loss: 3.6130  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:22: Trn - Oracle 3, cls loss: 0.1281, seg loss: 0.9681, kendall s_cls: -0.0151, s_seg: 0.0308
+18-09-26 19:30:22: Val - Oracle 3, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 2.8880, seg loss: 3.6174, total loss: 6.4474
+18-09-26 19:30:22: Val - Oracle 3, Tomato seg: loss=3.6973, mIoU=0.2001, acc=0.6003
+18-09-26 19:30:22: Val - Oracle 3, Maize seg: loss=3.4919, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:23: Eval(no-train) - Target 'test' 3, acc: 0.3651, avg acc: 0.5000, cls loss: 3.6024  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:25: Trn - Oracle 4, cls loss: 0.0894, seg loss: 1.0578, kendall s_cls: -0.0249, s_seg: 0.0371
+18-09-26 19:30:25: Val - Oracle 4, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 2.6563, seg loss: 3.4588, total loss: 6.0622
+18-09-26 19:30:25: Val - Oracle 4, Tomato seg: loss=4.0470, mIoU=0.2001, acc=0.6003
+18-09-26 19:30:25: Val - Oracle 4, Maize seg: loss=2.5345, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:26: Eval(no-train) - Target 'test' 4, acc: 0.3651, avg acc: 0.5000, cls loss: 3.2807  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:28: Trn - Oracle 5, cls loss: 0.2005, seg loss: 1.0720, kendall s_cls: -0.0340, s_seg: 0.0436
+18-09-26 19:30:29: Val - Oracle 5, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 1.9485, seg loss: 3.4066, total loss: 5.2818
+18-09-26 19:30:29: Val - Oracle 5, Tomato seg: loss=4.2199, mIoU=0.2001, acc=0.6003
+18-09-26 19:30:29: Val - Oracle 5, Maize seg: loss=2.1285, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:29: Eval(no-train) - Target 'test' 5, acc: 0.3651, avg acc: 0.5000, cls loss: 2.1452  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:31: Trn - Oracle 6, cls loss: 0.2052, seg loss: 0.9763, kendall s_cls: -0.0410, s_seg: 0.0497
+18-09-26 19:30:32: Val - Oracle 6, cls acc: 0.3889, cls avg acc: 0.5000, cls loss: 1.4070, seg loss: 1.7859, total loss: 3.1695
+18-09-26 19:30:32: Val - Oracle 6, Tomato seg: loss=1.6886, mIoU=0.3777, acc=0.6595
+18-09-26 19:30:32: Val - Oracle 6, Maize seg: loss=1.9389, mIoU=0.1223, acc=0.3668
+18-09-26 19:30:33: Eval(no-train) - Target 'test' 6, acc: 0.3651, avg acc: 0.5000, cls loss: 1.4144  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:35: Trn - Oracle 7, cls loss: 0.1560, seg loss: 0.9361, kendall s_cls: -0.0493, s_seg: 0.0556
+18-09-26 19:30:35: Val - Oracle 7, cls acc: 0.4444, cls avg acc: 0.5455, cls loss: 1.0610, seg loss: 1.9725, total loss: 2.9836
+18-09-26 19:30:35: Val - Oracle 7, Tomato seg: loss=2.3141, mIoU=0.3541, acc=0.6434
+18-09-26 19:30:35: Val - Oracle 7, Maize seg: loss=1.4357, mIoU=0.2216, acc=0.5053
+18-09-26 19:30:36: Eval(no-train) - Target 'test' 7, acc: 0.4444, avg acc: 0.5625, cls loss: 1.1419  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:38: Trn - Oracle 8, cls loss: 0.1482, seg loss: 0.9026, kendall s_cls: -0.0576, s_seg: 0.0612
+18-09-26 19:30:38: Val - Oracle 8, cls acc: 0.5556, cls avg acc: 0.6364, cls loss: 0.5160, seg loss: 1.2288, total loss: 1.7043
+18-09-26 19:30:38: Val - Oracle 8, Tomato seg: loss=1.4360, mIoU=0.4742, acc=0.7644
+18-09-26 19:30:38: Val - Oracle 8, Maize seg: loss=0.9032, mIoU=0.5140, acc=0.8210
+18-09-26 19:30:39: Eval(no-train) - Target 'test' 8, acc: 0.8889, avg acc: 0.9125, cls loss: 0.2521  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:41: Trn - Oracle 9, cls loss: 0.2830, seg loss: 0.9659, kendall s_cls: -0.0651, s_seg: 0.0667
+18-09-26 19:30:42: Val - Oracle 9, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.0859, seg loss: 0.7671, total loss: 0.8102
+18-09-26 19:30:42: Val - Oracle 9, Tomato seg: loss=0.6812, mIoU=0.8008, acc=0.9496
+18-09-26 19:30:42: Val - Oracle 9, Maize seg: loss=0.9022, mIoU=0.5880, acc=0.8302
+18-09-26 19:30:43: Eval(no-train) - Target 'test' 9, acc: 0.9683, avg acc: 0.9658, cls loss: 0.0617  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:44: Trn - Oracle 10, cls loss: 0.1622, seg loss: 0.9747, kendall s_cls: -0.0710, s_seg: 0.0727
+18-09-26 19:30:45: Val - Oracle 10, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0611, seg loss: 1.0726, total loss: 1.0639
+18-09-26 19:30:45: Val - Oracle 10, Tomato seg: loss=1.1395, mIoU=0.4675, acc=0.7050
+18-09-26 19:30:45: Val - Oracle 10, Maize seg: loss=0.9674, mIoU=0.5645, acc=0.7511
+18-09-26 19:30:46: Eval(no-train) - Target 'test' 10, acc: 0.9524, avg acc: 0.9625, cls loss: 0.1036  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:48: Trn - Oracle 11, cls loss: 0.1118, seg loss: 0.8197, kendall s_cls: -0.0779, s_seg: 0.0778
+18-09-26 19:30:48: Val - Oracle 11, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0650, seg loss: 0.8817, total loss: 0.8860
+18-09-26 19:30:48: Val - Oracle 11, Tomato seg: loss=0.7855, mIoU=0.6147, acc=0.8300
+18-09-26 19:30:48: Val - Oracle 11, Maize seg: loss=1.0328, mIoU=0.4609, acc=0.6526
+18-09-26 19:30:49: Eval(no-train) - Target 'test' 11, acc: 0.9683, avg acc: 0.9565, cls loss: 0.0717  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:51: Trn - Oracle 12, cls loss: 0.4526, seg loss: 0.8588, kendall s_cls: -0.0827, s_seg: 0.0824
+18-09-26 19:30:52: Val - Oracle 12, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0374, seg loss: 1.0507, total loss: 1.0081
+18-09-26 19:30:52: Val - Oracle 12, Tomato seg: loss=1.0877, mIoU=0.5689, acc=0.8093
+18-09-26 19:30:52: Val - Oracle 12, Maize seg: loss=0.9925, mIoU=0.4718, acc=0.7037
+18-09-26 19:30:52: Eval(no-train) - Target 'test' 12, acc: 0.9841, avg acc: 0.9783, cls loss: 0.0757  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:54: Trn - Oracle 13, cls loss: 0.1239, seg loss: 0.9063, kendall s_cls: -0.0869, s_seg: 0.0873
+18-09-26 19:30:55: Val - Oracle 13, cls acc: 0.4444, cls avg acc: 0.5455, cls loss: 0.6438, seg loss: 1.0201, total loss: 1.6372
+18-09-26 19:30:55: Val - Oracle 13, Tomato seg: loss=0.6843, mIoU=0.7265, acc=0.9166
+18-09-26 19:30:55: Val - Oracle 13, Maize seg: loss=1.5477, mIoU=0.4538, acc=0.7226
+18-09-26 19:30:56: Eval(no-train) - Target 'test' 13, acc: 0.5714, avg acc: 0.6625, cls loss: 0.6840  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:30:58: Trn - Oracle 14, cls loss: 0.3337, seg loss: 0.8479, kendall s_cls: -0.0919, s_seg: 0.0920
+18-09-26 19:30:58: Val - Oracle 14, cls acc: 0.6111, cls avg acc: 0.6818, cls loss: 0.5984, seg loss: 1.0464, total loss: 1.6105
+18-09-26 19:30:58: Val - Oracle 14, Tomato seg: loss=1.0088, mIoU=0.6701, acc=0.9082
+18-09-26 19:30:58: Val - Oracle 14, Maize seg: loss=1.1057, mIoU=0.5397, acc=0.7713
+18-09-26 19:30:59: Eval(no-train) - Target 'test' 14, acc: 0.6190, avg acc: 0.7000, cls loss: 0.8515  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:01: Trn - Oracle 15, cls loss: 0.1185, seg loss: 0.8826, kendall s_cls: -0.0965, s_seg: 0.0965
+18-09-26 19:31:01: Val - Oracle 15, cls acc: 0.7778, cls avg acc: 0.8182, cls loss: 0.4100, seg loss: 0.9394, total loss: 1.3046
+18-09-26 19:31:01: Val - Oracle 15, Tomato seg: loss=1.0098, mIoU=0.4304, acc=0.6855
+18-09-26 19:31:01: Val - Oracle 15, Maize seg: loss=0.8289, mIoU=0.5744, acc=0.8372
+18-09-26 19:31:02: Eval(no-train) - Target 'test' 15, acc: 0.8254, avg acc: 0.8625, cls loss: 0.5136  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:04: Trn - Oracle 16, cls loss: 0.1549, seg loss: 0.9236, kendall s_cls: -0.1022, s_seg: 0.1016
+18-09-26 19:31:04: Val - Oracle 16, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0493, seg loss: 0.8872, total loss: 0.8557
+18-09-26 19:31:04: Val - Oracle 16, Tomato seg: loss=0.9078, mIoU=0.5726, acc=0.7866
+18-09-26 19:31:04: Val - Oracle 16, Maize seg: loss=0.8547, mIoU=0.6463, acc=0.8410
+18-09-26 19:31:05: Eval(no-train) - Target 'test' 16, acc: 0.9524, avg acc: 0.9625, cls loss: 0.1212  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:07: Trn - Oracle 17, cls loss: 0.0832, seg loss: 0.8706, kendall s_cls: -0.1090, s_seg: 0.1066
+18-09-26 19:31:08: Val - Oracle 17, cls acc: 0.8889, cls avg acc: 0.9091, cls loss: 0.2243, seg loss: 0.6706, total loss: 0.8518
+18-09-26 19:31:08: Val - Oracle 17, Tomato seg: loss=0.5846, mIoU=0.8095, acc=0.9641
+18-09-26 19:31:08: Val - Oracle 17, Maize seg: loss=0.8058, mIoU=0.6420, acc=0.8567
+18-09-26 19:31:09: Eval(no-train) - Target 'test' 17, acc: 0.8889, avg acc: 0.9125, cls loss: 0.2697  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:10: Trn - Oracle 18, cls loss: 0.1212, seg loss: 0.9060, kendall s_cls: -0.1161, s_seg: 0.1115
+18-09-26 19:31:11: Val - Oracle 18, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0518, seg loss: 0.9972, total loss: 0.9479
+18-09-26 19:31:11: Val - Oracle 18, Tomato seg: loss=1.0807, mIoU=0.5524, acc=0.7340
+18-09-26 19:31:11: Val - Oracle 18, Maize seg: loss=0.8660, mIoU=0.6269, acc=0.8281
+18-09-26 19:31:12: Eval(no-train) - Target 'test' 18, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0218  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:14: Trn - Oracle 19, cls loss: 0.0518, seg loss: 0.8934, kendall s_cls: -0.1235, s_seg: 0.1163
+18-09-26 19:31:14: Val - Oracle 19, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0514, seg loss: 0.8507, total loss: 0.8119
+18-09-26 19:31:14: Val - Oracle 19, Tomato seg: loss=0.7443, mIoU=0.7121, acc=0.8639
+18-09-26 19:31:14: Val - Oracle 19, Maize seg: loss=1.0178, mIoU=0.4909, acc=0.6740
+18-09-26 19:31:15: Eval(no-train) - Target 'test' 19, acc: 0.9683, avg acc: 0.9565, cls loss: 0.0633  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:17: Trn - Oracle 20, cls loss: 0.1421, seg loss: 0.8200, kendall s_cls: -0.1307, s_seg: 0.1210
+18-09-26 19:31:17: Val - Oracle 20, cls acc: 0.8889, cls avg acc: 0.9091, cls loss: 0.1279, seg loss: 0.7346, total loss: 0.7918
+18-09-26 19:31:17: Val - Oracle 20, Tomato seg: loss=0.6101, mIoU=0.7779, acc=0.9629
+18-09-26 19:31:17: Val - Oracle 20, Maize seg: loss=0.9302, mIoU=0.5581, acc=0.7324
+18-09-26 19:31:18: Eval(no-train) - Target 'test' 20, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0427  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:20: Trn - Oracle 21, cls loss: 0.0741, seg loss: 0.7598, kendall s_cls: -0.1376, s_seg: 0.1249
+18-09-26 19:31:21: Val - Oracle 21, cls acc: 0.7778, cls avg acc: 0.8182, cls loss: 0.2632, seg loss: 0.6783, total loss: 0.8943
+18-09-26 19:31:21: Val - Oracle 21, Tomato seg: loss=0.5696, mIoU=0.7821, acc=0.9517
+18-09-26 19:31:21: Val - Oracle 21, Maize seg: loss=0.8490, mIoU=0.6920, acc=0.8357
+18-09-26 19:31:22: Eval(no-train) - Target 'test' 21, acc: 0.8889, avg acc: 0.9125, cls loss: 0.3081  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:23: Trn - Oracle 22, cls loss: 0.0969, seg loss: 0.8076, kendall s_cls: -0.1447, s_seg: 0.1285
+18-09-26 19:31:24: Val - Oracle 22, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.1603, seg loss: 0.7090, total loss: 0.8007
+18-09-26 19:31:24: Val - Oracle 22, Tomato seg: loss=0.5466, mIoU=0.7799, acc=0.9406
+18-09-26 19:31:24: Val - Oracle 22, Maize seg: loss=0.9644, mIoU=0.5141, acc=0.6970
+18-09-26 19:31:25: Eval(no-train) - Target 'test' 22, acc: 0.8730, avg acc: 0.9000, cls loss: 0.2739  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:27: Trn - Oracle 23, cls loss: 0.0493, seg loss: 0.7638, kendall s_cls: -0.1521, s_seg: 0.1319
+18-09-26 19:31:27: Val - Oracle 23, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0457, seg loss: 0.9093, total loss: 0.8400
+18-09-26 19:31:27: Val - Oracle 23, Tomato seg: loss=0.9754, mIoU=0.4895, acc=0.7101
+18-09-26 19:31:27: Val - Oracle 23, Maize seg: loss=0.8053, mIoU=0.6032, acc=0.8264
+18-09-26 19:31:28: Eval(no-train) - Target 'test' 23, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0734  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:30: Trn - Oracle 24, cls loss: 0.1090, seg loss: 0.7859, kendall s_cls: -0.1594, s_seg: 0.1349
+18-09-26 19:31:30: Val - Oracle 24, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0390, seg loss: 0.7027, total loss: 0.6475
+18-09-26 19:31:30: Val - Oracle 24, Tomato seg: loss=0.6522, mIoU=0.6288, acc=0.8498
+18-09-26 19:31:30: Val - Oracle 24, Maize seg: loss=0.7821, mIoU=0.6589, acc=0.8423
+18-09-26 19:31:31: Eval(no-train) - Target 'test' 24, acc: 0.9524, avg acc: 0.9533, cls loss: 0.0883  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:33: Trn - Oracle 25, cls loss: 0.1068, seg loss: 0.7795, kendall s_cls: -0.1664, s_seg: 0.1382
+18-09-26 19:31:34: Val - Oracle 25, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0065, seg loss: 0.6913, total loss: 0.5956
+18-09-26 19:31:34: Val - Oracle 25, Tomato seg: loss=0.5815, mIoU=0.7758, acc=0.9351
+18-09-26 19:31:34: Val - Oracle 25, Maize seg: loss=0.8638, mIoU=0.5984, acc=0.8450
+18-09-26 19:31:35: Eval(no-train) - Target 'test' 25, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0396  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:37: Trn - Oracle 26, cls loss: 0.0589, seg loss: 0.8128, kendall s_cls: -0.1733, s_seg: 0.1417
+18-09-26 19:31:37: Val - Oracle 26, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0130, seg loss: 0.6680, total loss: 0.5793
+18-09-26 19:31:37: Val - Oracle 26, Tomato seg: loss=0.5459, mIoU=0.8140, acc=0.9636
+18-09-26 19:31:37: Val - Oracle 26, Maize seg: loss=0.8598, mIoU=0.6107, acc=0.8197
+18-09-26 19:31:38: Eval(no-train) - Target 'test' 26, acc: 0.9841, avg acc: 0.9783, cls loss: 0.0365  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:40: Trn - Oracle 27, cls loss: 0.0682, seg loss: 0.8198, kendall s_cls: -0.1804, s_seg: 0.1449
+18-09-26 19:31:40: Val - Oracle 27, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0267, seg loss: 0.7067, total loss: 0.6256
+18-09-26 19:31:40: Val - Oracle 27, Tomato seg: loss=0.6069, mIoU=0.7137, acc=0.9026
+18-09-26 19:31:40: Val - Oracle 27, Maize seg: loss=0.8636, mIoU=0.6121, acc=0.7793
+18-09-26 19:31:41: Eval(no-train) - Target 'test' 27, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0441  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:43: Trn - Oracle 28, cls loss: 0.1608, seg loss: 0.7752, kendall s_cls: -0.1868, s_seg: 0.1482
+18-09-26 19:31:44: Val - Oracle 28, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.0780, seg loss: 0.6370, total loss: 0.6240
+18-09-26 19:31:44: Val - Oracle 28, Tomato seg: loss=0.5561, mIoU=0.7391, acc=0.9202
+18-09-26 19:31:44: Val - Oracle 28, Maize seg: loss=0.7642, mIoU=0.6137, acc=0.8536
+18-09-26 19:31:44: Eval(no-train) - Target 'test' 28, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0681  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:46: Trn - Oracle 29, cls loss: 0.0486, seg loss: 0.8389, kendall s_cls: -0.1933, s_seg: 0.1516
+18-09-26 19:31:47: Val - Oracle 29, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0496, seg loss: 0.6250, total loss: 0.5764
+18-09-26 19:31:47: Val - Oracle 29, Tomato seg: loss=0.5424, mIoU=0.8061, acc=0.9497
+18-09-26 19:31:47: Val - Oracle 29, Maize seg: loss=0.7549, mIoU=0.6264, acc=0.8577
+18-09-26 19:31:48: Eval(no-train) - Target 'test' 29, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0789  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:50: Trn - Oracle 30, cls loss: 0.0226, seg loss: 0.7411, kendall s_cls: -0.2005, s_seg: 0.1547
+18-09-26 19:31:50: Val - Oracle 30, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0521, seg loss: 0.6290, total loss: 0.5796
+18-09-26 19:31:50: Val - Oracle 30, Tomato seg: loss=0.4900, mIoU=0.7806, acc=0.9339
+18-09-26 19:31:50: Val - Oracle 30, Maize seg: loss=0.8474, mIoU=0.6494, acc=0.8151
+18-09-26 19:31:51: Eval(no-train) - Target 'test' 30, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0948  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:53: Trn - Oracle 31, cls loss: 0.0502, seg loss: 0.7318, kendall s_cls: -0.2078, s_seg: 0.1570
+18-09-26 19:31:54: Val - Oracle 31, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0401, seg loss: 0.5737, total loss: 0.5142
+18-09-26 19:31:54: Val - Oracle 31, Tomato seg: loss=0.4186, mIoU=0.8374, acc=0.9579
+18-09-26 19:31:54: Val - Oracle 31, Maize seg: loss=0.8174, mIoU=0.7076, acc=0.8503
+18-09-26 19:31:54: Eval(no-train) - Target 'test' 31, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0881  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:31:56: Trn - Oracle 32, cls loss: 0.1147, seg loss: 0.7966, kendall s_cls: -0.2142, s_seg: 0.1598
+18-09-26 19:31:57: Val - Oracle 32, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0339, seg loss: 0.6951, total loss: 0.6072
+18-09-26 19:31:57: Val - Oracle 32, Tomato seg: loss=0.5673, mIoU=0.8066, acc=0.9640
+18-09-26 19:31:57: Val - Oracle 32, Maize seg: loss=0.8959, mIoU=0.5510, acc=0.7373
+18-09-26 19:31:58: Eval(no-train) - Target 'test' 32, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0454  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:00: Trn - Oracle 33, cls loss: 0.1177, seg loss: 0.8456, kendall s_cls: -0.2207, s_seg: 0.1627
+18-09-26 19:32:00: Val - Oracle 33, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0515, seg loss: 0.7197, total loss: 0.6469
+18-09-26 19:32:00: Val - Oracle 33, Tomato seg: loss=0.6691, mIoU=0.7108, acc=0.9077
+18-09-26 19:32:00: Val - Oracle 33, Maize seg: loss=0.7993, mIoU=0.6898, acc=0.8542
+18-09-26 19:32:01: Eval(no-train) - Target 'test' 33, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0521  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:03: Trn - Oracle 34, cls loss: 0.0894, seg loss: 0.7954, kendall s_cls: -0.2260, s_seg: 0.1661
+18-09-26 19:32:03: Val - Oracle 34, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.1269, seg loss: 0.7355, total loss: 0.7521
+18-09-26 19:32:03: Val - Oracle 34, Tomato seg: loss=0.6188, mIoU=0.7789, acc=0.9279
+18-09-26 19:32:03: Val - Oracle 34, Maize seg: loss=0.9189, mIoU=0.5775, acc=0.7116
+18-09-26 19:32:04: Eval(no-train) - Target 'test' 34, acc: 0.8730, avg acc: 0.9000, cls loss: 0.2771  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:06: Trn - Oracle 35, cls loss: 0.2033, seg loss: 0.6836, kendall s_cls: -0.2311, s_seg: 0.1685
+18-09-26 19:32:07: Val - Oracle 35, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0102, seg loss: 0.8717, total loss: 0.7180
+18-09-26 19:32:07: Val - Oracle 35, Tomato seg: loss=0.8934, mIoU=0.7401, acc=0.9233
+18-09-26 19:32:07: Val - Oracle 35, Maize seg: loss=0.8377, mIoU=0.6339, acc=0.8013
+18-09-26 19:32:07: Eval(no-train) - Target 'test' 35, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0280  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:09: Trn - Oracle 36, cls loss: 0.2121, seg loss: 0.7744, kendall s_cls: -0.2350, s_seg: 0.1708
+18-09-26 19:32:10: Val - Oracle 36, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0030, seg loss: 0.7004, total loss: 0.5621
+18-09-26 19:32:10: Val - Oracle 36, Tomato seg: loss=0.5475, mIoU=0.7865, acc=0.9464
+18-09-26 19:32:10: Val - Oracle 36, Maize seg: loss=0.9407, mIoU=0.5597, acc=0.7479
+18-09-26 19:32:11: Eval(no-train) - Target 'test' 36, acc: 0.9683, avg acc: 0.9565, cls loss: 0.0551  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:13: Trn - Oracle 37, cls loss: 0.0245, seg loss: 0.8902, kendall s_cls: -0.2398, s_seg: 0.1738
+18-09-26 19:32:13: Val - Oracle 37, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0021, seg loss: 0.7121, total loss: 0.5682
+18-09-26 19:32:13: Val - Oracle 37, Tomato seg: loss=0.5991, mIoU=0.7217, acc=0.9044
+18-09-26 19:32:13: Val - Oracle 37, Maize seg: loss=0.8896, mIoU=0.6062, acc=0.7679
+18-09-26 19:32:14: Eval(no-train) - Target 'test' 37, acc: 0.9683, avg acc: 0.9565, cls loss: 0.0332  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:16: Trn - Oracle 38, cls loss: 0.2359, seg loss: 0.7153, kendall s_cls: -0.2445, s_seg: 0.1764
+18-09-26 19:32:16: Val - Oracle 38, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.0768, seg loss: 0.6610, total loss: 0.6182
+18-09-26 19:32:16: Val - Oracle 38, Tomato seg: loss=0.5459, mIoU=0.7837, acc=0.9368
+18-09-26 19:32:16: Val - Oracle 38, Maize seg: loss=0.8417, mIoU=0.6610, acc=0.8457
+18-09-26 19:32:17: Eval(no-train) - Target 'test' 38, acc: 0.9683, avg acc: 0.9565, cls loss: 0.0875  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:19: Trn - Oracle 39, cls loss: 0.0639, seg loss: 0.6958, kendall s_cls: -0.2488, s_seg: 0.1782
+18-09-26 19:32:20: Val - Oracle 39, cls acc: 0.7778, cls avg acc: 0.8182, cls loss: 0.4025, seg loss: 0.7384, total loss: 1.0988
+18-09-26 19:32:20: Val - Oracle 39, Tomato seg: loss=0.6604, mIoU=0.7416, acc=0.9088
+18-09-26 19:32:20: Val - Oracle 39, Maize seg: loss=0.8610, mIoU=0.6044, acc=0.8351
+18-09-26 19:32:20: Eval(no-train) - Target 'test' 39, acc: 0.8730, avg acc: 0.8908, cls loss: 0.3069  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:22: Trn - Oracle 40, cls loss: 0.0884, seg loss: 0.7290, kendall s_cls: -0.2536, s_seg: 0.1801
+18-09-26 19:32:23: Val - Oracle 40, cls acc: 0.7222, cls avg acc: 0.7727, cls loss: 0.4598, seg loss: 0.8489, total loss: 1.2647
+18-09-26 19:32:23: Val - Oracle 40, Tomato seg: loss=0.8175, mIoU=0.6289, acc=0.8883
+18-09-26 19:32:23: Val - Oracle 40, Maize seg: loss=0.8983, mIoU=0.6906, acc=0.8208
+18-09-26 19:32:24: Eval(no-train) - Target 'test' 40, acc: 0.7778, avg acc: 0.8250, cls loss: 0.4627  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:25: Trn - Oracle 41, cls loss: 0.1409, seg loss: 0.7247, kendall s_cls: -0.2585, s_seg: 0.1818
+18-09-26 19:32:26: Val - Oracle 41, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0573, seg loss: 0.7432, total loss: 0.6556
+18-09-26 19:32:26: Val - Oracle 41, Tomato seg: loss=0.7014, mIoU=0.7825, acc=0.9499
+18-09-26 19:32:26: Val - Oracle 41, Maize seg: loss=0.8090, mIoU=0.6399, acc=0.8516
+18-09-26 19:32:27: Eval(no-train) - Target 'test' 41, acc: 0.9365, avg acc: 0.9500, cls loss: 0.1857  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:29: Trn - Oracle 42, cls loss: 0.0486, seg loss: 0.7587, kendall s_cls: -0.2631, s_seg: 0.1835
+18-09-26 19:32:29: Val - Oracle 42, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0578, seg loss: 0.6486, total loss: 0.5754
+18-09-26 19:32:29: Val - Oracle 42, Tomato seg: loss=0.5699, mIoU=0.8226, acc=0.9630
+18-09-26 19:32:29: Val - Oracle 42, Maize seg: loss=0.7723, mIoU=0.6442, acc=0.8609
+18-09-26 19:32:30: Eval(no-train) - Target 'test' 42, acc: 0.9524, avg acc: 0.9625, cls loss: 0.1201  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:32: Trn - Oracle 43, cls loss: 0.0889, seg loss: 0.6537, kendall s_cls: -0.2682, s_seg: 0.1849
+18-09-26 19:32:32: Val - Oracle 43, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0526, seg loss: 0.6751, total loss: 0.5883
+18-09-26 19:32:32: Val - Oracle 43, Tomato seg: loss=0.5300, mIoU=0.8196, acc=0.9575
+18-09-26 19:32:32: Val - Oracle 43, Maize seg: loss=0.9032, mIoU=0.6532, acc=0.7847
+18-09-26 19:32:33: Eval(no-train) - Target 'test' 43, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0650  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:35: Trn - Oracle 44, cls loss: 0.0501, seg loss: 0.7383, kendall s_cls: -0.2731, s_seg: 0.1861
+18-09-26 19:32:36: Val - Oracle 44, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0507, seg loss: 0.6851, total loss: 0.5919
+18-09-26 19:32:36: Val - Oracle 44, Tomato seg: loss=0.5756, mIoU=0.7696, acc=0.9157
+18-09-26 19:32:36: Val - Oracle 44, Maize seg: loss=0.8572, mIoU=0.6532, acc=0.8260
+18-09-26 19:32:37: Eval(no-train) - Target 'test' 44, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0531  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:38: Trn - Oracle 45, cls loss: 0.1099, seg loss: 0.7045, kendall s_cls: -0.2780, s_seg: 0.1877
+18-09-26 19:32:39: Val - Oracle 45, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0363, seg loss: 0.6010, total loss: 0.5010
+18-09-26 19:32:39: Val - Oracle 45, Tomato seg: loss=0.4410, mIoU=0.8598, acc=0.9524
+18-09-26 19:32:39: Val - Oracle 45, Maize seg: loss=0.8526, mIoU=0.7047, acc=0.8302
+18-09-26 19:32:40: Eval(no-train) - Target 'test' 45, acc: 0.9841, avg acc: 0.9783, cls loss: 0.0472  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:42: Trn - Oracle 46, cls loss: 0.2648, seg loss: 0.7558, kendall s_cls: -0.2805, s_seg: 0.1891
+18-09-26 19:32:42: Val - Oracle 46, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0525, seg loss: 0.5571, total loss: 0.4849
+18-09-26 19:32:42: Val - Oracle 46, Tomato seg: loss=0.4419, mIoU=0.8492, acc=0.9552
+18-09-26 19:32:42: Val - Oracle 46, Maize seg: loss=0.7382, mIoU=0.6323, acc=0.8651
+18-09-26 19:32:43: Eval(no-train) - Target 'test' 46, acc: 0.9683, avg acc: 0.9750, cls loss: 0.1163  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:45: Trn - Oracle 47, cls loss: 0.1727, seg loss: 0.6399, kendall s_cls: -0.2835, s_seg: 0.1902
+18-09-26 19:32:46: Val - Oracle 47, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0673, seg loss: 0.5737, total loss: 0.5171
+18-09-26 19:32:46: Val - Oracle 47, Tomato seg: loss=0.4698, mIoU=0.8436, acc=0.9571
+18-09-26 19:32:46: Val - Oracle 47, Maize seg: loss=0.7369, mIoU=0.5971, acc=0.8503
+18-09-26 19:32:46: Eval(no-train) - Target 'test' 47, acc: 0.8730, avg acc: 0.9000, cls loss: 0.1692  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:48: Trn - Oracle 48, cls loss: 0.0550, seg loss: 0.7090, kendall s_cls: -0.2871, s_seg: 0.1913
+18-09-26 19:32:49: Val - Oracle 48, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0341, seg loss: 0.5819, total loss: 0.4781
+18-09-26 19:32:49: Val - Oracle 48, Tomato seg: loss=0.4692, mIoU=0.8359, acc=0.9475
+18-09-26 19:32:49: Val - Oracle 48, Maize seg: loss=0.7590, mIoU=0.5861, acc=0.8398
+18-09-26 19:32:50: Eval(no-train) - Target 'test' 48, acc: 0.9524, avg acc: 0.9625, cls loss: 0.1094  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:52: Trn - Oracle 49, cls loss: 0.0496, seg loss: 0.6974, kendall s_cls: -0.2911, s_seg: 0.1923
+18-09-26 19:32:52: Val - Oracle 49, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0246, seg loss: 0.5920, total loss: 0.4720
+18-09-26 19:32:52: Val - Oracle 49, Tomato seg: loss=0.4944, mIoU=0.8318, acc=0.9417
+18-09-26 19:32:52: Val - Oracle 49, Maize seg: loss=0.7453, mIoU=0.7312, acc=0.8835
+18-09-26 19:32:53: Eval(no-train) - Target 'test' 49, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0725  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:55: Trn - Oracle 50, cls loss: 0.0965, seg loss: 0.6733, kendall s_cls: -0.2952, s_seg: 0.1932
+18-09-26 19:32:55: Val - Oracle 50, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0349, seg loss: 0.6620, total loss: 0.5416
+18-09-26 19:32:55: Val - Oracle 50, Tomato seg: loss=0.5172, mIoU=0.8205, acc=0.9330
+18-09-26 19:32:55: Val - Oracle 50, Maize seg: loss=0.8894, mIoU=0.6080, acc=0.7628
+18-09-26 19:32:56: Eval(no-train) - Target 'test' 50, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0721  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:32:58: Trn - Oracle 51, cls loss: 0.0402, seg loss: 0.6405, kendall s_cls: -0.2991, s_seg: 0.1940
+18-09-26 19:32:59: Val - Oracle 51, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0388, seg loss: 0.5811, total loss: 0.4784
+18-09-26 19:32:59: Val - Oracle 51, Tomato seg: loss=0.4873, mIoU=0.8432, acc=0.9468
+18-09-26 19:32:59: Val - Oracle 51, Maize seg: loss=0.7284, mIoU=0.6895, acc=0.8624
+18-09-26 19:32:59: Eval(no-train) - Target 'test' 51, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0818  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:01: Trn - Oracle 52, cls loss: 0.1048, seg loss: 0.6104, kendall s_cls: -0.3029, s_seg: 0.1944
+18-09-26 19:33:02: Val - Oracle 52, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0386, seg loss: 0.5271, total loss: 0.4319
+18-09-26 19:33:02: Val - Oracle 52, Tomato seg: loss=0.4407, mIoU=0.8573, acc=0.9550
+18-09-26 19:33:02: Val - Oracle 52, Maize seg: loss=0.6630, mIoU=0.7264, acc=0.8923
+18-09-26 19:33:03: Eval(no-train) - Target 'test' 52, acc: 0.9048, avg acc: 0.9250, cls loss: 0.1452  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:05: Trn - Oracle 53, cls loss: 0.0717, seg loss: 0.6342, kendall s_cls: -0.3065, s_seg: 0.1946
+18-09-26 19:33:05: Val - Oracle 53, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0482, seg loss: 0.5520, total loss: 0.4639
+18-09-26 19:33:05: Val - Oracle 53, Tomato seg: loss=0.4989, mIoU=0.8434, acc=0.9543
+18-09-26 19:33:05: Val - Oracle 53, Maize seg: loss=0.6355, mIoU=0.7660, acc=0.8970
+18-09-26 19:33:06: Eval(no-train) - Target 'test' 53, acc: 0.9048, avg acc: 0.9250, cls loss: 0.1583  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:08: Trn - Oracle 54, cls loss: 0.0265, seg loss: 0.6241, kendall s_cls: -0.3103, s_seg: 0.1948
+18-09-26 19:33:08: Val - Oracle 54, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0442, seg loss: 0.5907, total loss: 0.4886
+18-09-26 19:33:08: Val - Oracle 54, Tomato seg: loss=0.5390, mIoU=0.8025, acc=0.9163
+18-09-26 19:33:08: Val - Oracle 54, Maize seg: loss=0.6720, mIoU=0.7129, acc=0.8891
+18-09-26 19:33:09: Eval(no-train) - Target 'test' 54, acc: 0.9524, avg acc: 0.9625, cls loss: 0.0839  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:11: Trn - Oracle 55, cls loss: 0.0558, seg loss: 0.6463, kendall s_cls: -0.3140, s_seg: 0.1950
+18-09-26 19:33:12: Val - Oracle 55, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0300, seg loss: 0.5826, total loss: 0.4609
+18-09-26 19:33:12: Val - Oracle 55, Tomato seg: loss=0.5063, mIoU=0.8495, acc=0.9645
+18-09-26 19:33:12: Val - Oracle 55, Maize seg: loss=0.7025, mIoU=0.7262, acc=0.8792
+18-09-26 19:33:13: Eval(no-train) - Target 'test' 55, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0738  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:14: Trn - Oracle 56, cls loss: 0.1706, seg loss: 0.6607, kendall s_cls: -0.3167, s_seg: 0.1952
+18-09-26 19:33:15: Val - Oracle 56, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0396, seg loss: 0.6104, total loss: 0.4957
+18-09-26 19:33:15: Val - Oracle 56, Tomato seg: loss=0.5110, mIoU=0.8564, acc=0.9656
+18-09-26 19:33:15: Val - Oracle 56, Maize seg: loss=0.7666, mIoU=0.7088, acc=0.8553
+18-09-26 19:33:16: Eval(no-train) - Target 'test' 56, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0787  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:18: Trn - Oracle 57, cls loss: 0.0823, seg loss: 0.6291, kendall s_cls: -0.3197, s_seg: 0.1955
+18-09-26 19:33:18: Val - Oracle 57, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0217, seg loss: 0.5552, total loss: 0.4244
+18-09-26 19:33:18: Val - Oracle 57, Tomato seg: loss=0.4367, mIoU=0.8683, acc=0.9614
+18-09-26 19:33:18: Val - Oracle 57, Maize seg: loss=0.7415, mIoU=0.7626, acc=0.8914
+18-09-26 19:33:19: Eval(no-train) - Target 'test' 57, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0787  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:21: Trn - Oracle 58, cls loss: 0.0730, seg loss: 0.6127, kendall s_cls: -0.3227, s_seg: 0.1958
+18-09-26 19:33:21: Val - Oracle 58, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0189, seg loss: 0.5384, total loss: 0.4054
+18-09-26 19:33:21: Val - Oracle 58, Tomato seg: loss=0.4491, mIoU=0.8483, acc=0.9585
+18-09-26 19:33:21: Val - Oracle 58, Maize seg: loss=0.6789, mIoU=0.7322, acc=0.8832
+18-09-26 19:33:22: Eval(no-train) - Target 'test' 58, acc: 0.9524, avg acc: 0.9625, cls loss: 0.0757  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:24: Trn - Oracle 59, cls loss: 0.0858, seg loss: 0.6354, kendall s_cls: -0.3253, s_seg: 0.1961
+18-09-26 19:33:25: Val - Oracle 59, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0174, seg loss: 0.5444, total loss: 0.4070
+18-09-26 19:33:25: Val - Oracle 59, Tomato seg: loss=0.4717, mIoU=0.8386, acc=0.9659
+18-09-26 19:33:25: Val - Oracle 59, Maize seg: loss=0.6587, mIoU=0.6554, acc=0.8771
+18-09-26 19:33:26: Eval(no-train) - Target 'test' 59, acc: 0.9206, avg acc: 0.9375, cls loss: 0.1407  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:27: Trn - Oracle 60, cls loss: 0.1129, seg loss: 0.6107, kendall s_cls: -0.3278, s_seg: 0.1961
+18-09-26 19:33:28: Val - Oracle 60, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0117, seg loss: 0.5785, total loss: 0.4259
+18-09-26 19:33:28: Val - Oracle 60, Tomato seg: loss=0.4861, mIoU=0.8074, acc=0.9462
+18-09-26 19:33:28: Val - Oracle 60, Maize seg: loss=0.7237, mIoU=0.7493, acc=0.8782
+18-09-26 19:33:29: Eval(no-train) - Target 'test' 60, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0763  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:31: Trn - Oracle 61, cls loss: 0.0859, seg loss: 0.6586, kendall s_cls: -0.3302, s_seg: 0.1965
+18-09-26 19:33:31: Val - Oracle 61, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0230, seg loss: 0.6827, total loss: 0.5261
+18-09-26 19:33:31: Val - Oracle 61, Tomato seg: loss=0.5167, mIoU=0.8380, acc=0.9468
+18-09-26 19:33:31: Val - Oracle 61, Maize seg: loss=0.9437, mIoU=0.6715, acc=0.7530
+18-09-26 19:33:32: Eval(no-train) - Target 'test' 61, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0867  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:34: Trn - Oracle 62, cls loss: 0.1632, seg loss: 0.6349, kendall s_cls: -0.3326, s_seg: 0.1966
+18-09-26 19:33:34: Val - Oracle 62, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0419, seg loss: 0.6841, total loss: 0.5524
+18-09-26 19:33:34: Val - Oracle 62, Tomato seg: loss=0.5798, mIoU=0.8475, acc=0.9607
+18-09-26 19:33:34: Val - Oracle 62, Maize seg: loss=0.8481, mIoU=0.7250, acc=0.8192
+18-09-26 19:33:35: Eval(no-train) - Target 'test' 62, acc: 0.8889, avg acc: 0.9125, cls loss: 0.1744  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:37: Trn - Oracle 63, cls loss: 0.0899, seg loss: 0.6038, kendall s_cls: -0.3345, s_seg: 0.1968
+18-09-26 19:33:38: Val - Oracle 63, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0208, seg loss: 0.7094, total loss: 0.5429
+18-09-26 19:33:38: Val - Oracle 63, Tomato seg: loss=0.5608, mIoU=0.8250, acc=0.9496
+18-09-26 19:33:38: Val - Oracle 63, Maize seg: loss=0.9430, mIoU=0.6705, acc=0.7355
+18-09-26 19:33:38: Eval(no-train) - Target 'test' 63, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0819  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:40: Trn - Oracle 64, cls loss: 0.1088, seg loss: 0.5945, kendall s_cls: -0.3365, s_seg: 0.1967
+18-09-26 19:33:41: Val - Oracle 64, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0139, seg loss: 0.6215, total loss: 0.4601
+18-09-26 19:33:41: Val - Oracle 64, Tomato seg: loss=0.5197, mIoU=0.8263, acc=0.9386
+18-09-26 19:33:41: Val - Oracle 64, Maize seg: loss=0.7815, mIoU=0.6667, acc=0.7863
+18-09-26 19:33:42: Eval(no-train) - Target 'test' 64, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0619  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:44: Trn - Oracle 65, cls loss: 0.0383, seg loss: 0.6196, kendall s_cls: -0.3386, s_seg: 0.1968
+18-09-26 19:33:44: Val - Oracle 65, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0136, seg loss: 0.5669, total loss: 0.4137
+18-09-26 19:33:44: Val - Oracle 65, Tomato seg: loss=0.4790, mIoU=0.8491, acc=0.9577
+18-09-26 19:33:44: Val - Oracle 65, Maize seg: loss=0.7049, mIoU=0.7321, acc=0.8932
+18-09-26 19:33:45: Eval(no-train) - Target 'test' 65, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0551  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:47: Trn - Oracle 66, cls loss: 0.1661, seg loss: 0.6482, kendall s_cls: -0.3404, s_seg: 0.1968
+18-09-26 19:33:47: Val - Oracle 66, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0156, seg loss: 0.5455, total loss: 0.3981
+18-09-26 19:33:47: Val - Oracle 66, Tomato seg: loss=0.4233, mIoU=0.8589, acc=0.9601
+18-09-26 19:33:47: Val - Oracle 66, Maize seg: loss=0.7375, mIoU=0.7564, acc=0.8797
+18-09-26 19:33:48: Eval(no-train) - Target 'test' 66, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0315  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:50: Trn - Oracle 67, cls loss: 0.0284, seg loss: 0.5826, kendall s_cls: -0.3423, s_seg: 0.1969
+18-09-26 19:33:51: Val - Oracle 67, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0121, seg loss: 0.5833, total loss: 0.4234
+18-09-26 19:33:51: Val - Oracle 67, Tomato seg: loss=0.4379, mIoU=0.8556, acc=0.9539
+18-09-26 19:33:51: Val - Oracle 67, Maize seg: loss=0.8119, mIoU=0.7734, acc=0.8589
+18-09-26 19:33:51: Eval(no-train) - Target 'test' 67, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0258  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:53: Trn - Oracle 68, cls loss: 0.1162, seg loss: 0.5956, kendall s_cls: -0.3440, s_seg: 0.1969
+18-09-26 19:33:54: Val - Oracle 68, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0134, seg loss: 0.5246, total loss: 0.3762
+18-09-26 19:33:54: Val - Oracle 68, Tomato seg: loss=0.4247, mIoU=0.8606, acc=0.9641
+18-09-26 19:33:54: Val - Oracle 68, Maize seg: loss=0.6816, mIoU=0.6744, acc=0.8601
+18-09-26 19:33:55: Eval(no-train) - Target 'test' 68, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0233  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:33:57: Trn - Oracle 69, cls loss: 0.0738, seg loss: 0.5822, kendall s_cls: -0.3457, s_seg: 0.1968
+18-09-26 19:33:57: Val - Oracle 69, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0123, seg loss: 0.5110, total loss: 0.3626
+18-09-26 19:33:57: Val - Oracle 69, Tomato seg: loss=0.3945, mIoU=0.8724, acc=0.9678
+18-09-26 19:33:57: Val - Oracle 69, Maize seg: loss=0.6939, mIoU=0.7011, acc=0.8718
+18-09-26 19:33:58: Eval(no-train) - Target 'test' 69, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0178  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:00: Trn - Oracle 70, cls loss: 0.0353, seg loss: 0.5827, kendall s_cls: -0.3474, s_seg: 0.1967
+18-09-26 19:34:00: Val - Oracle 70, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0158, seg loss: 0.5112, total loss: 0.3670
+18-09-26 19:34:00: Val - Oracle 70, Tomato seg: loss=0.4059, mIoU=0.8763, acc=0.9684
+18-09-26 19:34:00: Val - Oracle 70, Maize seg: loss=0.6766, mIoU=0.7090, acc=0.8783
+18-09-26 19:34:01: Eval(no-train) - Target 'test' 70, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0150  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:03: Trn - Oracle 71, cls loss: 0.0828, seg loss: 0.5942, kendall s_cls: -0.3490, s_seg: 0.1966
+18-09-26 19:34:04: Val - Oracle 71, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0148, seg loss: 0.4789, total loss: 0.3382
+18-09-26 19:34:04: Val - Oracle 71, Tomato seg: loss=0.3873, mIoU=0.8798, acc=0.9694
+18-09-26 19:34:04: Val - Oracle 71, Maize seg: loss=0.6227, mIoU=0.8098, acc=0.9048
+18-09-26 19:34:05: Eval(no-train) - Target 'test' 71, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0146  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:06: Trn - Oracle 72, cls loss: 0.0159, seg loss: 0.6034, kendall s_cls: -0.3505, s_seg: 0.1965
+18-09-26 19:34:07: Val - Oracle 72, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0155, seg loss: 0.5047, total loss: 0.3597
+18-09-26 19:34:07: Val - Oracle 72, Tomato seg: loss=0.4128, mIoU=0.8486, acc=0.9618
+18-09-26 19:34:07: Val - Oracle 72, Maize seg: loss=0.6491, mIoU=0.8081, acc=0.9059
+18-09-26 19:34:08: Eval(no-train) - Target 'test' 72, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0223  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:10: Trn - Oracle 73, cls loss: 0.0400, seg loss: 0.5784, kendall s_cls: -0.3520, s_seg: 0.1964
+18-09-26 19:34:10: Val - Oracle 73, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0153, seg loss: 0.4922, total loss: 0.3484
+18-09-26 19:34:10: Val - Oracle 73, Tomato seg: loss=0.3925, mIoU=0.8793, acc=0.9679
+18-09-26 19:34:10: Val - Oracle 73, Maize seg: loss=0.6490, mIoU=0.7043, acc=0.8865
+18-09-26 19:34:11: Eval(no-train) - Target 'test' 73, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0384  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:13: Trn - Oracle 74, cls loss: 0.0304, seg loss: 0.6248, kendall s_cls: -0.3534, s_seg: 0.1963
+18-09-26 19:34:13: Val - Oracle 74, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0218, seg loss: 0.5295, total loss: 0.3877
+18-09-26 19:34:13: Val - Oracle 74, Tomato seg: loss=0.4253, mIoU=0.8715, acc=0.9687
+18-09-26 19:34:13: Val - Oracle 74, Maize seg: loss=0.6932, mIoU=0.7155, acc=0.8881
+18-09-26 19:34:14: Eval(no-train) - Target 'test' 74, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0446  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:16: Trn - Oracle 75, cls loss: 0.0494, seg loss: 0.6182, kendall s_cls: -0.3547, s_seg: 0.1964
+18-09-26 19:34:17: Val - Oracle 75, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0160, seg loss: 0.5445, total loss: 0.3910
+18-09-26 19:34:17: Val - Oracle 75, Tomato seg: loss=0.4457, mIoU=0.8519, acc=0.9557
+18-09-26 19:34:17: Val - Oracle 75, Maize seg: loss=0.6999, mIoU=0.7503, acc=0.8899
+18-09-26 19:34:18: Eval(no-train) - Target 'test' 75, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0517  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:19: Trn - Oracle 76, cls loss: 0.0426, seg loss: 0.5846, kendall s_cls: -0.3559, s_seg: 0.1963
+18-09-26 19:34:20: Val - Oracle 76, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0121, seg loss: 0.4985, total loss: 0.3471
+18-09-26 19:34:20: Val - Oracle 76, Tomato seg: loss=0.3939, mIoU=0.8808, acc=0.9673
+18-09-26 19:34:20: Val - Oracle 76, Maize seg: loss=0.6628, mIoU=0.7747, acc=0.8991
+18-09-26 19:34:21: Eval(no-train) - Target 'test' 76, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0312  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:23: Trn - Oracle 77, cls loss: 0.0296, seg loss: 0.5798, kendall s_cls: -0.3570, s_seg: 0.1963
+18-09-26 19:34:23: Val - Oracle 77, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0101, seg loss: 0.5359, total loss: 0.3745
+18-09-26 19:34:23: Val - Oracle 77, Tomato seg: loss=0.4269, mIoU=0.8548, acc=0.9605
+18-09-26 19:34:23: Val - Oracle 77, Maize seg: loss=0.7073, mIoU=0.7718, acc=0.8899
+18-09-26 19:34:24: Eval(no-train) - Target 'test' 77, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0273  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:26: Trn - Oracle 78, cls loss: 0.0882, seg loss: 0.5179, kendall s_cls: -0.3579, s_seg: 0.1961
+18-09-26 19:34:26: Val - Oracle 78, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0220, seg loss: 0.5259, total loss: 0.3829
+18-09-26 19:34:26: Val - Oracle 78, Tomato seg: loss=0.4417, mIoU=0.8359, acc=0.9587
+18-09-26 19:34:26: Val - Oracle 78, Maize seg: loss=0.6583, mIoU=0.7808, acc=0.9051
+18-09-26 19:34:27: Eval(no-train) - Target 'test' 78, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0420  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:29: Trn - Oracle 79, cls loss: 0.0280, seg loss: 0.5540, kendall s_cls: -0.3588, s_seg: 0.1960
+18-09-26 19:34:30: Val - Oracle 79, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0154, seg loss: 0.5250, total loss: 0.3722
+18-09-26 19:34:30: Val - Oracle 79, Tomato seg: loss=0.4211, mIoU=0.8453, acc=0.9549
+18-09-26 19:34:30: Val - Oracle 79, Maize seg: loss=0.6882, mIoU=0.7717, acc=0.8964
+18-09-26 19:34:31: Eval(no-train) - Target 'test' 79, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0352  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:32: Trn - Oracle 80, cls loss: 0.0202, seg loss: 0.5213, kendall s_cls: -0.3597, s_seg: 0.1958
+18-09-26 19:34:33: Val - Oracle 80, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0277, seg loss: 0.5144, total loss: 0.3806
+18-09-26 19:34:33: Val - Oracle 80, Tomato seg: loss=0.3841, mIoU=0.8706, acc=0.9640
+18-09-26 19:34:33: Val - Oracle 80, Maize seg: loss=0.7192, mIoU=0.7769, acc=0.8804
+18-09-26 19:34:34: Eval(no-train) - Target 'test' 80, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0297  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:36: Trn - Oracle 81, cls loss: 0.1592, seg loss: 0.5475, kendall s_cls: -0.3604, s_seg: 0.1956
+18-09-26 19:34:36: Val - Oracle 81, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0096, seg loss: 0.5069, total loss: 0.3482
+18-09-26 19:34:36: Val - Oracle 81, Tomato seg: loss=0.4178, mIoU=0.8540, acc=0.9593
+18-09-26 19:34:36: Val - Oracle 81, Maize seg: loss=0.6471, mIoU=0.8095, acc=0.9005
+18-09-26 19:34:37: Eval(no-train) - Target 'test' 81, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0289  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:39: Trn - Oracle 82, cls loss: 0.0372, seg loss: 0.6039, kendall s_cls: -0.3609, s_seg: 0.1955
+18-09-26 19:34:39: Val - Oracle 82, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0092, seg loss: 0.4913, total loss: 0.3346
+18-09-26 19:34:39: Val - Oracle 82, Tomato seg: loss=0.3938, mIoU=0.8766, acc=0.9623
+18-09-26 19:34:39: Val - Oracle 82, Maize seg: loss=0.6445, mIoU=0.8087, acc=0.9027
+18-09-26 19:34:40: Eval(no-train) - Target 'test' 82, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0238  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:42: Trn - Oracle 83, cls loss: 0.0934, seg loss: 0.5556, kendall s_cls: -0.3615, s_seg: 0.1954
+18-09-26 19:34:43: Val - Oracle 83, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0109, seg loss: 0.4982, total loss: 0.3423
+18-09-26 19:34:43: Val - Oracle 83, Tomato seg: loss=0.3796, mIoU=0.8709, acc=0.9636
+18-09-26 19:34:43: Val - Oracle 83, Maize seg: loss=0.6845, mIoU=0.8042, acc=0.8910
+18-09-26 19:34:43: Eval(no-train) - Target 'test' 83, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0331  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:45: Trn - Oracle 84, cls loss: 0.0189, seg loss: 0.5119, kendall s_cls: -0.3620, s_seg: 0.1953
+18-09-26 19:34:46: Val - Oracle 84, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0116, seg loss: 0.5292, total loss: 0.3686
+18-09-26 19:34:46: Val - Oracle 84, Tomato seg: loss=0.3691, mIoU=0.8770, acc=0.9664
+18-09-26 19:34:46: Val - Oracle 84, Maize seg: loss=0.7809, mIoU=0.7630, acc=0.8614
+18-09-26 19:34:47: Eval(no-train) - Target 'test' 84, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0297  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:49: Trn - Oracle 85, cls loss: 0.0565, seg loss: 0.5118, kendall s_cls: -0.3625, s_seg: 0.1951
+18-09-26 19:34:49: Val - Oracle 85, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0114, seg loss: 0.4972, total loss: 0.3418
+18-09-26 19:34:49: Val - Oracle 85, Tomato seg: loss=0.3652, mIoU=0.8747, acc=0.9674
+18-09-26 19:34:49: Val - Oracle 85, Maize seg: loss=0.7048, mIoU=0.8028, acc=0.8890
+18-09-26 19:34:50: Eval(no-train) - Target 'test' 85, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0323  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:52: Trn - Oracle 86, cls loss: 0.0513, seg loss: 0.5807, kendall s_cls: -0.3629, s_seg: 0.1951
+18-09-26 19:34:52: Val - Oracle 86, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0123, seg loss: 0.4722, total loss: 0.3222
+18-09-26 19:34:52: Val - Oracle 86, Tomato seg: loss=0.3662, mIoU=0.8825, acc=0.9682
+18-09-26 19:34:52: Val - Oracle 86, Maize seg: loss=0.6388, mIoU=0.7444, acc=0.8938
+18-09-26 19:34:53: Eval(no-train) - Target 'test' 86, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0347  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:55: Trn - Oracle 87, cls loss: 0.0391, seg loss: 0.5680, kendall s_cls: -0.3632, s_seg: 0.1950
+18-09-26 19:34:56: Val - Oracle 87, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0134, seg loss: 0.4947, total loss: 0.3423
+18-09-26 19:34:56: Val - Oracle 87, Tomato seg: loss=0.3814, mIoU=0.8677, acc=0.9641
+18-09-26 19:34:56: Val - Oracle 87, Maize seg: loss=0.6728, mIoU=0.7597, acc=0.8967
+18-09-26 19:34:57: Eval(no-train) - Target 'test' 87, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0428  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:34:58: Trn - Oracle 88, cls loss: 0.0219, seg loss: 0.5553, kendall s_cls: -0.3635, s_seg: 0.1949
+18-09-26 19:34:59: Val - Oracle 88, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0099, seg loss: 0.5004, total loss: 0.3418
+18-09-26 19:34:59: Val - Oracle 88, Tomato seg: loss=0.3923, mIoU=0.8602, acc=0.9627
+18-09-26 19:34:59: Val - Oracle 88, Maize seg: loss=0.6703, mIoU=0.7499, acc=0.8992
+18-09-26 19:35:00: Eval(no-train) - Target 'test' 88, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0297  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:02: Trn - Oracle 89, cls loss: 0.0372, seg loss: 0.6491, kendall s_cls: -0.3638, s_seg: 0.1949
+18-09-26 19:35:02: Val - Oracle 89, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0091, seg loss: 0.5000, total loss: 0.3400
+18-09-26 19:35:02: Val - Oracle 89, Tomato seg: loss=0.4073, mIoU=0.8524, acc=0.9605
+18-09-26 19:35:02: Val - Oracle 89, Maize seg: loss=0.6456, mIoU=0.7254, acc=0.8963
+18-09-26 19:35:03: Eval(no-train) - Target 'test' 89, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0318  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:05: Trn - Oracle 90, cls loss: 0.0509, seg loss: 0.5727, kendall s_cls: -0.3640, s_seg: 0.1949
+18-09-26 19:35:05: Val - Oracle 90, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0104, seg loss: 0.5106, total loss: 0.3506
+18-09-26 19:35:05: Val - Oracle 90, Tomato seg: loss=0.4102, mIoU=0.8524, acc=0.9600
+18-09-26 19:35:05: Val - Oracle 90, Maize seg: loss=0.6684, mIoU=0.7245, acc=0.8797
+18-09-26 19:35:06: Eval(no-train) - Target 'test' 90, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0273  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:08: Trn - Oracle 91, cls loss: 0.0496, seg loss: 0.6201, kendall s_cls: -0.3642, s_seg: 0.1949
+18-09-26 19:35:09: Val - Oracle 91, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0123, seg loss: 0.4855, total loss: 0.3326
+18-09-26 19:35:09: Val - Oracle 91, Tomato seg: loss=0.3959, mIoU=0.8583, acc=0.9616
+18-09-26 19:35:09: Val - Oracle 91, Maize seg: loss=0.6263, mIoU=0.7385, acc=0.9007
+18-09-26 19:35:10: Eval(no-train) - Target 'test' 91, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0349  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:11: Trn - Oracle 92, cls loss: 0.0412, seg loss: 0.5216, kendall s_cls: -0.3643, s_seg: 0.1949
+18-09-26 19:35:12: Val - Oracle 92, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0111, seg loss: 0.5349, total loss: 0.3715
+18-09-26 19:35:12: Val - Oracle 92, Tomato seg: loss=0.3939, mIoU=0.8612, acc=0.9620
+18-09-26 19:35:12: Val - Oracle 92, Maize seg: loss=0.7565, mIoU=0.7485, acc=0.8563
+18-09-26 19:35:13: Eval(no-train) - Target 'test' 92, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0438  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:15: Trn - Oracle 93, cls loss: 0.0847, seg loss: 0.5363, kendall s_cls: -0.3644, s_seg: 0.1949
+18-09-26 19:35:15: Val - Oracle 93, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0087, seg loss: 0.5080, total loss: 0.3458
+18-09-26 19:35:15: Val - Oracle 93, Tomato seg: loss=0.3954, mIoU=0.8544, acc=0.9607
+18-09-26 19:35:15: Val - Oracle 93, Maize seg: loss=0.6849, mIoU=0.7512, acc=0.8912
+18-09-26 19:35:16: Eval(no-train) - Target 'test' 93, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0198  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:18: Trn - Oracle 94, cls loss: 0.0293, seg loss: 0.5377, kendall s_cls: -0.3645, s_seg: 0.1949
+18-09-26 19:35:18: Val - Oracle 94, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0103, seg loss: 0.5159, total loss: 0.3545
+18-09-26 19:35:18: Val - Oracle 94, Tomato seg: loss=0.3991, mIoU=0.8577, acc=0.9627
+18-09-26 19:35:18: Val - Oracle 94, Maize seg: loss=0.6994, mIoU=0.7377, acc=0.8780
+18-09-26 19:35:19: Eval(no-train) - Target 'test' 94, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0318  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:21: Trn - Oracle 95, cls loss: 0.2694, seg loss: 0.5788, kendall s_cls: -0.3645, s_seg: 0.1948
+18-09-26 19:35:22: Val - Oracle 95, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0075, seg loss: 0.4922, total loss: 0.3310
+18-09-26 19:35:22: Val - Oracle 95, Tomato seg: loss=0.4151, mIoU=0.8485, acc=0.9559
+18-09-26 19:35:22: Val - Oracle 95, Maize seg: loss=0.6134, mIoU=0.7510, acc=0.9057
+18-09-26 19:35:23: Eval(no-train) - Target 'test' 95, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0304  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:24: Trn - Oracle 96, cls loss: 0.1188, seg loss: 0.5538, kendall s_cls: -0.3646, s_seg: 0.1948
+18-09-26 19:35:25: Val - Oracle 96, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0087, seg loss: 0.4709, total loss: 0.3152
+18-09-26 19:35:25: Val - Oracle 96, Tomato seg: loss=0.3829, mIoU=0.8628, acc=0.9616
+18-09-26 19:35:25: Val - Oracle 96, Maize seg: loss=0.6091, mIoU=0.7422, acc=0.8976
+18-09-26 19:35:26: Eval(no-train) - Target 'test' 96, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0264  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:28: Trn - Oracle 97, cls loss: 0.0255, seg loss: 0.5201, kendall s_cls: -0.3646, s_seg: 0.1948
+18-09-26 19:35:28: Val - Oracle 97, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0125, seg loss: 0.4951, total loss: 0.3406
+18-09-26 19:35:28: Val - Oracle 97, Tomato seg: loss=0.4061, mIoU=0.8638, acc=0.9625
+18-09-26 19:35:28: Val - Oracle 97, Maize seg: loss=0.6348, mIoU=0.7706, acc=0.9080
+18-09-26 19:35:29: Eval(no-train) - Target 'test' 97, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0335  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:31: Trn - Oracle 98, cls loss: 0.1508, seg loss: 0.5286, kendall s_cls: -0.3646, s_seg: 0.1948
+18-09-26 19:35:31: Val - Oracle 98, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0085, seg loss: 0.4755, total loss: 0.3186
+18-09-26 19:35:31: Val - Oracle 98, Tomato seg: loss=0.4116, mIoU=0.8640, acc=0.9615
+18-09-26 19:35:31: Val - Oracle 98, Maize seg: loss=0.5759, mIoU=0.7624, acc=0.9076
+18-09-26 19:35:32: Eval(no-train) - Target 'test' 98, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0303  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:34: Trn - Oracle 99, cls loss: 0.0328, seg loss: 0.5993, kendall s_cls: -0.3646, s_seg: 0.1948
+18-09-26 19:35:35: Val - Oracle 99, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0127, seg loss: 0.4847, total loss: 0.3323
+18-09-26 19:35:35: Val - Oracle 99, Tomato seg: loss=0.3950, mIoU=0.8608, acc=0.9629
+18-09-26 19:35:35: Val - Oracle 99, Maize seg: loss=0.6255, mIoU=0.7732, acc=0.9084
+18-09-26 19:35:36: Eval(no-train) - Target 'test' 99, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0286  <- comparable to A1-A4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+18-09-26 19:35:36: Best model at epoch 96, oracle val total loss 0.3152
+18-09-26 19:35:36: FINAL best-model oracle val: cls acc: 1.0000, cls avg acc: 1.0000, seg loss: 0.4674
+18-09-26 19:35:36: FINAL best-model oracle val, Tomato seg: loss=0.3900, mIoU=0.8563, acc=0.9631
+18-09-26 19:35:36: FINAL best-model oracle val, Maize seg: loss=0.5892, mIoU=0.7502, acc=0.9069
+18-09-26 19:35:37: FINAL target (Pheno4D held-out) test accuracy: 1.0000, avg acc: 1.0000, loss: 0.0246  <- directly comparable to A1-A4's target cls acc (same file/metric)
+18-09-26 19:35:37: Confusion matrix (rows=true, cols=pred, order=['Tomato', 'Maize']):
+[[40  0]
+ [ 0 23]]
+18-09-26 19:35:37: Per-class precision/recall/F1 on target test:
+              precision    recall  f1-score   support
+
+      Tomato     1.0000    1.0000    1.0000        40
+       Maize     1.0000    1.0000    1.0000        23
+
+    accuracy                         1.0000        63
+   macro avg     1.0000    1.0000    1.0000        63
+weighted avg     1.0000    1.0000    1.0000        63
+
+18-09-26 19:35:38: FINAL target (Pheno4D held-out, annotated subset) segmentation -- Oracle-only metric, NOT comparable to A1-A4's source-val seg mIoU (different domain/label space):
+18-09-26 19:35:38: FINAL target seg, Tomato: loss=0.4425, mIoU=0.8232, acc=0.9570
+18-09-26 19:35:38: FINAL target seg, Maize: loss=0.8038, mIoU=0.6607, acc=0.8569
