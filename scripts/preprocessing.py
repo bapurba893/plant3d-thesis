@@ -108,12 +108,20 @@ def farthest_point_sampling(pts: np.ndarray, n_samples: int, seed: int = None) -
     return selected
 
 
-def normalize_and_center(pts: np.ndarray) -> np.ndarray:
-    """Center at centroid, scale to unit sphere (max radius = 1)."""
+def normalize_and_center(pts: np.ndarray):
+    """Center at centroid, scale to unit sphere (max radius = 1).
+
+    Returns (pts_normalized, center (3,) float64, scale float) -- center/scale
+    are the exact values needed to invert this transform later
+    (real_pts = pts_normalized * scale + center), e.g. for trait extraction
+    in physical units. Persisted downstream by preprocess_pointcloud's stats
+    dict -> 05_preprocess_pointclouds.py's manifest/.npz -- see
+    scripts/trait_extraction.py for the consumer.
+    """
     center = pts.mean(axis=0)
     pts = pts - center
     scale = np.max(np.linalg.norm(pts, axis=1))
-    return pts / (scale + 1e-8)
+    return pts / (scale + 1e-8), center, float(scale)
 
 
 def preprocess_pointcloud(pts: np.ndarray, labels: np.ndarray = None,
@@ -162,7 +170,7 @@ def preprocess_pointcloud(pts: np.ndarray, labels: np.ndarray = None,
         pts_out = work_pts[fps_idx]
         labels_out = work_labels[fps_idx] if work_labels is not None else None
 
-    pts_out = normalize_and_center(pts_out.astype(np.float32))
+    pts_out, norm_center, norm_scale = normalize_and_center(pts_out.astype(np.float32))
 
     stats = {
         "n_raw": n_raw,
@@ -170,5 +178,9 @@ def preprocess_pointcloud(pts: np.ndarray, labels: np.ndarray = None,
         "n_outliers_removed": n_removed,
         "n_predecimated": n_predecimated,
         "n_final": target_n,
+        "norm_scale": norm_scale,
+        "norm_center_x": float(norm_center[0]),
+        "norm_center_y": float(norm_center[1]),
+        "norm_center_z": float(norm_center[2]),
     }
     return pts_out.astype(np.float32), labels_out, stats

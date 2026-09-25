@@ -112,6 +112,9 @@ def main():
                                   "n_outliers_removed", "n_predecimated", "n_final"):
                     if stat_key in cached:
                         manifest_row[stat_key] = int(cached[stat_key])
+                for stat_key in ("norm_scale", "norm_center_x", "norm_center_y", "norm_center_z"):
+                    if stat_key in cached:
+                        manifest_row[stat_key] = float(cached[stat_key])
             results_rows.append(manifest_row)
             continue
 
