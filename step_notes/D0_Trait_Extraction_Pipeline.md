@@ -248,9 +248,120 @@ branch is byte-identical to `run_inference_on_batch`'s, reading `maize_remap["Ma
   leaf collapse failures visible in the first place (an aggregate mIoU alone would have hidden
   every one of them).
 
-## Status: segmentation approach settled. Full run pending.
+## Segmentation run at full scale
 
-`height_split` (Tomato) + standard `data_driven` remap (Maize) is the segmentation approach to use
-for the full 223-scan trait-extraction run. Preprocessing's `norm_scale`/`norm_center` fix (see
-`scripts/preprocessing.py`, committed separately) is already in place, so real-world-unit trait
-extraction can proceed once segmentation runs at full scale.
+`height_split` (Tomato) + standard `data_driven` remap (Maize) was run across all 223 Pheno4D
+scans via `adapters/infer_segmentation.py --mode full` (`run_full_dataset_inference`), writing one
+`.npz` per scan to `data/segmented/Pheno4D/<species>/<stem>.npz` (`{"points": normalized_pts,
+"pred_organ": (N,) int}`). 223/223 scans processed, 0 failures.
+
+## Trait extraction: `scripts/trait_extraction.py`
+
+Implements `height`, `stem_diameter`, `leaf_area`, `leaf_count`, `volume`, all requiring real-
+world-unit points (`unnormalize()` raises loudly if a scan's `norm_scale` is missing rather than
+silently computing meaningless normalized-space values). `leaf_area`/`leaf_count` share a DBSCAN
+clustering step over leaf-predicted points (adaptive `eps` from each scan's own k-distance
+distribution) since B3b's segmentation has no per-leaf-instance output. All five validated against
+synthetic point clouds with known dimensions before running on real data. Output:
+`data/traits/pheno4d_traits_per_scan.csv`, one row per scan.
+
+### A real bug found and fixed: `stem_diameter`'s original formula
+
+The first `stem_diameter` implementation (a circular-disk fit from the basal slice's XY
+**covariance**: `diameter = 4*std`) produced physically impossible values on the real run —
+**35/223 scans (16%) had `stem_diameter >= height`**, concentrated in bushy, late-stage Tomato
+scans. Root cause, confirmed by direct inspection of the worst offender (`T03_0325_a.npz`): within
+the 122-point basal slice, the **median** distance from the slice's own center was 0.069 (a tight,
+plausible stem core) but the **mean** was 0.463 and the **max** 1.244 — a ~38% minority of
+scattered false-positive "stem" points (inevitable given segmentation recall is 77%/40-48%, not
+100%) dominated the variance-based estimate, since variance is quadratic in deviation.
+
+**Fix**: switched to a robust, median-distance-based estimator. For a uniform 2D disk of radius R,
+the CDF of radial distance from center is `(r/R)^2`, so the median radius is `R/sqrt(2)` — giving
+`diameter = 2R = 2*sqrt(2)*median_dist`. Medians tolerate contamination up to 50%, unlike variance.
+This cut the physically-impossible rate from 35/223 (16%) to 10/223 (4.5%) and the median
+diameter/height ratio from an implausible 0.264 to a much more plausible 0.129.
+
+### The remaining 10 outliers: two distinct clusters, not random noise
+
+Per explicit user instruction, the remaining 10 `stem_diameter >= height` scans were inspected
+individually (plant_id, species, scan_date, point counts) rather than assumed benign. **All 10 are
+Tomato — zero Maize** — already a strong non-random signal. Within Tomato, two clearly distinct
+clusters:
+
+**Cluster A (4 scans, all T02, early dates 305-311)**: tiny plants (height 23-33, the smallest in
+the dataset), NORMAL stem-point-fraction (2.4-4.3%, in line with the dataset median ~15%... below
+it, in fact). At this small absolute scale, a modest formula imprecision produces a large *ratio*
+even though the underlying segmentation looks unremarkable. Read as benign small-plant fragility,
+not a segmentation failure.
+
+**Cluster B (6 scans: T01_320, T02_322, T03_324, T04_324, T07_322, T07_325)**: ABNORMALLY HIGH
+stem-point-fraction (20.9-59.9%, vs. the dataset median ~15%), disproportionately late in the
+scanning window (dates 320-325, near the end). Visualized directly (colored point clouds, predicted
+vs. ground truth where annotated) and confirmed with real ground truth on the 3 annotated scans
+(T03_324, T04_324, T07_325):
+
+| Scan | predicted stem pts | **true stem pts** | over-count | pixel agreement |
+|---|---|---|---|---|
+| T03_324 | 1,479 | 467 | 3.2x | 68.3% |
+| T04_324 | 1,583 | 439 | 3.6x | 66.1% |
+| T07_325 | 2,183 | 503 | 4.3x | **51.2%** |
+
+**This is a genuine, severe segmentation failure, not noise the median fix can absorb.** The
+images show the model calling leaf petioles/branch stalks "stem" — structures that are locally
+thin and linear (the same visual signature id0->stem legitimately keys on in the average case,
+76.69% held-out recall) but which are botanically leaf-supporting structure, not the main stem.
+This over-firing gets worse as the plant becomes bushier with more branching (hence the late-date
+skew) -- the id0->stem assignment, validated as "already solved, no geometry needed" on the
+held-out AVERAGE, has a real failure mode this average hid: it doesn't generalize to unusually
+bushy individual scans.
+
+### Which traits are actually corrupted on the 6 cluster-B scans (checked, not assumed)
+
+Per explicit user instruction, computed all 5 traits from BOTH the model's predictions AND the
+real ground truth on the 3 annotated cluster-B scans, to see which traits the stem-over-prediction
+actually corrupts:
+
+| Trait | T03_324 | T04_324 | T07_325 | Verdict |
+|---|---|---|---|---|
+| height | −0.3% | +0.0% | −1.8% | **unaffected** |
+| volume | −0.6% | +1.1% | −7.9% | **unaffected** |
+| leaf_area | **−38.4%** | **−39.8%** | **−63.7%** | **corrupted** |
+| leaf_count | **+40.0%** | **+71.4%** | **+50.0%** | **corrupted** |
+| stem_diameter | +2204% | +2436% | +1393% | **corrupted** (already known) |
+
+(% = predicted vs. ground-truth, `(pred-gt)/gt`)
+
+**height and volume are safe to trust as-is on these scans** — both are computed over ALL non-soil
+points regardless of the stem/leaf split, so misclassifying a point as stem instead of leaf (or
+vice versa) doesn't change either computation; the errors stay well within normal noise.
+**leaf_area and leaf_count are ALSO meaningfully corrupted**, not just stem_diameter: leaf_area is
+substantially UNDERestimated (true leaf points pulled into the "stem" bucket are excluded from the
+leaf-area computation, which only sums leaf-labeled points) and leaf_count is substantially
+OVERestimated (removing points from a true leaf cluster can fragment it into multiple smaller
+DBSCAN-detected clusters instead of one).
+
+### Confidence flag: `stem_leaf_boundary_low_confidence`
+
+`scripts/trait_extraction.py::flag_stem_leaf_boundary_confidence` adds two columns to the output
+CSV rather than silently dropping or blanking any values (raw numbers are kept for transparency):
+`stem_frac_of_points` (diagnostic) and `stem_leaf_boundary_low_confidence` (bool). The flag is
+`(stem_diameter >= height) AND (stem_frac_of_points > 0.15)` — this exact combined condition
+reproduces the 6 manually-identified cluster-B scans precisely (verified against the full 223-scan
+dataset: no false positives, no false negatives) while correctly excluding cluster A's 4
+small-plant scans, which don't have the same abnormal stem-fraction signature. `0.15` is not an
+arbitrary round number -- it sits between cluster A's max (4.3%) and cluster B's min (20.9%), with
+a comfortable margin on both sides.
+
+**Practical consequence for downstream use**: `stem_diameter`, `leaf_area`, and `leaf_count` for
+the 6 flagged scans should be excluded (not silently trusted) wherever they're consumed --
+concretely, `scripts/growth_curves.py`'s height/stem_diameter curve-fitting must drop flagged rows
+before fitting stem_diameter series (height is unaffected and needs no exclusion). `height` and
+`volume` remain trustworthy for these scans and need no special handling.
+
+## Status: segmentation + trait extraction done, flagged, and documented. Time-series assembly next.
+
+`data/traits/pheno4d_traits_per_scan.csv` (223 rows, all 5 traits + the confidence flag) is ready
+to feed `scripts/assemble_trait_timeseries.py` (not yet written) and, downstream,
+`scripts/growth_curves.py` (not yet written, will need to respect `stem_leaf_boundary_low_
+confidence` when fitting stem_diameter series specifically).

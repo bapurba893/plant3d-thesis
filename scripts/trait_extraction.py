@@ -234,6 +234,48 @@ def extract_all_traits(real_pts: np.ndarray, pred_organ: np.ndarray) -> dict:
     }
 
 
+# Threshold justified empirically (not an arbitrary round number): see
+# step_notes/D0_Trait_Extraction_Pipeline.md's "known segmentation failure
+# mode" section. STEM_FRAC_THRESHOLD=0.15 sits between the dataset's
+# small-plant "cluster A" outliers (2.4-4.3% stem-of-points, benign --
+# just tiny absolute scale, not a segmentation problem) and the
+# bushy/late-stage "cluster B" failures (20.9-59.9%, confirmed via real
+# ground truth on 3 scans to be genuine over-prediction of stem, 3.2-4.3x
+# too many stem points, 51-68% pixel agreement) -- combined with the
+# already-physically-motivated stem_diameter>=height check, this exact
+# pair of conditions reproduces the 6 manually-identified cluster-B scans
+# with no other false positives or negatives (verified against the full
+# 223-scan dataset).
+STEM_FRAC_THRESHOLD = 0.15
+
+
+def flag_stem_leaf_boundary_confidence(df: pd.DataFrame) -> pd.DataFrame:
+    """Adds `stem_frac_of_points` and `stem_leaf_boundary_low_confidence`
+    (bool) columns. The flag does NOT blank out any values (raw numbers
+    are kept for transparency/debugging) -- it marks which scans'
+    stem/leaf-boundary-dependent traits should be excluded from anything
+    trait-value-sensitive downstream (confirmed via ground truth on 3
+    annotated scans to specifically corrupt stem_diameter [13-24x
+    overestimate], leaf_area [38-64% UNDERestimate -- true leaf points
+    misclassified as stem are excluded from the leaf-area computation],
+    and leaf_count [40-71% OVERestimate -- removing points from a leaf
+    cluster can fragment it into multiple smaller DBSCAN clusters].
+    height and volume were confirmed NOT meaningfully affected on the
+    same 3 scans (height: -1.8% to +0.0% difference; volume: -7.9% to
+    +1.1%) -- both stay well within normal noise because they're
+    computed over ALL non-soil points regardless of the stem/leaf split,
+    so misclassifying a point AS stem instead of leaf, or vice versa,
+    doesn't change either computation. See step_notes/
+    D0_Trait_Extraction_Pipeline.md for the full derivation and the
+    per-scan predicted-vs-ground-truth comparison this is based on."""
+    df = df.copy()
+    df["stem_frac_of_points"] = df["n_stem_pts"] / (df["n_soil_pts"] + df["n_stem_pts"] + df["n_leaf_pts"])
+    df["stem_leaf_boundary_low_confidence"] = (
+        (df["stem_diameter"] >= df["height"]) & (df["stem_frac_of_points"] > STEM_FRAC_THRESHOLD)
+    )
+    return df
+
+
 def main():
     ap = argparse.ArgumentParser(description="D0: extract traits from segmented Pheno4D scans")
     ap.add_argument("--seg_dir", type=str, default=str(_REPO_ROOT / "data" / "segmented" / "Pheno4D"))
@@ -287,8 +329,16 @@ def main():
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     df = pd.DataFrame(rows)
+    df = flag_stem_leaf_boundary_confidence(df)
     df.to_csv(out_path, index=False)
     print(f"Wrote {len(df)} rows to {out_path}")
+    n_flagged = int(df["stem_leaf_boundary_low_confidence"].sum())
+    print(f"stem_leaf_boundary_low_confidence flagged {n_flagged} scans -- "
+          f"stem_diameter/leaf_area/leaf_count unreliable for these (height/volume unaffected). "
+          f"See step_notes/D0_Trait_Extraction_Pipeline.md.")
+    if n_flagged:
+        print(df.loc[df["stem_leaf_boundary_low_confidence"],
+                      ["plant_id", "species", "scan_date"]].to_string(index=False))
     print(df.groupby("species")[["height", "stem_diameter", "leaf_area", "leaf_count", "volume"]]
           .agg(["mean", "std", lambda x: x.isna().sum()]))
 
