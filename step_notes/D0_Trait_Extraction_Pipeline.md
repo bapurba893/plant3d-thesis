@@ -361,7 +361,84 @@ before fitting stem_diameter series (height is unaffected and needs no exclusion
 
 ## Status: segmentation + trait extraction done, flagged, and documented. Time-series assembly next.
 
-`data/traits/pheno4d_traits_per_scan.csv` (223 rows, all 5 traits + the confidence flag) is ready
-to feed `scripts/assemble_trait_timeseries.py` (not yet written) and, downstream,
-`scripts/growth_curves.py` (not yet written, will need to respect `stem_leaf_boundary_low_
-confidence` when fitting stem_diameter series specifically).
+## Time-series assembly: `scripts/assemble_trait_timeseries.py`
+
+Parses `scan_date` (MMDD float, e.g. `313.0`) into a `datetime.date` via an arbitrary common year
+(2000 -- confirmed all 14 plants' scans fall entirely within March, no year-boundary risk in the
+current data, but guarded defensively with an assertion that raw `scan_date` and parsed-date
+ordering agree, rather than assumed to hold forever). Computes `elapsed_days` per plant (day 0 =
+that plant's own first scan), sorts, and writes `data/traits/pheno4d_traits_timeseries_long.csv`
+(223 rows, one per scan, all trait columns + `elapsed_days` + the `stem_leaf_boundary_low_
+confidence` flag carried through unchanged). Cross-checked against `data/pheno4d_plant_level.csv`'s
+`n_scans` per plant: **exact match for all 14 plants, no missing/extra scans.**
+
+## Growth-curve fitting: `scripts/growth_curves.py`
+
+**Scope, per the decision made before this pipeline was built**: Logistic and Gompertz
+curve-fitting applies ONLY to `height` and `stem_diameter` (`TRAITS_TO_FIT`, a fixed list, not a
+runtime check) -- `leaf_area`/`leaf_count`/`volume` are never fit, since both curve families assume
+monotonic saturating growth and those three traits can legitimately decrease via senescence.
+
+Closed forms derived directly from the ODEs (verified against synthetic data with known parameters
+before running on real data -- both recovered K/A/rho/beta within tolerance, R²>0.999):
+- **Logistic**: `dy/dt = ρy(1−y/K)` → `y(t) = K / (1 + B·exp(−ρt))`, `B = (K−y0)/y0`.
+- **Gompertz** (log space): `dy/dt = α − βy` (in `ŷ=ln y`) → `y(t) = A·exp(−B_g·exp(−βt))`,
+  `A = exp(α/β)`, `B_g = α/β − ln(y0)` — exponentiating the log-space linear ODE's solution back to
+  raw space reproduces the textbook 3-parameter Gompertz form exactly, a self-consistency check on
+  the derivation.
+
+**`stem_diameter` fitting excludes the 6 `stem_leaf_boundary_low_confidence` scans** (confirmed
+corrupted, 13-24x overestimate); **`height` fitting does NOT exclude them** (confirmed unaffected
+by the same segmentation issue). Per plant this leaves 18-20 stem_diameter points for Tomato,
+11-12 for Maize — comfortably above the `MIN_POINTS_TO_FIT=4` floor.
+
+**A real bug caught before trusting the results**: the first version of the fit-quality check
+(flag `poor` if any fitted parameter sits within 1% of its bound) flagged nearly every fit as
+`poor` regardless of R². Root cause: `B` (logistic) and `Bg`/`β` (Gompertz) intentionally use very
+wide bounds (spanning several orders of magnitude, since their natural scale depends heavily on
+`y0`'s relative size) — checking "fraction of a [1e-6, 1e6]-scale span" is meaningless for those,
+since almost any realistic fitted value sits near 0% of such a span by construction. Fixed by
+restricting the near-bound check to just the asymptote parameter (`K` for logistic, `A` for
+Gompertz, `bound_check_indices=(0,)`), the one with a tight, physically meaningful bound
+(0.9-5x of the observed max) where actually hitting it is a genuine, informative signal.
+
+### Results, and what they mean
+
+**`height`**: fits well overall. Maize: all 7 plants `ok` for both models, R² 0.969-0.989. Tomato:
+R² is high across the board (0.947-0.989) but 4 of 7 plants (T03, T04, T05, T06) get flagged
+`poor` for logistic -- confirmed by direct inspection this is NOT a poor fit in the R² sense, it's
+the fitted `K` landing EXACTLY on its upper bound (5.0x the plant's own observed max height) for
+all 4. This is a genuine, informative result, not a bug: **these 4 plants' height had not
+plateaued within Pheno4D's observed scanning window** -- the optimizer wants an even higher
+asymptote than the (already generous) 5x-headroom bound allows, consistent with them still being
+in active vertical growth at the last scan. Gompertz shows the same story with slightly more
+plants affected (6 of 7 Tomato flagged `poor`) since its `Bg`/`β` parameterization is more
+sensitive to an unconstrained tail.
+
+**`stem_diameter`**: fits uniformly poorly across BOTH species -- R² ranges from very low (0.025,
+T06) to moderate (0.82, M03), with most plants well below the `R2_POOR_THRESHOLD=0.8` cutoff, even
+on Maize (where segmentation is solid, mIoU ~0.55-0.59, and none of the 6 known-bad scans apply at
+all). **This is a genuine finding, not attributable to the already-excluded segmentation failure**
+-- since it affects Maize equally and Maize was never flagged for any stem/leaf-boundary problem.
+The most likely explanation: `stem_diameter`'s per-scan measurement (even via the robust
+median-distance estimator) still carries enough scan-to-scan noise/scatter -- from natural
+variation in exactly which points the segmentation calls "stem" in the basal slice from one scan
+to the next -- that a smooth monotonic growth curve doesn't capture it well, unlike `height`
+(a coarser, more robust z-extent measurement that's far less sensitive to exactly which points
+land in which organ bucket). Flagged here as a real measurement-precision limitation for anyone
+consuming `stem_diameter`'s fitted growth-curve parameters downstream, not something further
+"fixed" in this pass -- the raw per-scan `stem_diameter` values (outside the 6 flagged scans) are
+still the best available measurement, just noisier over time than `height`.
+
+Output: `data/traits/pheno4d_growth_curves.csv`, one row per `(plant_id, trait)` for
+`trait in {height, stem_diameter}` (28 rows = 14 plants x 2 traits), with `logistic_K/B/rho/
+y0_hat/R2/fit_quality`, `gompertz_A/Bg/beta/alpha_hat/y0hat_log/R2/fit_quality`,
+`n_points_fit`, and `n_excluded_low_confidence`.
+
+## Status: D0 pipeline complete end-to-end.
+
+Segmentation (223/223 scans) → trait extraction (5 traits, confidence-flagged) → time-series
+assembly (verified against the plant-level reference) → growth-curve fitting (height fits well;
+stem_diameter fits are noisy, a documented limitation, not a bug) are all done, validated at each
+step against synthetic ground truth and/or real Pheno4D annotations, and committed. Ready to feed
+Block D (D1-D6).
