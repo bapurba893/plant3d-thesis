@@ -83,10 +83,11 @@ if _DEFREC_ROOT not in sys.path:
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from models_kpconv import KPConv_ClsSeg, PlantKPConvConfig  # noqa: E402
 from kpconv_collate import (  # noqa: E402
-    calibrate_neighborhood_limits, make_kpconv_collate_fn, batch_points_bcn,
+    calibrate_neighborhood_limits, make_kpconv_collate_fn, make_kpconv_collate_fn_cls_only,
+    batch_points_bcn,
 )
 from dataset import (  # noqa: E402
-    PlantClsSegDataset, SPECIES_TO_IDX, SEG_NUM_CLASSES,
+    PlantClsSegDataset, PlantSpeciesDataset, SPECIES_TO_IDX, SEG_NUM_CLASSES,
     PHENO4D_SEG_NUM_CLASSES, pheno4d_collapse_organ_labels,
 )
 
@@ -839,6 +840,89 @@ def validate_against_annotated(checkpoint_path=DEFAULT_CHECKPOINT, dropout=0.5,
     return {"adaptation_pool": pool_stats, "heldout_eval": heldout_stats}
 
 
+def run_full_dataset_inference(checkpoint_path=DEFAULT_CHECKPOINT, dropout=0.5, device="cpu",
+                                batch_size=16, num_workers=0, out_dir=None):
+    """Segments ALL 223 Pheno4D scans (not just the 126 annotated ones
+    validate_against_annotated uses) with the settled approach: Maize via
+    the standard data_driven remap, Tomato via height_split (see
+    step_notes/D0_Trait_Extraction_Pipeline.md for why -- 92.84% soil /
+    76.69% stem / 68.66% leaf held-out recall, the only one of five
+    attempts with all three organs above 65% simultaneously). Per
+    explicit user instruction, this is the gated final step, run only
+    after the held-out validation above was checked and judged
+    acceptable -- not run automatically by any other function here.
+
+    pheno4d_adaptation_pool.csv (160 scans) + pheno4d_heldout_eval.csv
+    (63 scans) together cover all 223 Pheno4D scans (confirmed: 160+63=
+    223, no overlap) -- using PlantSpeciesDataset (not PlantClsSegDataset)
+    since most scans are unannotated and PlantSpeciesDataset doesn't
+    require a 'labels' key, unlike the annotated-only validation path.
+
+    Writes one .npz per scan to <out_dir>/<species>/<stem>.npz with
+    {"points": normalized_pts (N,3), "pred_organ": (N,) int64 in
+    {0,1,2}}, mirroring the Stage-0 cache's own
+    <out_dir>/<species>/<stem>.npz layout so downstream trait-extraction
+    code can resolve files the same way adapters/dataset.py's manifest
+    lookup does.
+    """
+    if out_dir is None:
+        out_dir = _REPO_ROOT / "data" / "segmented" / "Pheno4D"
+    out_dir = Path(out_dir)
+
+    data_dir = _REPO_ROOT / "data"
+    manifest_csv = data_dir / "preprocessed" / "preprocessed_manifest.csv"
+
+    pool_set = PlantSpeciesDataset(
+        data_dir / "pheno4d_adaptation_pool.csv", manifest_csv, augment=False)
+    heldout_set = PlantSpeciesDataset(
+        data_dir / "pheno4d_heldout_eval.csv", manifest_csv, augment=False)
+    print(f"[full inference] pool: {len(pool_set)}, heldout: {len(heldout_set)}, "
+          f"total: {len(pool_set) + len(heldout_set)} (expect 223)")
+
+    model, config = load_b3b_model(checkpoint_path, dropout, device)
+    calib_set = ConcatDataset([pool_set, heldout_set])
+    config.neighborhood_limits = calibrate_neighborhood_limits(
+        config, calib_set, batch_size, num_workers=num_workers,
+        collate_fn_factory=make_kpconv_collate_fn_cls_only)
+    print(f"[full inference] calibrated neighborhood_limits: {config.neighborhood_limits}")
+
+    maize_remap = build_data_driven_remap(model, config, device, batch_size, num_workers)
+
+    n_written, n_skipped_existing = 0, 0
+    for split_name, dataset in [("adaptation_pool", pool_set), ("heldout_eval", heldout_set)]:
+        loader = DataLoader(dataset, batch_size=batch_size, shuffle=False,
+                             num_workers=num_workers,
+                             collate_fn=make_kpconv_collate_fn_cls_only(config))
+        sample_i = 0
+        for batch in loader:
+            bs = batch.species_labels.shape[0]
+            cache_paths_in_batch = [dataset.samples[sample_i + j][0] for j in range(bs)]
+            sample_i += bs
+
+            per_species = run_inference_on_batch_tomato_height_split(
+                model, batch, maize_remap, device)
+            points_bcn = batch_points_bcn(batch.to(device))  # (B,3,N)
+            points_bnc = points_bcn.permute(0, 2, 1).cpu().numpy()  # (B,N,3)
+
+            pred_organ_full = np.zeros((bs, points_bnc.shape[1]), dtype=np.int64)
+            for species, (pred_organ, mask) in per_species.items():
+                idx_in_batch = np.where(mask.cpu().numpy())[0]
+                pred_organ_full[idx_in_batch] = pred_organ.cpu().numpy()
+
+            for j in range(bs):
+                cache_path = Path(cache_paths_in_batch[j])
+                species_name = cache_path.parent.name  # ".../Pheno4D/<species>/<stem>.npz"
+                dest = out_dir / species_name / cache_path.name
+                dest.parent.mkdir(parents=True, exist_ok=True)
+                np.savez_compressed(dest, points=points_bnc[j], pred_organ=pred_organ_full[j])
+                n_written += 1
+
+        print(f"[full inference] {split_name}: done ({sample_i} scans)")
+
+    print(f"[full inference] wrote {n_written} segmented .npz files to {out_dir}")
+    return n_written
+
+
 def parse_args():
     p = argparse.ArgumentParser(description="D0: B3b segmentation inference on Pheno4D")
     p.add_argument("--checkpoint", type=str, default=str(DEFAULT_CHECKPOINT))
@@ -850,6 +934,11 @@ def parse_args():
                     choices=["data_driven", "histogram", "groundtruth", "hybrid",
                              "geometric", "height_split"],
                     default="data_driven")
+    p.add_argument("--mode", choices=["validate", "full"], default="validate",
+                    help="'validate': mIoU check against the 126 annotated scans (default). "
+                         "'full': segment all 223 scans with the settled height_split/"
+                         "data_driven approach and write .npz output to --out_dir.")
+    p.add_argument("--out_dir", type=str, default=None)
     return p.parse_args()
 
 
@@ -857,6 +946,11 @@ if __name__ == "__main__":
     args = parse_args()
     cuda = args.gpu >= 0 and torch.cuda.is_available()
     device = torch.device(f"cuda:{args.gpu}" if cuda else "cpu")
+    if args.mode == "full":
+        print(f"Using {'GPU ' + str(args.gpu) if cuda else 'CPU'}")
+        run_full_dataset_inference(args.checkpoint, args.dropout, device,
+                                    args.batch_size, args.num_workers, args.out_dir)
+        raise SystemExit(0)
     print(f"Using {'GPU ' + str(args.gpu) if cuda else 'CPU'}")
     validate_against_annotated(args.checkpoint, args.dropout, device,
                                 args.batch_size, args.num_workers, args.remap_mode)
