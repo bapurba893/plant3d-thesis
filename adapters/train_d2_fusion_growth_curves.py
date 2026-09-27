@@ -68,6 +68,47 @@ Fixed with CLIP_STD (below): standardized growth-curve-param features are
 clipped to +/-CLIP_STD before entering the model, bounding worst-case
 extrapolation without changing what's included or discarding the
 parameter's signal for the other 13, well-behaved plants.
+
+**Architecture corrected, second bug/design flaw found and fixed
+(2026-09-28), BEFORE this file's numbers were treated as final**: the
+first real run used D1's shared `TraitFusionHead` (a single
+`Linear(268, 7)`), reasoned at the time as "identical to D1's linear-head
+architecture, only the input width changed." That reasoning undersold a
+real problem, root-caused via an inference-time ablation (zero the 12
+growth-curve dims, keep the trained weights): leaf_area's test R^2
+recovered from -0.5069 to 0.5540 (near D1's own 0.5952) -- the growth
+dims were causally corrupting leaf_area's prediction. **Important
+correction to the original diagnosis**: this is NOT cross-term gradient
+leakage through a shared weight MATRIX -- a plain `nn.Linear(in_dim,
+n_out)` layer already gives each output row an independent gradient (row
+i's weights only ever receive dL_i/dW, never dL_j/dW for j!=i; Kendall's
+learned per-term scalars don't couple rows either) -- so 7 separate
+per-term `nn.Linear` modules taking the SAME shared 268-dim input would
+have been a mathematical no-op, not a fix. The actual mechanism: leaf_area
+(and leaf_count/volume, none of which has a growth-curve fit of their own
+in D0's scope -- curve-fitting was always restricted to height/
+stem_diameter, see growth_curves.py's TRAITS_TO_FIT) had its OWN
+independently-optimized weight row spuriously fit noise in the 12
+growth-curve columns, because 268 free input dims against 72 training
+samples is enough for gradient descent to find some spurious fit even
+under wd=1e-2, and that fit didn't generalize.
+
+**PerTermFusionHead (below) fixes this structurally, not by hoping a
+learned weight goes to zero**: leaf_area/leaf_count/volume's `nn.Linear`
+modules are constructed with in_dim=256 and are NEVER given the 12
+growth-curve columns as input at all -- literal absence, the same
+"structural guarantee over runtime flag" principle already used for the
+frozen-B3b-encoder enforcement (see train_d1_fusion_baseline.py's module
+docstring). height/height_rate see B3b's 256 feat + height's OWN 6 curve
+params only (not stem_diameter's); stem_diameter/stem_diameter_rate see
+B3b's 256 feat + stem_diameter's OWN 6 curve params only. This is
+genuinely different from the original TraitFusionHead(in_dim=268)
+despite both being "linear heads" -- the difference is which columns
+each term's row is even allowed to see, not whether the layer is single
+vs. multi-module. CLIP_STD's clipping is still necessary and unchanged:
+height/stem_diameter/their _rate terms still legitimately consume the
+growth-curve columns (including the ones that can take pathological
+values), so their own extrapolation still needs bounding.
 """
 
 CLIP_STD = 5.0
@@ -80,6 +121,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import torch
+import torch.nn as nn
 import torch.optim as optim
 from torch.optim.lr_scheduler import CosineAnnealingLR
 from torch.utils.data import Dataset, DataLoader
@@ -88,7 +130,7 @@ _REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from losses import KendallUncertaintyWeighting  # noqa: E402
 from train_d1_fusion_baseline import (  # noqa: E402
-    TraitFusionHead, IOStream, ALL_TERMS, TRAIT_TERMS,
+    IOStream, ALL_TERMS, TRAIT_TERMS,
     build_scan_table, compute_norm_stats, masked_regression_loss,
     run_epoch, compute_metrics,
 )
@@ -180,6 +222,59 @@ class D2FusionDataset(Dataset):
         return feat, np.array(targets, dtype=np.float32), np.array(valids, dtype=np.float32)
 
 
+_N_B3B = 256
+_N_GROWTH_PER_TRAIT = len(GROWTH_PARAM_FIELDS)  # 6
+# Which terms' own head is allowed to see growth-curve columns at all, and
+# which trait's 6-column block (see D2FusionDataset -- GROWTH_PARAM_COLS'
+# construction order guarantees feat[:, 256:262]=height's block,
+# feat[:, 262:268]=stem_diameter's block). leaf_area/leaf_count/volume are
+# deliberately absent -- see module docstring's "PerTermFusionHead" note.
+_GROWTH_RELEVANT_SLICE = {
+    "height": slice(_N_B3B, _N_B3B + _N_GROWTH_PER_TRAIT),
+    "height_rate": slice(_N_B3B, _N_B3B + _N_GROWTH_PER_TRAIT),
+    "stem_diameter": slice(_N_B3B + _N_GROWTH_PER_TRAIT, _N_B3B + 2 * _N_GROWTH_PER_TRAIT),
+    "stem_diameter_rate": slice(_N_B3B + _N_GROWTH_PER_TRAIT, _N_B3B + 2 * _N_GROWTH_PER_TRAIT),
+}
+
+
+class PerTermFusionHead(nn.Module):
+    """7 genuinely separate nn.Linear modules, one per term in ALL_TERMS,
+    each constructed with ONLY the input columns relevant to that term --
+    see module docstring's "Architecture corrected" note for why this
+    differs from (and fixes what) a single shared Linear(268,7) didn't.
+
+    - leaf_area, leaf_count, volume: Linear(256, 1) -- B3b feature only,
+      growth-curve columns never concatenated at all (no growth-curve fit
+      of their own exists in D0's scope for these 3 traits).
+    - height, height_rate: Linear(262, 1) -- B3b feature + height's own
+      6 curve params (columns 256:262 of the cached 268-dim feat).
+    - stem_diameter, stem_diameter_rate: Linear(262, 1) -- B3b feature +
+      stem_diameter's own 6 curve params (columns 262:268).
+
+    forward() still takes the SAME (B, 268) feat tensor D2FusionDataset
+    already produces (no dataset change needed) and slices internally --
+    the isolation is in which columns reach each nn.Linear's weight
+    matrix, not in the data pipeline."""
+
+    def __init__(self, dropout=0.3):
+        super().__init__()
+        self.heads = nn.ModuleDict()
+        for term in ALL_TERMS:
+            in_dim = _N_B3B + (_N_GROWTH_PER_TRAIT if term in _GROWTH_RELEVANT_SLICE else 0)
+            self.heads[term] = nn.Sequential(nn.Dropout(dropout), nn.Linear(in_dim, 1))
+
+    def forward(self, feat):
+        b3b = feat[:, :_N_B3B]
+        outs = []
+        for term in ALL_TERMS:
+            if term in _GROWTH_RELEVANT_SLICE:
+                x = torch.cat([b3b, feat[:, _GROWTH_RELEVANT_SLICE[term]]], dim=1)
+            else:
+                x = b3b
+            outs.append(self.heads[term](x))
+        return torch.cat(outs, dim=1)  # (B, len(ALL_TERMS))
+
+
 def parse_args():
     p = argparse.ArgumentParser(description="D2: fusion (F2, + growth curve params)")
     p.add_argument("--exp_name", type=str, default="D2_fusion_growth_curves")
@@ -188,9 +283,6 @@ def parse_args():
     p.add_argument("--batch_size", type=int, default=16)
     p.add_argument("--lr", type=float, default=1e-3)
     p.add_argument("--wd", type=float, default=1e-2)
-    p.add_argument("--hidden_dim", type=int, default=0,
-                    help="0 (default) = direct linear head -- kept identical to D1's chosen "
-                         "architecture, see train_d1_fusion_baseline.py's TraitFusionHead docstring")
     p.add_argument("--dropout", type=float, default=0.3)
     p.add_argument("--lambda_corr", type=float, default=0.5)
     p.add_argument("--seed", type=int, default=1)
@@ -236,12 +328,14 @@ def main():
     val_loader = DataLoader(val_set, batch_size=args.batch_size, shuffle=False)
     test_loader = DataLoader(test_set, batch_size=args.batch_size, shuffle=False)
 
-    in_dim = 256 + N_GROWTH_PARAMS
-    model = TraitFusionHead(in_dim=in_dim, hidden_dim=args.hidden_dim, dropout=args.dropout).to(device)
+    model = PerTermFusionHead(dropout=args.dropout).to(device)
     n_params = sum(p.numel() for p in model.parameters())
-    io.cprint(f"TraitFusionHead parameter count: {n_params} (in_dim={in_dim} = 256 B3b feat "
-              f"+ {N_GROWTH_PARAMS} growth-curve params; same linear-head architecture as D1, "
-              f"only the input width changed)")
+    per_term_in_dims = {term: (_N_B3B + _N_GROWTH_PER_TRAIT if term in _GROWTH_RELEVANT_SLICE else _N_B3B)
+                         for term in ALL_TERMS}
+    io.cprint(f"PerTermFusionHead parameter count: {n_params} -- per-term in_dim: {per_term_in_dims} "
+              f"(leaf_area/leaf_count/volume NEVER see the 12 growth-curve columns; height/height_rate "
+              f"see only height's own 6; stem_diameter/stem_diameter_rate see only stem_diameter's own 6 "
+              f"-- structural isolation, see module docstring's 'Architecture corrected' note)")
 
     kendall = KendallUncertaintyWeighting({term: "regression" for term in ALL_TERMS}).to(device)
     opt = optim.Adam(list(model.parameters()) + list(kendall.parameters()), lr=args.lr, weight_decay=args.wd)

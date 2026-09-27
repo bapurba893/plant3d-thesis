@@ -196,7 +196,12 @@ in its place:**
 ## Next
 
 D2 (Block D, F2, complete — see `step_notes/D2_Fusion_Growth_Curves.md`): added growth-curve
-params to the fusion input, same backbone/DA/augmentation/architecture/loss as D1. Mixed result,
-not a clear win — small gains on height_rate/stem_diameter_rate, a real regression on leaf_area,
-and no fix for D1's diagnosed Maize-volume generalization failure (Maize test R² −0.270→−0.207,
-still broken).
+params to the fusion input. First attempt used a shared `Linear(268,7)` head and regressed
+leaf_area badly (root-caused via ablation to per-term overfitting on 268 input dims / 72
+samples, not cross-term weight leakage — a plain Linear layer already gives each output row an
+independent gradient). Fixed with `PerTermFusionHead` (term-specific input slices, e.g.
+leaf_area/leaf_count/volume never see the growth-curve columns at all) — corrected result is a
+genuine win over D1 on height_rate/stem_diameter_rate/leaf_count, essentially tied on
+height/stem_diameter/leaf_area. Maize-volume generalization failure (diagnosed above) is
+confirmed NOT caused by growth-curve-dim leakage — it persists unchanged (test R² −0.270→−0.337)
+even with volume's input now byte-identical to D1's own, and remains open for D3/D4.

@@ -126,14 +126,124 @@ to the input dimensions plausibly relevant to it), or separate small per-term li
 instead of one shared `Linear(in_dim, 7)`, rather than continuing to grow one fully-shared input
 vector. Not yet implemented — flagged here for the D3 design discussion, not decided unilaterally.
 
+## Architecture corrected: PerTermFusionHead (2026-09-28)
+
+**Everything above this section is preserved as originally written — the diagnostic process
+(the shared-`Linear(268,7)` run, the weight-magnitude check, the zero-at-inference ablation) is
+kept in full because it's what led to this fix, not superseded by it.**
+
+Discussed two structural options before implementing anything: (a) separate small per-term
+linear heads instead of one shared `Linear(in_dim, 7)`, vs. (b) keep the shared layer but add a
+learned or fixed input gate/mask per term. Before picking either, worked out a correction to the
+diagnosis itself: **a plain `nn.Linear(in_dim, n_out)` layer already gives every output row an
+independent gradient** — row `i`'s weights receive gradient only from term `i`'s own loss
+(`dL_j/dW[i,:] = 0` for `j != i` in a linear layer; Kendall's learned per-term scalars scale each
+term's own gradient but never mix rows either). B3b is frozen and there's no hidden layer, so
+there's no shared trainable computation anywhere upstream of the 7 output rows. **This means
+"separate per-term `nn.Linear` modules taking the same shared 268-dim input" — option (a) as
+literally stated — would have been a mathematical no-op**, identical gradients and identical
+overfitting behavior to what was already running. The real mechanism (confirmed by the ablation
+above) is that leaf_area/leaf_count/volume's OWN independently-optimized row spuriously fit noise
+in the 12 growth-curve columns, because 268 free input dims against 72 training samples is enough
+for gradient descent to find a spurious fit even under `wd=1e-2` — a per-term overfitting problem,
+not cross-term weight leakage.
+
+**The actual fix needed is restricting which input columns each term's row is even given, not
+how many separate `nn.Module` objects exist.** Implemented as a hard-coded, domain-informed mask
+(a zero-new-parameters special case of option (b), avoiding the "new mechanism needing its own
+verification" concern) via genuinely separate `nn.Linear` modules, each constructed with a
+different, smaller input slice:
+
+- `leaf_area`, `leaf_count`, `volume`: `Linear(256, 1)` — B3b feature only. The growth-curve
+  columns are never concatenated in at all (not just weighted near zero) — none of these 3 traits
+  has a growth-curve fit of its own in D0's scope (`growth_curves.py`'s `TRAITS_TO_FIT` was always
+  restricted to height/stem_diameter), so there was never a principled reason for them to see any
+  of the 12 added columns.
+- `height`, `height_rate`: `Linear(262, 1)` — B3b feature + height's own 6 curve params only.
+- `stem_diameter`, `stem_diameter_rate`: `Linear(262, 1)` — B3b feature + stem_diameter's own 6
+  curve params only.
+
+`CLIP_STD` clipping (the earlier fix) is unchanged and still necessary — height/stem_diameter and
+their `_rate` terms still legitimately consume the growth-curve columns, including the ones that
+can take pathological values, so their own extrapolation still needs bounding.
+
+### Smoke test on synthetic data (before touching real data, as always)
+
+1. **Structural isolation**: confirmed each term's `nn.Linear.in_features` matches the design
+   exactly (256 for leaf_area/leaf_count/volume, 262 for the other 4). In `eval()` mode (to
+   remove Dropout's own randomness from the check), altering the 12 growth-curve columns by
+   1000x changed leaf_area/leaf_count/volume's output by exactly `0.0` and changed height's
+   output by `113.69` — the isolation is exact, not approximate.
+2. **Reproduce-and-fix**: built a synthetic 268-dim feature where a term's true target depends
+   only on the first 8 of 256 "B3b" dims (zero true relationship to 12 "growth-curve" dims,
+   mirroring leaf_area's real situation), then injected a spurious TRAIN-ONLY linear correlation
+   between one growth-curve column and that term's target residual — the same mechanism that
+   corrupted the real run. Trained the OLD shared-`Linear(268,7)` and NEW `PerTermFusionHead` side
+   by side on identical data: **OLD val R²=0.3994, NEW val R²=0.6439** — reproduced the failure
+   mode on synthetic data and confirmed the fix, before running on real data.
+
+### Real-data retrain (2026-09-28), corrected architecture
+
+Same 72/18/63 Oracle split, `wd=1e-2`, `dropout=0.3`, 200 epochs, best epoch 164 (val total loss
+0.1010). `PerTermFusionHead` parameter count: 1,823 (vs. the old shared head's 1,883 — fewer
+parameters despite 7 separate modules, since the 3 unrelated terms no longer carry 12 unused
+weight slots each).
+
+**Per-term test R² — D1, original (flawed, shared-input) D2, and corrected D2:**
+
+| Term | D1 | D2 (shared, flawed) | D2 (PerTermFusionHead) |
+|---|---|---|---|
+| height | 0.8802 | 0.8891 | 0.8891 |
+| height_rate | 0.7165 | 0.7670 | 0.7567 |
+| stem_diameter | 0.1438 | 0.1474 | 0.1377 |
+| stem_diameter_rate | 0.1464 | 0.2118 | 0.1954 |
+| leaf_area | 0.5952 | **−0.5069** | **0.5703** |
+| leaf_count | 0.3439 | 0.1175 | **0.3540** |
+| volume | 0.0618 | 0.0527 | 0.0178 |
+
+Full RMSE/MAE/R² in `results/D2_fusion_growth_curves/run.log` (the original shared-input run's
+log is preserved in git history at commit `1545455`, prior to this rewrite of the same path).
+
+**Exactly the recovery predicted by the ablation and the synthetic smoke test**: leaf_area's test
+R² goes from −0.5069 back to 0.5703, matching D1's own 0.5952 almost exactly. leaf_count actually
+now exceeds D1 (0.3540 vs. 0.3439) rather than merely recovering to it. The two rate terms keep
+their real (if slightly smaller) gains over D1 (height_rate 0.7567, stem_diameter_rate 0.1954,
+both still above D1's 0.7165/0.1464) — confirming those two terms' earlier improvement was
+genuine signal, not an artifact of the same noise-leakage bug.
+
+**Closing the loop on the Maize-volume question, explicitly**: since `volume`'s input is now
+byte-identical in shape (256-dim, B3b feature only) to D1's own architecture, this is the cleanest
+possible check of whether growth-curve-dim leakage was ever related to the separately-diagnosed
+Maize-volume generalization failure (`step_notes/D1_Fusion_Baseline.md`). Checked directly:
+**Maize test volume R² = −0.3369** under the corrected architecture — slightly WORSE than both
+D1's −0.270 and the flawed shared-input D2's −0.207, not better. **Confirms the Maize-volume
+problem is a genuinely separate, still-unresolved issue — it was never caused by, or fixable via,
+the growth-curve-dim leakage.** It remains open for D3/D4 or dedicated attention.
+
+**Updated conclusion, superseding (not replacing) the "mixed, not a clear win" framing above**:
+with the architecture bug fixed, D2 genuinely does beat D1 on the two terms most directly related
+to growth-curve context (height_rate, stem_diameter_rate) and on leaf_count, is essentially tied
+on height/stem_diameter, and is close-to-tied (not collapsed) on leaf_area. The only place D2
+still trails D1 is volume (0.0178 vs. 0.0618, both poor) — small and consistent with volume simply
+not benefiting from either the growth-curve context or (unlike leaf_area/leaf_count) having zero
+principled reason to, plus continuing to carry the unresolved Maize few-shot problem regardless of
+fusion input.
+
 ## Files
 
-- `adapters/train_d2_fusion_growth_curves.py` — new training script; imports `TraitFusionHead`,
-  `masked_regression_loss`, `run_epoch`, `compute_metrics`, `IOStream`, `build_scan_table`,
-  `compute_norm_stats` from `train_d1_fusion_baseline.py` unmodified.
-- `results/D2_fusion_growth_curves/run.log` — full training log + final per-split metrics.
+- `adapters/train_d2_fusion_growth_curves.py` — training script. Originally imported D1's shared
+  `TraitFusionHead`; now defines its own `PerTermFusionHead` (per-term input slices) locally,
+  still importing `IOStream`/`ALL_TERMS`/`TRAIT_TERMS`/`build_scan_table`/`compute_norm_stats`/
+  `masked_regression_loss`/`run_epoch`/`compute_metrics` from `train_d1_fusion_baseline.py`
+  unmodified (those functions needed no changes — they only ever call `model(feat)` and expect a
+  `(B,7)` output, agnostic to how the model is internally structured).
+- `results/D2_fusion_growth_curves/run.log` — full training log + final per-split metrics
+  (corrected architecture; the original shared-input run's log is in git history at `1545455`).
 
 ## Next
 
-D3 (Block D, F3): add temporal info to the fusion input, same backbone/DA/augmentation/
-architecture/loss as D1-D2 — only the fusion input changes.
+D3 (Block D, F3): add temporal info to the fusion input, same backbone/DA/augmentation/loss as
+D1-D2 — only the fusion input changes. Per-term input relevance (which new dimensions each term's
+head actually receives) should be decided explicitly for D3's temporal features too, using the
+same "does this trait have a principled reason to see this input" test applied here, rather than
+defaulting back to one shared input vector.
