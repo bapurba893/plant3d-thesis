@@ -105,10 +105,12 @@ separately-caused limitation that D3 was never expected to resolve.
 
 ## Next
 
-D4 (Block D, F4, "full model"): add previous growth stage to the fusion input — same
-backbone/DA/augmentation/loss, same per-term relevance discipline (decide explicitly which terms
-have a principled claim on the new feature before including it universally or restricting it,
-per the D2/D3 precedent — don't default to a blanket shared input). D5/D6 add the
-physics-informed growth constraint (Logistic/Gompertz `L_phys` + `L_mono`) on top of D4, per
-CLAUDE.md — not before D4, since D1-D4 are specified as isolating the fusion-input progression
-first.
+D4 (Block D, F4, "full model", complete — see `step_notes/D4_Fusion_Previous_Stage.md`): added
+previous growth stage (each term's own lag-1 trait value) to the fusion input. Required excluding
+~15-18% of scans lacking a trustworthy previous stage, so D4's numbers were compared against D3
+on the SAME reduced test subset (not the naive full-63 D1-D3 numbers) before drawing conclusions
+— on that honest comparison, D4 shows large real gains on height/leaf_area/leaf_count/volume and
+real regressions on stem_diameter/height_rate/stem_diameter_rate. Maize-volume continues its
+gradual, still-unresolved improvement trend (test R² −0.132→−0.043), a third consecutive row
+without a real fix, consistent with it being a data-scarcity limitation. D1-D4 (the fusion-input
+progression) are now complete; D5/D6 add the physics-informed growth constraint next.
