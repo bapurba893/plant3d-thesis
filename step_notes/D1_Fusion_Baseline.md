@@ -155,11 +155,28 @@ in its place:**
    question the synthetic test was built to answer.
 
 4. **New finding, not predicted by either check: volume's test-set collapse** (val R²=0.844 →
-   test R²=0.062). Unlike the noise-limited terms above, volume looks strong on train/val then
-   falls to near-zero specifically on the 4 held-out (genuinely plant-disjoint) test plants.
-   Plausibly a cross-plant generalization gap — only 10 total plants split across train+val
-   (8+2), so the 2 validation plants may not represent the volume range/shape distribution the
-   4 test plants cover. Flagged for attention in D2-D4, not yet actionable from one row alone.
+   test R²=0.062) — **root-caused (2026-09-27), not just a range/small-split artifact.**
+   Checked whether test volumes simply fall outside the train+val range first: they don't (test
+   range [4,131–5,497,273] sits entirely inside train+val's [167–9,217,219], 0/63 scans
+   outside; species composition is also balanced ~1.5:1 Tomato:Maize across all 3 splits) — so
+   this isn't a simple out-of-distribution-target problem.
+
+   Loaded the trained checkpoint and inspected predictions directly instead. Found the collapse
+   is concentrated almost entirely in the 2 held-out **Maize** plants (M03, M04): they account
+   for **88.6% of test-set squared error** (M03 36.1%, M04 52.5%), while the 2 held-out Tomato
+   plants (T01, T03) contribute only 11.4% combined and track reasonably (Tomato test R²=0.674,
+   close to Tomato's own train R²=0.735). Split test R² by species: **Maize = −0.270** (worse
+   than predicting the mean) vs. **Tomato = 0.674**. Critically, Maize's TRAIN R² (0.683) is
+   healthy and comparable to Tomato's — the model fits Maize training plants fine, it just fails
+   to generalize to the 2 held-out ones. Several individual Maize test predictions are
+   physically impossible (negative volume) or overshoot actual by 4-6x on specific scans,
+   confirming genuine extrapolation instability rather than a small, uniform bias.
+
+   **Conclusion**: this is a per-species few-shot generalization failure specific to Maize (only
+   4 Maize plants total in train+val, 2 held out), not the generic "10 total plants is few"
+   framing suggested initially, and not a target-range or overfitting-capacity issue. Flagged as
+   a known Block-D limitation to watch in D2-D4 (does adding growth-curve/temporal context
+   stabilize Maize volume specifically?), not yet actionable from D1 alone.
 
 5. **stem_diameter_rate's negative val R² (−0.1548)** is most likely small-N noise (only 17
    valid val samples after excluding the 6 low-confidence scans) rather than a distinct problem
@@ -178,6 +195,8 @@ in its place:**
 
 ## Next
 
-D2 (Block D, F2): add growth-curve params to the fusion input, same backbone/DA/augmentation
-(KPConv+DA-S/B3b), same frozen-encoder/Oracle-split protocol as D1 — only the fusion input
-changes, per CLAUDE.md's Block D isolation rule.
+D2 (Block D, F2, complete — see `step_notes/D2_Fusion_Growth_Curves.md`): added growth-curve
+params to the fusion input, same backbone/DA/augmentation/architecture/loss as D1. Mixed result,
+not a clear win — small gains on height_rate/stem_diameter_rate, a real regression on leaf_area,
+and no fix for D1's diagnosed Maize-volume generalization failure (Maize test R² −0.270→−0.207,
+still broken).
