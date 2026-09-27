@@ -242,8 +242,9 @@ fusion input.
 
 ## Next
 
-D3 (Block D, F3): add temporal info to the fusion input, same backbone/DA/augmentation/loss as
-D1-D2 — only the fusion input changes. Per-term input relevance (which new dimensions each term's
-head actually receives) should be decided explicitly for D3's temporal features too, using the
-same "does this trait have a principled reason to see this input" test applied here, rather than
-defaulting back to one shared input vector.
+D3 (Block D, F3, complete — see `step_notes/D3_Fusion_Temporal.md`): added `elapsed_days` to the
+fusion input, applying (not mechanically copying) this file's per-term relevance discipline —
+unlike growth-curve params, `elapsed_days` was given to all 7 terms since every trait/rate is
+genuinely time-dependent. D3 beat D2 on 5 of 7 terms, including a real (if partial) improvement
+on the Maize-volume problem (test R² −0.337→−0.132, still broken but moving the right way for the
+first time since D1).
