@@ -74,25 +74,57 @@ Full RMSE/MAE/R² in `results/D2_fusion_growth_curves/run.log`.
   plausibly because the growth-curve rate parameters (rho/beta) give the model information
   directly related to these two targets specifically.
 - **Roughly flat**: height, stem_diameter, volume — no meaningful change either direction.
-- **A real regression**: leaf_area's test R² collapsed from 0.5952 to **−0.5069**. Train leaf_area
-  R² rose (0.6235→0.7157), so this looks like the 12 added input dimensions giving the linear
-  head more capacity to fit train-set noise (72 samples, 256→268 input dims) without it
-  generalizing — plausibly amplified by stem_diameter's already-known-poor curve fits injecting
-  noise into the shared input vector rather than signal (leaf_area itself has no direct
-  growth-curve fit of its own — it's excluded from D0's curve-fitting scope entirely — so any
-  effect on it is purely from the added noise/dimensionality, not a targeted signal).
+- **A real regression, root-caused via ablation (2026-09-27), not left as a guess**: leaf_area's
+  test R² collapsed from 0.5952 to **−0.5069**. First checked whether the trained weight matrix
+  puts disproportionate magnitude on the 12 growth-curve dims vs. the 256 B3b dims (mean |weight|
+  ratio) — inconclusive: leaf_area's ratio (1.254) was actually LOWER than height_rate's (1.520),
+  which improved, so weight magnitude alone doesn't separate the terms that broke from the ones
+  that didn't. Ran a more direct causal test instead: zeroed the 12 growth-curve input dims at
+  inference time on the already-trained model (same weights, no retraining) and recomputed test
+  R² for all 7 terms.
+
+  | Term | As-trained | Growth dims zeroed | D1's own R² |
+  |---|---|---|---|
+  | leaf_area | −0.5069 | **0.5540** | 0.5952 |
+  | leaf_count | 0.1175 | 0.3126 | 0.3439 |
+  | volume | 0.0527 | 0.1541 | 0.0618 |
+  | height | 0.8891 | 0.8958 | 0.8802 |
+  | stem_diameter | 0.1474 | 0.1191 | 0.1438 |
+  | height_rate | 0.7670 | 0.5104 | 0.7165 |
+  | stem_diameter_rate | 0.2118 | 0.1625 | 0.1464 |
+
+  **Confirmed, not just plausible**: zeroing only the growth-curve dims (keeping every learned
+  weight fixed) restores leaf_area to 0.554 — almost exactly D1's own 0.595. leaf_count and
+  volume show the same pattern to a lesser degree. The flip side is equally clean: height_rate
+  and stem_diameter_rate get WORSE when zeroed (0.767→0.510, 0.212→0.163) — those are the only
+  two terms genuinely using the growth-curve signal productively (unsurprising, since they're
+  the two terms most directly related to the trajectory-shape parameters being added). Every
+  other term is picking up noise through the SHARED linear layer's single weight matrix, which
+  lets 12 dimensions relevant to only 2 of 7 terms corrupt the other 5's predictions.
 - **Motivating question (does D2 fix D1's diagnosed Maize-volume generalization failure)**:
   checked directly by species. Maize test volume R² moved **−0.270 (D1) → −0.207 (D2)** — a
   marginal nudge, still deeply negative/broken, not resolved. Tomato volume actually got worse
   (0.674→0.520). Per-plant SSE breakdown confirms M03/M04 (Maize) still dominate test error.
 
 **Conclusion: growth-curve parameters, as included here (all 12 raw params, both trait
-families), do not clearly help D2 over D1** — two small, targeted gains on the rate terms they're
-most directly related to, no help for the identified Maize-volume weak point, and a real
-regression on leaf_area from added input noise/capacity on a 72-sample training set. Worth
-revisiting in D3/D4 with the same lens (does the newly-added fusion component help or hurt each
-term specifically, checked per-species where a species-specific failure is already known) rather
-than assuming later components will do better by default.
+families), do not clearly help D2 over D1** — two real, causally-confirmed gains on the rate
+terms they're most directly related to, no help for the identified Maize-volume weak point, and
+a causally-confirmed regression on leaf_area (and to a lesser extent leaf_count/volume) from
+noisy dimensions leaking through the single shared linear layer into terms they have no genuine
+relationship to.
+
+**Structural implication for D3/D4 (explicitly flagged by the user as the reason this check
+mattered, not just a D2 footnote)**: this is a SHARED-LINEAR-LAYER problem, not a "not enough
+data" problem that more regularization alone will fix. A single `Linear(in_dim, 7)` layer lets
+any input dimension influence every output term's prediction, regardless of whether that
+dimension has any real relationship to that term. D3 (+temporal info) and D4 (+previous growth
+stage) will each add more dimensions on the same 72-sample training set, so the same failure
+mode — a term-irrelevant addition hijacking an unrelated, previously-healthy term's prediction —
+should be EXPECTED to recur unless addressed structurally, not just hoped away with weight
+decay. Worth considering for D3/D4: per-term input gating/masking (only expose each term's head
+to the input dimensions plausibly relevant to it), or separate small per-term linear heads
+instead of one shared `Linear(in_dim, 7)`, rather than continuing to grow one fully-shared input
+vector. Not yet implemented — flagged here for the D3 design discussion, not decided unilaterally.
 
 ## Files
 
