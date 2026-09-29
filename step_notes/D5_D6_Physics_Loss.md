@@ -302,17 +302,81 @@ terms (as it structurally cannot), and the large across-the-board R² gains repo
 D5 training run" section above should NOT be attributed to the physics constraint — they are the
 warm-start/extra-training confound, now confirmed rather than merely suspected.
 
-## Remaining scope for D6 (Gompertz, not yet built)
+## D6 (Gompertz) — built and trained (2026-09-29)
 
-`physics_loss.py` is already `ode_family`-parameterized
-(`"logistic"`/`"gompertz"`) and `ode_params[term] = (raw_rate, other)`
-already generically covers `(rho, K)` for Logistic and `(beta, alpha)` for
-Gompertz — the RATE parameter (rho/beta) is always `raw_rate` (softplus-
-bounded), and the non-rate parameter (K/alpha) is always `other`. The
-`lr_K`-style fix found here applies identically to Gompertz's `alpha` when
-D6 is built: `alpha`'s gradient in `eps = dydt - (alpha - beta*y_log)` is
-`d(eps)/d(alpha) = -1` (NOT scaled by beta, unlike K) — so this specific
-coupling may not reproduce for Gompertz's alpha the same way, and should be
-checked with its own synthetic recovery test before assuming the same
-5x multiplier applies, rather than copying the Logistic result over
-unverified.
+Both open questions flagged in the section above were checked directly, per explicit user
+instruction, rather than assumed to transfer from D5.
+
+**Synthetic recovery test** (`scripts/d6_synthetic_recovery_test.py`, same methodology as D5's
+own test — a known Gompertz trajectory, deliberately bad init, finite-difference `L_phys` via the
+same `compute_l_phys_finite_diff`/`gompertz_residual` code the real training path uses):
+
+1. **Finite-difference transfers correctly** — expected, since the autodiff-vs-total-trajectory
+   bug D5 fixed was generic (about `elapsed_days` vs. `prev_height`, not specific to the Logistic
+   formula), and confirmed: alpha/beta recovered to ~2%/~1% relative error from `alpha0=0.2` (true
+   0.6) / `beta0=0.03` (true 0.1).
+2. **alpha does NOT need D5's boosted-lr treatment.** Analytically, `eps = dydt - (alpha -
+   beta*y_mid)` gives `d(eps)/d(alpha) = -1` — constant, full-strength regardless of beta's
+   current value, unlike Logistic's `d(eps)/dK = rho*y^2/K^2`, which vanishes while rho is small.
+   Confirmed empirically: `lr_alpha` at 1x/5x/10x `lr_beta` all landed within 1.8-2.1% alpha
+   relative error (noise-level differences, no trend) — no boost helps. **D6 uses a SINGLE shared
+   learning rate for alpha and beta** (one optimizer param group, `lr_ode`), not D5's split
+   `lr_ode`/`lr_K`.
+
+**`adapters/train_d6_fusion_physics_gompertz.py`** mirrors D5's structure exactly otherwise:
+reuses `physics_loss.py`'s already `ode_family`-parameterized machinery unchanged, warm-starts
+from D4's own checkpoint (not D5's — D6 stays directly comparable to D4, not chained off D5),
+initializes `(alpha, beta)` from D0's own already-derived `gompertz_alpha_hat`/`gompertz_beta`
+columns in `data/traits/pheno4d_growth_curves.csv` (`gompertz_alpha_hat = beta * ln(A)`, already
+computed by `scripts/growth_curves.py::fit_gompertz` from the raw-space 3-parameter Gompertz fit
+— not a fresh derivation). CPU smoke test (2 epochs, real data) passed cleanly before submitting.
+
+**Real D6 run (job 323640) and its control ablation (job 323641, `lambda_phys=lambda_mono=0`,
+identical warm start/seed/schedule)** were submitted together via sbatch, both completed cleanly
+(best epoch 172 for both — same as D5's own selection, expected given the identical warm start
+and seed). Recovered `(alpha, beta)` at best epoch, vs. D0-population-average init:
+
+| Trait | alpha: init → final | beta: init → final |
+|---|---|---|
+| height | 0.7144 → 0.6724 (−5.9%) | 0.1145 → 0.1124 (−1.8%) |
+| stem_diameter | 0.5099 → 0.3671 (−28.0%) | 0.1278 → 0.1270 (−0.6%) |
+
+beta barely moves on real data (same low-`lambda_phys` story as D5's K/rho), but — cross-validating
+the synthetic test's conclusion — alpha moves without needing any learning-rate boost, unlike K,
+which was stuck at the shared rate until boosted.
+
+**Three-way per-term test R² (D4 → ablation → D6, same 54-scan subset):**
+
+| Term | D4 | Ablation (λ=0) | D6 (physics on) | Ablation−D4 | D6−Ablation |
+|---|---|---|---|---|---|
+| height | 0.9114 | 0.9021 | 0.9273 | −0.009 | **+0.025** |
+| stem_diameter | 0.1161 | 0.1418 | 0.1386 | +0.026 | −0.003 |
+| leaf_area | 0.7382 | 0.8000 | 0.8000 | +0.062 | **0.000 (exact)** |
+| leaf_count | 0.4197 | 0.4272 | 0.4272 | +0.008 | **0.000 (exact)** |
+| volume | 0.2256 | 0.4501 | 0.4501 | +0.225 | **0.000 (exact)** |
+| height_rate | 0.6823 | 0.6855 | 0.6855 | +0.003 | **0.000 (exact)** |
+| stem_diameter_rate | 0.1416 | 0.1614 | 0.1614 | +0.020 | **0.000 (exact)** |
+
+**D6's ablation numbers are identical to D5's ablation numbers, term for term** — expected and a
+useful sanity check, not a coincidence: with `lambda_phys=lambda_mono=0`, the two ablation runs are
+literally the same computation (the ODE family choice is irrelevant once its loss weight is zero,
+same warm start, same seed).
+
+**The D5 finding replicates cleanly for Gompertz, at nearly identical magnitudes:**
+
+1. **The confound is confirmed outright again** for the 5 unreachable terms — bit-for-bit
+   identical between the D6 ablation and D6 real run, exactly as with D5. 100% of their D4→D6
+   improvement is the warm-start/extra-training effect.
+2. **height shows the same real, physics-attributable effect** — +0.025 over the ablation
+   (D5's was +0.026, almost the same size despite the different ODE family and different
+   alpha/beta learning-rate treatment), and again recovers past a slight ablation-alone decline
+   vs. D4 (−0.009, same ablation run as D5's, so identically reproduced).
+3. **stem_diameter shows the same lack of benefit** — D6 lands marginally below the ablation
+   (−0.003, essentially identical to D5's −0.003) — consistent with D0's stem_diameter
+   measurement-noise finding, independent of which ODE family is used.
+
+**Conclusion: D5 and D6 tell the same story on real data** — a modest, real height-specific
+benefit, no benefit (possibly negligible cost) on stem_diameter, and zero effect (structurally
+guaranteed) on every other term. The choice between Logistic and Gompertz doesn't change this
+project's real-data finding for Block D; it changes only the parametric growth-curve
+interpretation.

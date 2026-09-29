@@ -1199,6 +1199,46 @@ that distinction is now settled rather than just flagged as a concern.
 
 ---
 
+## 38. The Second Growth-Curve Family Built and Tested the Same Careful Way — 2026-09-29
+
+Built the second version of the physics-informed growth constraint — a different standard
+biological growth-curve shape than the one used before, better suited to some kinds of growth
+patterns than the S-shaped curve already tested. Rather than assuming everything already learned
+about the first version would just carry over, both open questions were checked again from
+scratch specifically for this new curve shape, exactly as instructed.
+
+The first question — whether the fix for computing growth rate the more direct way (real
+consecutive measurements instead of the automatic-differentiation shortcut) still works correctly
+— checked out as expected, since that fix was about a general problem with the technique, not
+anything specific to the first curve shape.
+
+The second question was more interesting: whether this curve's own version of the "stuck
+parameter" problem from before would show up again, needing the same fix (giving one parameter a
+much faster learning rate than the other). It turned out NOT to be needed here. A look at the
+underlying math showed this curve's two parameters don't have the same lopsided relationship the
+first curve's did — one parameter's training signal here doesn't get weaker just because the
+other parameter is still wrong. A controlled recovery test confirmed this directly: giving one
+parameter a faster learning rate made no real difference at any of the speeds tried. So this
+version correctly uses a single shared learning rate for both parameters, a genuinely different
+design decision from before, reached by testing rather than by copying the earlier fix.
+
+With both questions settled, the real training run and its matching control run (same setup,
+physics constraint switched off) were submitted together, and both finished cleanly. The result
+lines up almost exactly with what the first curve shape already showed: the same five prediction
+targets the physics idea has no way to influence were, once again, EXACTLY identical between the
+control run and the physics-on run — not just similar, identical — confirming yet again that their
+earlier gains were purely the extra-training effect and nothing to do with either growth-curve
+idea. Height showed the same kind of real, modest improvement as before, landing at almost the
+exact same size gain as the first curve shape. Stem diameter again showed no real benefit, also
+landing at almost the same tiny difference as before.
+
+**In one sentence**: the second growth-curve shape tells the same story as the first, at nearly
+matching numbers — a small, real, height-specific improvement and nothing else — which is itself
+a useful, confirming result: whichever specific biological growth curve gets used later doesn't
+change this project's finding, only the underlying growth-curve interpretation.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
