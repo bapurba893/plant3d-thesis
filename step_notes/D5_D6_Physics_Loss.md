@@ -183,6 +183,66 @@ well-posed question than the synthetic test, which had an exact single
 generating value by construction. K's real-data behavior is being tracked
 as informative diagnostic signal, not a pass/fail gate on D5's validity.
 
+## Real D5 training run (2026-09-29, job 323476)
+
+Submitted via `jobs/d5_fusion_physics_logistic.sbatch` (rather than run directly like D1-D4,
+specifically so it survives an interactive session disconnecting — repeated connection drops
+during tonight's debugging session). CPU, warm-started from D4's own checkpoint, same
+59-train/15-val/54-test split D4 used. 200 epochs, ~65s wall time (SLURM queue/startup overhead
+accounted for the rest of the job's 5m27s total). Best epoch 172 (selected by lowest
+`val_total = val_loss + lambda_phys*val_phys + lambda_mono*val_mono`, D4's own `val_loss` plus the
+two new physics/mono terms).
+
+**Recovered (rho, K) at the best epoch, vs. their D0 population-average initialization:**
+
+| Trait | rho: init → final | K: init → final |
+|---|---|---|
+| height | 0.225 → 0.136 (−39%) | 499.69 → 497.42 (−0.5%) |
+| stem_diameter | 0.253 → 0.084 (−67%) | 201.22 → 195.48 (−2.9%) |
+
+**rho moved substantially; K barely moved — the same qualitative "K stuck" pattern the lr_K fix
+targeted, still visible here even with the fix applied.** Not read as the fix failing: real
+`lambda_phys=1e-4` is ~1000x smaller than the synthetic test's `lambda_phys=0.1` (deliberately
+small so `L_phys` doesn't dominate `L_trait`/`L_growth`, see `train_d5_fusion_physics_logistic.py`'s
+own module docstring), so K's absolute gradient signal on real data is proportionally tiny even
+with the 5x learning-rate boost — the fix addressed the RELATIVE rho/K learning-rate imbalance,
+it did not and was not meant to change how weak the overall physics signal is by design. This is
+also consistent with (not contradicted by) the D0 caveat above: with several real Tomato plants
+that hadn't plateaued, the population doesn't have one clean target K to pull toward in the first
+place. Tracked as diagnostic signal, not a pass/fail gate, per the standing instruction.
+
+**Per-term test-set R² vs. D4 (same 54-scan held-out test subset, n varies by term same as D4's
+own table):**
+
+| Term | D4 R² | D5 R² | Δ |
+|---|---|---|---|
+| height | 0.9114 | 0.9282 | +0.017 |
+| stem_diameter | 0.1161 | 0.1385 | +0.022 |
+| leaf_area | 0.7382 | 0.8000 | +0.062 |
+| leaf_count | 0.4197 | 0.4272 | +0.008 |
+| volume | 0.2256 | 0.4501 | **+0.225** |
+| height_rate | 0.6823 | 0.6855 | +0.003 |
+| stem_diameter_rate | 0.1416 | 0.1614 | +0.020 |
+
+Every term improved, several substantially (volume, leaf_area). **This is NOT evidence the physics
+loss broadly helped, and should not be read that way**: `PerTermFusionHeadD4.heads` is an
+`nn.ModuleDict` of fully independent per-term `nn.Linear` layers with no shared trainable trunk
+(verified by reading the class directly) — `L_phys`/`L_mono`'s backward pass only has `height` and
+`stem_diameter` in its computational graph (`PHYSICS_TERMS`), so gradients from the physics loss
+cannot reach leaf_area/leaf_count/volume/height_rate/stem_diameter_rate's parameters at all; their
+improvement has to come from somewhere else. The most likely explanation: D5 warm-starts from D4's
+own best-epoch-188 checkpoint and then runs 200 MORE epochs of ordinary supervised training
+(`run_epoch`, unchanged from D4) under a FRESH `CosineAnnealingLR` schedule restarted from
+`args.lr` — effectively a warm restart on top of D4's already-converged solution, not a from-scratch
+run. That alone plausibly explains improvement across ALL terms, physics-connected or not, and is a
+confound this comparison does not control for. Only `height` and `stem_diameter` (the two terms
+whose heads DO receive physics-loss gradient) are even plausibly influenced by the physics
+constraint specifically — and even those two are equally exposed to the same warm-restart confound,
+so their improvement can't be cleanly attributed to the physics loss either without a proper
+ablation (e.g. D5 with `lambda_phys=lambda_mono=0`, same warm-start, as a control run). Not run
+yet; flagged here as the honest caveat on this comparison rather than overclaiming "physics loss
+helped" from an apples-to-oranges training-length difference.
+
 ## Remaining scope for D6 (Gompertz, not yet built)
 
 `physics_loss.py` is already `ode_family`-parameterized

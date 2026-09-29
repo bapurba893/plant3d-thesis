@@ -1114,6 +1114,53 @@ started yet — that's next.
 
 ---
 
+## 36. Row D5 Trained on Real Data — Every Prediction Target Improved, But With an Honest Caveat — 2026-09-29
+
+Ran the physics-informed growth-loss row on the real plant data for the first time, submitted as a
+proper queued cluster job (rather than run directly, like the three fusion rows just before it)
+specifically so it would keep running even if tonight's unstable connection dropped again — it did
+not need that protection in the end (the run only took about a minute of actual compute), but it
+was queued and finished independently of this session either way.
+
+On the same held-out test plants used by the row right before this one, every single prediction
+target improved — including several, like overall plant volume, by a large margin. That sounds
+like an unambiguous win for the new physics constraint, but a closer look complicates that story in
+an important, honest way: this new constraint was only ever designed to touch two of the seven
+prediction targets (height and stem diameter) — it has no mathematical path to affect the other
+five at all, since each target is predicted by its own completely separate, independently-trained
+piece of the model. So something else must explain why targets the physics constraint can't even
+touch also got better.
+
+The most likely explanation: this row didn't start training from a blank slate — it started from
+the already-trained result of the row right before it, then trained for another full run on top of
+that with a fresh learning-rate schedule. That's effectively extra training time layered on an
+already-good starting point, which is a well-known way to improve results on its own, with nothing
+to do with the new physics constraint. This means the improvement seen here can't be honestly
+credited to the physics idea working — a fair test of that would need a matched control run (same
+extra training, physics constraint switched off) to separate the two effects apart, which hasn't
+been run yet. Flagged clearly rather than reported as a clean win.
+
+Separately, the two curve parameters the physics constraint is trying to learn (a growth-rate
+parameter and a plateau/carrying-capacity parameter, one pair each for height and stem diameter)
+moved by very different amounts on the real data: the growth-rate parameter shifted substantially
+from its starting point, but the plateau parameter barely moved — the same lopsided pattern
+tonight's fix was built to solve, showing up again even with the fix in place. The likely reason:
+the physics constraint is deliberately given very little influence over the overall training
+signal (so it can't overwhelm the model's main job of predicting accurately), and that weak overall
+influence naturally means slower movement for both parameters on real data than the earlier,
+deliberately amplified controlled test showed — not necessarily a sign the fix stopped working.
+Combined with the earlier finding that several real plants hadn't finished growing by the end of
+the scanning window, there may not be one single "correct" plateau value for the whole population
+to converge to in the first place. Tracked as useful diagnostic information, not a pass/fail
+requirement, matching the plan agreed before this run started.
+
+**Bottom line**: the row ran successfully end to end on real data, is fully committed, and produced
+real numbers — but the honest next step, before drawing any conclusion about whether the physics
+constraint itself helps, is a proper controlled comparison (same extra training, constraint on vs.
+off) rather than trusting this apples-to-oranges result at face value.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
