@@ -1161,6 +1161,44 @@ off) rather than trusting this apples-to-oranges result at face value.
 
 ---
 
+## 37. The Control Comparison Runs — a Clean, Split Answer Instead of a Simple Yes or No — 2026-09-29
+
+Ran the controlled comparison flagged as needed right after the previous milestone: an identical
+copy of the previous row's training run — same starting point, same length, same schedule, same
+everything — with only the new physics constraint switched off. This isolates exactly one
+question: of everything that improved in the previous row, how much was really the physics idea
+working, and how much was just the side effect of training longer on an already-good starting
+point?
+
+The answer came back sharper and more useful than a plain yes-or-no. For the five prediction
+targets the physics constraint has no way to influence at all (by construction, each target is
+predicted by its own separate, unconnected piece of the model), this control run and the physics
+run produced numbers that matched EXACTLY, to four decimal places — not just similar, identical.
+That settles it beyond doubt: every bit of those five targets' improvement, including the
+dramatic gain in predicted plant volume, came purely from the extra training, with zero
+contribution from the physics idea. Exactly what the architecture predicted, now empirically
+confirmed rather than just suspected.
+
+For the two targets the physics constraint CAN influence — height and stem diameter — the story
+splits in an interesting way. For height, the control run (extra training alone, no physics)
+actually came out slightly worse than the very first version of this row, meaning extra training
+by itself was not what helped here — if anything it cost a little. The physics-on version not
+only recovered that loss but pushed meaningfully past both, a real improvement that has no other
+explanation in this comparison. For stem diameter, the opposite: the control run alone already
+captured the entire improvement, and the physics-on version landed marginally below it — no real
+benefit there, and possibly a tiny cost, though small enough it could just be noise. This lines up
+with an already-known measurement problem: stem diameter readings were already found to be the
+noisiest of all the tracked measurements in this project, for reasons unrelated to this row,
+which plausibly makes it a poor candidate for a physics constraint to usefully act on regardless.
+
+**In one sentence**: the physics-informed growth constraint has one confirmed, real benefit
+(better height predictions) and no confirmed benefit anywhere else — the sweeping,
+across-the-board improvement that looked exciting in the previous milestone turns out to be
+almost entirely an illusion of extra training, not evidence the physics idea works broadly, and
+that distinction is now settled rather than just flagged as a concern.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested

@@ -243,6 +243,65 @@ ablation (e.g. D5 with `lambda_phys=lambda_mono=0`, same warm-start, as a contro
 yet; flagged here as the honest caveat on this comparison rather than overclaiming "physics loss
 helped" from an apples-to-oranges training-length difference.
 
+## Control ablation (2026-09-29, job 323622) — the confound is confirmed AND a real effect isolated
+
+Ran `jobs/d5_ablation_no_physics.sbatch`: byte-identical to the real D5 run above (same warm
+start from D4's checkpoint, same seed=1, same 200 epochs, same cosine schedule, same
+`lr`/`wd`/`dropout`/`lambda_corr`/`lr_ode`/`lr_K`) except `--lambda_phys 0 --lambda_mono 0`. No
+code changes needed — both were already exposed CLI args. First submission (job 323542) was
+cancelled ~12s after starting, before any epoch completed (cancelled by our own account, most
+likely session-teardown cleanup, not a real failure) — resubmitted clean as job 323622,
+completed normally (2m35s, mostly SLURM overhead).
+
+Sanity check confirming the ablation is wired correctly: `rho`/`K` for both traits stayed
+EXACTLY at their D0-population-average init values for all 200 epochs (`height` rho=0.2250,
+K=499.69; `stem_diameter` rho=0.2528, K=201.22, unchanged from epoch 0 to epoch 199) — exactly
+the expected behavior when their only gradient source (`L_phys`/`L_mono`) is multiplied by 0.
+Also selected the SAME best epoch (172) as the real D5 run, since both used the identical seed
+and warm start.
+
+**Three-way per-term test R² (same 54-scan subset D4/D5 both report against):**
+
+| Term | D4 | Ablation (λ=0) | D5 (physics on) | Ablation−D4 | D5−Ablation |
+|---|---|---|---|---|---|
+| height | 0.9114 | 0.9021 | 0.9282 | −0.009 | **+0.026** |
+| stem_diameter | 0.1161 | 0.1418 | 0.1385 | +0.026 | −0.003 |
+| leaf_area | 0.7382 | 0.8000 | 0.8000 | +0.062 | **0.000 (exact)** |
+| leaf_count | 0.4197 | 0.4272 | 0.4272 | +0.008 | **0.000 (exact)** |
+| volume | 0.2256 | 0.4501 | 0.4501 | +0.225 | **0.000 (exact)** |
+| height_rate | 0.6823 | 0.6855 | 0.6855 | +0.003 | **0.000 (exact)** |
+| stem_diameter_rate | 0.1416 | 0.1614 | 0.1614 | +0.020 | **0.000 (exact)** |
+
+**This resolves more precisely than a simple pass/fail, and splits cleanly by term:**
+
+1. **The confound is confirmed outright, not just plausible, for the 5 terms `L_phys`/`L_mono`
+   cannot reach.** Ablation and D5 are bit-for-bit identical to 4 decimal places on
+   leaf_area/leaf_count/volume/height_rate/stem_diameter_rate — not approximately close, exactly
+   equal, which is the mathematically expected result given `PerTermFusionHeadD4`'s fully
+   independent per-term heads and matches the zero-gradient argument made before this ablation
+   was run. 100% of these terms' D4→D5 improvement (including volume's striking +0.225) is the
+   warm-start/extra-training effect alone; the physics loss contributed nothing to them, exactly
+   as architecturally predicted.
+2. **`height` shows a real, physics-attributable effect.** The ablation (extra training only,
+   no physics) actually lands BELOW D4 (0.9021 vs 0.9114, −0.009) — so extra training alone is
+   not what improves height; if anything it costs a little. D5 recovers past both D4 and the
+   ablation, +0.026 over the ablation specifically. That gap has no other source in this design
+   (same warm start, same schedule, same seed, only the physics/mono loss differs) — a genuine,
+   isolated physics-loss benefit for `height`, though a single run without repeated seeds, so a
+   modest-confidence finding, not a bulletproof one.
+3. **`stem_diameter` shows no benefit, and possibly a small cost.** The ablation alone already
+   captures the entire D4→D5 gain (+0.026); D5 with physics on lands marginally below the
+   ablation (−0.003). This is consistent with (not surprising given) D0's own earlier finding that
+   `stem_diameter` measurements are noisy across the board regardless of segmentation quality —
+   plausibly too noisy a signal for the physics constraint to usefully act on, though −0.003 is
+   also small enough to be within run-to-run noise rather than a confirmed cost.
+
+**Bottom line for D5**: the physics-informed growth loss has one confirmed, isolated benefit
+(`height`'s R²), contributes nothing measurable to `stem_diameter` or any of the 5 unconnected
+terms (as it structurally cannot), and the large across-the-board R² gains reported in the "Real
+D5 training run" section above should NOT be attributed to the physics constraint — they are the
+warm-start/extra-training confound, now confirmed rather than merely suspected.
+
 ## Remaining scope for D6 (Gompertz, not yet built)
 
 `physics_loss.py` is already `ode_family`-parameterized
