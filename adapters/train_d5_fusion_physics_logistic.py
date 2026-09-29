@@ -29,6 +29,19 @@ checkpoint (see step_notes/D5_D6_Physics_Loss.md) rather than guessed,
 so the physics/monotonicity terms are comparably scaled to the
 Kendall-combined L_trait+L_growth total at the start of D5 training, not
 silently dominating or negligible.
+
+**rho and K get SEPARATE optimizer param groups/learning rates
+(2026-09-29)** -- an earlier synthetic recovery test showed rho
+recovering (65.8%/58.8% relative error, down from ~90%+) but K barely
+moving when both shared lr_ode. Root cause, confirmed by a follow-up
+synthetic test: dL_phys/dK scales with rho (dK ~ rho*y^2/K^2), so while
+rho is still small K's gradient is weak too -- and a slow-moving K wasn't
+just cosmetic, it let the optimizer cheat by collapsing rho toward 0
+instead (same vacuous-law failure effective_rate_param's floor targets,
+resurfacing via K). Giving K its own lr_K=5x lr_ode fixed BOTH
+parameters in the follow-up test (rho 6.7%/K 2.2% relative error); 10x
+gave identical results to 5x, so 5x is used as sufficient. See
+step_notes/D5_D6_Physics_Loss.md for the full test.
 """
 
 import argparse
@@ -95,11 +108,23 @@ def parse_args():
                          "contributed ~1.19, likely DOMINATING D4's own ~0.1-1 loss scale; "
                          "0.1 contributes ~0.12, comparably scaled instead), not tuned")
     p.add_argument("--lr_ode", type=float, default=2e-2,
-                    help="separate, higher LR for the trainable ODE parameters -- also given "
+                    help="separate, higher LR for the trainable rho (rate) parameters -- also given "
                          "their own weight_decay=0.0 parameter group (see main()), since applying "
                          "the network's own weight_decay to physical constants was a real bug found "
                          "during synthetic verification (it pulled K toward 0 identically for both "
                          "traits, see step_notes/D5_D6_Physics_Loss.md)")
+    p.add_argument("--lr_K", type=float, default=1e-1,
+                    help="SEPARATE, higher LR for the trainable K (carrying-capacity) parameters -- "
+                         "5x lr_ode. A synthetic recovery test (2026-09-29, see "
+                         "step_notes/D5_D6_Physics_Loss.md) found K stuck when sharing lr_ode with "
+                         "rho: dL_phys/dK scales with rho (dK ~ rho*y^2/K^2), so while rho is still "
+                         "small/wrong K's gradient is weak too -- and this wasn't just cosmetic, K "
+                         "staying wrong let the optimizer take the cheaper route of collapsing rho "
+                         "toward 0 instead (the same vacuous-law failure effective_rate_param's "
+                         "floor was meant to prevent, resurfacing via K instead of rho this time). "
+                         "5x and 10x lr_ode gave IDENTICAL recovery in the synthetic test (rho "
+                         "6.7%/K 2.2% relative error, both down from 99.9%/52.2% at 1x), so 5x is "
+                         "used as sufficient, not the largest value tried.")
     p.add_argument("--init_from_d4", type=str,
                     default=str(_REPO_ROOT / "results" / "D4_fusion_previous_stage" / "model.pt"),
                     help="warm-start PerTermFusionHeadD4 weights from D4's own trained checkpoint "
@@ -164,18 +189,20 @@ def main():
               "collapse found via synthetic verification -- see physics_loss.py's module docstring "
               "and step_notes/D5_D6_Physics_Loss.md")
     ode_params = {}
-    trainable_ode_params = []
+    rate_params, scale_params = [], []
     for term in PHYSICS_TERMS:
         rho0, K0 = init_params[term]
         raw_rho = torch.nn.Parameter(torch.tensor(inverse_softplus_init(rho0), dtype=torch.float32, device=device))
         K = torch.nn.Parameter(torch.tensor(K0, dtype=torch.float32, device=device))
         ode_params[term] = (raw_rho, K)
-        trainable_ode_params += [raw_rho, K]
+        rate_params.append(raw_rho)
+        scale_params.append(K)
 
     kendall = KendallUncertaintyWeighting({term: "regression" for term in ALL_TERMS}).to(device)
     opt = optim.Adam([
         {"params": list(model.parameters()) + list(kendall.parameters()), "weight_decay": args.wd},
-        {"params": trainable_ode_params, "weight_decay": 0.0, "lr": args.lr_ode},
+        {"params": rate_params, "weight_decay": 0.0, "lr": args.lr_ode},
+        {"params": scale_params, "weight_decay": 0.0, "lr": args.lr_K},
     ], lr=args.lr)
     scheduler = CosineAnnealingLR(opt, args.epochs)
 

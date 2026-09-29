@@ -1055,6 +1055,65 @@ to combining that groundwork with actual growth-curve and trait prediction.
 
 ---
 
+## 35. Physics-Informed Growth Loss (D5) — a Wrong Turn Caught and Fixed Before It Reached Real Training — 2026-09-29
+
+Work moved into the next phase of the project (Block D), specifically the two rows that add a
+physics-based growth constraint on top of the fusion model already built: the idea is to penalize
+the model whenever its predicted growth rate disagrees with a standard biological growth curve
+(the same S-shaped curve family already fit to the real data earlier in the project), not just
+whenever its predicted height/diameter is wrong in isolation.
+
+The design docs specify computing the model's predicted growth *rate* using automatic
+differentiation — a standard deep-learning technique for getting an exact derivative of a model's
+output with respect to one of its inputs. This was built first, exactly as specified, and checked
+to be mathematically correct in isolation. But a controlled test — generating fake data from a
+known, exact growth curve and checking whether the training process could recover the curve's own
+parameters from scratch — revealed a subtle problem: the automatic-differentiation approach was
+holding one of the model's other inputs (the plant's own previous measurement) artificially fixed
+while taking the derivative, when in reality that input changes together with time along a real
+plant's trajectory. The two ways of measuring "the growth rate" disagreed by roughly 40x on the
+same test data. This meant the training signal could be satisfied cheaply, without the model's
+real predicted growth behavior ever becoming physically sensible.
+
+**This is a documented redesign, not a silent fix**: switched to computing the growth rate the
+more direct way — the actual difference between the model's own predictions at two real,
+consecutive measurement dates for the same plant, divided by the time between them — instead of
+the automatic-differentiation shortcut. The original (now-retired) version was kept in the code,
+clearly labeled, as a record of what didn't work and why, rather than deleted.
+
+After that fix, a second controlled recovery test showed real progress but an uneven result: the
+growth-rate parameter of the curve recovered much better than before (down to roughly 60% error
+from over 90%), but the curve's carrying-capacity parameter (its eventual plateau value) barely
+moved from its starting guess at all. Investigating why: the mathematical relationship between
+these two parameters means the plateau parameter's training signal is weak exactly when the
+growth-rate parameter is still far from correct — a chicken-and-egg problem, since both start
+untrained together. Worse, leaving the plateau parameter moving too slowly was actively making the
+growth-rate parameter's own recovery worse, not just failing on its own — the training process was
+taking a shortcut through the growth-rate parameter instead of correcting the real problem.
+
+**Fix**: giving the plateau parameter its own separate, much faster learning rate (five times the
+growth-rate parameter's own rate) than sharing one rate between both, confirmed via the same kind
+of controlled recovery test, fixed BOTH parameters together — the growth-rate parameter also
+recovered well once the plateau parameter was allowed to move fast enough to stop dragging it down.
+Ten times the rate gave no further improvement over five times, so the smaller, sufficient value
+was kept rather than the largest one tried.
+
+One caveat carried forward into the real training run, not treated as a blocker: earlier
+curve-fitting work on the real plant data already found that several real tomato plants in the
+dataset hadn't finished growing by the time scanning stopped — their curves wanted an even higher
+plateau than the data supported. This means, on real data (unlike the clean synthetic test), there
+may not be one single "correct" plateau value for the whole population to converge to in the first
+place — so the plateau parameter's exact final value on real training will be treated as useful
+diagnostic information rather than a strict pass/fail requirement, per explicit guidance given
+before this row's real training run started.
+
+All of the above (loss design, the retired automatic-differentiation attempt, the redesign, both
+recovery tests, and the two-learning-rate fix) is now committed and pushed, so tonight's debugging
+work is not at risk if the connection drops. Actual training of this row on real data hasn't
+started yet — that's next.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
