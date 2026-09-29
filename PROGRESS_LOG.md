@@ -1239,6 +1239,38 @@ change this project's finding, only the underlying growth-curve interpretation.
 
 ---
 
+## 39. The Discrepancy-Based Adaptation Method Tested on All Three Architectures — a Clean Answer — 2026-09-30
+
+Followed up on the one adaptation method that had only ever been tried on a single architecture:
+the discrepancy-based approach that produced the second-best result in the whole project, but
+only on the third backbone so far. Ran it on the other two architectures as well, to settle
+whether that earlier win was something special about that one architecture, or a real property of
+the method itself.
+
+The answer split cleanly into two parts, and both parts matter. On DIRECTION: this method helped
+on all three architectures, with no exception, on every measure checked — the average result
+across a full training run, the single best checkpoint chosen the normal way, how stable training
+was, and how often the model gave up and predicted only one class. That has not happened for any
+other adaptation method tried in this project. The adversarial method never clearly helped any of
+the three; the self-supervised method helped two but actively hurt the third. This method is the
+first to help everywhere.
+
+On MAGNITUDE: the size of the benefit was very different across the three. The third architecture
+(the one that already showed the biggest win) still saw by far the largest gain — three to seven
+times bigger than what the other two architectures got from the exact same method. The other two
+did genuinely improve, just far more modestly.
+
+One more small but real result for the second backbone specifically: this is the FIRST adaptation
+method of any kind that hasn't hurt it. Every adaptation method tried before this one — including
+the one that worked best on the other two architectures — made that backbone's results worse.
+
+**In one sentence**: the "helps vs. hurts" story now generalizes cleanly across all three
+architectures for this specific method, a real strengthening of the project's earlier finding
+(which was built from one architecture alone) — but the size of the benefit is still very
+architecture-dependent, and the third architecture remains the standout by a wide margin.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested

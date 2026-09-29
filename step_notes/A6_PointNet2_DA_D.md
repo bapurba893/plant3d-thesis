@@ -27,9 +27,42 @@ CPU smoke test (1 epoch, real data) passed cleanly before submitting — sane no
 numbers, no shape/gradient errors, coral loss values in the same tiny-but-nonzero range as C6's
 and B3's own epoch-0 readings.
 
-## Status
+## Status: DONE (job 323672, 2026-09-30, 13m50s)
 
-Submitted to the cluster via `jobs/a6_pointnet2_da_d.sbatch` (2026-09-30), `--time=04:00:00`
-matching A1-A5's own budget. Full-trajectory analysis against A1's own DA-0 baseline required
-before drawing conclusions, per explicit user instruction — same discipline as A2/A3/A4's own
-trajectory analyses. Results pending.
+Best epoch 97 (source val total loss). Selected-checkpoint target test accuracy 0.5714 (avg acc
+0.6625) — a real improvement over A1's own 0.4603.
+
+**Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
+
+| Metric | A1 (DA-0) | A6 (DA-D) |
+|---|---|---|
+| Full-run mean | 0.599 | **0.649 (+0.050)** |
+| Full-run stdev | 0.196 | 0.166 |
+| corr(selection-loss, target acc) | -0.165 | +0.024 |
+| Collapse epochs (avg_acc~0.5, tol 0.02) | 17/100 | **4/100** |
+| Selected-checkpoint acc | 0.4603 | **0.5714 (+0.111)** |
+
+**Answering the motivating question for PointNet++ specifically: DA-D is a second cooperative-
+loss win on this backbone, alongside DA-S (A3, +0.201 full-run mean) — both cooperative methods
+now help PointNet++, while the one adversarial method tried (A2) hurts (mildly, and partly an
+augmentation-mix artifact per A4).** DA-D's gain here (+0.050) is real but far more modest than
+DA-S's own (+0.201) on the same backbone — cooperative losses aren't uniformly as strong as each
+other even on a backbone that responds well to the category as a whole. Collapse-epoch count
+drops sharply (17→4, matching the kind of stabilizing effect A4's augmentation-narrowing also
+produced on this backbone's otherwise-noisy baseline) even though the selection-signal
+correlation itself doesn't improve (stays near zero/wrong-signed).
+
+## Cross-backbone DA-D verdict (all three backbones now tested, 2026-09-30)
+
+See step_notes/C6_DGCNN_DA_D.md for the full table and discussion (duplicated here for
+zero-context-reader convenience):
+
+| Backbone | DA-0 | DA-D | Δ full-run mean | Δ selected checkpoint | Δ stdev | Δ collapse epochs |
+|---|---|---|---|---|---|---|
+| A (PointNet++) | 0.599 | 0.649 | +0.050 | 0.4603→0.5714 (+0.111) | 0.196→0.166 | 17→4 |
+| B (KPConv) | 0.629 | 0.808 | **+0.179** | 0.4444→0.6825 (+0.238) | 0.203→0.094 | 3→0 |
+| C (DGCNN) | 0.791 | 0.816 | +0.025 | 0.7460→0.8571 (+0.111) | 0.104→0.091 | 3→2 |
+
+**Direct answer: the direction (DA-D helps) generalizes cleanly across all three backbones — the
+first adaptation method in this project where that's true without exception — but the magnitude
+stays strongly backbone-dependent, KPConv's gain 3.5-7x the other two.**
