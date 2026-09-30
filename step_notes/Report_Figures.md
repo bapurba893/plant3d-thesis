@@ -63,20 +63,30 @@ generated successfully before this bug surfaced on A5; the fixed script still ne
 across all 8 curated rows, including a re-run of A5 itself, before any confusion-matrix figures
 are treated as final) — tracked as the next step before finalizing the confusion-matrix set.
 
-## Related, separately-documented finding: PointNet++ eval-time nondeterminism
+## Related, separately-documented findings: eval-time nondeterminism (PointNet++ AND KPConv)
 
 While root-causing the Oracle bug above, the A1/A3 confusion-matrix numbers this script produced
 were independently checked against each row's own already-logged `run.log` accuracy and found to
 differ slightly (A3: 0.9048 here vs. 0.8889 logged). This is NOT a second instance of the Oracle
 bug above (unrelated code path, no state_dict mismatch was reported) — it is a genuine, separate
 finding about the vendored PointNet++ backbone being non-deterministic at eval time even with
-weights frozen. Fully measured and written up in its own dedicated file,
-`step_notes/PointNet2_Eval_Nondeterminism.md`, since it's a cross-cutting methodological finding
-relevant to every Block A row (A1-A6), not just this report-figures effort. Practical consequence
-for this file's own confusion-matrix/t-SNE scripts: both should set a fixed
-`torch.manual_seed(...)` immediately before each row's evaluation pass for figure-to-figure
-reproducibility — not yet implemented, tracked as a follow-up alongside the Oracle-bug re-run
-above.
+weights frozen. Fully measured and written up in `step_notes/PointNet2_Eval_Nondeterminism.md`.
+
+**A second, mechanistically distinct instance of the same class of problem was then found in
+KPConv** while fixing the first one and re-verifying against this project's own reproducibility
+bar (a fix that doesn't actually reproduce on repeated calls doesn't count as fixed) — TWO
+separate unseeded-RNG sources (`calibrate_neighborhood_limits`'s calibration `DataLoader`, and
+the vendored KPConv-PyTorch kernel-point layer's random rotation, which uses NumPy's global RNG,
+not torch's, and required a second, separate fix after the first `torch.manual_seed`-only attempt
+was verified to NOT resolve it). Full investigation, both root causes, and the final verified fix
+in `step_notes/KPConv_Eval_Nondeterminism.md`.
+
+**Both fixes are now actually wired into the inference paths `plot_confusion_matrices.py` and
+`tsne_feature_plot.py` use** (`torch.manual_seed`/`np.random.seed` set immediately before
+calibration and model construction in every KPConv function, immediately after `model.eval()` in
+every PointNet2/DGCNN function) — verified by repeated-call tests for both backbones, not just
+asserted. DGCNN needs no such fix (no known eval-time randomness source in that architecture,
+confirmed by its confusion-matrix numbers matching `run.log` exactly).
 
 ## Figure 1: C1 (DGCNN, DA-0) — source vs. target feature space
 

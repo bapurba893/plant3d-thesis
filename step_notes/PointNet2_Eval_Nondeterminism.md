@@ -89,12 +89,13 @@ with this in mind:
   full-trajectory mean (+0.050, a 100-epoch-averaged, noise-robust number) rather than the
   selected-checkpoint delta alone, which is the more defensible way to have stated it.
 
-## Practical fix for future report figures
+## Practical fix for future report figures — IMPLEMENTED and verified
 
-`scripts/plot_confusion_matrices.py` and `scripts/tsne_feature_plot.py` should call
-`torch.manual_seed(<fixed value>)` immediately before each row's evaluation pass, so regenerating
-a given figure later reproduces the SAME confusion matrix/t-SNE embedding every time (run-to-run
-reproducibility of the figure itself) — not implemented yet as of this writing; tracked as a
-follow-up before finalizing the confusion-matrix figures. This does not "fix" the underlying
-nondeterminism (a different seed still gives a different, equally valid draw), it only makes a
+`scripts/plot_confusion_matrices.py` and `scripts/tsne_feature_plot.py` now call
+`torch.manual_seed(<fixed value>)` immediately after `model.eval()` in every PointNet2 path, so
+regenerating a given figure later reproduces the SAME confusion matrix/t-SNE embedding every time
+(run-to-run reproducibility of the figure itself). Verified directly: `confusion_pointnet2` on
+A3's checkpoint returned 0.9048 identically across 3 repeated calls after this fix (previously
+varied per call). This does not "fix" the underlying nondeterminism (a different seed still gives
+a different, equally valid draw), it only makes a
 given figure's exact numbers reproducible on demand.

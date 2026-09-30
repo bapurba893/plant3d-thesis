@@ -155,6 +155,17 @@ def extract_features_kpconv(checkpoint_path, device, max_per_domain=150, seed=0,
         calibrate_neighborhood_limits, combine_neighborhood_limits,
     )
 
+    # MUST be set before calibrate_neighborhood_limits (called twice below) AND before
+    # KPConv_ClsSeg(...) construction further down -- TWO separate nondeterminism sources, see
+    # step_notes/KPConv_Eval_Nondeterminism.md: (1) calibration's own DataLoader uses
+    # shuffle=True unseeded (torch RNG); (2) the vendored KPConv-PyTorch kernel-point layer
+    # applies a fresh random rotation to the kernel geometry on every construction via
+    # np.random.rand/normal -- NumPy's GLOBAL RNG, which `np.random.default_rng(seed)` below
+    # does NOT seed (that call creates an ISOLATED Generator instance, only used for this
+    # function's own subsampling -- a different, non-overlapping RNG stream).
+    torch.manual_seed(seed)
+    np.random.seed(seed)
+
     rng = np.random.default_rng(seed)
     src_full = PlantClsSegDataset(_SOURCE_CSV, _MANIFEST_CSV, augment=False)
     tgt_full = PlantSpeciesDataset(_TARGET_CSV, _MANIFEST_CSV, augment=False)
@@ -168,8 +179,6 @@ def extract_features_kpconv(checkpoint_path, device, max_per_domain=150, seed=0,
     model = KPConv_ClsSeg(config, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
-    torch.manual_seed(seed)  # see the two functions above -- set uniformly across all three
-    # backbones for consistency, though KPConv has no known eval-time randomness source
 
     src_idx = _subsample_indices(len(src_full), max_per_domain, rng)
     tgt_idx = _subsample_indices(len(tgt_full), max_per_domain, rng)

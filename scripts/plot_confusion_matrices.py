@@ -112,6 +112,20 @@ def confusion_kpconv(checkpoint_path, device, dirname=None, batch_size=16):
     from models_kpconv import KPConv_ClsSeg, PlantKPConvConfig
     from kpconv_collate import make_kpconv_collate_fn_cls_only, calibrate_neighborhood_limits
 
+    # Both seeds MUST be set before calibrate_neighborhood_limits AND before KPConv_ClsSeg(...)
+    # construction below -- TWO separate, independently-confirmed nondeterminism sources, not
+    # one: (1) calibrate_neighborhood_limits' own calibration DataLoader uses shuffle=True with
+    # no seed (adapters/kpconv_collate.py), consuming torch's RNG; (2) the vendored KPConv-PyTorch
+    # kernel-point layer (kernels/kernel_points.py::load_kernels) applies a FRESH RANDOM ROTATION
+    # to the convolution kernel's geometry on every model construction via np.random.rand/normal
+    # -- NumPy's global RNG, not torch's, and NOT part of the saved state_dict (recomputed at
+    # __init__ every time, even loading the same trained weights). Seeding torch alone (the first,
+    # incomplete fix) did NOT resolve the measured variance -- confirmed by a second repeated-call
+    # test after that fix still showing 0.4286-0.5079. Both together are needed; see step_notes/
+    # KPConv_Eval_Nondeterminism.md for the full investigation and final verification.
+    torch.manual_seed(EVAL_SEED)
+    np.random.seed(EVAL_SEED)
+
     target_csv = _REPO_ROOT / "data" / "pheno4d_heldout_eval.csv"
     tgt_set = PlantSpeciesDataset(target_csv, _MANIFEST_CSV, augment=False)
 
@@ -123,7 +137,10 @@ def confusion_kpconv(checkpoint_path, device, dirname=None, batch_size=16):
                            seg_num_classes=_seg_num_classes_for(dirname or "")).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
-    torch.manual_seed(EVAL_SEED)
+    # NOT re-seeding here: doing so would silently discard whatever RNG state the eval loader
+    # (shuffle=False, but any last calibration draws still matter for reproducibility of THIS
+    # specific run) is at -- the single seed call above, before calibration, is what makes the
+    # whole call (calibration + eval) reproducible end to end.
 
     loader = DataLoader(tgt_set, batch_size=batch_size, shuffle=False,
                          collate_fn=make_kpconv_collate_fn_cls_only(config))
