@@ -5,15 +5,23 @@ Loads ONE sample point cloud and renders a grid showing the effect of
 each augmentation individually, plus the full composed pipeline —
 proving the augmentation code runs and doesn't destroy the plant shape.
 
-Usage (Pheno4D example):
+Usage (Pheno4D example, raw file if available):
     python 04_augmentation_sanity_check.py \
         --file "data/pheno4d/Tomato01/T01_0305_a.txt" --source pheno4d \
         --out augmentation_check.png
 
-Usage (Crops3D example):
+Usage (Crops3D example, raw file if available):
     python 04_augmentation_sanity_check.py \
         --file "data/crops3d/Tomato/sample.ply" --source crops3d \
         --out augmentation_check.png
+
+Usage (preprocessed .npz cache -- raw Crops3D/Pheno4D files are NOT present on the cluster, see
+CLAUDE.md's Repository layout section; --file also accepts a path ending in .npz, loading the
+cached, already outlier-removed/decimated/normalized 'points' array directly instead of the raw
+loader -- --source still required, used only to label the figure):
+    python 04_augmentation_sanity_check.py \
+        --file "data/preprocessed/Pheno4D/Tomato/T01_0325_a.npz" --source pheno4d \
+        --out augmentation_check_pheno4d.png
 """
 
 import argparse
@@ -45,7 +53,9 @@ def main():
     ap.add_argument("--out", default="augmentation_check.png")
     args = ap.parse_args()
 
-    if args.source == "crops3d":
+    if args.file.endswith(".npz"):
+        pts = np.load(args.file)["points"]
+    elif args.source == "crops3d":
         pts = load_crops3d_ply(args.file)
     else:
         pts, _ = load_pheno4d_xyz(args.file)
