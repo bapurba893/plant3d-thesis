@@ -1271,6 +1271,56 @@ architecture-dependent, and the third architecture remains the standout by a wid
 
 ---
 
+## 40. Two Real Bugs Found and Fixed While Building Report Figures — and a Claim Corrected — 2026-09-30
+
+Before trusting any of the confusion-matrix or feature-space illustrations for the write-up, each
+one got checked against already-published numbers rather than taken at face value. That check
+caught two separate, real problems, and each one got the full treatment (what was wrong, which
+results does it affect, does it change anything already reported) rather than a quick patch.
+
+The first was a straightforward mix-up: the newest report-figure script briefly used the wrong
+class-count setup for the three "ceiling" rows, which train on a different label scheme than
+every other row. It failed loudly and immediately, before producing a single number, and reading
+each ceiling row's own original training code confirmed that code was always correct — nothing
+already reported was affected.
+
+The second was more interesting and took real digging: re-running a finished, frozen model
+through evaluation a second time gave a slightly different accuracy than the original run logged
+— same weights, same test data, different answer. Chased down to a genuine quirk in the first
+architecture's own reference code: one of its internal steps picks a random starting point every
+time it runs, with no fixed seed, so re-evaluating the same trained model twice in a row can
+legitimately give two different (both correct) answers. Measured this precisely with ten repeated
+evaluations rather than guessing, and confirmed every already-published number for that
+architecture falls comfortably inside the range this randomness produces — nothing published is
+wrong, but small differences between two single-run results for that architecture now come with
+an honest asterisk.
+
+Fixing it (locking the randomness to a fixed starting point before evaluating) was checked, not
+assumed — and the check itself found the fix was only half done. A second, completely separate
+random-numbers problem turned up in the third architecture's own code, caused by a different
+internal step that also isn't seeded and, worse, uses a different random-number system than the
+one that had just been fixed. That took a second round of digging and a second fix, verified the
+same rigorous way: running the same frozen model through evaluation four times, deliberately
+starting from four different random states, and confirming all four now give the identical
+answer.
+
+One more thing came out of properly fixing this: regenerating one of the visual illustrations
+with the correct, reproducible randomness showed a real difference from what an earlier version
+of the same illustration had suggested. The earlier, not-yet-fixed version looked like it showed
+two groups of data points merging together under a particular method; the corrected version shows
+they stay as two separate groups, though a different, related pattern (much better separation
+between the two plant species) still holds up clearly. Rather than quietly swap the picture and
+move on, the difference was written down explicitly, together with what the corrected picture
+actually shows instead.
+
+**In one sentence**: two independent, real measurement-noise bugs were found by holding new
+work to the same standard as everything already published, both were root-caused and fixed
+properly (not just patched), the fixes were verified rather than assumed, nothing already
+reported turned out to be wrong, and one visual claim made earlier in the process was corrected
+rather than left standing once the tools that produced it were fixed.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
