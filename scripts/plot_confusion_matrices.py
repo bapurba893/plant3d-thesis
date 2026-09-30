@@ -38,10 +38,35 @@ if _DEFREC_ROOT not in sys.path:
 os.environ.setdefault("POINTNET2_ROOT", str(_REPO_ROOT.parent / "Pointnet_Pointnet2_pytorch"))
 sys.path.insert(0, str(_REPO_ROOT / "adapters"))
 
-from dataset import PlantSpeciesDataset, SEG_NUM_CLASSES, IDX_TO_SPECIES  # noqa: E402
+from dataset import PlantSpeciesDataset, SEG_NUM_CLASSES, PHENO4D_SEG_NUM_CLASSES, IDX_TO_SPECIES  # noqa: E402
 from tsne_feature_plot import _load_state_dict_lenient  # noqa: E402
 
 _MANIFEST_CSV = _REPO_ROOT / "data" / "preprocessed" / "preprocessed_manifest.csv"
+
+# Fixed seed set immediately before each row's evaluation pass (not a training seed -- these
+# checkpoints are already trained). Needed because the vendored PointNet++ backbone's
+# farthest_point_sample draws an unseeded random starting centroid on every forward call, so
+# eval-mode inference is NOT deterministic even with frozen weights -- confirmed and quantified
+# in step_notes/PointNet2_Eval_Nondeterminism.md (std 0.010-0.027, range 0.032-0.079 across 10
+# unseeded repeats on 3 fixed checkpoints). Applied uniformly to all three backbones here (not
+# just PointNet2) for figure-to-figure reproducibility even though DGCNN/KPConv are believed
+# deterministic already (no FPS in either architecture) -- harmless either way, and removes any
+# doubt for a reader comparing this script's numbers against another run of the same script.
+EVAL_SEED = 0
+
+# Oracle rows (A5/B5/C5) train directly on Pheno4D's OWN per-point organ labels (3-class
+# soil/stem/leaf scheme for BOTH species, see PHENO4D_SEG_NUM_CLASSES docstring in dataset.py) --
+# a different label space than every other row's Crops3D-shaped SEG_NUM_CLASSES (Tomato=3,
+# Maize=6). Model construction must match whichever scheme a given checkpoint was actually
+# trained with, or state_dict loading fails on the segmentation head's shape (found the hard way:
+# A5 raised a size-mismatch error on seg_heads.Maize before this was added).
+_ORACLE_DIRNAME_PREFIXES = ("A5_", "B5_", "C5_")
+
+
+def _seg_num_classes_for(dirname):
+    if dirname.startswith(_ORACLE_DIRNAME_PREFIXES):
+        return PHENO4D_SEG_NUM_CLASSES
+    return SEG_NUM_CLASSES
 
 
 def _eval_target_confusion_plain_tensor(model, device, batch_size=32):
@@ -60,25 +85,30 @@ def _eval_target_confusion_plain_tensor(model, device, batch_size=32):
     return np.concatenate(all_true), np.concatenate(all_pred)
 
 
-def confusion_dgcnn(checkpoint_path, device):
+def confusion_dgcnn(checkpoint_path, device, dirname=None):
     from models import DGCNN_ClsSeg
     model_args = argparse.Namespace(model="dgcnn", cuda=False, dropout=0.5)
-    model = DGCNN_ClsSeg(model_args, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
+    model = DGCNN_ClsSeg(model_args, num_class=2,
+                          seg_num_classes=_seg_num_classes_for(dirname or "")).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
+    torch.manual_seed(EVAL_SEED)
     return _eval_target_confusion_plain_tensor(model, device)
 
 
-def confusion_pointnet2(checkpoint_path, device):
+def confusion_pointnet2(checkpoint_path, device, dirname=None):
     from models_pointnet2 import PointNet2_ClsSeg
     model_args = argparse.Namespace(dropout=0.5)
-    model = PointNet2_ClsSeg(model_args, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
+    model = PointNet2_ClsSeg(model_args, num_class=2,
+                              seg_num_classes=_seg_num_classes_for(dirname or "")).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
+    torch.manual_seed(EVAL_SEED)  # see EVAL_SEED docstring -- this is the backbone that actually
+    # needs it (unseeded farthest_point_sample); set uniformly across all three regardless.
     return _eval_target_confusion_plain_tensor(model, device)
 
 
-def confusion_kpconv(checkpoint_path, device, batch_size=16):
+def confusion_kpconv(checkpoint_path, device, dirname=None, batch_size=16):
     from models_kpconv import KPConv_ClsSeg, PlantKPConvConfig
     from kpconv_collate import make_kpconv_collate_fn_cls_only, calibrate_neighborhood_limits
 
@@ -89,9 +119,11 @@ def confusion_kpconv(checkpoint_path, device, batch_size=16):
     config.neighborhood_limits = calibrate_neighborhood_limits(
         config, tgt_set, batch_size, num_workers=0, collate_fn_factory=make_kpconv_collate_fn_cls_only)
 
-    model = KPConv_ClsSeg(config, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
+    model = KPConv_ClsSeg(config, num_class=2,
+                           seg_num_classes=_seg_num_classes_for(dirname or "")).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
+    torch.manual_seed(EVAL_SEED)
 
     loader = DataLoader(tgt_set, batch_size=batch_size, shuffle=False,
                          collate_fn=make_kpconv_collate_fn_cls_only(config))
@@ -155,7 +187,7 @@ def main():
             continue
         checkpoint = _REPO_ROOT / "results" / dirname / "model.pt"
         print(f"[{label}] loading checkpoint {checkpoint}")
-        y_true, y_pred = confusion_fn(checkpoint, device)
+        y_true, y_pred = confusion_fn(checkpoint, device, dirname=dirname)
         acc = (y_true == y_pred).mean()
         print(f"  n={len(y_true)}, acc={acc:.4f}")
         out_path = out_dir / f"confusion_{dirname}.png"

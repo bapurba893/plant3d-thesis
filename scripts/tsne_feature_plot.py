@@ -82,6 +82,9 @@ def extract_features_dgcnn(checkpoint_path, device, max_per_domain=150, seed=0):
     model = DGCNN_ClsSeg(model_args, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
+    torch.manual_seed(seed)  # reproducibility across repeated runs of this script -- see
+    # step_notes/PointNet2_Eval_Nondeterminism.md (applies to PointNet2 specifically; set here
+    # too for consistency/figure-to-figure reproducibility, harmless for DGCNN either way)
 
     rng = np.random.default_rng(seed)
     src_set = PlantClsSegDataset(_SOURCE_CSV, _MANIFEST_CSV, augment=False)
@@ -116,6 +119,8 @@ def extract_features_pointnet2(checkpoint_path, device, max_per_domain=150, seed
     model = PointNet2_ClsSeg(model_args, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
+    torch.manual_seed(seed)  # PointNet2's farthest_point_sample is unseeded/nondeterministic at
+    # eval time otherwise -- see step_notes/PointNet2_Eval_Nondeterminism.md
 
     rng = np.random.default_rng(seed)
     src_set = PlantClsSegDataset(_SOURCE_CSV, _MANIFEST_CSV, augment=False)
@@ -163,6 +168,8 @@ def extract_features_kpconv(checkpoint_path, device, max_per_domain=150, seed=0,
     model = KPConv_ClsSeg(config, num_class=2, seg_num_classes=SEG_NUM_CLASSES).to(device)
     _load_state_dict_lenient(model, checkpoint_path, device)
     model.eval()
+    torch.manual_seed(seed)  # see the two functions above -- set uniformly across all three
+    # backbones for consistency, though KPConv has no known eval-time randomness source
 
     src_idx = _subsample_indices(len(src_full), max_per_domain, rng)
     tgt_idx = _subsample_indices(len(tgt_full), max_per_domain, rng)
