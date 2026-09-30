@@ -7,6 +7,8 @@ kernels/
 
 # Raw Crops3D/Pheno4D sample files (manually transferred for scripts/06_before_after_preprocessing.py,
 # 2026-10-01) -- per CLAUDE.md's Repository layout, raw data stays out of this repo (too large);
-# only the preprocessed .npz cache is tracked.
+# only the preprocessed .npz cache is tracked. No other .txt files exist anywhere under data/
+# (checked before widening this rule from the two specific filenames originally listed here), so
+# a general *.txt pattern is safe.
 data/*.ply
-data/T01_0325_a.txt
+data/*.txt
