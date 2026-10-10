@@ -148,7 +148,7 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
 ## 9. Status checklist (Claude: keep this updated)
 
 ### Stage 0 — Setup
-- [ ] CLAUDE.md dataset facts corrected (section 2) and pointer to this plan added
+- [x] CLAUDE.md dataset facts corrected (section 2) and pointer to this plan added
 ### Stage 1 — Prerequisite checks (laptop, CPU) -> `step_notes/PP_0_Prerequisite_Checks.md`
 - [ ] Crops3D maize pot label id identified
 - [ ] Pheno4D soil label id confirmed (tomato and maize label columns)

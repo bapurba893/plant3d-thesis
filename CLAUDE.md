@@ -3,6 +3,13 @@
 M.Tech thesis project, IIT Bombay. Read `docs/Domain_Invariance_Strategy_Table.docx` and
 `docs/plant_3d_pipeline_v6_corrected.drawio` for full detail — this file is the summary.
 
+## Current work: Preprocessing Comparison (Block PP)
+
+Active as of 2026-10-10, requested by Prof. Soumyashree Kar. Full plan, rationale, and pipeline
+definitions: `docs/PREPROCESSING_COMPARISON_PLAN.md`. **That file's section 9 status checklist
+is the authoritative status tracker for this block** — check it before assuming any step is
+done, and keep it updated as work progresses.
+
 ## Problem
 Deep learning models on plant 3D point clouds fail to generalize across sensors/datasets
 (domain shift). Goal: learn domain-invariant representations that transfer from a labeled
@@ -10,15 +17,31 @@ source dataset to an unlabeled target dataset, AND predict plant traits/growth t
 growth-curve-informed features — not just species classification.
 
 ## Datasets
-- **Source: Crops3D** — Tomato + Maize, structured-light/RGB-D sensors, controlled greenhouse.
-  Fully labeled. Format: PLY files, organized `Crops3D/<Species>/*.ply`.
-- **Target: Pheno4D** — Tomato + Maize, laser triangulation scanner, multi-temporal (multiple
-  scan days per plant), different greenhouse setup. Unlabeled during adaptation training;
-  point-wise soil/stem/leaf labels available for evaluation and the Oracle upper-bound only.
-  Format: `.xyz` files, `<Species><NN>/<code>_<date>[_a].xyz`. `_a` suffix = annotated
-  (4 cols for tomato: x,y,z,label; 5 cols for maize: x,y,z,label1,label2). Unannotated = 3 cols.
-- IMPORTANT: both datasets are greenhouse-acquired. The domain gap is SENSOR + ACQUISITION
-  SETUP, not indoor/outdoor — do not describe it as "outdoor" anywhere.
+- **Source: Crops3D** — Tomato + Maize, Zhu et al., *Crops3D: a diverse 3D crop dataset*,
+  Scientific Data 2024. Fully labeled. Format: PLY files, organized `Crops3D/<Species>/*.ply`.
+  **The two species are NOT acquired the same way** (corrected 2026-10-10, see "Domain gap"
+  below):
+  - **Maize**: terrestrial laser scanning (FARO Focus S70), **field**-acquired. Labelled
+    classes: soil, pot, stem, leaves, tassel, fruit.
+  - **Tomato**: structure-from-motion photogrammetry (Canon 77D), greenhouse-acquired,
+    **no soil points** in the cloud at all (independently confirmed in
+    `step_notes/D0_Trait_Extraction_Pipeline.md`).
+- **Target: Pheno4D** — Tomato + Maize, Schunck et al., PLOS ONE 2021. Perceptron ScanWorks V5
+  laser triangulation scanner mounted on a measuring arm; coordinates are in the **arm's local
+  frame** (up-axis not guaranteed to be Z — must be checked/aligned per dataset, never assumed).
+  Clouds **include parts of pot and soil, for both species**. Multi-temporal (multiple scan days
+  per plant). Unlabeled during adaptation training; point-wise soil/stem/leaf labels available
+  for evaluation and the Oracle upper-bound only. Format: `.xyz` files,
+  `<Species><NN>/<code>_<date>[_a].xyz`. `_a` suffix = annotated (4 cols for tomato: x,y,z,label;
+  5 cols for maize: x,y,z,label1,label2). Unannotated = 3 cols.
+- **Domain gap, corrected (2026-10-10)** — previously described here as "both datasets are
+  greenhouse-acquired... SENSOR + ACQUISITION SETUP, not indoor/outdoor"; that was wrong and has
+  been removed. The real picture is a confound, not a single axis: in the source domain, species
+  is confounded with sensor (FARO LiDAR vs. SfM photogrammetry), field vs. greenhouse, soil/pot
+  presence, and point density — a Crops3D maize-vs-tomato classifier could in principle be
+  exploiting any of these instead of plant shape. This confound is the central hypothesis
+  `docs/PREPROCESSING_COMPARISON_PLAN.md` (Block PP) tests. Still never describe the gap as
+  simply "indoor/outdoor" — it is this specific, enumerated set of confounds, not one axis.
 
 ## Backbones (3, each representing a different architecture family)
 - **PointNet++** — pointwise-MLP, hierarchical set abstraction. Known weakness: fixed-radius
