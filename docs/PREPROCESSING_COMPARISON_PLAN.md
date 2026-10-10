@@ -88,16 +88,28 @@ one label per whole cloud, so it is out of scope for the baseline classification
 ## 6. Definitions of the shared steps
 
 - **Soil/pot removal**
-  - Crops3D maize: drop the soil id (confirmed id 0) and the pot id (to be identified in
-    Stage 1 by colour and height; the paper lists soil, pot, stem, leaves, tassel, fruit).
-  - Crops3D tomato: nothing to remove (no soil). Verify on a few clouds.
-  - Pheno4D annotated scans (`_a`): drop the soil label (confirm the id from the data and
-    from `adapters/infer_segmentation.py`).
-  - Pheno4D unannotated scans: after up-axis alignment, fit the soil plane with RANSAC on
-    the lowest 15% of points and remove points at or below it plus a small margin. Tune the
-    margin on the annotated scans, where the soil labels give the right answer. Report soil
-    removed (%) and plant points lost (%) on the annotated scans. Suggested target: > 95% of
-    soil removed and < 1% of plant points lost (a starting target, not a requirement).
+  - Crops3D maize: drop the soil id (CONFIRMED id 0) and the pot id (CONFIRMED id 5 — identified
+    in Stage 1 by hollow-ring geometry and colour; see step_notes/PP_0_Prerequisite_Checks.md
+    check 1). Uses Crops3D's own source labels — fine, since Crops3D is the labeled source
+    dataset, not the unlabeled target.
+  - Crops3D tomato: nothing to remove (CONFIRMED no soil id and no unlabeled ground-like layer
+    either; check 3).
+  - **Pheno4D, ALL scans, annotated or not: a single LABEL-FREE geometric cut, never using soil
+    labels** — corrected 2026-10 from the original "use labels on `_a` scans, RANSAC on
+    unannotated scans" split. Rationale: Pheno4D is the **target** dataset; using its own soil
+    labels inside preprocessing (even just on the `_a` subset) would put target labels into a
+    step that the rest of the pipeline treats as unsupervised, silently leaking supervision the
+    adaptation protocol is supposed to do without. Labels are used **only** to validate the cut
+    (score soil-removed%/plant-points-lost% on the `_a` scans) — never to compute it, on `_a`
+    scans or otherwise. Method (replaces the tilted-plane-RANSAC-on-lowest-15%-of-points
+    approach, which failed on late-growing-season scans where drooping leaves/stem dominate the
+    lowest 15% of *points*): find the height z0 of the densest thin horizontal slab that also
+    has a wide lateral footprint — restricting the search to the bottom 30% of the scan's
+    *physical z-range* (a geometric fact about the scene: soil sits below the plant it supports;
+    not a label), not the bottom 30% of *points* (which is what let drooping plant material
+    dominate the old approach) — then cut at z0 plus a margin. Validated on all 126 annotated
+    scans; see step_notes/PP_0_Prerequisite_Checks.md Part C for the numbers, the worst scans,
+    and whether the > 95% soil removed / < 1% plant points lost starting target is reached.
 - **Up-axis alignment**: determine per dataset (not per cloud) which axis is up by rendering
   about 5 clouds per species per dataset. Store the rotation in a config/constant with a
   comment saying how it was verified.
@@ -150,12 +162,19 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
 ### Stage 0 — Setup
 - [x] CLAUDE.md dataset facts corrected (section 2) and pointer to this plan added
 ### Stage 1 — Prerequisite checks (laptop, CPU) -> `step_notes/PP_0_Prerequisite_Checks.md`
-- [ ] Crops3D maize pot label id identified
-- [ ] Pheno4D soil label id confirmed (tomato and maize label columns)
-- [ ] Crops3D tomato confirmed to have no soil
-- [ ] Up-axis per dataset determined from renders; rotation recorded
-- [ ] Crops3D tomato units/scale checked
-- [ ] RANSAC soil cut tuned and validated on annotated Pheno4D (numbers recorded)
+- [x] Crops3D maize pot label id identified
+- [x] Pheno4D soil label id confirmed (tomato and maize label columns)
+- [x] Crops3D tomato confirmed to have no soil
+- [ ] Up-axis per dataset determined from renders; rotation recorded (Maize +z and Pheno4D +z
+      CONFIRMED via renders; Crops3D tomato deliberately left open — montage
+      `results/pp_checks/tomato_axis_montage.png` (36 clouds) made for the user to review, no
+      decision made here — so this box stays unticked until tomato is resolved)
+- [x] Crops3D tomato units/scale checked (checked; result is INFERRED not CONFIRMED — see step note)
+- [x] Label-free horizontal-slab soil cut tuned and validated on ALL 126 annotated Pheno4D scans
+      (numbers recorded; **target REACHED** at margin=2.0mm: 95.32% soil removed, 0.377% plant
+      lost, pooled — see step note Part C. Supersedes the original tilted-plane-RANSAC approach,
+      which never reached the target; replaced because it also used soil labels on annotated
+      scans during preprocessing, which Pheno4D being the target dataset ruled out — see section 6)
 ### Stage 2 — Implement pipelines -> `step_notes/PP_1_Pipelines.md`
 - [ ] `scripts/preprocessing_variants.py` + `scripts/07_preprocess_variants.py` written
 - [ ] Smoke test `--limit 5` per pipeline passes; before/after renders checked
