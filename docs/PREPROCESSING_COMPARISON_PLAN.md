@@ -78,6 +78,15 @@ All pipelines end with exactly 4,096 points. "Soil/pot removal" is defined in se
 | P4c | No up-axis alignment |
 | P4d | Normalise before soil removal (soil included in the scale) |
 
+**P3 = P4 = P4c on this data (verified 2026-10-11, Stage 4).** All 531 cached clouds have
+identical data arrays (points, labels, normalisation, point counts) in the three caches; only the
+`pipeline_id` / `up_axis_aligned` metadata fields differ, and the three pipelines' C1 `run.log`s
+are line-for-line identical per seed once timestamps and run names are removed. Reason: up-axis
+alignment is a no-op here (Crops3D maize and Pheno4D are +z; Crops3D tomato is trusted as +z,
+`TOMATO_UP_AXIS_ALIGN = False`), so no cloud is rotated. Count them as **one** pipeline (7
+distinct pipelines, not 9). The P4c ablation therefore says nothing about up-axis alignment. See
+`step_notes/PP_2_Results.md` caveat 3.1.
+
 Optional, only if P4 does not clearly beat P0: **P5** = P4 + noise matching (add the same
 small Gaussian jitter to every cloud at preprocessing time). Decide with the user first.
 
@@ -229,14 +238,22 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
       fixed a real bug first — see section 6a below.
 - [ ] Caches committed/transferred to Prajna (explicitly deferred — not done this pass)
 ### Stage 3 — Run (Prajna)
-- [ ] P0 run with seeds 2 and 3 (seed 1 = existing C1 result if identical settings; else rerun)
-- [ ] P1–P4 × 3 seeds finished
-- [ ] P4a–P4d × 3 seeds finished
+- [x] P0 run with seeds 2 and 3 (seed 1 = existing C1 result if identical settings; else rerun)
+      — seed 1 was rerun as `results/PP_P0_s1` through the new `--manifest` path and reproduces
+      the existing C1 result exactly (full-run mean 0.7913, selected epoch 95, acc 0.746, Tomato
+      mIoU 0.3248, Maize mIoU 0.3427)
+- [x] P1–P4 × 3 seeds finished (all `complete=True`, 100 epochs, `results/pp_summary/pp_runs.csv`)
+- [x] P4a–P4d × 3 seeds finished (same check)
 ### Stage 4 — Analyse -> `step_notes/PP_2_Results.md`
-- [ ] Shortcut probe run for every pipeline
-- [ ] `results/PP_summary.md` table produced
-- [ ] Proposed strategy written up (which steps matter, from the ablations)
-- [ ] PROGRESS_LOG.md milestone added
+- [x] Shortcut probe run for every pipeline (`results/pp_summary/shortcut_probe.md`, all 9)
+- [x] `results/PP_summary.md` table produced — actual path `results/pp_summary/pp_summary.md`
+      (per section 8's `scripts/10_pp_summarize.py` output layout); results and caveats in
+      `step_notes/PP_2_Results.md`
+- [ ] Proposed strategy written up (which steps matter, from the ablations) — findings on which
+      steps matter are in `step_notes/PP_2_Results.md`, but no strategy chosen yet: the open
+      question there (soil/pot may be a species cue in both datasets, caveat 3.4) should be
+      discussed with the user first
+- [x] PROGRESS_LOG.md milestone added (milestone 41)
 - [ ] Table + note sent to maam
 
 ## 10. Rules for this block

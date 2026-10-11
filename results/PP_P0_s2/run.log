@@ -1,0 +1,526 @@
+11-10-26 17:08:31: Namespace(exp_name='PP_P0_s2', out_path='/home/pearl/25m0301/plant3d-thesis/results', epochs=100, batch_size=32, test_batch_size=32, lr=0.001, wd=5e-05, dropout=0.5, seed=2, gpu=0, manifest=None)
+11-10-26 17:08:31: Using GPU 0: NVIDIA A100-SXM4-80GB
+11-10-26 17:08:32: Crops3D train: 263 {'Tomato': 71, 'Maize': 192}
+11-10-26 17:08:32: Crops3D val:   45 {'Tomato': 12, 'Maize': 33}
+11-10-26 17:08:32: Pheno4D held-out eval (target, never trained on, cls-only): 63 {'Tomato': 40, 'Maize': 23}
+11-10-26 17:08:32: L_cls class weights (w_c=(f_c+eps)^-1, normalized): {'Tomato': 1.4600751399993896, 'Maize': 0.5399248600006104}
+11-10-26 17:08:32: L_seg class weights for Tomato (counts=[59711, 228589, 2516]): [0.12004272639751434, 0.031357139348983765, 2.848600149154663]
+11-10-26 17:08:32: L_seg class weights for Maize (counts=[105103, 53541, 475303, 3874, 3443, 145168]): [0.09747688472270966, 0.19134941697120667, 0.021555034443736076, 2.6440656185150146, 2.974978446960449, 0.0705743357539177]
+11-10-26 17:08:38: Trn - Source 0, cls loss: 0.4258, seg loss: 2.2786, kendall s_cls: 0.0007, s_seg: 0.0079
+11-10-26 17:08:38: Val - Source 0, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.7283, seg loss: 2.3592, total loss: 3.0727
+11-10-26 17:08:38: Val - Source 0, Tomato seg: loss=1.7188, mIoU=0.0064, acc=0.0193
+11-10-26 17:08:38: Val - Source 0, Maize seg: loss=2.5920, mIoU=0.1036, acc=0.6215
+11-10-26 17:08:39: Eval(no-train) - Target 0, acc: 0.3651, avg acc: 0.5000, cls loss: 1.5079  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:08:42: Trn - Source 1, cls loss: 0.2312, seg loss: 2.0658, kendall s_cls: -0.0058, s_seg: 0.0157
+11-10-26 17:08:43: Val - Source 1, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.8941, seg loss: 2.3135, total loss: 3.1818
+11-10-26 17:08:43: Val - Source 1, Tomato seg: loss=2.0766, mIoU=0.0064, acc=0.0193
+11-10-26 17:08:43: Val - Source 1, Maize seg: loss=2.3997, mIoU=0.0555, acc=0.1223
+11-10-26 17:08:43: Eval(no-train) - Target 1, acc: 0.3651, avg acc: 0.5000, cls loss: 2.2132  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:08:47: Trn - Source 2, cls loss: 0.1845, seg loss: 1.9374, kendall s_cls: -0.0133, s_seg: 0.0232
+11-10-26 17:08:47: Val - Source 2, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.7356, seg loss: 2.1411, total loss: 2.8424
+11-10-26 17:08:47: Val - Source 2, Tomato seg: loss=1.7324, mIoU=0.0064, acc=0.0193
+11-10-26 17:08:47: Val - Source 2, Maize seg: loss=2.2897, mIoU=0.0275, acc=0.0667
+11-10-26 17:08:48: Eval(no-train) - Target 2, acc: 0.3651, avg acc: 0.5000, cls loss: 1.6497  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:08:51: Trn - Source 3, cls loss: 0.1318, seg loss: 1.8347, kendall s_cls: -0.0218, s_seg: 0.0305
+11-10-26 17:08:52: Val - Source 3, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.4518, seg loss: 2.3721, total loss: 2.7670
+11-10-26 17:08:52: Val - Source 3, Tomato seg: loss=2.0812, mIoU=0.0064, acc=0.0193
+11-10-26 17:08:52: Val - Source 3, Maize seg: loss=2.4779, mIoU=0.0064, acc=0.0156
+11-10-26 17:08:52: Eval(no-train) - Target 3, acc: 0.3651, avg acc: 0.5000, cls loss: 0.7909  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:08:55: Trn - Source 4, cls loss: 0.1048, seg loss: 1.7726, kendall s_cls: -0.0307, s_seg: 0.0375
+11-10-26 17:08:56: Val - Source 4, cls acc: 0.8889, cls avg acc: 0.7917, cls loss: 0.1917, seg loss: 1.8616, total loss: 1.9942
+11-10-26 17:08:56: Val - Source 4, Tomato seg: loss=1.7655, mIoU=0.0149, acc=0.0397
+11-10-26 17:08:56: Val - Source 4, Maize seg: loss=1.8965, mIoU=0.0883, acc=0.2135
+11-10-26 17:08:57: Eval(no-train) - Target 4, acc: 0.9048, avg acc: 0.8880, cls loss: 0.3680  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:00: Trn - Source 5, cls loss: 0.0958, seg loss: 1.7125, kendall s_cls: -0.0394, s_seg: 0.0443
+11-10-26 17:09:00: Val - Source 5, cls acc: 0.7778, cls avg acc: 0.5833, cls loss: 0.4189, seg loss: 2.2778, total loss: 2.6173
+11-10-26 17:09:00: Val - Source 5, Tomato seg: loss=1.7038, mIoU=0.0258, acc=0.0641
+11-10-26 17:09:00: Val - Source 5, Maize seg: loss=2.4866, mIoU=0.0419, acc=0.1059
+11-10-26 17:09:01: Eval(no-train) - Target 5, acc: 0.8413, avg acc: 0.8288, cls loss: 0.3372  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:04: Trn - Source 6, cls loss: 0.0792, seg loss: 1.6741, kendall s_cls: -0.0484, s_seg: 0.0509
+11-10-26 17:09:05: Val - Source 6, cls acc: 0.9111, cls avg acc: 0.8333, cls loss: 0.0922, seg loss: 1.7405, total loss: 1.7521
+11-10-26 17:09:05: Val - Source 6, Tomato seg: loss=1.3941, mIoU=0.1549, acc=0.3656
+11-10-26 17:09:05: Val - Source 6, Maize seg: loss=1.8665, mIoU=0.1313, acc=0.3818
+11-10-26 17:09:05: Eval(no-train) - Target 6, acc: 0.8889, avg acc: 0.8478, cls loss: 0.6423  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:09: Trn - Source 7, cls loss: 0.1298, seg loss: 1.7046, kendall s_cls: -0.0570, s_seg: 0.0576
+11-10-26 17:09:09: Val - Source 7, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0326, seg loss: 1.6663, total loss: 1.6079
+11-10-26 17:09:09: Val - Source 7, Tomato seg: loss=1.3517, mIoU=0.1785, acc=0.4202
+11-10-26 17:09:09: Val - Source 7, Maize seg: loss=1.7807, mIoU=0.1614, acc=0.4385
+11-10-26 17:09:10: Eval(no-train) - Target 7, acc: 0.8571, avg acc: 0.8043, cls loss: 1.0017  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:13: Trn - Source 8, cls loss: 0.0534, seg loss: 1.6705, kendall s_cls: -0.0657, s_seg: 0.0641
+11-10-26 17:09:14: Val - Source 8, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0414, seg loss: 1.7725, total loss: 1.7059
+11-10-26 17:09:14: Val - Source 8, Tomato seg: loss=1.6432, mIoU=0.1328, acc=0.3054
+11-10-26 17:09:14: Val - Source 8, Maize seg: loss=1.8195, mIoU=0.1249, acc=0.3467
+11-10-26 17:09:14: Eval(no-train) - Target 8, acc: 0.8730, avg acc: 0.8261, cls loss: 0.6345  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:17: Trn - Source 9, cls loss: 0.0952, seg loss: 1.6167, kendall s_cls: -0.0744, s_seg: 0.0706
+11-10-26 17:09:18: Val - Source 9, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0133, seg loss: 1.5178, total loss: 1.4268
+11-10-26 17:09:18: Val - Source 9, Tomato seg: loss=1.3853, mIoU=0.2377, acc=0.6364
+11-10-26 17:09:18: Val - Source 9, Maize seg: loss=1.5660, mIoU=0.1728, acc=0.4669
+11-10-26 17:09:19: Eval(no-train) - Target 9, acc: 0.8730, avg acc: 0.8261, cls loss: 1.6268  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:22: Trn - Source 10, cls loss: 0.0448, seg loss: 1.5939, kendall s_cls: -0.0830, s_seg: 0.0769
+11-10-26 17:09:22: Val - Source 10, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0187, seg loss: 1.6145, total loss: 1.5123
+11-10-26 17:09:22: Val - Source 10, Tomato seg: loss=1.2835, mIoU=0.2421, acc=0.5729
+11-10-26 17:09:22: Val - Source 10, Maize seg: loss=1.7349, mIoU=0.1479, acc=0.4301
+11-10-26 17:09:23: Eval(no-train) - Target 10, acc: 0.8730, avg acc: 0.8261, cls loss: 1.4337  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:26: Trn - Source 11, cls loss: 0.0481, seg loss: 1.5827, kendall s_cls: -0.0919, s_seg: 0.0830
+11-10-26 17:09:27: Val - Source 11, cls acc: 0.9333, cls avg acc: 0.8750, cls loss: 0.1042, seg loss: 1.5725, total loss: 1.5570
+11-10-26 17:09:27: Val - Source 11, Tomato seg: loss=1.4589, mIoU=0.1214, acc=0.2830
+11-10-26 17:09:27: Val - Source 11, Maize seg: loss=1.6138, mIoU=0.1810, acc=0.5185
+11-10-26 17:09:27: Eval(no-train) - Target 11, acc: 0.8889, avg acc: 0.8478, cls loss: 0.8085  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:31: Trn - Source 12, cls loss: 0.0698, seg loss: 1.5608, kendall s_cls: -0.1005, s_seg: 0.0891
+11-10-26 17:09:31: Val - Source 12, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.0652, seg loss: 1.6472, total loss: 1.5731
+11-10-26 17:09:31: Val - Source 12, Tomato seg: loss=1.4236, mIoU=0.1520, acc=0.3515
+11-10-26 17:09:31: Val - Source 12, Maize seg: loss=1.7284, mIoU=0.1680, acc=0.4528
+11-10-26 17:09:32: Eval(no-train) - Target 12, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5129  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:35: Trn - Source 13, cls loss: 0.0812, seg loss: 1.5716, kendall s_cls: -0.1085, s_seg: 0.0951
+11-10-26 17:09:36: Val - Source 13, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0220, seg loss: 1.5076, total loss: 1.3886
+11-10-26 17:09:36: Val - Source 13, Tomato seg: loss=1.3048, mIoU=0.2004, acc=0.4646
+11-10-26 17:09:36: Val - Source 13, Maize seg: loss=1.5813, mIoU=0.1777, acc=0.5057
+11-10-26 17:09:36: Eval(no-train) - Target 13, acc: 0.8889, avg acc: 0.8478, cls loss: 0.7781  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:39: Trn - Source 14, cls loss: 0.0533, seg loss: 1.6088, kendall s_cls: -0.1167, s_seg: 0.1012
+11-10-26 17:09:40: Val - Source 14, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0163, seg loss: 1.5151, total loss: 1.3798
+11-10-26 17:09:40: Val - Source 14, Tomato seg: loss=1.4876, mIoU=0.2678, acc=0.6051
+11-10-26 17:09:40: Val - Source 14, Maize seg: loss=1.5251, mIoU=0.1888, acc=0.5393
+11-10-26 17:09:41: Eval(no-train) - Target 14, acc: 0.8730, avg acc: 0.8261, cls loss: 1.3029  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:44: Trn - Source 15, cls loss: 0.0528, seg loss: 1.5837, kendall s_cls: -0.1249, s_seg: 0.1073
+11-10-26 17:09:44: Val - Source 15, cls acc: 0.9333, cls avg acc: 0.9545, cls loss: 0.1400, seg loss: 1.5020, total loss: 1.4990
+11-10-26 17:09:44: Val - Source 15, Tomato seg: loss=1.3714, mIoU=0.2636, acc=0.6632
+11-10-26 17:09:44: Val - Source 15, Maize seg: loss=1.5495, mIoU=0.1787, acc=0.4986
+11-10-26 17:09:45: Eval(no-train) - Target 15, acc: 0.8571, avg acc: 0.8043, cls loss: 1.3954  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:48: Trn - Source 16, cls loss: 0.1010, seg loss: 1.6573, kendall s_cls: -0.1329, s_seg: 0.1136
+11-10-26 17:09:49: Val - Source 16, cls acc: 0.9333, cls avg acc: 0.9545, cls loss: 0.1780, seg loss: 1.4495, total loss: 1.4875
+11-10-26 17:09:49: Val - Source 16, Tomato seg: loss=1.3059, mIoU=0.2450, acc=0.6342
+11-10-26 17:09:49: Val - Source 16, Maize seg: loss=1.5017, mIoU=0.1976, acc=0.5554
+11-10-26 17:09:49: Eval(no-train) - Target 16, acc: 0.8730, avg acc: 0.8261, cls loss: 2.3187  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:53: Trn - Source 17, cls loss: 0.1062, seg loss: 1.5182, kendall s_cls: -0.1401, s_seg: 0.1195
+11-10-26 17:09:53: Val - Source 17, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.1039, seg loss: 1.4251, total loss: 1.3738
+11-10-26 17:09:53: Val - Source 17, Tomato seg: loss=1.4760, mIoU=0.1049, acc=0.2344
+11-10-26 17:09:53: Val - Source 17, Maize seg: loss=1.4066, mIoU=0.1991, acc=0.5344
+11-10-26 17:09:54: Eval(no-train) - Target 17, acc: 0.8730, avg acc: 0.8446, cls loss: 0.4826  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:09:57: Trn - Source 18, cls loss: 0.0552, seg loss: 1.5863, kendall s_cls: -0.1476, s_seg: 0.1253
+11-10-26 17:09:58: Val - Source 18, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0439, seg loss: 1.6512, total loss: 1.4966
+11-10-26 17:09:58: Val - Source 18, Tomato seg: loss=1.7538, mIoU=0.2061, acc=0.4403
+11-10-26 17:09:58: Val - Source 18, Maize seg: loss=1.6139, mIoU=0.1905, acc=0.5226
+11-10-26 17:09:58: Eval(no-train) - Target 18, acc: 0.8413, avg acc: 0.8011, cls loss: 0.5007  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:01: Trn - Source 19, cls loss: 0.0341, seg loss: 1.4992, kendall s_cls: -0.1553, s_seg: 0.1309
+11-10-26 17:10:02: Val - Source 19, cls acc: 0.9778, cls avg acc: 0.9848, cls loss: 0.0903, seg loss: 1.4302, total loss: 1.3479
+11-10-26 17:10:02: Val - Source 19, Tomato seg: loss=1.3839, mIoU=0.2413, acc=0.5295
+11-10-26 17:10:02: Val - Source 19, Maize seg: loss=1.4470, mIoU=0.2146, acc=0.6376
+11-10-26 17:10:03: Eval(no-train) - Target 19, acc: 0.8730, avg acc: 0.8261, cls loss: 1.4245  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:06: Trn - Source 20, cls loss: 0.0343, seg loss: 1.5055, kendall s_cls: -0.1633, s_seg: 0.1364
+11-10-26 17:10:07: Val - Source 20, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.0498, seg loss: 1.4379, total loss: 1.2998
+11-10-26 17:10:07: Val - Source 20, Tomato seg: loss=1.3789, mIoU=0.1766, acc=0.3872
+11-10-26 17:10:07: Val - Source 20, Maize seg: loss=1.4593, mIoU=0.2116, acc=0.5874
+11-10-26 17:10:07: Eval(no-train) - Target 20, acc: 0.8730, avg acc: 0.8261, cls loss: 0.8716  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:10: Trn - Source 21, cls loss: 0.0654, seg loss: 1.5064, kendall s_cls: -0.1709, s_seg: 0.1419
+11-10-26 17:10:11: Val - Source 21, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.0887, seg loss: 1.6559, total loss: 1.5276
+11-10-26 17:10:11: Val - Source 21, Tomato seg: loss=1.5659, mIoU=0.0694, acc=0.1479
+11-10-26 17:10:11: Val - Source 21, Maize seg: loss=1.6887, mIoU=0.1488, acc=0.4124
+11-10-26 17:10:12: Eval(no-train) - Target 21, acc: 0.9048, avg acc: 0.8696, cls loss: 0.3992  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:15: Trn - Source 22, cls loss: 0.0336, seg loss: 1.4653, kendall s_cls: -0.1786, s_seg: 0.1471
+11-10-26 17:10:15: Val - Source 22, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0136, seg loss: 1.5648, total loss: 1.3513
+11-10-26 17:10:15: Val - Source 22, Tomato seg: loss=1.3286, mIoU=0.2460, acc=0.5861
+11-10-26 17:10:15: Val - Source 22, Maize seg: loss=1.6507, mIoU=0.1642, acc=0.4399
+11-10-26 17:10:16: Eval(no-train) - Target 22, acc: 0.8730, avg acc: 0.8261, cls loss: 0.8734  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:19: Trn - Source 23, cls loss: 0.0212, seg loss: 1.4770, kendall s_cls: -0.1863, s_seg: 0.1522
+11-10-26 17:10:20: Val - Source 23, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0116, seg loss: 1.4168, total loss: 1.2138
+11-10-26 17:10:20: Val - Source 23, Tomato seg: loss=1.3346, mIoU=0.2406, acc=0.5396
+11-10-26 17:10:20: Val - Source 23, Maize seg: loss=1.4468, mIoU=0.1957, acc=0.5453
+11-10-26 17:10:20: Eval(no-train) - Target 23, acc: 0.8730, avg acc: 0.8261, cls loss: 1.1523  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:24: Trn - Source 24, cls loss: 0.0234, seg loss: 1.4325, kendall s_cls: -0.1940, s_seg: 0.1571
+11-10-26 17:10:24: Val - Source 24, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0055, seg loss: 1.5538, total loss: 1.3160
+11-10-26 17:10:24: Val - Source 24, Tomato seg: loss=1.5622, mIoU=0.1040, acc=0.2438
+11-10-26 17:10:24: Val - Source 24, Maize seg: loss=1.5507, mIoU=0.1999, acc=0.5613
+11-10-26 17:10:25: Eval(no-train) - Target 24, acc: 0.9048, avg acc: 0.8696, cls loss: 0.6162  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:28: Trn - Source 25, cls loss: 0.0943, seg loss: 1.4438, kendall s_cls: -0.2010, s_seg: 0.1621
+11-10-26 17:10:29: Val - Source 25, cls acc: 0.8444, cls avg acc: 0.7083, cls loss: 0.5153, seg loss: 1.5661, total loss: 1.9424
+11-10-26 17:10:29: Val - Source 25, Tomato seg: loss=1.8024, mIoU=0.0077, acc=0.0224
+11-10-26 17:10:29: Val - Source 25, Maize seg: loss=1.4802, mIoU=0.2224, acc=0.6771
+11-10-26 17:10:29: Eval(no-train) - Target 25, acc: 0.5556, avg acc: 0.6315, cls loss: 1.8878  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:32: Trn - Source 26, cls loss: 0.0435, seg loss: 1.5180, kendall s_cls: -0.2079, s_seg: 0.1669
+11-10-26 17:10:33: Val - Source 26, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0052, seg loss: 1.3161, total loss: 1.0996
+11-10-26 17:10:33: Val - Source 26, Tomato seg: loss=1.3267, mIoU=0.1605, acc=0.3633
+11-10-26 17:10:33: Val - Source 26, Maize seg: loss=1.3122, mIoU=0.2372, acc=0.6850
+11-10-26 17:10:34: Eval(no-train) - Target 26, acc: 0.8730, avg acc: 0.8261, cls loss: 1.4110  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:37: Trn - Source 27, cls loss: 0.0563, seg loss: 1.5579, kendall s_cls: -0.2148, s_seg: 0.1720
+11-10-26 17:10:37: Val - Source 27, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0068, seg loss: 1.3290, total loss: 1.1060
+11-10-26 17:10:37: Val - Source 27, Tomato seg: loss=1.2461, mIoU=0.2863, acc=0.6790
+11-10-26 17:10:37: Val - Source 27, Maize seg: loss=1.3591, mIoU=0.2106, acc=0.5744
+11-10-26 17:10:38: Eval(no-train) - Target 27, acc: 0.8730, avg acc: 0.8261, cls loss: 1.3911  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:41: Trn - Source 28, cls loss: 0.0465, seg loss: 1.5023, kendall s_cls: -0.2217, s_seg: 0.1769
+11-10-26 17:10:42: Val - Source 28, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0110, seg loss: 1.3890, total loss: 1.1552
+11-10-26 17:10:42: Val - Source 28, Tomato seg: loss=1.3445, mIoU=0.2412, acc=0.5356
+11-10-26 17:10:42: Val - Source 28, Maize seg: loss=1.4052, mIoU=0.2078, acc=0.5526
+11-10-26 17:10:42: Eval(no-train) - Target 28, acc: 0.8730, avg acc: 0.8261, cls loss: 0.9350  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:46: Trn - Source 29, cls loss: 0.0441, seg loss: 1.5152, kendall s_cls: -0.2284, s_seg: 0.1819
+11-10-26 17:10:46: Val - Source 29, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0132, seg loss: 1.4516, total loss: 1.2035
+11-10-26 17:10:46: Val - Source 29, Tomato seg: loss=1.4292, mIoU=0.1619, acc=0.3708
+11-10-26 17:10:46: Val - Source 29, Maize seg: loss=1.4598, mIoU=0.2126, acc=0.6045
+11-10-26 17:10:47: Eval(no-train) - Target 29, acc: 0.8730, avg acc: 0.8261, cls loss: 1.4436  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:50: Trn - Source 30, cls loss: 0.0221, seg loss: 1.4548, kendall s_cls: -0.2352, s_seg: 0.1867
+11-10-26 17:10:51: Val - Source 30, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.1210, seg loss: 1.5362, total loss: 1.4035
+11-10-26 17:10:51: Val - Source 30, Tomato seg: loss=1.4493, mIoU=0.1633, acc=0.4647
+11-10-26 17:10:51: Val - Source 30, Maize seg: loss=1.5678, mIoU=0.1942, acc=0.5706
+11-10-26 17:10:51: Eval(no-train) - Target 30, acc: 0.9048, avg acc: 0.8696, cls loss: 0.9377  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:54: Trn - Source 31, cls loss: 0.0470, seg loss: 1.4618, kendall s_cls: -0.2419, s_seg: 0.1912
+11-10-26 17:10:55: Val - Source 31, cls acc: 0.8889, cls avg acc: 0.7917, cls loss: 0.2395, seg loss: 1.5255, total loss: 1.5398
+11-10-26 17:10:55: Val - Source 31, Tomato seg: loss=1.6343, mIoU=0.0427, acc=0.1004
+11-10-26 17:10:55: Val - Source 31, Maize seg: loss=1.4860, mIoU=0.2002, acc=0.5431
+11-10-26 17:10:55: Eval(no-train) - Target 31, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5998  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:10:59: Trn - Source 32, cls loss: 0.0730, seg loss: 1.4280, kendall s_cls: -0.2481, s_seg: 0.1956
+11-10-26 17:10:59: Val - Source 32, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0094, seg loss: 1.3986, total loss: 1.1359
+11-10-26 17:10:59: Val - Source 32, Tomato seg: loss=1.2740, mIoU=0.2220, acc=0.4987
+11-10-26 17:10:59: Val - Source 32, Maize seg: loss=1.4439, mIoU=0.2036, acc=0.5500
+11-10-26 17:11:00: Eval(no-train) - Target 32, acc: 0.8889, avg acc: 0.8478, cls loss: 1.0421  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:03: Trn - Source 33, cls loss: 0.0333, seg loss: 1.4093, kendall s_cls: -0.2543, s_seg: 0.1998
+11-10-26 17:11:04: Val - Source 33, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0146, seg loss: 1.4388, total loss: 1.1699
+11-10-26 17:11:04: Val - Source 33, Tomato seg: loss=1.2865, mIoU=0.1961, acc=0.4367
+11-10-26 17:11:04: Val - Source 33, Maize seg: loss=1.4943, mIoU=0.1908, acc=0.5193
+11-10-26 17:11:04: Eval(no-train) - Target 33, acc: 0.8730, avg acc: 0.8261, cls loss: 1.4016  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:07: Trn - Source 34, cls loss: 0.0246, seg loss: 1.4076, kendall s_cls: -0.2605, s_seg: 0.2039
+11-10-26 17:11:08: Val - Source 34, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0314, seg loss: 1.3888, total loss: 1.1451
+11-10-26 17:11:08: Val - Source 34, Tomato seg: loss=1.3855, mIoU=0.1491, acc=0.3332
+11-10-26 17:11:08: Val - Source 34, Maize seg: loss=1.3900, mIoU=0.2137, acc=0.6042
+11-10-26 17:11:09: Eval(no-train) - Target 34, acc: 0.8730, avg acc: 0.8261, cls loss: 1.2188  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:12: Trn - Source 35, cls loss: 0.0866, seg loss: 1.4199, kendall s_cls: -0.2663, s_seg: 0.2079
+11-10-26 17:11:12: Val - Source 35, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0063, seg loss: 1.3349, total loss: 1.0633
+11-10-26 17:11:12: Val - Source 35, Tomato seg: loss=1.3594, mIoU=0.1746, acc=0.3841
+11-10-26 17:11:12: Val - Source 35, Maize seg: loss=1.3260, mIoU=0.2336, acc=0.6486
+11-10-26 17:11:13: Eval(no-train) - Target 35, acc: 0.8730, avg acc: 0.8261, cls loss: 0.9669  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:16: Trn - Source 36, cls loss: 0.0170, seg loss: 1.4378, kendall s_cls: -0.2722, s_seg: 0.2119
+11-10-26 17:11:17: Val - Source 36, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0302, seg loss: 1.3746, total loss: 1.1216
+11-10-26 17:11:17: Val - Source 36, Tomato seg: loss=1.3483, mIoU=0.1996, acc=0.4350
+11-10-26 17:11:17: Val - Source 36, Maize seg: loss=1.3842, mIoU=0.2321, acc=0.6582
+11-10-26 17:11:17: Eval(no-train) - Target 36, acc: 0.8730, avg acc: 0.8261, cls loss: 0.8380  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:21: Trn - Source 37, cls loss: 0.0350, seg loss: 1.4412, kendall s_cls: -0.2780, s_seg: 0.2158
+11-10-26 17:11:21: Val - Source 37, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.1000, seg loss: 1.6907, total loss: 1.4634
+11-10-26 17:11:21: Val - Source 37, Tomato seg: loss=1.6638, mIoU=0.0347, acc=0.0777
+11-10-26 17:11:21: Val - Source 37, Maize seg: loss=1.7004, mIoU=0.1755, acc=0.5427
+11-10-26 17:11:22: Eval(no-train) - Target 37, acc: 0.7778, avg acc: 0.7696, cls loss: 0.5103  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:25: Trn - Source 38, cls loss: 0.0294, seg loss: 1.3995, kendall s_cls: -0.2838, s_seg: 0.2196
+11-10-26 17:11:26: Val - Source 38, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0354, seg loss: 1.3669, total loss: 1.1124
+11-10-26 17:11:26: Val - Source 38, Tomato seg: loss=1.4247, mIoU=0.1360, acc=0.2977
+11-10-26 17:11:26: Val - Source 38, Maize seg: loss=1.3459, mIoU=0.2194, acc=0.5970
+11-10-26 17:11:26: Eval(no-train) - Target 38, acc: 0.8730, avg acc: 0.8446, cls loss: 0.6607  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:29: Trn - Source 39, cls loss: 0.0321, seg loss: 1.4824, kendall s_cls: -0.2895, s_seg: 0.2234
+11-10-26 17:11:30: Val - Source 39, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0114, seg loss: 1.3856, total loss: 1.0903
+11-10-26 17:11:30: Val - Source 39, Tomato seg: loss=1.2901, mIoU=0.2140, acc=0.4594
+11-10-26 17:11:30: Val - Source 39, Maize seg: loss=1.4203, mIoU=0.2016, acc=0.5436
+11-10-26 17:11:31: Eval(no-train) - Target 39, acc: 0.8889, avg acc: 0.8571, cls loss: 0.8686  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:34: Trn - Source 40, cls loss: 0.0376, seg loss: 1.4087, kendall s_cls: -0.2950, s_seg: 0.2270
+11-10-26 17:11:34: Val - Source 40, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0064, seg loss: 1.2953, total loss: 1.0068
+11-10-26 17:11:34: Val - Source 40, Tomato seg: loss=1.2965, mIoU=0.2199, acc=0.4743
+11-10-26 17:11:34: Val - Source 40, Maize seg: loss=1.2949, mIoU=0.2415, acc=0.6542
+11-10-26 17:11:35: Eval(no-train) - Target 40, acc: 0.8571, avg acc: 0.8321, cls loss: 0.7821  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:38: Trn - Source 41, cls loss: 0.0102, seg loss: 1.4057, kendall s_cls: -0.3005, s_seg: 0.2306
+11-10-26 17:11:39: Val - Source 41, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0040, seg loss: 1.2634, total loss: 0.9738
+11-10-26 17:11:39: Val - Source 41, Tomato seg: loss=1.1978, mIoU=0.2697, acc=0.6081
+11-10-26 17:11:39: Val - Source 41, Maize seg: loss=1.2873, mIoU=0.2386, acc=0.6478
+11-10-26 17:11:39: Eval(no-train) - Target 41, acc: 0.8889, avg acc: 0.8478, cls loss: 1.0511  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:43: Trn - Source 42, cls loss: 0.0570, seg loss: 1.3925, kendall s_cls: -0.3057, s_seg: 0.2340
+11-10-26 17:11:43: Val - Source 42, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0160, seg loss: 1.2628, total loss: 0.9852
+11-10-26 17:11:43: Val - Source 42, Tomato seg: loss=1.2336, mIoU=0.2386, acc=0.5317
+11-10-26 17:11:43: Val - Source 42, Maize seg: loss=1.2734, mIoU=0.2346, acc=0.6540
+11-10-26 17:11:44: Eval(no-train) - Target 42, acc: 0.8889, avg acc: 0.8478, cls loss: 1.0246  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:47: Trn - Source 43, cls loss: 0.0174, seg loss: 1.4098, kendall s_cls: -0.3108, s_seg: 0.2373
+11-10-26 17:11:48: Val - Source 43, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0082, seg loss: 1.2100, total loss: 0.9288
+11-10-26 17:11:48: Val - Source 43, Tomato seg: loss=1.2461, mIoU=0.2716, acc=0.6175
+11-10-26 17:11:48: Val - Source 43, Maize seg: loss=1.1969, mIoU=0.2603, acc=0.6994
+11-10-26 17:11:48: Eval(no-train) - Target 43, acc: 0.8730, avg acc: 0.8261, cls loss: 1.4565  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:51: Trn - Source 44, cls loss: 0.0367, seg loss: 1.3657, kendall s_cls: -0.3158, s_seg: 0.2405
+11-10-26 17:11:52: Val - Source 44, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0017, seg loss: 1.2367, total loss: 0.9371
+11-10-26 17:11:52: Val - Source 44, Tomato seg: loss=1.3113, mIoU=0.2684, acc=0.6196
+11-10-26 17:11:52: Val - Source 44, Maize seg: loss=1.2096, mIoU=0.2501, acc=0.6711
+11-10-26 17:11:53: Eval(no-train) - Target 44, acc: 0.8889, avg acc: 0.8478, cls loss: 0.9270  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:11:56: Trn - Source 45, cls loss: 0.0203, seg loss: 1.3822, kendall s_cls: -0.3206, s_seg: 0.2436
+11-10-26 17:11:56: Val - Source 45, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0023, seg loss: 1.2816, total loss: 0.9692
+11-10-26 17:11:56: Val - Source 45, Tomato seg: loss=1.3488, mIoU=0.2550, acc=0.5899
+11-10-26 17:11:56: Val - Source 45, Maize seg: loss=1.2572, mIoU=0.2510, acc=0.6631
+11-10-26 17:11:57: Eval(no-train) - Target 45, acc: 0.8730, avg acc: 0.8261, cls loss: 1.0441  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:00: Trn - Source 46, cls loss: 0.0122, seg loss: 1.3825, kendall s_cls: -0.3255, s_seg: 0.2466
+11-10-26 17:12:01: Val - Source 46, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0024, seg loss: 1.3805, total loss: 1.0426
+11-10-26 17:12:01: Val - Source 46, Tomato seg: loss=1.3478, mIoU=0.1941, acc=0.4353
+11-10-26 17:12:01: Val - Source 46, Maize seg: loss=1.3923, mIoU=0.2025, acc=0.5089
+11-10-26 17:12:01: Eval(no-train) - Target 46, acc: 0.8730, avg acc: 0.8261, cls loss: 1.1608  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:05: Trn - Source 47, cls loss: 0.0596, seg loss: 1.3749, kendall s_cls: -0.3301, s_seg: 0.2495
+11-10-26 17:12:05: Val - Source 47, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0090, seg loss: 1.3411, total loss: 1.0172
+11-10-26 17:12:05: Val - Source 47, Tomato seg: loss=1.3554, mIoU=0.1579, acc=0.3538
+11-10-26 17:12:05: Val - Source 47, Maize seg: loss=1.3359, mIoU=0.2250, acc=0.5769
+11-10-26 17:12:06: Eval(no-train) - Target 47, acc: 0.9048, avg acc: 0.8696, cls loss: 0.6352  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:09: Trn - Source 48, cls loss: 0.0253, seg loss: 1.3476, kendall s_cls: -0.3345, s_seg: 0.2522
+11-10-26 17:12:10: Val - Source 48, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0276, seg loss: 1.2316, total loss: 0.9545
+11-10-26 17:12:10: Val - Source 48, Tomato seg: loss=1.3471, mIoU=0.1643, acc=0.3751
+11-10-26 17:12:10: Val - Source 48, Maize seg: loss=1.1895, mIoU=0.2453, acc=0.6610
+11-10-26 17:12:10: Eval(no-train) - Target 48, acc: 0.7302, avg acc: 0.7413, cls loss: 0.6302  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:13: Trn - Source 49, cls loss: 0.0198, seg loss: 1.3169, kendall s_cls: -0.3388, s_seg: 0.2548
+11-10-26 17:12:14: Val - Source 49, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0064, seg loss: 1.1758, total loss: 0.8783
+11-10-26 17:12:14: Val - Source 49, Tomato seg: loss=1.2235, mIoU=0.2320, acc=0.5416
+11-10-26 17:12:14: Val - Source 49, Maize seg: loss=1.1585, mIoU=0.2651, acc=0.7126
+11-10-26 17:12:15: Eval(no-train) - Target 49, acc: 0.8730, avg acc: 0.8261, cls loss: 0.9875  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:18: Trn - Source 50, cls loss: 0.0247, seg loss: 1.3442, kendall s_cls: -0.3430, s_seg: 0.2574
+11-10-26 17:12:18: Val - Source 50, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0053, seg loss: 1.2393, total loss: 0.9228
+11-10-26 17:12:18: Val - Source 50, Tomato seg: loss=1.1983, mIoU=0.2428, acc=0.5615
+11-10-26 17:12:18: Val - Source 50, Maize seg: loss=1.2543, mIoU=0.2619, acc=0.6775
+11-10-26 17:12:19: Eval(no-train) - Target 50, acc: 0.8730, avg acc: 0.8261, cls loss: 1.2883  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:22: Trn - Source 51, cls loss: 0.0258, seg loss: 1.2894, kendall s_cls: -0.3471, s_seg: 0.2598
+11-10-26 17:12:23: Val - Source 51, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0037, seg loss: 1.1691, total loss: 0.8633
+11-10-26 17:12:23: Val - Source 51, Tomato seg: loss=1.2042, mIoU=0.2510, acc=0.5643
+11-10-26 17:12:23: Val - Source 51, Maize seg: loss=1.1564, mIoU=0.2688, acc=0.6980
+11-10-26 17:12:23: Eval(no-train) - Target 51, acc: 0.8730, avg acc: 0.8261, cls loss: 1.3066  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:27: Trn - Source 52, cls loss: 0.0189, seg loss: 1.3031, kendall s_cls: -0.3510, s_seg: 0.2620
+11-10-26 17:12:27: Val - Source 52, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0096, seg loss: 1.1792, total loss: 0.8765
+11-10-26 17:12:27: Val - Source 52, Tomato seg: loss=1.2615, mIoU=0.1957, acc=0.4270
+11-10-26 17:12:27: Val - Source 52, Maize seg: loss=1.1492, mIoU=0.2609, acc=0.6890
+11-10-26 17:12:28: Eval(no-train) - Target 52, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7419  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:31: Trn - Source 53, cls loss: 0.0290, seg loss: 1.3360, kendall s_cls: -0.3548, s_seg: 0.2643
+11-10-26 17:12:32: Val - Source 53, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0021, seg loss: 1.2602, total loss: 0.9253
+11-10-26 17:12:32: Val - Source 53, Tomato seg: loss=1.2372, mIoU=0.2418, acc=0.5278
+11-10-26 17:12:32: Val - Source 53, Maize seg: loss=1.2686, mIoU=0.2660, acc=0.7195
+11-10-26 17:12:32: Eval(no-train) - Target 53, acc: 0.8730, avg acc: 0.8261, cls loss: 1.2102  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:35: Trn - Source 54, cls loss: 0.0064, seg loss: 1.2951, kendall s_cls: -0.3586, s_seg: 0.2664
+11-10-26 17:12:36: Val - Source 54, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0020, seg loss: 1.1736, total loss: 0.8560
+11-10-26 17:12:36: Val - Source 54, Tomato seg: loss=1.2206, mIoU=0.2166, acc=0.4943
+11-10-26 17:12:36: Val - Source 54, Maize seg: loss=1.1566, mIoU=0.2606, acc=0.6908
+11-10-26 17:12:37: Eval(no-train) - Target 54, acc: 0.8730, avg acc: 0.8261, cls loss: 1.1478  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:40: Trn - Source 55, cls loss: 0.0436, seg loss: 1.3416, kendall s_cls: -0.3621, s_seg: 0.2685
+11-10-26 17:12:40: Val - Source 55, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0047, seg loss: 1.2483, total loss: 0.9144
+11-10-26 17:12:40: Val - Source 55, Tomato seg: loss=1.2264, mIoU=0.2481, acc=0.5535
+11-10-26 17:12:40: Val - Source 55, Maize seg: loss=1.2563, mIoU=0.2467, acc=0.6602
+11-10-26 17:12:41: Eval(no-train) - Target 55, acc: 0.8889, avg acc: 0.8478, cls loss: 0.9267  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:44: Trn - Source 56, cls loss: 0.0598, seg loss: 1.4152, kendall s_cls: -0.3653, s_seg: 0.2706
+11-10-26 17:12:45: Val - Source 56, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0402, seg loss: 1.1835, total loss: 0.9136
+11-10-26 17:12:45: Val - Source 56, Tomato seg: loss=1.3694, mIoU=0.1799, acc=0.3983
+11-10-26 17:12:45: Val - Source 56, Maize seg: loss=1.1160, mIoU=0.2780, acc=0.7336
+11-10-26 17:12:45: Eval(no-train) - Target 56, acc: 0.8730, avg acc: 0.8446, cls loss: 0.4523  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:49: Trn - Source 57, cls loss: 0.0303, seg loss: 1.2784, kendall s_cls: -0.3684, s_seg: 0.2726
+11-10-26 17:12:49: Val - Source 57, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0331, seg loss: 1.1989, total loss: 0.9127
+11-10-26 17:12:49: Val - Source 57, Tomato seg: loss=1.4131, mIoU=0.1466, acc=0.3254
+11-10-26 17:12:49: Val - Source 57, Maize seg: loss=1.1211, mIoU=0.2723, acc=0.7046
+11-10-26 17:12:50: Eval(no-train) - Target 57, acc: 0.8889, avg acc: 0.8571, cls loss: 0.3592  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:53: Trn - Source 58, cls loss: 0.0189, seg loss: 1.2623, kendall s_cls: -0.3715, s_seg: 0.2744
+11-10-26 17:12:54: Val - Source 58, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0035, seg loss: 1.2255, total loss: 0.8880
+11-10-26 17:12:54: Val - Source 58, Tomato seg: loss=1.2954, mIoU=0.2116, acc=0.4491
+11-10-26 17:12:54: Val - Source 58, Maize seg: loss=1.2001, mIoU=0.2574, acc=0.6581
+11-10-26 17:12:54: Eval(no-train) - Target 58, acc: 0.8730, avg acc: 0.8261, cls loss: 0.6341  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:12:57: Trn - Source 59, cls loss: 0.0226, seg loss: 1.3094, kendall s_cls: -0.3745, s_seg: 0.2762
+11-10-26 17:12:58: Val - Source 59, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0019, seg loss: 1.2853, total loss: 0.9287
+11-10-26 17:12:58: Val - Source 59, Tomato seg: loss=1.2468, mIoU=0.2374, acc=0.5192
+11-10-26 17:12:58: Val - Source 59, Maize seg: loss=1.2993, mIoU=0.2424, acc=0.6305
+11-10-26 17:12:58: Eval(no-train) - Target 59, acc: 0.8889, avg acc: 0.8478, cls loss: 0.5397  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:02: Trn - Source 60, cls loss: 0.0381, seg loss: 1.2720, kendall s_cls: -0.3773, s_seg: 0.2778
+11-10-26 17:13:02: Val - Source 60, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.1836, total loss: 0.8481
+11-10-26 17:13:02: Val - Source 60, Tomato seg: loss=1.1501, mIoU=0.2825, acc=0.6274
+11-10-26 17:13:02: Val - Source 60, Maize seg: loss=1.1958, mIoU=0.2779, acc=0.7018
+11-10-26 17:13:03: Eval(no-train) - Target 60, acc: 0.8730, avg acc: 0.8261, cls loss: 0.9288  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:06: Trn - Source 61, cls loss: 0.0319, seg loss: 1.2731, kendall s_cls: -0.3800, s_seg: 0.2794
+11-10-26 17:13:07: Val - Source 61, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.1317, total loss: 0.8071
+11-10-26 17:13:07: Val - Source 61, Tomato seg: loss=1.1268, mIoU=0.2932, acc=0.6599
+11-10-26 17:13:07: Val - Source 61, Maize seg: loss=1.1335, mIoU=0.2855, acc=0.7382
+11-10-26 17:13:07: Eval(no-train) - Target 61, acc: 0.8730, avg acc: 0.8261, cls loss: 1.0819  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:11: Trn - Source 62, cls loss: 0.0085, seg loss: 1.2422, kendall s_cls: -0.3826, s_seg: 0.2809
+11-10-26 17:13:11: Val - Source 62, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.1161, total loss: 0.7934
+11-10-26 17:13:11: Val - Source 62, Tomato seg: loss=1.1197, mIoU=0.2941, acc=0.6542
+11-10-26 17:13:11: Val - Source 62, Maize seg: loss=1.1148, mIoU=0.2949, acc=0.7475
+11-10-26 17:13:12: Eval(no-train) - Target 62, acc: 0.8730, avg acc: 0.8261, cls loss: 1.1299  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:15: Trn - Source 63, cls loss: 0.0073, seg loss: 1.2315, kendall s_cls: -0.3852, s_seg: 0.2822
+11-10-26 17:13:16: Val - Source 63, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0017, seg loss: 1.1447, total loss: 0.8142
+11-10-26 17:13:16: Val - Source 63, Tomato seg: loss=1.1617, mIoU=0.2517, acc=0.5582
+11-10-26 17:13:16: Val - Source 63, Maize seg: loss=1.1385, mIoU=0.2957, acc=0.7323
+11-10-26 17:13:16: Eval(no-train) - Target 63, acc: 0.8889, avg acc: 0.8478, cls loss: 0.9019  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:19: Trn - Source 64, cls loss: 0.0055, seg loss: 1.2481, kendall s_cls: -0.3877, s_seg: 0.2835
+11-10-26 17:13:20: Val - Source 64, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0021, seg loss: 1.1836, total loss: 0.8423
+11-10-26 17:13:20: Val - Source 64, Tomato seg: loss=1.1506, mIoU=0.2690, acc=0.5945
+11-10-26 17:13:20: Val - Source 64, Maize seg: loss=1.1956, mIoU=0.2764, acc=0.6873
+11-10-26 17:13:21: Eval(no-train) - Target 64, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7297  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:24: Trn - Source 65, cls loss: 0.0128, seg loss: 1.2316, kendall s_cls: -0.3901, s_seg: 0.2848
+11-10-26 17:13:24: Val - Source 65, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0018, seg loss: 1.1634, total loss: 0.8250
+11-10-26 17:13:24: Val - Source 65, Tomato seg: loss=1.1411, mIoU=0.2754, acc=0.6047
+11-10-26 17:13:24: Val - Source 65, Maize seg: loss=1.1714, mIoU=0.2810, acc=0.7081
+11-10-26 17:13:25: Eval(no-train) - Target 65, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5980  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:28: Trn - Source 66, cls loss: 0.0164, seg loss: 1.2448, kendall s_cls: -0.3923, s_seg: 0.2859
+11-10-26 17:13:29: Val - Source 66, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.1379, total loss: 0.8031
+11-10-26 17:13:29: Val - Source 66, Tomato seg: loss=1.1861, mIoU=0.2562, acc=0.5577
+11-10-26 17:13:29: Val - Source 66, Maize seg: loss=1.1203, mIoU=0.3001, acc=0.7464
+11-10-26 17:13:29: Eval(no-train) - Target 66, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5358  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:33: Trn - Source 67, cls loss: 0.0099, seg loss: 1.2320, kendall s_cls: -0.3944, s_seg: 0.2870
+11-10-26 17:13:33: Val - Source 67, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.0869, total loss: 0.7637
+11-10-26 17:13:33: Val - Source 67, Tomato seg: loss=1.1466, mIoU=0.2659, acc=0.5809
+11-10-26 17:13:33: Val - Source 67, Maize seg: loss=1.0652, mIoU=0.2959, acc=0.7505
+11-10-26 17:13:34: Eval(no-train) - Target 67, acc: 0.9048, avg acc: 0.8696, cls loss: 0.6030  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:37: Trn - Source 68, cls loss: 0.0050, seg loss: 1.2194, kendall s_cls: -0.3964, s_seg: 0.2881
+11-10-26 17:13:37: Val - Source 68, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.0823, total loss: 0.7586
+11-10-26 17:13:37: Val - Source 68, Tomato seg: loss=1.1536, mIoU=0.2616, acc=0.5698
+11-10-26 17:13:37: Val - Source 68, Maize seg: loss=1.0563, mIoU=0.3064, acc=0.7551
+11-10-26 17:13:38: Eval(no-train) - Target 68, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5269  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:41: Trn - Source 69, cls loss: 0.0064, seg loss: 1.2200, kendall s_cls: -0.3983, s_seg: 0.2890
+11-10-26 17:13:42: Val - Source 69, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.0689, total loss: 0.7472
+11-10-26 17:13:42: Val - Source 69, Tomato seg: loss=1.1469, mIoU=0.2714, acc=0.5910
+11-10-26 17:13:42: Val - Source 69, Maize seg: loss=1.0405, mIoU=0.3041, acc=0.7515
+11-10-26 17:13:43: Eval(no-train) - Target 69, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5684  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:46: Trn - Source 70, cls loss: 0.0255, seg loss: 1.2142, kendall s_cls: -0.4000, s_seg: 0.2899
+11-10-26 17:13:46: Val - Source 70, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.0792, total loss: 0.7538
+11-10-26 17:13:46: Val - Source 70, Tomato seg: loss=1.1656, mIoU=0.2672, acc=0.5881
+11-10-26 17:13:46: Val - Source 70, Maize seg: loss=1.0478, mIoU=0.2995, acc=0.7536
+11-10-26 17:13:47: Eval(no-train) - Target 70, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5946  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:50: Trn - Source 71, cls loss: 0.0044, seg loss: 1.2543, kendall s_cls: -0.4017, s_seg: 0.2908
+11-10-26 17:13:51: Val - Source 71, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0997, total loss: 0.7678
+11-10-26 17:13:51: Val - Source 71, Tomato seg: loss=1.1379, mIoU=0.2748, acc=0.6039
+11-10-26 17:13:51: Val - Source 71, Maize seg: loss=1.0858, mIoU=0.2917, acc=0.7236
+11-10-26 17:13:51: Eval(no-train) - Target 71, acc: 0.9048, avg acc: 0.8696, cls loss: 0.4665  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:55: Trn - Source 72, cls loss: 0.0167, seg loss: 1.2279, kendall s_cls: -0.4032, s_seg: 0.2917
+11-10-26 17:13:55: Val - Source 72, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.1352, total loss: 0.7938
+11-10-26 17:13:55: Val - Source 72, Tomato seg: loss=1.2219, mIoU=0.2426, acc=0.5252
+11-10-26 17:13:55: Val - Source 72, Maize seg: loss=1.1037, mIoU=0.2855, acc=0.7097
+11-10-26 17:13:56: Eval(no-train) - Target 72, acc: 0.8413, avg acc: 0.8196, cls loss: 0.4764  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:13:59: Trn - Source 73, cls loss: 0.0230, seg loss: 1.2527, kendall s_cls: -0.4046, s_seg: 0.2924
+11-10-26 17:13:59: Val - Source 73, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0982, total loss: 0.7654
+11-10-26 17:13:59: Val - Source 73, Tomato seg: loss=1.2099, mIoU=0.2488, acc=0.5325
+11-10-26 17:13:59: Val - Source 73, Maize seg: loss=1.0576, mIoU=0.3015, acc=0.7429
+11-10-26 17:14:00: Eval(no-train) - Target 73, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5208  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:03: Trn - Source 74, cls loss: 0.0253, seg loss: 1.2227, kendall s_cls: -0.4059, s_seg: 0.2932
+11-10-26 17:14:04: Val - Source 74, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0518, total loss: 0.7299
+11-10-26 17:14:04: Val - Source 74, Tomato seg: loss=1.1556, mIoU=0.2669, acc=0.5712
+11-10-26 17:14:04: Val - Source 74, Maize seg: loss=1.0140, mIoU=0.3120, acc=0.7532
+11-10-26 17:14:04: Eval(no-train) - Target 74, acc: 0.9048, avg acc: 0.8696, cls loss: 0.8317  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:08: Trn - Source 75, cls loss: 0.0059, seg loss: 1.2551, kendall s_cls: -0.4071, s_seg: 0.2939
+11-10-26 17:14:08: Val - Source 75, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0443, total loss: 0.7236
+11-10-26 17:14:08: Val - Source 75, Tomato seg: loss=1.1036, mIoU=0.2922, acc=0.6417
+11-10-26 17:14:08: Val - Source 75, Maize seg: loss=1.0227, mIoU=0.2922, acc=0.7347
+11-10-26 17:14:09: Eval(no-train) - Target 75, acc: 0.9048, avg acc: 0.8696, cls loss: 0.8714  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:12: Trn - Source 76, cls loss: 0.0045, seg loss: 1.2173, kendall s_cls: -0.4083, s_seg: 0.2945
+11-10-26 17:14:13: Val - Source 76, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.0416, total loss: 0.7205
+11-10-26 17:14:13: Val - Source 76, Tomato seg: loss=1.0856, mIoU=0.3023, acc=0.6679
+11-10-26 17:14:13: Val - Source 76, Maize seg: loss=1.0255, mIoU=0.2974, acc=0.7367
+11-10-26 17:14:13: Eval(no-train) - Target 76, acc: 0.8889, avg acc: 0.8478, cls loss: 0.8809  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:17: Trn - Source 77, cls loss: 0.0160, seg loss: 1.2166, kendall s_cls: -0.4094, s_seg: 0.2951
+11-10-26 17:14:17: Val - Source 77, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0654, total loss: 0.7378
+11-10-26 17:14:17: Val - Source 77, Tomato seg: loss=1.1106, mIoU=0.2839, acc=0.6161
+11-10-26 17:14:17: Val - Source 77, Maize seg: loss=1.0490, mIoU=0.2956, acc=0.7248
+11-10-26 17:14:18: Eval(no-train) - Target 77, acc: 0.8889, avg acc: 0.8478, cls loss: 0.8647  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:21: Trn - Source 78, cls loss: 0.0148, seg loss: 1.2150, kendall s_cls: -0.4103, s_seg: 0.2956
+11-10-26 17:14:21: Val - Source 78, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.0799, total loss: 0.7476
+11-10-26 17:14:21: Val - Source 78, Tomato seg: loss=1.1259, mIoU=0.2713, acc=0.5864
+11-10-26 17:14:21: Val - Source 78, Maize seg: loss=1.0632, mIoU=0.2901, acc=0.7173
+11-10-26 17:14:22: Eval(no-train) - Target 78, acc: 0.8889, avg acc: 0.8478, cls loss: 0.8885  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:25: Trn - Source 79, cls loss: 0.0083, seg loss: 1.1930, kendall s_cls: -0.4112, s_seg: 0.2961
+11-10-26 17:14:26: Val - Source 79, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0714, total loss: 0.7411
+11-10-26 17:14:26: Val - Source 79, Tomato seg: loss=1.1211, mIoU=0.2738, acc=0.5965
+11-10-26 17:14:26: Val - Source 79, Maize seg: loss=1.0534, mIoU=0.2906, acc=0.7246
+11-10-26 17:14:26: Eval(no-train) - Target 79, acc: 0.8889, avg acc: 0.8478, cls loss: 0.8817  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:30: Trn - Source 80, cls loss: 0.0283, seg loss: 1.2264, kendall s_cls: -0.4120, s_seg: 0.2965
+11-10-26 17:14:30: Val - Source 80, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.0466, total loss: 0.7220
+11-10-26 17:14:30: Val - Source 80, Tomato seg: loss=1.0967, mIoU=0.2862, acc=0.6253
+11-10-26 17:14:30: Val - Source 80, Maize seg: loss=1.0284, mIoU=0.2955, acc=0.7413
+11-10-26 17:14:31: Eval(no-train) - Target 80, acc: 0.9048, avg acc: 0.8696, cls loss: 0.9101  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:34: Trn - Source 81, cls loss: 0.0130, seg loss: 1.1749, kendall s_cls: -0.4127, s_seg: 0.2969
+11-10-26 17:14:35: Val - Source 81, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.0308, total loss: 0.7097
+11-10-26 17:14:35: Val - Source 81, Tomato seg: loss=1.0878, mIoU=0.2919, acc=0.6402
+11-10-26 17:14:35: Val - Source 81, Maize seg: loss=1.0101, mIoU=0.3044, acc=0.7489
+11-10-26 17:14:35: Eval(no-train) - Target 81, acc: 0.9048, avg acc: 0.8696, cls loss: 0.8268  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:38: Trn - Source 82, cls loss: 0.0025, seg loss: 1.2078, kendall s_cls: -0.4134, s_seg: 0.2972
+11-10-26 17:14:39: Val - Source 82, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.0369, total loss: 0.7135
+11-10-26 17:14:39: Val - Source 82, Tomato seg: loss=1.1009, mIoU=0.2872, acc=0.6268
+11-10-26 17:14:39: Val - Source 82, Maize seg: loss=1.0136, mIoU=0.3028, acc=0.7523
+11-10-26 17:14:40: Eval(no-train) - Target 82, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7873  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:43: Trn - Source 83, cls loss: 0.0556, seg loss: 1.1754, kendall s_cls: -0.4139, s_seg: 0.2975
+11-10-26 17:14:43: Val - Source 83, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0330, total loss: 0.7108
+11-10-26 17:14:43: Val - Source 83, Tomato seg: loss=1.1150, mIoU=0.2828, acc=0.6139
+11-10-26 17:14:43: Val - Source 83, Maize seg: loss=1.0032, mIoU=0.3054, acc=0.7543
+11-10-26 17:14:44: Eval(no-train) - Target 83, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7464  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:47: Trn - Source 84, cls loss: 0.0204, seg loss: 1.1696, kendall s_cls: -0.4144, s_seg: 0.2978
+11-10-26 17:14:48: Val - Source 84, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0376, total loss: 0.7138
+11-10-26 17:14:48: Val - Source 84, Tomato seg: loss=1.1274, mIoU=0.2807, acc=0.6008
+11-10-26 17:14:48: Val - Source 84, Maize seg: loss=1.0050, mIoU=0.3032, acc=0.7455
+11-10-26 17:14:48: Eval(no-train) - Target 84, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7038  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:52: Trn - Source 85, cls loss: 0.0034, seg loss: 1.1838, kendall s_cls: -0.4149, s_seg: 0.2981
+11-10-26 17:14:52: Val - Source 85, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.0354, total loss: 0.7115
+11-10-26 17:14:52: Val - Source 85, Tomato seg: loss=1.1329, mIoU=0.2792, acc=0.5970
+11-10-26 17:14:52: Val - Source 85, Maize seg: loss=0.9999, mIoU=0.3025, acc=0.7451
+11-10-26 17:14:53: Eval(no-train) - Target 85, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7155  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:14:56: Trn - Source 86, cls loss: 0.0098, seg loss: 1.2014, kendall s_cls: -0.4153, s_seg: 0.2983
+11-10-26 17:14:57: Val - Source 86, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.0355, total loss: 0.7114
+11-10-26 17:14:57: Val - Source 86, Tomato seg: loss=1.1221, mIoU=0.2828, acc=0.6059
+11-10-26 17:14:57: Val - Source 86, Maize seg: loss=1.0040, mIoU=0.3023, acc=0.7427
+11-10-26 17:14:57: Eval(no-train) - Target 86, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7116  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:00: Trn - Source 87, cls loss: 0.0327, seg loss: 1.1696, kendall s_cls: -0.4156, s_seg: 0.2984
+11-10-26 17:15:01: Val - Source 87, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0344, total loss: 0.7098
+11-10-26 17:15:01: Val - Source 87, Tomato seg: loss=1.1279, mIoU=0.2797, acc=0.6002
+11-10-26 17:15:01: Val - Source 87, Maize seg: loss=1.0003, mIoU=0.3012, acc=0.7453
+11-10-26 17:15:02: Eval(no-train) - Target 87, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7723  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:05: Trn - Source 88, cls loss: 0.0020, seg loss: 1.1799, kendall s_cls: -0.4159, s_seg: 0.2986
+11-10-26 17:15:05: Val - Source 88, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0292, total loss: 0.7059
+11-10-26 17:15:05: Val - Source 88, Tomato seg: loss=1.1196, mIoU=0.2830, acc=0.6061
+11-10-26 17:15:05: Val - Source 88, Maize seg: loss=0.9964, mIoU=0.3069, acc=0.7540
+11-10-26 17:15:06: Eval(no-train) - Target 88, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7746  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:09: Trn - Source 89, cls loss: 0.0469, seg loss: 1.1709, kendall s_cls: -0.4161, s_seg: 0.2987
+11-10-26 17:15:10: Val - Source 89, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.0265, total loss: 0.7038
+11-10-26 17:15:10: Val - Source 89, Tomato seg: loss=1.1177, mIoU=0.2851, acc=0.6115
+11-10-26 17:15:10: Val - Source 89, Maize seg: loss=0.9933, mIoU=0.3078, acc=0.7541
+11-10-26 17:15:10: Eval(no-train) - Target 89, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7478  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:14: Trn - Source 90, cls loss: 0.0039, seg loss: 1.1947, kendall s_cls: -0.4163, s_seg: 0.2988
+11-10-26 17:15:14: Val - Source 90, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.0259, total loss: 0.7034
+11-10-26 17:15:14: Val - Source 90, Tomato seg: loss=1.1082, mIoU=0.2859, acc=0.6174
+11-10-26 17:15:14: Val - Source 90, Maize seg: loss=0.9960, mIoU=0.3051, acc=0.7464
+11-10-26 17:15:15: Eval(no-train) - Target 90, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7340  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:18: Trn - Source 91, cls loss: 0.0087, seg loss: 1.1958, kendall s_cls: -0.4165, s_seg: 0.2989
+11-10-26 17:15:19: Val - Source 91, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.0259, total loss: 0.7035
+11-10-26 17:15:19: Val - Source 91, Tomato seg: loss=1.1036, mIoU=0.2862, acc=0.6191
+11-10-26 17:15:19: Val - Source 91, Maize seg: loss=0.9976, mIoU=0.3041, acc=0.7441
+11-10-26 17:15:19: Eval(no-train) - Target 91, acc: 0.9048, avg acc: 0.8696, cls loss: 0.6899  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:22: Trn - Source 92, cls loss: 0.0124, seg loss: 1.1753, kendall s_cls: -0.4166, s_seg: 0.2990
+11-10-26 17:15:23: Val - Source 92, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.0207, total loss: 0.6993
+11-10-26 17:15:23: Val - Source 92, Tomato seg: loss=1.1056, mIoU=0.2904, acc=0.6246
+11-10-26 17:15:23: Val - Source 92, Maize seg: loss=0.9898, mIoU=0.3050, acc=0.7505
+11-10-26 17:15:24: Eval(no-train) - Target 92, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7253  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:27: Trn - Source 93, cls loss: 0.0096, seg loss: 1.1921, kendall s_cls: -0.4167, s_seg: 0.2991
+11-10-26 17:15:27: Val - Source 93, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0221, total loss: 0.7001
+11-10-26 17:15:27: Val - Source 93, Tomato seg: loss=1.1095, mIoU=0.2875, acc=0.6184
+11-10-26 17:15:27: Val - Source 93, Maize seg: loss=0.9903, mIoU=0.3086, acc=0.7558
+11-10-26 17:15:28: Eval(no-train) - Target 93, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7230  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:31: Trn - Source 94, cls loss: 0.0207, seg loss: 1.1706, kendall s_cls: -0.4168, s_seg: 0.2991
+11-10-26 17:15:32: Val - Source 94, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0254, total loss: 0.7024
+11-10-26 17:15:32: Val - Source 94, Tomato seg: loss=1.1106, mIoU=0.2880, acc=0.6190
+11-10-26 17:15:32: Val - Source 94, Maize seg: loss=0.9944, mIoU=0.3066, acc=0.7523
+11-10-26 17:15:32: Eval(no-train) - Target 94, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7032  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:36: Trn - Source 95, cls loss: 0.0032, seg loss: 1.2004, kendall s_cls: -0.4169, s_seg: 0.2991
+11-10-26 17:15:36: Val - Source 95, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0245, total loss: 0.7018
+11-10-26 17:15:36: Val - Source 95, Tomato seg: loss=1.1167, mIoU=0.2848, acc=0.6121
+11-10-26 17:15:36: Val - Source 95, Maize seg: loss=0.9910, mIoU=0.3075, acc=0.7528
+11-10-26 17:15:37: Eval(no-train) - Target 95, acc: 0.9048, avg acc: 0.8696, cls loss: 0.6813  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:40: Trn - Source 96, cls loss: 0.0246, seg loss: 1.1837, kendall s_cls: -0.4169, s_seg: 0.2992
+11-10-26 17:15:41: Val - Source 96, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0201, total loss: 0.6984
+11-10-26 17:15:41: Val - Source 96, Tomato seg: loss=1.1011, mIoU=0.2889, acc=0.6219
+11-10-26 17:15:41: Val - Source 96, Maize seg: loss=0.9907, mIoU=0.3080, acc=0.7559
+11-10-26 17:15:41: Eval(no-train) - Target 96, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7430  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:44: Trn - Source 97, cls loss: 0.0083, seg loss: 1.1992, kendall s_cls: -0.4169, s_seg: 0.2992
+11-10-26 17:15:45: Val - Source 97, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0247, total loss: 0.7017
+11-10-26 17:15:45: Val - Source 97, Tomato seg: loss=1.1088, mIoU=0.2887, acc=0.6194
+11-10-26 17:15:45: Val - Source 97, Maize seg: loss=0.9942, mIoU=0.3086, acc=0.7564
+11-10-26 17:15:46: Eval(no-train) - Target 97, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7578  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:49: Trn - Source 98, cls loss: 0.0041, seg loss: 1.1770, kendall s_cls: -0.4169, s_seg: 0.2992
+11-10-26 17:15:49: Val - Source 98, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0238, total loss: 0.7010
+11-10-26 17:15:49: Val - Source 98, Tomato seg: loss=1.0989, mIoU=0.2899, acc=0.6248
+11-10-26 17:15:49: Val - Source 98, Maize seg: loss=0.9965, mIoU=0.3068, acc=0.7535
+11-10-26 17:15:50: Eval(no-train) - Target 98, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7397  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:53: Trn - Source 99, cls loss: 0.0697, seg loss: 1.2188, kendall s_cls: -0.4169, s_seg: 0.2992
+11-10-26 17:15:54: Val - Source 99, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0237, total loss: 0.7009
+11-10-26 17:15:54: Val - Source 99, Tomato seg: loss=1.1063, mIoU=0.2879, acc=0.6217
+11-10-26 17:15:54: Val - Source 99, Maize seg: loss=0.9937, mIoU=0.3070, acc=0.7522
+11-10-26 17:15:54: Eval(no-train) - Target 99, acc: 0.9048, avg acc: 0.8696, cls loss: 0.7934  <- domain gap indicator (DA-0 baseline, cls-only)
+11-10-26 17:15:54: Best model at epoch 96, source val total loss 0.6984
+11-10-26 17:15:55: FINAL best-model source val: cls acc: 1.0000, cls avg acc: 1.0000, seg loss: 1.0201
+11-10-26 17:15:55: FINAL best-model source val, Tomato seg: loss=1.1011, mIoU=0.2889, acc=0.6219
+11-10-26 17:15:55: FINAL best-model source val, Maize seg: loss=0.9907, mIoU=0.3080, acc=0.7559
+11-10-26 17:15:55: FINAL target (Pheno4D held-out) test accuracy: 0.9048, avg acc: 0.8696, loss: 0.7430  <- classification-only; target segmentation not evaluated (see module docstring)
+11-10-26 17:15:55: Confusion matrix (rows=true, cols=pred, order=['Tomato', 'Maize']):
+[[40  0]
+ [ 6 17]]
+11-10-26 17:15:55: Per-class precision/recall/F1 on target test:
+              precision    recall  f1-score   support
+
+      Tomato     0.8696    1.0000    0.9302        40
+       Maize     1.0000    0.7391    0.8500        23
+
+    accuracy                         0.9048        63
+   macro avg     0.9348    0.8696    0.8901        63
+weighted avg     0.9172    0.9048    0.9009        63
+

@@ -1321,6 +1321,49 @@ rather than left standing once the tools that produced it were fixed.
 
 ---
 
+## 41. The Preprocessing Comparison Results Are In — Removing the Soil Hurts, Not Helps — 2026-10-11
+
+Our supervisor asked for a side-by-side comparison of the different ways published work prepares
+plant point clouds before training ("preprocessing": cleaning out stray points, removing the soil
+and pot, turning the plant upright, thinning it to a fixed number of points, and resizing it). The
+idea was to test every recipe on the same simple baseline model, change nothing else, and use the
+comparison to design our own recipe. Nine recipes were each trained three times with different
+random starting points (27 training runs), all with the same baseline model and settings. The
+first check passed cleanly: the original recipe, re-run through the new setup, reproduced the
+project's earlier baseline result exactly, number for number.
+
+The main result went the opposite way from what we expected. The starting suspicion was that the
+soil and pot are a misleading clue in the training data (only one of the two plant species in it
+has soil at all), so cutting them out should help the model transfer to the other dataset. Instead,
+cutting them out costs about 16 percentage points of accuracy on the other dataset. This was
+measured cleanly with two recipes that differ in exactly that one step. Every recipe that removes
+soil lands well below every recipe that keeps it, with no overlap. One recipe that resizes the
+plant before removing the soil (so the soil still affects the plant's final size and position)
+did worst of all, below what you'd get by always guessing the more common species.
+
+The best recipes (the one used in a well-known domain-adaptation paper, and our own proposed
+recipe with the soil step left out) are noticeably more consistent from run to run than the
+original recipe. They are not clearly more accurate, though: they're about 2 points higher on
+average, and that's smaller than how much the original recipe itself varies between runs.
+
+Some honest caveats came out of checking the results rather than just reading the table. Three of
+the nine recipes turned out to produce byte-for-byte identical data, because the "turn the plant
+upright" step has nothing to do here (every dataset is already upright), so those three count as
+one result, not three. One segmentation score can't be compared between recipes that remove soil
+and those that don't, because removing soil also removes two of the categories being scored. A
+separate check for "shortcut" clues (things like point density that reveal the species without
+looking at plant shape) gave mixed answers: the clues exist under every recipe, and no recipe
+removes them. And the biggest open question: the soil and pot may themselves be a species clue
+that both datasets share. If so, keeping them helps for the wrong reason (not because of the
+plant's shape). That needs to be settled before choosing a final recipe.
+
+**In one sentence**: all 27 preprocessing-comparison runs are done and written up. Removing soil
+clearly lowers accuracy on the other dataset, the best recipes are steadier but not clearly
+better than the original, and before we propose our own recipe we need to find out whether the
+soil itself is quietly giving the species away.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
