@@ -72,6 +72,13 @@ RUN_FIELDS = ["pipeline", "seed", "run_dir", "complete", "n_epochs", "full_run_m
 METRICS = ["full_run_mean_acc", "full_run_mean_bal_acc", "selected_acc",
            "tomato_miou", "maize_miou", "n_train", "n_val", "n_heldout"]
 COUNT_FIELDS = ["n_train", "n_val", "n_heldout"]
+# Soil-removal pipelines (P2, P3, P4, P4b-d) drop Maize classes 0 and 5 from every cloud, and
+# the training script's per-cloud mIoU averages over all 6 classes with absent classes scored 0,
+# so Maize mIoU is capped at 4/6 there. Numbers are kept, but labelled.
+MAIZE_MIOU_LABEL = "not comparable across pipelines (absent classes scored 0)"
+MAIZE_MIOU_NOTE = (f"* Maize mIoU: {MAIZE_MIOU_LABEL}. Soil-removal pipelines (P2, P3, P4, "
+                   f"P4b-P4d) have no Maize class 0 or 5 points, so their Maize mIoU is capped "
+                   f"at 4/6; P0, P1 and P4a are not.")
 
 
 def parse_run_log(log_path):
@@ -280,7 +287,7 @@ def markdown_report(rows, p0_mean, n_p0, count_warnings):
             ("full_run_mean_bal_acc", "Full-run mean target bal. acc"),
             ("selected_acc", "Selected-checkpoint target acc"),
             ("tomato_miou", "Source seg mIoU, tomato"),
-            ("maize_miou", "Source seg mIoU, maize")]
+            ("maize_miou", f"Source seg mIoU, maize* ({MAIZE_MIOU_LABEL})")]
     out = ["**Block PP: C1 baseline (DGCNN, DA-0) per preprocessing pipeline** "
            "(mean ± std over seeds; target = Pheno4D held-out, 63 clouds)", "",
            "| Pipeline | Seeds | " + " | ".join(c[1] for c in cols) + " | Decision vs P0 |",
@@ -297,7 +304,8 @@ def markdown_report(rows, p0_mean, n_p0, count_warnings):
             f"a higher full-run mean target accuracy than P0's mean "
             f"({'n/a' if p0_mean is None else f'{p0_mean:.3f}'}, over {n_p0} complete seed(s)). "
             f"Selected checkpoint = lowest source validation loss; target labels never used "
-            f"for selection. Std is shown only when there are 2 or more seeds."]
+            f"for selection. Std is shown only when there are 2 or more seeds.", "",
+            "\\" + MAIZE_MIOU_NOTE]  # escaped so Markdown keeps the '*' instead of a bullet
     if count_warnings:
         out += ["", "**Data check warnings:**", ""] + [f"- {w}" for w in count_warnings]
     return "\n".join(out) + "\n"
@@ -338,7 +346,7 @@ def main():
 
     run_tbl = text_table(
         ["pipeline", "seed", "epochs", "fullrun_acc", "fullrun_bal", "sel_ep", "sel_acc",
-         "tom_mIoU", "mai_mIoU", "n_train", "n_val", "n_heldout"],
+         "tom_mIoU", "mai_mIoU*", "n_train", "n_val", "n_heldout"],
         [[r["pipeline"], str(r["seed"]), fmt(r["n_epochs"]), fmt(r["full_run_mean_acc"]),
           fmt(r["full_run_mean_bal_acc"]), fmt(r["selected_epoch"]), fmt(r["selected_acc"]),
           fmt(r["tomato_miou"]), fmt(r["maize_miou"]), fmt(r["n_train"]), fmt(r["n_val"]),
@@ -346,7 +354,7 @@ def main():
     ms = lambda row, k: (f"{fmt(row[f'{k}_mean'])} ± {fmt(row[f'{k}_std'])}"
                          if row[f"{k}_mean"] is not None else "-")
     pipe_tbl = text_table(
-        ["pipeline", "seeds", "fullrun_acc", "fullrun_bal", "sel_acc", "tom_mIoU", "mai_mIoU",
+        ["pipeline", "seeds", "fullrun_acc", "fullrun_bal", "sel_acc", "tom_mIoU", "mai_mIoU*",
          "decision"],
         [[row["pipeline"], row["seeds"] or "-", ms(row, "full_run_mean_acc"),
           ms(row, "full_run_mean_bal_acc"), ms(row, "selected_acc"), ms(row, "tomato_miou"),
@@ -356,9 +364,9 @@ def main():
                  for r in runs if r["warnings"]]
     report = "\n".join(
         ["PER-RUN (target = Pheno4D held-out; sel = checkpoint chosen by lowest source val loss)",
-         run_tbl, "",
+         run_tbl, MAIZE_MIOU_NOTE, "",
          "PER-PIPELINE (mean ± sample std across COMPLETE seeds only; std '-' when n<2)",
-         pipe_tbl, "",
+         pipe_tbl, MAIZE_MIOU_NOTE, "",
          f"P0 mean full-run acc used by the decision rule: {fmt(p0_mean)} "
          f"(over {sum(1 for r in runs if r['pipeline'] == 'P0' and r['complete'])} complete"
          f" seed(s); the rule needs {N_SEEDS_REQUIRED})", "",
