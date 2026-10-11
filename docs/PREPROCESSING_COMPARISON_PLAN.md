@@ -143,9 +143,12 @@ target accuracy than P0's 3-seed mean. Report the rest as "no clear difference".
   writes `data/preprocessed_variants/<ID>/` with `.npz` files and its own
   `preprocessed_manifest.csv` (same columns as the existing one).
 - `scripts/08_soil_removal_check.py` — validates the RANSAC soil cut on annotated Pheno4D.
-- `scripts/09_shortcut_probe.py` — the shortcut score (section 7, item 5).
-- `scripts/10_pp_summarize.py` — parses `results/PP_*/run.log`, writes
-  `results/PP_summary.csv` and `results/PP_summary.md` (the table for maam).
+- `scripts/09_shortcut_probe.py` — the shortcut score (section 7, item 5). Runs on the laptop
+  from each pipeline's cache/manifest; it is NOT a training metric and is not in `run.log`.
+- `scripts/10_pp_summarize.py` — parses `results/PP_*/run.log`, writes to `results/pp_summary/`:
+  `pp_runs.csv` (one row per run), `pp_by_pipeline.csv` (mean/std per pipeline + decision),
+  `pp_summary.txt` (plain-text tables) and `pp_summary.md` (the table for maam). The shortcut
+  score is not included; it comes from `scripts/09_shortcut_probe.py`.
 - `adapters/train_c1_dgcnn_da0.py` — add a `--manifest` argument (default = current path,
   so old behaviour is unchanged). Nothing else changes.
 - `jobs/pp_compare.sbatch` — Slurm job array over pipeline × seed, `--time=02:00:00`,
