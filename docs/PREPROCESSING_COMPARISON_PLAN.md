@@ -179,8 +179,10 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
 - [ ] `scripts/preprocessing_variants.py` + `scripts/07_preprocess_variants.py` written
 - [ ] Smoke test `--limit 5` per pipeline passes; before/after renders checked
 - [ ] All 8 caches generated (P1–P4, P4a–P4d); point counts all = 4096
-- [ ] `--manifest` argument added to C1 script; old default verified unchanged
-- [ ] `jobs/pp_compare.sbatch` written
+- [x] `--manifest` argument added to C1 script; old default verified unchanged (2026-10-11, by
+      diff: omitted -> same hardcoded path; only side effect is `manifest=None` in the logged args)
+- [x] `jobs/pp_compare.sbatch` written (2026-10-11; 27-task array, mapping checked with
+      `PP_DRY_RUN=1`; variant manifest file name still TO BE CONFIRMED against the laptop caches)
 - [ ] Caches committed/transferred to Prajna
 ### Stage 3 — Run (Prajna)
 - [ ] P0 run with seeds 2 and 3 (seed 1 = existing C1 result if identical settings; else rerun)
