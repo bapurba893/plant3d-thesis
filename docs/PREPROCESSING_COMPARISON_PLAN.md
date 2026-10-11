@@ -118,6 +118,27 @@ one label per whole cloud, so it is out of scope for the baseline classification
   voxel size in mm is not safe across datasets. Check in Stage 1 whether Crops3D tomato is in
   metric units; if it is, a fixed mm voxel is an option to discuss with the user.
 
+### 6a. Manifest portability bug, found and fixed (2026-10-11)
+
+`scripts/07_preprocess_variants.py` originally wrote `source_filepath` and `cache_path` into
+each variant manifest as **absolute, laptop-specific paths** (from `data/dataset_manifest.csv`'s
+own absolute raw-data root, and from `--out_dir.resolve()`). This was not just a cluster-transfer
+problem — it broke `PlantClsSegDataset`/`PlantSpeciesDataset` on **any** machine, including this
+laptop: `adapters/dataset.py` matches a split CSV's `filepath` (e.g. `../data/crops3d/Maize/
+3-54.ply`) against the manifest's `source_filepath` by exact string (after stripping a leading
+`../`), and an absolute path never matches that relative form — confirmed directly, 0 of 263
+`crops3d_train.csv` rows matched before the fix. Separately, `pathlib`'s `/` operator *discards*
+its left operand whenever the right operand is already absolute, so `_REPO_ROOT / cache_path`
+silently resolved to the original laptop path even when `_REPO_ROOT` was a different machine's
+checkout — never an error, just a missing file, which `PlantClsSegDataset` treats as "skip this
+row," i.e. a silently empty dataset rather than a crash.
+
+Fixed in `scripts/07_preprocess_variants.py` (`to_portable_source_filepath`/
+`to_portable_cache_path`, used for all future runs) and applied as a manifest-only rewrite to all
+8 already-generated manifests (no `.npz` file touched). Re-verified after the fix: 100% of
+`crops3d_train.csv`/`crops3d_val.csv`/`pheno4d_heldout_eval.csv` rows resolve to an existing
+cache file through every one of the 8 variant manifests.
+
 ## 7. What to report for each pipeline (the table for maam)
 
 For each pipeline: mean ± std across 3 seeds of
@@ -168,10 +189,14 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
 - [x] Crops3D maize pot label id identified
 - [x] Pheno4D soil label id confirmed (tomato and maize label columns)
 - [x] Crops3D tomato confirmed to have no soil
-- [ ] Up-axis per dataset determined from renders; rotation recorded (Maize +z and Pheno4D +z
-      CONFIRMED via renders; Crops3D tomato deliberately left open — montage
-      `results/pp_checks/tomato_axis_montage.png` (36 clouds) made for the user to review, no
-      decision made here — so this box stays unticked until tomato is resolved)
+- [x] Up-axis per dataset determined from renders; rotation recorded. Maize +z and Pheno4D +z
+      CONFIRMED via renders. **Crops3D tomato: DECIDED 2026-10-11 — Option A (trust the raw +z
+      convention, no realignment; `TOMATO_UP_AXIS_ALIGN = False` in
+      `scripts/preprocessing_variants.py`).** Visually verified on 36 of 83 clouds via
+      `results/pp_checks/tomato_axis_montage.png` — the 24 clouds the shape heuristics disagreed
+      on most, plus 12 random controls — all 36 render upright. See step_notes/
+      PP_0_Prerequisite_Checks.md Part C for the full decision record and the acknowledged
+      residual uncertainty (36 of 83 checked, not all).
 - [x] Crops3D tomato units/scale checked (checked; result is INFERRED not CONFIRMED — see step note)
 - [x] Label-free horizontal-slab soil cut tuned and validated on ALL 126 annotated Pheno4D scans
       (numbers recorded; **target REACHED** at margin=2.0mm: 95.32% soil removed, 0.377% plant
@@ -179,14 +204,30 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
       which never reached the target; replaced because it also used soil labels on annotated
       scans during preprocessing, which Pheno4D being the target dataset ruled out — see section 6)
 ### Stage 2 — Implement pipelines -> `step_notes/PP_1_Pipelines.md`
-- [ ] `scripts/preprocessing_variants.py` + `scripts/07_preprocess_variants.py` written
-- [ ] Smoke test `--limit 5` per pipeline passes; before/after renders checked
-- [ ] All 8 caches generated (P1–P4, P4a–P4d); point counts all = 4096
+- [x] `scripts/preprocessing_variants.py` + `scripts/07_preprocess_variants.py` written
+- [x] Smoke test `--limit 5` per pipeline passes (all 8, zero failures) — since superseded by the
+      full generation itself finishing cleanly (stronger evidence than the smoke test alone).
+      **Not done: before/after renders** — flagging this explicitly rather than ticking a
+      two-part box half-true; no visual before/after comparison was made for the variant
+      pipelines (unlike the shape/NaN/manifest-consistency checks below, which were done).
+- [x] All 8 caches generated (P1–P4, P4a–P4d); point counts all = 4096 (verified: 531/531 rows
+      per pipeline manifest, zero `n_final != 4096`, zero nulls in `n_final`/`norm_scale`, 120
+      randomly-sampled `.npz` files checked directly for shape/NaN/Inf — zero problems). Known,
+      confirmed limitation carried through correctly: 9 of 225 Crops3D maize clouds have neither
+      the soil id (0) nor the pot id (5) at all (step_notes/PP_0 check 1) — those 9 show
+      `n_soil_pot_removed == 0` in every pipeline that removes soil/pot (216/225 show > 0,
+      matching exactly), which is the correct behaviour for clouds with nothing to remove, not a
+      bug.
 - [x] `--manifest` argument added to C1 script; old default verified unchanged (2026-10-11, by
       diff: omitted -> same hardcoded path; only side effect is `manifest=None` in the logged args)
 - [x] `jobs/pp_compare.sbatch` written (2026-10-11; 27-task array, mapping checked with
-      `PP_DRY_RUN=1`; variant manifest file name still TO BE CONFIRMED against the laptop caches)
-- [ ] Caches committed/transferred to Prajna
+      `PP_DRY_RUN=1`). **Variant manifest file name CONFIRMED 2026-10-11: `preprocessed_manifest.csv`**
+      (matches the sbatch script's own `VARIANT_MANIFEST_NAME` guess) — verified by a full
+      round-trip check against `adapters/dataset.py`'s actual lookup logic, not just by filename:
+      100% of `data/crops3d_train.csv`/`crops3d_val.csv`/`pheno4d_heldout_eval.csv` rows resolve
+      to an existing `.npz` through every one of the 8 variant manifests. This check caught and
+      fixed a real bug first — see section 6a below.
+- [ ] Caches committed/transferred to Prajna (explicitly deferred — not done this pass)
 ### Stage 3 — Run (Prajna)
 - [ ] P0 run with seeds 2 and 3 (seed 1 = existing C1 result if identical settings; else rerun)
 - [ ] P1–P4 × 3 seeds finished

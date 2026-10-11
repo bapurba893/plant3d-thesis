@@ -671,6 +671,25 @@ heuristic-disagreement clouds; grey-bordered panels are the 12 random controls. 
 about whether any panel looks correctly oriented is made in this note or anywhere else in this
 pass** — per instruction, that call is left to the user.
 
+#### DECISION (2026-10-11): Option A — trust +z, no realignment
+
+After reviewing `tomato_axis_montage.png`, the user decided: **Option A** from check 4's three
+options above — trust the raw +z convention for Crops3D tomato, same as every other
+dataset/species, with no per-cloud or per-dataset realignment.
+`scripts/preprocessing_variants.py::TOMATO_UP_AXIS_ALIGN = False` implements this (identity
+transform; flipping the constant to `True` without first implementing a real rotation rule
+raises `NotImplementedError`, by design — see that constant's docstring).
+
+Basis for the decision: all 36 visually-reviewed clouds — the 24 the shape heuristics disagreed
+on most, plus 12 random controls — rendered upright, including the clouds the heuristics
+disagreed on hardest. **Residual uncertainty, stated plainly, not resolved by this decision**:
+36 of 83 Crops3D tomato clouds were visually checked, not all 83; the remaining 47 are assumed
+consistent with the checked sample based on this evidence, not independently verified. Option B
+(per-cloud PCA/stem-direction realignment) and Option C (expand the manual check further) remain
+available if a future finding (e.g. an unexpected Block-D result traceable to tomato orientation)
+calls this back into question — see check 4 above for their respective evidence and risk profiles,
+unchanged by this decision.
+
 ### Task 2 — Label-free horizontal-slab soil cut, re-evaluated on all 126 annotated scans
 
 #### Method
@@ -818,6 +837,15 @@ the pipeline treats as unsupervised. The Crops3D maize rule (drop soil id 0 and 
 Crops3D's own source labels — fine, since Crops3D is the labeled source dataset) and the Crops3D
 tomato note (nothing to remove) are unchanged, now stated as CONFIRMED per Part A/B's checks
 rather than "to be identified."
+
+### Known limitation, reconfirmed at Stage 2: 9/225 Crops3D maize clouds have nothing to remove
+
+Check 1 found 9 of 225 Crops3D maize clouds contain neither the soil id (0) nor the pot id (5) at
+all. This is not a Stage 2 bug — it was reconfirmed directly against the real generated caches
+(2026-10-11, Stage 2 wrap-up): across every pipeline that removes Crops3D soil/pot (P2, P3, P4,
+P4b, P4c, P4d), exactly 216/225 maize rows show `n_soil_pot_removed > 0` and the other 9 show
+`0`, matching check 1's count exactly. For those 9 clouds, "soil/pot removal" is correctly a
+no-op (there is nothing present to remove), not a failure of the removal step.
 
 ### Reproducing Part C's numbers
 
