@@ -11,6 +11,13 @@ cache -- refuses to run if --out_dir would collide with it.
 Usage:
     python scripts/07_preprocess_variants.py --pipeline P4 --limit 5
     python scripts/07_preprocess_variants.py --pipeline P1
+    python scripts/07_preprocess_variants.py --remove_soil true    # P4 via preprocess_cloud
+    python scripts/07_preprocess_variants.py --remove_soil false   # P4a via preprocess_cloud
+
+--remove_soil (instead of --pipeline) runs the single switchable function
+scripts/preprocessing_pipeline.py::preprocess_cloud; its default --out_dir is
+data/preprocessed_variants/single_remove_soil_<true|false>/, so it never
+writes into the existing P4/P4a caches unless --out_dir points there.
 
 Writes:
     <out_dir>/<dataset>/<species>/<stem>.npz   (points [+labels] + per-step stats)
@@ -38,6 +45,7 @@ from data_io import load_crops3d_ply, load_pheno4d_xyz  # noqa: E402
 from preprocessing_variants import (  # noqa: E402
     PIPELINES, DEFAULT_TARGET_N, DEFAULT_SEED, DEFAULT_SOR_K, DEFAULT_SOR_STD_RATIO,
 )
+from preprocessing_pipeline import preprocess_cloud  # noqa: E402
 
 EXISTING_CACHE_DIR = (_REPO_ROOT / "data" / "preprocessed").resolve()
 
@@ -50,7 +58,7 @@ _INT_STAT_KEYS = ("n_raw", "n_after_outlier_removal", "n_outliers_removed",
                    "n_predecimated", "n_final")
 _FLOAT_STAT_KEYS = ("norm_scale", "norm_center_x", "norm_center_y", "norm_center_z",
                      "voxel_size_mm")
-_BOOL_STAT_KEYS = ("up_axis_aligned",)
+_BOOL_STAT_KEYS = ("up_axis_aligned", "remove_soil")
 _STR_STAT_KEYS = ("voxel_size_basis", "sampling_method", "pipeline_id", "norm_kind")
 
 
@@ -134,9 +142,23 @@ def write_manifest(results_rows, out_manifest_path: Path):
     return out_manifest
 
 
+def parse_bool(s: str) -> bool:
+    v = s.strip().lower()
+    if v in ("true", "1", "yes"):
+        return True
+    if v in ("false", "0", "no"):
+        return False
+    raise argparse.ArgumentTypeError(f"expected true/false, got {s!r}")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--pipeline", required=True, choices=sorted(PIPELINES.keys()))
+    which = ap.add_mutually_exclusive_group(required=True)
+    which.add_argument("--pipeline", choices=sorted(PIPELINES.keys()))
+    which.add_argument("--remove_soil", type=parse_bool, default=None,
+                       help="true/false: run preprocessing_pipeline.preprocess_cloud "
+                            "(true = P4, soil/pot removed; false = P4a, soil/pot kept) "
+                            "instead of a --pipeline")
     ap.add_argument("--manifest", default=str(_REPO_ROOT / "data" / "dataset_manifest.csv"))
     ap.add_argument("--out_dir", default=None,
                      help="Default: data/preprocessed_variants/<pipeline>/")
@@ -163,8 +185,18 @@ def main():
 
     shared_cache_dir = None if args.shared_cache_dir.strip().lower() == "none" else args.shared_cache_dir
 
+    if args.remove_soil is not None:
+        run_name = f"single_remove_soil_{str(args.remove_soil).lower()}"
+        remove_soil = args.remove_soil
+
+        def pipeline_fn(pts, **kw):
+            return preprocess_cloud(pts, remove_soil=remove_soil, **kw)
+    else:
+        run_name = args.pipeline
+        pipeline_fn = PIPELINES[args.pipeline]
+
     out_dir = (Path(args.out_dir) if args.out_dir
-               else (_REPO_ROOT / "data" / "preprocessed_variants" / args.pipeline))
+               else (_REPO_ROOT / "data" / "preprocessed_variants" / run_name))
     out_dir = out_dir.resolve()
 
     # Hard safety check: the plan requires data/preprocessed/ to never be
@@ -185,7 +217,6 @@ def main():
         print("[warn] manifest is empty for the requested filter(s) -- nothing to do.")
         return
 
-    pipeline_fn = PIPELINES[args.pipeline]
     out_dir.mkdir(parents=True, exist_ok=True)
     out_manifest_path = out_dir / "preprocessed_manifest.csv"
 
@@ -195,7 +226,7 @@ def main():
     t_start = time.time()
 
     for _, row in tqdm(manifest.iterrows(), total=len(manifest),
-                        desc=f"Preprocessing [{args.pipeline}]"):
+                        desc=f"Preprocessing [{run_name}]"):
         cache_file = cache_path_for(row, out_dir)
         manifest_row = {
             "dataset": row["dataset"], "species": row["species"],
@@ -239,7 +270,7 @@ def main():
                 seed=args.seed, shared_cache_dir=shared_cache_dir,
                 stem=Path(row["filepath"]).stem)
         except Exception as e:
-            print(f"[error] failed to preprocess ({args.pipeline}) {row['filepath']}: {e}")
+            print(f"[error] failed to preprocess ({run_name}) {row['filepath']}: {e}")
             n_failed += 1
             continue
         dt = time.time() - t0
@@ -273,7 +304,7 @@ def main():
 
     elapsed = time.time() - t_start
 
-    print(f"\n[{args.pipeline}] Done in {elapsed:.1f}s -- processed {n_processed}, "
+    print(f"\n[{run_name}] Done in {elapsed:.1f}s -- processed {n_processed}, "
           f"skipped (already cached) {n_skipped}, failed {n_failed}.")
     if per_file_times:
         arr = np.array(per_file_times)
