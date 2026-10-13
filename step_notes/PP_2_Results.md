@@ -216,6 +216,50 @@ time.
   uses the logged best epoch, which is what the training script itself selected.
 - 3 seeds per pipeline is a small sample. Std values are from 3 numbers.
 
+### 3.6 Soil-cue test: cross-evaluation (2026-10-13)
+
+Runs the third test proposed in 3.4: no retraining, each protocol-selected checkpoint is
+evaluated on the other target cache. Soil-kept models (P0, P1, P4a) on the soil-removed Pheno4D
+target (P4 cache); soil-removed models (P3, P4) on the soil-kept target (P4a cache). Script
+`scripts/11_cross_eval.py`, job `jobs/pp_cross_eval.sbatch`, outputs
+`results/pp_summary/cross_eval.{md,csv}` and `cross_eval_runs.csv` (per seed, with confusion
+matrices). Mean ± std over seeds 1, 2, 3; 63 target clouds.
+
+| Model | Model soil | Eval cache | Target acc | Target bal. acc | Δ acc vs own |
+|---|---|---|---|---|---|
+| P0 | kept | P0 (own) | 0.862 ± 0.102 | 0.842 ± 0.087 | – |
+| P0 | kept | P4 | 0.619 ± 0.057 | 0.700 ± 0.045 | −0.243 |
+| P1 | kept | P1 (own) | 0.915 ± 0.018 | 0.884 ± 0.025 | – |
+| P1 | kept | P4 | 0.735 ± 0.081 | 0.792 ± 0.064 | −0.180 |
+| P4a | kept | P4a (own) | 0.884 ± 0.037 | 0.865 ± 0.025 | – |
+| P4a | kept | P4 | 0.651 ± 0.097 | 0.725 ± 0.076 | −0.233 |
+| P3 / P4 | removed | own | 0.730 ± 0.069 | 0.787 ± 0.054 | – |
+| P3 / P4 | removed | P4a | 0.905 ± 0.032 | 0.870 ± 0.043 | +0.175 |
+
+Majority baseline (always Tomato): 40/63 = 0.635. P3 and P4 rows are identical (caveat 3.1).
+
+Findings (measured):
+- **Soil-kept models drop to about the majority baseline when the target soil is removed**
+  (P0 0.619, P4a 0.651; P1 stays somewhat above at 0.735). In every seed the drop comes from
+  Tomato clouds being called Maize (Maize recall stays 23/23; see `cross_eval_runs.csv`).
+- **Soil-removed models score 0.905 on soil-kept target clouds, against 0.730 on their own
+  soil-removed target clouds** (+0.175, positive in all 3 seeds). A model that never saw soil in
+  training does better on Pheno4D clouds that still contain soil.
+- **Check mismatch resolved.** A first reference check of `PP_P4a_s1` on its own P4a cache gave
+  0.857 against the logged 0.8413. The difference is CPU vs. GPU floating-point precision (the
+  check ran on CPU, training ran on GPU). The cross job therefore runs on GPU and starts with a
+  guard that re-evaluates the reference run on its own cache and stops if it does not match
+  run.log; on GPU it matched exactly (0.8413), and every own-cache row reproduces its run.log
+  (`own_matches_log` = True for all 15).
+
+Interpretation (**untested inference**): the second finding does not fit "soil is a cue the
+model relies on" alone, since a model trained without soil gains from target soil being present.
+One explanation that fits is that the soil-removed Pheno4D target clouds themselves are damaged
+or mismatched by the soil cut (for example, plant points removed with the soil, or a cut that
+behaves differently on Pheno4D's arm-frame clouds than on Crops3D), so the ~16-point loss in 2.1
+may be partly a target-preprocessing defect rather than the loss of a useful soil cue. Not
+checked: no inspection or render of the P4 target clouds has been done yet.
+
 ---
 
 ## 4. Not done in this stage
