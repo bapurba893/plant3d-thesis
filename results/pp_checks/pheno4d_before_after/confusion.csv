@@ -1,0 +1,13 @@
+cache,seed,true,n,pred_Tomato,pred_Maize,recall
+P4,1,Maize,23,0,23,1.0000
+P4,1,Tomato,40,26,14,0.6500
+P4,2,Maize,23,0,23,1.0000
+P4,2,Tomato,40,18,22,0.4500
+P4,3,Maize,23,0,23,1.0000
+P4,3,Tomato,40,25,15,0.6250
+P4a,1,Maize,23,4,19,0.8261
+P4a,1,Tomato,40,34,6,0.8500
+P4a,2,Maize,23,6,17,0.7391
+P4a,2,Tomato,40,40,0,1.0000
+P4a,3,Maize,23,4,19,0.8261
+P4a,3,Tomato,40,38,2,0.9500

@@ -1,0 +1,13 @@
+cache,species,stage,mean,std,n_clouds
+P4,Maize,early,1.0000,0.0000,8
+P4,Maize,late,1.0000,0.0000,8
+P4,Maize,mid,1.0000,0.0000,7
+P4,Tomato,early,0.1190,0.0825,14
+P4,Tomato,late,0.8611,0.2406,12
+P4,Tomato,mid,0.7857,0.0714,14
+P4a,Maize,early,0.4167,0.1443,8
+P4a,Maize,late,1.0000,0.0000,8
+P4a,Maize,mid,1.0000,0.0000,7
+P4a,Tomato,early,1.0000,0.0000,14
+P4a,Tomato,late,0.9167,0.1443,12
+P4a,Tomato,mid,0.8810,0.1091,14
