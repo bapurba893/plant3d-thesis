@@ -1,0 +1,627 @@
+14-10-26 12:14:19: Namespace(exp_name='PP_SW_learned_scalar_s1', out_path='/home/pearl/25m0301/plant3d-thesis/results', epochs=100, batch_size=32, test_batch_size=32, lr=0.001, wd=5e-05, dropout=0.5, seed=1, gpu=0, manifest='data/preprocessed_variants/P4a/preprocessed_manifest.csv', soil_weight='learned_scalar', max_train_batches=None)
+14-10-26 12:14:20: Using GPU 0: NVIDIA A100-SXM4-80GB
+14-10-26 12:14:20: Crops3D train: 263 {'Tomato': 71, 'Maize': 192}
+14-10-26 12:14:20: Crops3D val:   45 {'Tomato': 12, 'Maize': 33}
+14-10-26 12:14:20: Pheno4D held-out eval (target, never trained on, cls-only): 63 {'Tomato': 40, 'Maize': 23}
+14-10-26 12:14:20: L_cls class weights (w_c=(f_c+eps)^-1, normalized): {'Tomato': 1.4600751399993896, 'Maize': 0.5399248600006104}
+14-10-26 12:14:20: L_seg class weights for Tomato (counts=[59742, 228498, 2576]): [0.12269575148820877, 0.03207956627011299, 2.845224618911743]
+14-10-26 12:14:20: L_seg class weights for Maize (counts=[105192, 53378, 475470, 3861, 3510, 145021]): [0.09816843271255493, 0.19345910847187042, 0.021718710660934448, 2.6740505695343018, 2.9413957595825195, 0.07120731472969055]
+14-10-26 12:14:20: Soil weight: mode=learned_scalar, trainable params=1, soil/pot ids (Maize)=(0, 5), bound=[0.2, 5.0], normalised to mean 1 over all maize points per batch
+14-10-26 12:14:26: Trn - Source 0, cls loss: 0.3780, seg loss: 2.3061, kendall s_cls: -0.0022, s_seg: 0.0080
+14-10-26 12:14:26: SoilW - Source 0, soil_raw: mean=1.0010 std=0.0005 min=1.0000 max=1.0015 | soil: mean=1.0007 std=0.0004 min=1.0000 max=1.0011 | plant: mean=0.9997 std=0.0001 min=0.9996 max=1.0000 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:26: Val - Source 0, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.8288, seg loss: 2.3785, total loss: 3.1932
+14-10-26 12:14:26: Val - Source 0, Tomato seg: loss=1.7027, mIoU=0.0063, acc=0.0190
+14-10-26 12:14:26: Val - Source 0, Maize seg: loss=2.6243, mIoU=0.0284, acc=0.1703
+14-10-26 12:14:27: Eval(no-train) - Target 0, acc: 0.3651, avg acc: 0.5000, cls loss: 1.8183  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:30: Trn - Source 1, cls loss: 0.1896, seg loss: 2.1576, kendall s_cls: -0.0096, s_seg: 0.0158
+14-10-26 12:14:30: SoilW - Source 1, soil_raw: mean=0.9982 std=0.0012 min=0.9964 max=1.0000 | soil: mean=0.9988 std=0.0008 min=0.9977 max=1.0000 | plant: mean=1.0005 std=0.0004 min=1.0000 max=1.0013 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:31: Val - Source 1, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 1.1734, seg loss: 2.3653, total loss: 3.5161
+14-10-26 12:14:31: Val - Source 1, Tomato seg: loss=1.7381, mIoU=0.0063, acc=0.0190
+14-10-26 12:14:31: Val - Source 1, Maize seg: loss=2.5934, mIoU=0.0022, acc=0.0083
+14-10-26 12:14:32: Eval(no-train) - Target 1, acc: 0.3651, avg acc: 0.5000, cls loss: 2.7383  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:35: Trn - Source 2, cls loss: 0.1230, seg loss: 1.9342, kendall s_cls: -0.0177, s_seg: 0.0234
+14-10-26 12:14:35: SoilW - Source 2, soil_raw: mean=0.9938 std=0.0014 min=0.9917 max=0.9958 | soil: mean=0.9956 std=0.0012 min=0.9942 max=0.9973 | plant: mean=1.0018 std=0.0003 min=1.0013 max=1.0025 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:35: Val - Source 2, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.8968, seg loss: 2.3894, total loss: 3.2497
+14-10-26 12:14:35: Val - Source 2, Tomato seg: loss=1.7529, mIoU=0.0063, acc=0.0190
+14-10-26 12:14:35: Val - Source 2, Maize seg: loss=2.6208, mIoU=0.0019, acc=0.0055
+14-10-26 12:14:36: Eval(no-train) - Target 2, acc: 0.3651, avg acc: 0.5000, cls loss: 2.1308  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:39: Trn - Source 3, cls loss: 0.1066, seg loss: 1.8861, kendall s_cls: -0.0260, s_seg: 0.0307
+14-10-26 12:14:39: SoilW - Source 3, soil_raw: mean=0.9896 std=0.0011 min=0.9879 max=0.9913 | soil: mean=0.9926 std=0.0007 min=0.9916 max=0.9936 | plant: mean=1.0030 std=0.0005 min=1.0024 max=1.0040 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:40: Val - Source 3, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.8546, seg loss: 2.2848, total loss: 3.0952
+14-10-26 12:14:40: Val - Source 3, Tomato seg: loss=1.6856, mIoU=0.0063, acc=0.0190
+14-10-26 12:14:40: Val - Source 3, Maize seg: loss=2.5027, mIoU=0.0021, acc=0.0059
+14-10-26 12:14:41: Eval(no-train) - Target 3, acc: 0.3651, avg acc: 0.5000, cls loss: 2.2420  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:44: Trn - Source 4, cls loss: 0.0970, seg loss: 1.8053, kendall s_cls: -0.0346, s_seg: 0.0377
+14-10-26 12:14:44: SoilW - Source 4, soil_raw: mean=0.9858 std=0.0010 min=0.9843 max=0.9875 | soil: mean=0.9899 std=0.0007 min=0.9887 max=0.9910 | plant: mean=1.0041 std=0.0005 min=1.0036 max=1.0053 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:44: Val - Source 4, cls acc: 0.7333, cls avg acc: 0.5000, cls loss: 0.3796, seg loss: 2.1508, total loss: 2.4657
+14-10-26 12:14:44: Val - Source 4, Tomato seg: loss=1.6972, mIoU=0.0064, acc=0.0192
+14-10-26 12:14:44: Val - Source 4, Maize seg: loss=2.3158, mIoU=0.0298, acc=0.0606
+14-10-26 12:14:45: Eval(no-train) - Target 4, acc: 0.3810, avg acc: 0.5125, cls loss: 1.0905  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:48: Trn - Source 5, cls loss: 0.0906, seg loss: 1.7296, kendall s_cls: -0.0433, s_seg: 0.0446
+14-10-26 12:14:48: SoilW - Source 5, soil_raw: mean=0.9828 std=0.0007 min=0.9817 max=0.9839 | soil: mean=0.9877 std=0.0013 min=0.9860 max=0.9894 | plant: mean=1.0048 std=0.0007 min=1.0035 max=1.0060 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:49: Val - Source 5, cls acc: 0.9111, cls avg acc: 0.8333, cls loss: 0.2268, seg loss: 2.1290, total loss: 2.2737
+14-10-26 12:14:49: Val - Source 5, Tomato seg: loss=1.6474, mIoU=0.0379, acc=0.0838
+14-10-26 12:14:49: Val - Source 5, Maize seg: loss=2.3041, mIoU=0.0359, acc=0.1003
+14-10-26 12:14:50: Eval(no-train) - Target 5, acc: 0.9365, avg acc: 0.9130, cls loss: 0.2343  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:53: Trn - Source 6, cls loss: 0.1448, seg loss: 1.7136, kendall s_cls: -0.0514, s_seg: 0.0512
+14-10-26 12:14:53: SoilW - Source 6, soil_raw: mean=0.9804 std=0.0006 min=0.9794 max=0.9814 | soil: mean=0.9859 std=0.0011 min=0.9840 max=0.9873 | plant: mean=1.0055 std=0.0007 min=1.0044 max=1.0066 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:54: Val - Source 6, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.1278, seg loss: 2.2378, total loss: 2.2606
+14-10-26 12:14:54: Val - Source 6, Tomato seg: loss=1.7875, mIoU=0.0363, acc=0.0828
+14-10-26 12:14:54: Val - Source 6, Maize seg: loss=2.4016, mIoU=0.0473, acc=0.1327
+14-10-26 12:14:54: Eval(no-train) - Target 6, acc: 0.9365, avg acc: 0.9130, cls loss: 0.2216  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:14:57: Trn - Source 7, cls loss: 0.0609, seg loss: 1.6859, kendall s_cls: -0.0597, s_seg: 0.0577
+14-10-26 12:14:57: SoilW - Source 7, soil_raw: mean=0.9782 std=0.0006 min=0.9772 max=0.9791 | soil: mean=0.9844 std=0.0010 min=0.9828 max=0.9858 | plant: mean=1.0062 std=0.0009 min=1.0046 max=1.0074 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:14:58: Val - Source 7, cls acc: 0.9333, cls avg acc: 0.9545, cls loss: 0.1309, seg loss: 1.8511, total loss: 1.8852
+14-10-26 12:14:58: Val - Source 7, Tomato seg: loss=1.4018, mIoU=0.2058, acc=0.4582
+14-10-26 12:14:58: Val - Source 7, Maize seg: loss=2.0145, mIoU=0.0951, acc=0.2759
+14-10-26 12:14:59: Eval(no-train) - Target 7, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5173  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:02: Trn - Source 8, cls loss: 0.0711, seg loss: 1.6694, kendall s_cls: -0.0681, s_seg: 0.0641
+14-10-26 12:15:02: SoilW - Source 8, soil_raw: mean=0.9757 std=0.0008 min=0.9744 max=0.9769 | soil: mean=0.9829 std=0.0011 min=0.9813 max=0.9847 | plant: mean=1.0072 std=0.0011 min=1.0056 max=1.0091 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:03: Val - Source 8, cls acc: 0.9778, cls avg acc: 0.9848, cls loss: 0.0712, seg loss: 1.6098, total loss: 1.5841
+14-10-26 12:15:03: Val - Source 8, Tomato seg: loss=1.3646, mIoU=0.2575, acc=0.5904
+14-10-26 12:15:03: Val - Source 8, Maize seg: loss=1.6990, mIoU=0.1657, acc=0.4564
+14-10-26 12:15:03: Eval(no-train) - Target 8, acc: 0.8730, avg acc: 0.8261, cls loss: 0.8617  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:06: Trn - Source 9, cls loss: 0.0913, seg loss: 1.6423, kendall s_cls: -0.0764, s_seg: 0.0705
+14-10-26 12:15:06: SoilW - Source 9, soil_raw: mean=0.9729 std=0.0007 min=0.9717 max=0.9740 | soil: mean=0.9809 std=0.0009 min=0.9792 max=0.9818 | plant: mean=1.0081 std=0.0010 min=1.0059 max=1.0093 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:07: Val - Source 9, cls acc: 0.9778, cls avg acc: 0.9848, cls loss: 0.0785, seg loss: 1.7016, total loss: 1.6675
+14-10-26 12:15:07: Val - Source 9, Tomato seg: loss=1.5646, mIoU=0.0856, acc=0.1895
+14-10-26 12:15:07: Val - Source 9, Maize seg: loss=1.7514, mIoU=0.1444, acc=0.4397
+14-10-26 12:15:08: Eval(no-train) - Target 9, acc: 0.9048, avg acc: 0.8696, cls loss: 0.3882  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:11: Trn - Source 10, cls loss: 0.0676, seg loss: 1.6672, kendall s_cls: -0.0848, s_seg: 0.0769
+14-10-26 12:15:11: SoilW - Source 10, soil_raw: mean=0.9700 std=0.0009 min=0.9687 max=0.9714 | soil: mean=0.9785 std=0.0010 min=0.9770 max=0.9803 | plant: mean=1.0087 std=0.0006 min=1.0077 max=1.0099 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:12: Val - Source 10, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0197, seg loss: 1.4319, total loss: 1.3435
+14-10-26 12:15:12: Val - Source 10, Tomato seg: loss=1.3551, mIoU=0.2430, acc=0.5529
+14-10-26 12:15:12: Val - Source 10, Maize seg: loss=1.4598, mIoU=0.2198, acc=0.5909
+14-10-26 12:15:12: Eval(no-train) - Target 10, acc: 0.8889, avg acc: 0.8478, cls loss: 0.7319  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:15: Trn - Source 11, cls loss: 0.0689, seg loss: 1.6317, kendall s_cls: -0.0930, s_seg: 0.0832
+14-10-26 12:15:15: SoilW - Source 11, soil_raw: mean=0.9675 std=0.0006 min=0.9666 max=0.9684 | soil: mean=0.9765 std=0.0015 min=0.9752 max=0.9797 | plant: mean=1.0090 std=0.0012 min=1.0074 max=1.0119 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:16: Val - Source 11, cls acc: 0.9778, cls avg acc: 0.9848, cls loss: 0.0547, seg loss: 1.6098, total loss: 1.5364
+14-10-26 12:15:16: Val - Source 11, Tomato seg: loss=1.3297, mIoU=0.2839, acc=0.7185
+14-10-26 12:15:16: Val - Source 11, Maize seg: loss=1.7116, mIoU=0.1497, acc=0.4457
+14-10-26 12:15:17: Eval(no-train) - Target 11, acc: 0.8730, avg acc: 0.8261, cls loss: 1.3194  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:20: Trn - Source 12, cls loss: 0.0496, seg loss: 1.5608, kendall s_cls: -0.1012, s_seg: 0.0893
+14-10-26 12:15:20: SoilW - Source 12, soil_raw: mean=0.9652 std=0.0006 min=0.9643 max=0.9663 | soil: mean=0.9751 std=0.0013 min=0.9723 max=0.9767 | plant: mean=1.0100 std=0.0014 min=1.0081 max=1.0125 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:21: Val - Source 12, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0202, seg loss: 1.5879, total loss: 1.4686
+14-10-26 12:15:21: Val - Source 12, Tomato seg: loss=1.2710, mIoU=0.2657, acc=0.6301
+14-10-26 12:15:21: Val - Source 12, Maize seg: loss=1.7031, mIoU=0.1439, acc=0.3872
+14-10-26 12:15:21: Eval(no-train) - Target 12, acc: 0.9048, avg acc: 0.8696, cls loss: 0.4495  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:24: Trn - Source 13, cls loss: 0.0987, seg loss: 1.6111, kendall s_cls: -0.1092, s_seg: 0.0954
+14-10-26 12:15:24: SoilW - Source 13, soil_raw: mean=0.9629 std=0.0007 min=0.9618 max=0.9641 | soil: mean=0.9733 std=0.0016 min=0.9712 max=0.9757 | plant: mean=1.0105 std=0.0015 min=1.0074 max=1.0127 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:25: Val - Source 13, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0370, seg loss: 1.6109, total loss: 1.4986
+14-10-26 12:15:25: Val - Source 13, Tomato seg: loss=1.4777, mIoU=0.1614, acc=0.3606
+14-10-26 12:15:25: Val - Source 13, Maize seg: loss=1.6593, mIoU=0.1747, acc=0.5051
+14-10-26 12:15:26: Eval(no-train) - Target 13, acc: 0.9365, avg acc: 0.9130, cls loss: 0.2414  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:29: Trn - Source 14, cls loss: 0.0555, seg loss: 1.5791, kendall s_cls: -0.1170, s_seg: 0.1013
+14-10-26 12:15:29: SoilW - Source 14, soil_raw: mean=0.9608 std=0.0006 min=0.9598 max=0.9616 | soil: mean=0.9718 std=0.0010 min=0.9703 max=0.9735 | plant: mean=1.0113 std=0.0012 min=1.0090 max=1.0130 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:29: Val - Source 14, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0107, seg loss: 1.5856, total loss: 1.4370
+14-10-26 12:15:29: Val - Source 14, Tomato seg: loss=1.3540, mIoU=0.2490, acc=0.6079
+14-10-26 12:15:29: Val - Source 14, Maize seg: loss=1.6698, mIoU=0.1758, acc=0.5023
+14-10-26 12:15:30: Eval(no-train) - Target 14, acc: 0.8889, avg acc: 0.8571, cls loss: 0.7084  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:33: Trn - Source 15, cls loss: 0.0271, seg loss: 1.5163, kendall s_cls: -0.1252, s_seg: 0.1072
+14-10-26 12:15:33: SoilW - Source 15, soil_raw: mean=0.9581 std=0.0008 min=0.9570 max=0.9594 | soil: mean=0.9701 std=0.0009 min=0.9681 max=0.9714 | plant: mean=1.0123 std=0.0011 min=1.0104 max=1.0138 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:34: Val - Source 15, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0124, seg loss: 1.4703, total loss: 1.3258
+14-10-26 12:15:34: Val - Source 15, Tomato seg: loss=1.3257, mIoU=0.2118, acc=0.4800
+14-10-26 12:15:34: Val - Source 15, Maize seg: loss=1.5228, mIoU=0.2091, acc=0.5902
+14-10-26 12:15:35: Eval(no-train) - Target 15, acc: 0.9048, avg acc: 0.8696, cls loss: 0.4809  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:38: Trn - Source 16, cls loss: 0.0282, seg loss: 1.5496, kendall s_cls: -0.1335, s_seg: 0.1129
+14-10-26 12:15:38: SoilW - Source 16, soil_raw: mean=0.9555 std=0.0007 min=0.9546 max=0.9567 | soil: mean=0.9677 std=0.0014 min=0.9654 max=0.9689 | plant: mean=1.0125 std=0.0017 min=1.0099 max=1.0151 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:38: Val - Source 16, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0065, seg loss: 1.6213, total loss: 1.4454
+14-10-26 12:15:38: Val - Source 16, Tomato seg: loss=1.3800, mIoU=0.2013, acc=0.4354
+14-10-26 12:15:38: Val - Source 16, Maize seg: loss=1.7091, mIoU=0.1818, acc=0.5483
+14-10-26 12:15:39: Eval(no-train) - Target 16, acc: 0.9048, avg acc: 0.8696, cls loss: 0.4857  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:42: Trn - Source 17, cls loss: 0.0375, seg loss: 1.4809, kendall s_cls: -0.1417, s_seg: 0.1184
+14-10-26 12:15:42: SoilW - Source 17, soil_raw: mean=0.9534 std=0.0006 min=0.9525 max=0.9543 | soil: mean=0.9662 std=0.0013 min=0.9636 max=0.9676 | plant: mean=1.0133 std=0.0012 min=1.0117 max=1.0153 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:43: Val - Source 17, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0041, seg loss: 1.3583, total loss: 1.1997
+14-10-26 12:15:43: Val - Source 17, Tomato seg: loss=1.2466, mIoU=0.2595, acc=0.6324
+14-10-26 12:15:43: Val - Source 17, Maize seg: loss=1.3989, mIoU=0.2403, acc=0.6867
+14-10-26 12:15:44: Eval(no-train) - Target 17, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5009  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:47: Trn - Source 18, cls loss: 0.0202, seg loss: 1.4796, kendall s_cls: -0.1499, s_seg: 0.1237
+14-10-26 12:15:47: SoilW - Source 18, soil_raw: mean=0.9514 std=0.0006 min=0.9505 max=0.9522 | soil: mean=0.9649 std=0.0013 min=0.9625 max=0.9665 | plant: mean=1.0141 std=0.0011 min=1.0124 max=1.0158 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:47: Val - Source 18, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0080, seg loss: 1.4528, total loss: 1.2800
+14-10-26 12:15:47: Val - Source 18, Tomato seg: loss=1.2852, mIoU=0.2404, acc=0.5235
+14-10-26 12:15:47: Val - Source 18, Maize seg: loss=1.5137, mIoU=0.2046, acc=0.5832
+14-10-26 12:15:48: Eval(no-train) - Target 18, acc: 0.8730, avg acc: 0.8446, cls loss: 0.5396  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:51: Trn - Source 19, cls loss: 0.0610, seg loss: 1.5016, kendall s_cls: -0.1579, s_seg: 0.1291
+14-10-26 12:15:51: SoilW - Source 19, soil_raw: mean=0.9490 std=0.0008 min=0.9477 max=0.9502 | soil: mean=0.9635 std=0.0022 min=0.9597 max=0.9664 | plant: mean=1.0148 std=0.0022 min=1.0118 max=1.0181 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:52: Val - Source 19, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0334, seg loss: 1.4136, total loss: 1.2671
+14-10-26 12:15:52: Val - Source 19, Tomato seg: loss=1.4336, mIoU=0.1144, acc=0.2417
+14-10-26 12:15:52: Val - Source 19, Maize seg: loss=1.4064, mIoU=0.2087, acc=0.5941
+14-10-26 12:15:53: Eval(no-train) - Target 19, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4424  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:15:56: Trn - Source 20, cls loss: 0.0294, seg loss: 1.4367, kendall s_cls: -0.1656, s_seg: 0.1343
+14-10-26 12:15:56: SoilW - Source 20, soil_raw: mean=0.9463 std=0.0007 min=0.9452 max=0.9474 | soil: mean=0.9615 std=0.0018 min=0.9584 max=0.9645 | plant: mean=1.0158 std=0.0018 min=1.0140 max=1.0190 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:15:56: Val - Source 20, cls acc: 0.9333, cls avg acc: 0.8750, cls loss: 0.0905, seg loss: 1.5058, total loss: 1.4077
+14-10-26 12:15:56: Val - Source 20, Tomato seg: loss=1.5406, mIoU=0.1732, acc=0.3569
+14-10-26 12:15:56: Val - Source 20, Maize seg: loss=1.4931, mIoU=0.2055, acc=0.5933
+14-10-26 12:15:57: Eval(no-train) - Target 20, acc: 0.8095, avg acc: 0.7946, cls loss: 0.6021  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:00: Trn - Source 21, cls loss: 0.0277, seg loss: 1.4432, kendall s_cls: -0.1732, s_seg: 0.1395
+14-10-26 12:16:00: SoilW - Source 21, soil_raw: mean=0.9436 std=0.0009 min=0.9421 max=0.9448 | soil: mean=0.9594 std=0.0031 min=0.9531 max=0.9636 | plant: mean=1.0160 std=0.0030 min=1.0113 max=1.0207 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:01: Val - Source 21, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.0863, seg loss: 1.5626, total loss: 1.4449
+14-10-26 12:16:01: Val - Source 21, Tomato seg: loss=1.3917, mIoU=0.1975, acc=0.4096
+14-10-26 12:16:01: Val - Source 21, Maize seg: loss=1.6247, mIoU=0.1874, acc=0.5564
+14-10-26 12:16:01: Eval(no-train) - Target 21, acc: 0.8889, avg acc: 0.8571, cls loss: 0.6135  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:05: Trn - Source 22, cls loss: 0.0141, seg loss: 1.4426, kendall s_cls: -0.1810, s_seg: 0.1444
+14-10-26 12:16:05: SoilW - Source 22, soil_raw: mean=0.9405 std=0.0009 min=0.9392 max=0.9418 | soil: mean=0.9567 std=0.0026 min=0.9520 max=0.9602 | plant: mean=1.0168 std=0.0021 min=1.0136 max=1.0196 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:05: Val - Source 22, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0439, seg loss: 1.3560, total loss: 1.2080
+14-10-26 12:16:05: Val - Source 22, Tomato seg: loss=1.4087, mIoU=0.1703, acc=0.3499
+14-10-26 12:16:05: Val - Source 22, Maize seg: loss=1.3368, mIoU=0.2310, acc=0.6309
+14-10-26 12:16:06: Eval(no-train) - Target 22, acc: 0.8889, avg acc: 0.8663, cls loss: 0.4303  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:09: Trn - Source 23, cls loss: 0.0494, seg loss: 1.4556, kendall s_cls: -0.1885, s_seg: 0.1494
+14-10-26 12:16:09: SoilW - Source 23, soil_raw: mean=0.9381 std=0.0006 min=0.9370 max=0.9389 | soil: mean=0.9559 std=0.0032 min=0.9513 max=0.9622 | plant: mean=1.0183 std=0.0031 min=1.0144 max=1.0262 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:10: Val - Source 23, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0654, seg loss: 1.2241, total loss: 1.1137
+14-10-26 12:16:10: Val - Source 23, Tomato seg: loss=1.2936, mIoU=0.2630, acc=0.6308
+14-10-26 12:16:10: Val - Source 23, Maize seg: loss=1.1988, mIoU=0.2635, acc=0.7207
+14-10-26 12:16:10: Eval(no-train) - Target 23, acc: 0.7937, avg acc: 0.8005, cls loss: 0.3968  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:14: Trn - Source 24, cls loss: 0.0540, seg loss: 1.4326, kendall s_cls: -0.1956, s_seg: 0.1542
+14-10-26 12:16:14: SoilW - Source 24, soil_raw: mean=0.9357 std=0.0007 min=0.9346 max=0.9368 | soil: mean=0.9535 std=0.0016 min=0.9507 max=0.9558 | plant: mean=1.0187 std=0.0019 min=1.0172 max=1.0220 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:14: Val - Source 24, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0681, seg loss: 1.5641, total loss: 1.4027
+14-10-26 12:16:14: Val - Source 24, Tomato seg: loss=1.2260, mIoU=0.2704, acc=0.5870
+14-10-26 12:16:14: Val - Source 24, Maize seg: loss=1.6870, mIoU=0.1582, acc=0.4546
+14-10-26 12:16:15: Eval(no-train) - Target 24, acc: 0.7778, avg acc: 0.7880, cls loss: 0.6086  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:18: Trn - Source 25, cls loss: 0.0451, seg loss: 1.4035, kendall s_cls: -0.2027, s_seg: 0.1589
+14-10-26 12:16:18: SoilW - Source 25, soil_raw: mean=0.9333 std=0.0006 min=0.9324 max=0.9343 | soil: mean=0.9518 std=0.0029 min=0.9456 max=0.9558 | plant: mean=1.0190 std=0.0032 min=1.0133 max=1.0239 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:19: Val - Source 25, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0062, seg loss: 1.5887, total loss: 1.3411
+14-10-26 12:16:19: Val - Source 25, Tomato seg: loss=1.2322, mIoU=0.2808, acc=0.6099
+14-10-26 12:16:19: Val - Source 25, Maize seg: loss=1.7184, mIoU=0.1939, acc=0.5328
+14-10-26 12:16:19: Eval(no-train) - Target 25, acc: 0.7460, avg acc: 0.7538, cls loss: 0.9019  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:23: Trn - Source 26, cls loss: 0.0239, seg loss: 1.3902, kendall s_cls: -0.2098, s_seg: 0.1636
+14-10-26 12:16:23: SoilW - Source 26, soil_raw: mean=0.9310 std=0.0007 min=0.9299 max=0.9321 | soil: mean=0.9501 std=0.0022 min=0.9467 max=0.9533 | plant: mean=1.0201 std=0.0024 min=1.0170 max=1.0245 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:23: Val - Source 26, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0202, seg loss: 1.3702, total loss: 1.1652
+14-10-26 12:16:23: Val - Source 26, Tomato seg: loss=1.3564, mIoU=0.1814, acc=0.3973
+14-10-26 12:16:23: Val - Source 26, Maize seg: loss=1.3752, mIoU=0.2290, acc=0.6606
+14-10-26 12:16:24: Eval(no-train) - Target 26, acc: 0.8571, avg acc: 0.8321, cls loss: 0.5746  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:27: Trn - Source 27, cls loss: 0.0528, seg loss: 1.4061, kendall s_cls: -0.2167, s_seg: 0.1681
+14-10-26 12:16:27: SoilW - Source 27, soil_raw: mean=0.9286 std=0.0007 min=0.9275 max=0.9296 | soil: mean=0.9479 std=0.0024 min=0.9426 max=0.9514 | plant: mean=1.0205 std=0.0023 min=1.0163 max=1.0235 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:28: Val - Source 27, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0155, seg loss: 1.3496, total loss: 1.1357
+14-10-26 12:16:28: Val - Source 27, Tomato seg: loss=1.2587, mIoU=0.2168, acc=0.4681
+14-10-26 12:16:28: Val - Source 27, Maize seg: loss=1.3826, mIoU=0.2388, acc=0.6405
+14-10-26 12:16:28: Eval(no-train) - Target 27, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5733  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:32: Trn - Source 28, cls loss: 0.0354, seg loss: 1.4269, kendall s_cls: -0.2234, s_seg: 0.1726
+14-10-26 12:16:32: SoilW - Source 28, soil_raw: mean=0.9261 std=0.0007 min=0.9250 max=0.9271 | soil: mean=0.9463 std=0.0014 min=0.9433 max=0.9480 | plant: mean=1.0217 std=0.0018 min=1.0185 max=1.0234 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:32: Val - Source 28, cls acc: 0.9556, cls avg acc: 0.9167, cls loss: 0.1504, seg loss: 1.5292, total loss: 1.4494
+14-10-26 12:16:32: Val - Source 28, Tomato seg: loss=1.5260, mIoU=0.0958, acc=0.2001
+14-10-26 12:16:32: Val - Source 28, Maize seg: loss=1.5304, mIoU=0.2133, acc=0.5745
+14-10-26 12:16:33: Eval(no-train) - Target 28, acc: 0.9048, avg acc: 0.9065, cls loss: 0.2045  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:36: Trn - Source 29, cls loss: 0.0487, seg loss: 1.3387, kendall s_cls: -0.2301, s_seg: 0.1770
+14-10-26 12:16:36: SoilW - Source 29, soil_raw: mean=0.9239 std=0.0006 min=0.9229 max=0.9248 | soil: mean=0.9441 std=0.0016 min=0.9412 max=0.9469 | plant: mean=1.0217 std=0.0014 min=1.0196 max=1.0239 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:37: Val - Source 29, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0159, seg loss: 1.2152, total loss: 1.0115
+14-10-26 12:16:37: Val - Source 29, Tomato seg: loss=1.2403, mIoU=0.2375, acc=0.5011
+14-10-26 12:16:37: Val - Source 29, Maize seg: loss=1.2061, mIoU=0.2527, acc=0.7010
+14-10-26 12:16:37: Eval(no-train) - Target 29, acc: 0.9206, avg acc: 0.9005, cls loss: 0.4047  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:41: Trn - Source 30, cls loss: 0.0249, seg loss: 1.3882, kendall s_cls: -0.2367, s_seg: 0.1812
+14-10-26 12:16:41: SoilW - Source 30, soil_raw: mean=0.9218 std=0.0006 min=0.9209 max=0.9226 | soil: mean=0.9435 std=0.0031 min=0.9384 max=0.9476 | plant: mean=1.0229 std=0.0034 min=1.0179 max=1.0289 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:41: Val - Source 30, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0085, seg loss: 1.3379, total loss: 1.0991
+14-10-26 12:16:41: Val - Source 30, Tomato seg: loss=1.1983, mIoU=0.3036, acc=0.6251
+14-10-26 12:16:41: Val - Source 30, Maize seg: loss=1.3886, mIoU=0.2250, acc=0.6071
+14-10-26 12:16:42: Eval(no-train) - Target 30, acc: 0.8889, avg acc: 0.8571, cls loss: 0.4532  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:45: Trn - Source 31, cls loss: 0.0315, seg loss: 1.3697, kendall s_cls: -0.2433, s_seg: 0.1853
+14-10-26 12:16:45: SoilW - Source 31, soil_raw: mean=0.9198 std=0.0006 min=0.9189 max=0.9207 | soil: mean=0.9416 std=0.0022 min=0.9385 max=0.9455 | plant: mean=1.0235 std=0.0021 min=1.0209 max=1.0269 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:46: Val - Source 31, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0060, seg loss: 1.4184, total loss: 1.1570
+14-10-26 12:16:46: Val - Source 31, Tomato seg: loss=1.4500, mIoU=0.2115, acc=0.4775
+14-10-26 12:16:46: Val - Source 31, Maize seg: loss=1.4069, mIoU=0.2251, acc=0.6526
+14-10-26 12:16:46: Eval(no-train) - Target 31, acc: 0.9048, avg acc: 0.8788, cls loss: 0.3297  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:50: Trn - Source 32, cls loss: 0.0171, seg loss: 1.3945, kendall s_cls: -0.2498, s_seg: 0.1894
+14-10-26 12:16:50: SoilW - Source 32, soil_raw: mean=0.9178 std=0.0006 min=0.9168 max=0.9186 | soil: mean=0.9405 std=0.0020 min=0.9365 max=0.9423 | plant: mean=1.0244 std=0.0023 min=1.0197 max=1.0270 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:50: Val - Source 32, cls acc: 0.9556, cls avg acc: 0.9697, cls loss: 0.1348, seg loss: 1.3850, total loss: 1.2888
+14-10-26 12:16:50: Val - Source 32, Tomato seg: loss=1.2885, mIoU=0.2672, acc=0.6279
+14-10-26 12:16:50: Val - Source 32, Maize seg: loss=1.4200, mIoU=0.2214, acc=0.6317
+14-10-26 12:16:51: Eval(no-train) - Target 32, acc: 0.9048, avg acc: 0.8696, cls loss: 0.6650  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:54: Trn - Source 33, cls loss: 0.0155, seg loss: 1.3596, kendall s_cls: -0.2563, s_seg: 0.1935
+14-10-26 12:16:54: SoilW - Source 33, soil_raw: mean=0.9155 std=0.0007 min=0.9144 max=0.9165 | soil: mean=0.9382 std=0.0028 min=0.9340 max=0.9435 | plant: mean=1.0243 std=0.0029 min=1.0201 max=1.0294 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:55: Val - Source 33, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0283, seg loss: 1.2152, total loss: 1.0066
+14-10-26 12:16:55: Val - Source 33, Tomato seg: loss=1.2982, mIoU=0.1889, acc=0.4037
+14-10-26 12:16:55: Val - Source 33, Maize seg: loss=1.1850, mIoU=0.2645, acc=0.6913
+14-10-26 12:16:55: Eval(no-train) - Target 33, acc: 0.8889, avg acc: 0.8571, cls loss: 0.5812  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:16:59: Trn - Source 34, cls loss: 0.0516, seg loss: 1.3748, kendall s_cls: -0.2626, s_seg: 0.1973
+14-10-26 12:16:59: SoilW - Source 34, soil_raw: mean=0.9133 std=0.0005 min=0.9126 max=0.9141 | soil: mean=0.9368 std=0.0035 min=0.9288 max=0.9421 | plant: mean=1.0247 std=0.0042 min=1.0165 max=1.0314 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:16:59: Val - Source 34, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0098, seg loss: 1.1921, total loss: 0.9587
+14-10-26 12:16:59: Val - Source 34, Tomato seg: loss=1.2891, mIoU=0.1996, acc=0.4109
+14-10-26 12:16:59: Val - Source 34, Maize seg: loss=1.1568, mIoU=0.2723, acc=0.7012
+14-10-26 12:17:00: Eval(no-train) - Target 34, acc: 0.8730, avg acc: 0.8446, cls loss: 0.8638  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:03: Trn - Source 35, cls loss: 0.0186, seg loss: 1.3295, kendall s_cls: -0.2686, s_seg: 0.2012
+14-10-26 12:17:03: SoilW - Source 35, soil_raw: mean=0.9116 std=0.0005 min=0.9108 max=0.9124 | soil: mean=0.9364 std=0.0036 min=0.9318 max=0.9424 | plant: mean=1.0265 std=0.0038 min=1.0226 max=1.0339 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:04: Val - Source 35, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0144, seg loss: 1.3647, total loss: 1.1011
+14-10-26 12:17:04: Val - Source 35, Tomato seg: loss=1.1904, mIoU=0.2780, acc=0.6012
+14-10-26 12:17:04: Val - Source 35, Maize seg: loss=1.4281, mIoU=0.2218, acc=0.5871
+14-10-26 12:17:04: Eval(no-train) - Target 35, acc: 0.6984, avg acc: 0.7071, cls loss: 0.9073  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:08: Trn - Source 36, cls loss: 0.0877, seg loss: 1.3217, kendall s_cls: -0.2742, s_seg: 0.2048
+14-10-26 12:17:08: SoilW - Source 36, soil_raw: mean=0.9098 std=0.0005 min=0.9090 max=0.9106 | soil: mean=0.9344 std=0.0032 min=0.9289 max=0.9396 | plant: mean=1.0264 std=0.0036 min=1.0206 max=1.0326 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:08: Val - Source 36, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0026, seg loss: 1.4330, total loss: 1.1363
+14-10-26 12:17:08: Val - Source 36, Tomato seg: loss=1.2573, mIoU=0.3388, acc=0.7624
+14-10-26 12:17:08: Val - Source 36, Maize seg: loss=1.4970, mIoU=0.2163, acc=0.5814
+14-10-26 12:17:09: Eval(no-train) - Target 36, acc: 0.6349, avg acc: 0.6663, cls loss: 1.1647  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:12: Trn - Source 37, cls loss: 0.0328, seg loss: 1.3623, kendall s_cls: -0.2797, s_seg: 0.2084
+14-10-26 12:17:12: SoilW - Source 37, soil_raw: mean=0.9081 std=0.0004 min=0.9074 max=0.9088 | soil: mean=0.9326 std=0.0027 min=0.9290 max=0.9370 | plant: mean=1.0265 std=0.0026 min=1.0238 max=1.0315 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:13: Val - Source 37, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.3402, total loss: 1.0529
+14-10-26 12:17:13: Val - Source 37, Tomato seg: loss=1.1886, mIoU=0.3532, acc=0.7499
+14-10-26 12:17:13: Val - Source 37, Maize seg: loss=1.3953, mIoU=0.2276, acc=0.6307
+14-10-26 12:17:13: Eval(no-train) - Target 37, acc: 0.8095, avg acc: 0.7946, cls loss: 1.0364  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:16: Trn - Source 38, cls loss: 0.0201, seg loss: 1.3051, kendall s_cls: -0.2853, s_seg: 0.2119
+14-10-26 12:17:16: SoilW - Source 38, soil_raw: mean=0.9065 std=0.0005 min=0.9057 max=0.9072 | soil: mean=0.9310 std=0.0025 min=0.9261 max=0.9339 | plant: mean=1.0267 std=0.0027 min=1.0223 max=1.0304 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:17: Val - Source 38, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0040, seg loss: 1.2161, total loss: 0.9526
+14-10-26 12:17:17: Val - Source 38, Tomato seg: loss=1.1812, mIoU=0.2882, acc=0.6095
+14-10-26 12:17:17: Val - Source 38, Maize seg: loss=1.2288, mIoU=0.2485, acc=0.6747
+14-10-26 12:17:18: Eval(no-train) - Target 38, acc: 0.8571, avg acc: 0.8505, cls loss: 0.7396  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:21: Trn - Source 39, cls loss: 0.0048, seg loss: 1.3887, kendall s_cls: -0.2910, s_seg: 0.2154
+14-10-26 12:17:21: SoilW - Source 39, soil_raw: mean=0.9048 std=0.0005 min=0.9040 max=0.9055 | soil: mean=0.9300 std=0.0037 min=0.9222 max=0.9345 | plant: mean=1.0270 std=0.0042 min=1.0201 max=1.0332 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:22: Val - Source 39, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0070, seg loss: 1.5361, total loss: 1.2100
+14-10-26 12:17:22: Val - Source 39, Tomato seg: loss=1.6179, mIoU=0.1443, acc=0.2764
+14-10-26 12:17:22: Val - Source 39, Maize seg: loss=1.5063, mIoU=0.2157, acc=0.5709
+14-10-26 12:17:22: Eval(no-train) - Target 39, acc: 0.7778, avg acc: 0.7880, cls loss: 0.6480  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:25: Trn - Source 40, cls loss: 0.0495, seg loss: 1.3142, kendall s_cls: -0.2965, s_seg: 0.2188
+14-10-26 12:17:25: SoilW - Source 40, soil_raw: mean=0.9030 std=0.0005 min=0.9022 max=0.9038 | soil: mean=0.9299 std=0.0031 min=0.9245 max=0.9347 | plant: mean=1.0291 std=0.0035 min=1.0240 max=1.0344 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:26: Val - Source 40, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0033, seg loss: 1.4156, total loss: 1.1030
+14-10-26 12:17:26: Val - Source 40, Tomato seg: loss=1.2841, mIoU=0.2695, acc=0.5401
+14-10-26 12:17:26: Val - Source 40, Maize seg: loss=1.4635, mIoU=0.2416, acc=0.6493
+14-10-26 12:17:27: Eval(no-train) - Target 40, acc: 0.7619, avg acc: 0.7755, cls loss: 0.8325  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:30: Trn - Source 41, cls loss: 0.0238, seg loss: 1.4405, kendall s_cls: -0.3018, s_seg: 0.2222
+14-10-26 12:17:30: SoilW - Source 41, soil_raw: mean=0.9013 std=0.0005 min=0.9004 max=0.9020 | soil: mean=0.9282 std=0.0032 min=0.9197 max=0.9316 | plant: mean=1.0293 std=0.0036 min=1.0215 max=1.0328 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:31: Val - Source 41, cls acc: 0.8222, cls avg acc: 0.6667, cls loss: 0.4096, seg loss: 2.2465, total loss: 2.3131
+14-10-26 12:17:31: Val - Source 41, Tomato seg: loss=1.3270, mIoU=0.2366, acc=0.4962
+14-10-26 12:17:31: Val - Source 41, Maize seg: loss=2.5809, mIoU=0.0998, acc=0.3810
+14-10-26 12:17:31: Eval(no-train) - Target 41, acc: 0.7143, avg acc: 0.7288, cls loss: 0.7331  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:34: Trn - Source 42, cls loss: 0.0470, seg loss: 1.4327, kendall s_cls: -0.3068, s_seg: 0.2258
+14-10-26 12:17:34: SoilW - Source 42, soil_raw: mean=0.8990 std=0.0007 min=0.8980 max=0.9001 | soil: mean=0.9263 std=0.0033 min=0.9198 max=0.9298 | plant: mean=1.0297 std=0.0038 min=1.0239 max=1.0355 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:35: Val - Source 42, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0032, seg loss: 1.3819, total loss: 1.0664
+14-10-26 12:17:35: Val - Source 42, Tomato seg: loss=1.1832, mIoU=0.3579, acc=0.7284
+14-10-26 12:17:35: Val - Source 42, Maize seg: loss=1.4541, mIoU=0.2309, acc=0.6532
+14-10-26 12:17:36: Eval(no-train) - Target 42, acc: 0.8095, avg acc: 0.7853, cls loss: 0.9049  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:39: Trn - Source 43, cls loss: 0.0146, seg loss: 1.4384, kendall s_cls: -0.3118, s_seg: 0.2293
+14-10-26 12:17:39: SoilW - Source 43, soil_raw: mean=0.8967 std=0.0006 min=0.8957 max=0.8977 | soil: mean=0.9240 std=0.0037 min=0.9176 max=0.9301 | plant: mean=1.0297 std=0.0038 min=1.0244 max=1.0374 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:39: Val - Source 43, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0031, seg loss: 1.2722, total loss: 0.9745
+14-10-26 12:17:39: Val - Source 43, Tomato seg: loss=1.1541, mIoU=0.3300, acc=0.7205
+14-10-26 12:17:39: Val - Source 43, Maize seg: loss=1.3152, mIoU=0.2351, acc=0.6691
+14-10-26 12:17:40: Eval(no-train) - Target 43, acc: 0.8254, avg acc: 0.7978, cls loss: 0.9041  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:43: Trn - Source 44, cls loss: 0.0183, seg loss: 1.3733, kendall s_cls: -0.3168, s_seg: 0.2327
+14-10-26 12:17:43: SoilW - Source 44, soil_raw: mean=0.8946 std=0.0006 min=0.8937 max=0.8955 | soil: mean=0.9239 std=0.0034 min=0.9187 max=0.9287 | plant: mean=1.0321 std=0.0038 min=1.0262 max=1.0376 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:44: Val - Source 44, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0119, seg loss: 1.2874, total loss: 0.9945
+14-10-26 12:17:44: Val - Source 44, Tomato seg: loss=1.2412, mIoU=0.2421, acc=0.5392
+14-10-26 12:17:44: Val - Source 44, Maize seg: loss=1.3043, mIoU=0.2414, acc=0.6887
+14-10-26 12:17:45: Eval(no-train) - Target 44, acc: 0.8730, avg acc: 0.8446, cls loss: 0.9299  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:48: Trn - Source 45, cls loss: 0.0239, seg loss: 1.3508, kendall s_cls: -0.3217, s_seg: 0.2358
+14-10-26 12:17:48: SoilW - Source 45, soil_raw: mean=0.8927 std=0.0004 min=0.8921 max=0.8935 | soil: mean=0.9216 std=0.0031 min=0.9164 max=0.9272 | plant: mean=1.0318 std=0.0039 min=1.0260 max=1.0392 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:48: Val - Source 45, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0403, seg loss: 1.2666, total loss: 1.0132
+14-10-26 12:17:48: Val - Source 45, Tomato seg: loss=1.2594, mIoU=0.2409, acc=0.4993
+14-10-26 12:17:48: Val - Source 45, Maize seg: loss=1.2692, mIoU=0.2402, acc=0.6530
+14-10-26 12:17:49: Eval(no-train) - Target 45, acc: 0.8413, avg acc: 0.8196, cls loss: 0.5361  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:52: Trn - Source 46, cls loss: 0.0571, seg loss: 1.3177, kendall s_cls: -0.3263, s_seg: 0.2388
+14-10-26 12:17:52: SoilW - Source 46, soil_raw: mean=0.8913 std=0.0004 min=0.8908 max=0.8919 | soil: mean=0.9198 std=0.0043 min=0.9144 max=0.9274 | plant: mean=1.0310 std=0.0047 min=1.0252 max=1.0407 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:53: Val - Source 46, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0199, seg loss: 1.2992, total loss: 1.0070
+14-10-26 12:17:53: Val - Source 46, Tomato seg: loss=1.1891, mIoU=0.2689, acc=0.5679
+14-10-26 12:17:53: Val - Source 46, Maize seg: loss=1.3392, mIoU=0.2380, acc=0.6503
+14-10-26 12:17:53: Eval(no-train) - Target 46, acc: 0.6825, avg acc: 0.6946, cls loss: 0.7487  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:17:57: Trn - Source 47, cls loss: 0.0087, seg loss: 1.3355, kendall s_cls: -0.3307, s_seg: 0.2416
+14-10-26 12:17:57: SoilW - Source 47, soil_raw: mean=0.8899 std=0.0005 min=0.8891 max=0.8906 | soil: mean=0.9193 std=0.0048 min=0.9123 max=0.9274 | plant: mean=1.0317 std=0.0056 min=1.0247 max=1.0423 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:17:57: Val - Source 47, cls acc: 0.9778, cls avg acc: 0.9848, cls loss: 0.0200, seg loss: 1.2737, total loss: 0.9836
+14-10-26 12:17:57: Val - Source 47, Tomato seg: loss=1.1304, mIoU=0.3010, acc=0.6314
+14-10-26 12:17:57: Val - Source 47, Maize seg: loss=1.3259, mIoU=0.2398, acc=0.6414
+14-10-26 12:17:58: Eval(no-train) - Target 47, acc: 0.8254, avg acc: 0.8071, cls loss: 0.7818  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:01: Trn - Source 48, cls loss: 0.0243, seg loss: 1.2817, kendall s_cls: -0.3352, s_seg: 0.2443
+14-10-26 12:18:01: SoilW - Source 48, soil_raw: mean=0.8883 std=0.0004 min=0.8877 max=0.8889 | soil: mean=0.9192 std=0.0046 min=0.9111 max=0.9283 | plant: mean=1.0338 std=0.0048 min=1.0258 max=1.0445 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:02: Val - Source 48, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0095, seg loss: 1.2377, total loss: 0.9373
+14-10-26 12:18:02: Val - Source 48, Tomato seg: loss=1.1209, mIoU=0.3130, acc=0.6475
+14-10-26 12:18:02: Val - Source 48, Maize seg: loss=1.2802, mIoU=0.2423, acc=0.6512
+14-10-26 12:18:02: Eval(no-train) - Target 48, acc: 0.8571, avg acc: 0.8321, cls loss: 0.6878  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:06: Trn - Source 49, cls loss: 0.0359, seg loss: 1.2672, kendall s_cls: -0.3394, s_seg: 0.2468
+14-10-26 12:18:06: SoilW - Source 49, soil_raw: mean=0.8869 std=0.0004 min=0.8863 max=0.8875 | soil: mean=0.9164 std=0.0045 min=0.9091 max=0.9219 | plant: mean=1.0322 std=0.0051 min=1.0251 max=1.0389 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:06: Val - Source 49, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0023, seg loss: 1.2551, total loss: 0.9376
+14-10-26 12:18:06: Val - Source 49, Tomato seg: loss=1.1877, mIoU=0.2514, acc=0.5139
+14-10-26 12:18:06: Val - Source 49, Maize seg: loss=1.2797, mIoU=0.2464, acc=0.6579
+14-10-26 12:18:07: Eval(no-train) - Target 49, acc: 0.8095, avg acc: 0.7946, cls loss: 0.5754  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:10: Trn - Source 50, cls loss: 0.0337, seg loss: 1.2621, kendall s_cls: -0.3434, s_seg: 0.2492
+14-10-26 12:18:10: SoilW - Source 50, soil_raw: mean=0.8856 std=0.0003 min=0.8852 max=0.8861 | soil: mean=0.9148 std=0.0040 min=0.9111 max=0.9246 | plant: mean=1.0322 std=0.0038 min=1.0290 max=1.0437 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:11: Val - Source 50, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.1788, total loss: 0.8729
+14-10-26 12:18:11: Val - Source 50, Tomato seg: loss=1.1046, mIoU=0.2881, acc=0.6142
+14-10-26 12:18:11: Val - Source 50, Maize seg: loss=1.2058, mIoU=0.2679, acc=0.7091
+14-10-26 12:18:11: Eval(no-train) - Target 50, acc: 0.7937, avg acc: 0.7821, cls loss: 1.0083  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:15: Trn - Source 51, cls loss: 0.0258, seg loss: 1.2433, kendall s_cls: -0.3474, s_seg: 0.2514
+14-10-26 12:18:15: SoilW - Source 51, soil_raw: mean=0.8846 std=0.0003 min=0.8840 max=0.8851 | soil: mean=0.9147 std=0.0045 min=0.9060 max=0.9204 | plant: mean=1.0328 std=0.0055 min=1.0240 max=1.0404 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:15: Val - Source 51, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.1448, total loss: 0.8432
+14-10-26 12:18:15: Val - Source 51, Tomato seg: loss=1.1069, mIoU=0.3156, acc=0.6545
+14-10-26 12:18:15: Val - Source 51, Maize seg: loss=1.1586, mIoU=0.2762, acc=0.7268
+14-10-26 12:18:16: Eval(no-train) - Target 51, acc: 0.8095, avg acc: 0.7946, cls loss: 1.0144  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:19: Trn - Source 52, cls loss: 0.0166, seg loss: 1.2857, kendall s_cls: -0.3512, s_seg: 0.2536
+14-10-26 12:18:19: SoilW - Source 52, soil_raw: mean=0.8832 std=0.0004 min=0.8826 max=0.8839 | soil: mean=0.9149 std=0.0031 min=0.9095 max=0.9186 | plant: mean=1.0354 std=0.0036 min=1.0299 max=1.0408 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:20: Val - Source 52, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.1491, total loss: 0.8439
+14-10-26 12:18:20: Val - Source 52, Tomato seg: loss=1.1545, mIoU=0.2761, acc=0.5827
+14-10-26 12:18:20: Val - Source 52, Maize seg: loss=1.1472, mIoU=0.2711, acc=0.7357
+14-10-26 12:18:20: Eval(no-train) - Target 52, acc: 0.8571, avg acc: 0.8321, cls loss: 0.8428  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:24: Trn - Source 53, cls loss: 0.0228, seg loss: 1.2950, kendall s_cls: -0.3550, s_seg: 0.2558
+14-10-26 12:18:24: SoilW - Source 53, soil_raw: mean=0.8818 std=0.0003 min=0.8813 max=0.8824 | soil: mean=0.9125 std=0.0025 min=0.9090 max=0.9155 | plant: mean=1.0345 std=0.0031 min=1.0303 max=1.0385 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:24: Val - Source 53, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0014, seg loss: 1.2983, total loss: 0.9577
+14-10-26 12:18:24: Val - Source 53, Tomato seg: loss=1.3665, mIoU=0.2031, acc=0.3759
+14-10-26 12:18:24: Val - Source 53, Maize seg: loss=1.2735, mIoU=0.2516, acc=0.6578
+14-10-26 12:18:25: Eval(no-train) - Target 53, acc: 0.7460, avg acc: 0.7446, cls loss: 0.8564  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:28: Trn - Source 54, cls loss: 0.0108, seg loss: 1.2524, kendall s_cls: -0.3587, s_seg: 0.2579
+14-10-26 12:18:28: SoilW - Source 54, soil_raw: mean=0.8808 std=0.0003 min=0.8804 max=0.8812 | soil: mean=0.9119 std=0.0037 min=0.9055 max=0.9175 | plant: mean=1.0346 std=0.0041 min=1.0278 max=1.0413 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:29: Val - Source 54, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.2811, total loss: 0.9409
+14-10-26 12:18:29: Val - Source 54, Tomato seg: loss=1.2748, mIoU=0.2662, acc=0.5201
+14-10-26 12:18:29: Val - Source 54, Maize seg: loss=1.2833, mIoU=0.2441, acc=0.6655
+14-10-26 12:18:29: Eval(no-train) - Target 54, acc: 0.7302, avg acc: 0.7321, cls loss: 0.9904  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:33: Trn - Source 55, cls loss: 0.0309, seg loss: 1.2767, kendall s_cls: -0.3622, s_seg: 0.2599
+14-10-26 12:18:33: SoilW - Source 55, soil_raw: mean=0.8798 std=0.0003 min=0.8793 max=0.8803 | soil: mean=0.9126 std=0.0039 min=0.9059 max=0.9172 | plant: mean=1.0365 std=0.0045 min=1.0294 max=1.0424 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:33: Val - Source 55, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.1579, total loss: 0.8426
+14-10-26 12:18:33: Val - Source 55, Tomato seg: loss=1.1847, mIoU=0.3141, acc=0.6599
+14-10-26 12:18:33: Val - Source 55, Maize seg: loss=1.1481, mIoU=0.2658, acc=0.6828
+14-10-26 12:18:34: Eval(no-train) - Target 55, acc: 0.7619, avg acc: 0.7571, cls loss: 0.8966  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:37: Trn - Source 56, cls loss: 0.0233, seg loss: 1.3040, kendall s_cls: -0.3655, s_seg: 0.2619
+14-10-26 12:18:37: SoilW - Source 56, soil_raw: mean=0.8787 std=0.0003 min=0.8782 max=0.8792 | soil: mean=0.9102 std=0.0044 min=0.9005 max=0.9176 | plant: mean=1.0349 std=0.0049 min=1.0251 max=1.0439 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:38: Val - Source 56, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.2436, total loss: 0.9061
+14-10-26 12:18:38: Val - Source 56, Tomato seg: loss=1.2004, mIoU=0.2974, acc=0.6356
+14-10-26 12:18:38: Val - Source 56, Maize seg: loss=1.2594, mIoU=0.2436, acc=0.6495
+14-10-26 12:18:38: Eval(no-train) - Target 56, acc: 0.8254, avg acc: 0.8163, cls loss: 0.6524  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:42: Trn - Source 57, cls loss: 0.0134, seg loss: 1.2086, kendall s_cls: -0.3688, s_seg: 0.2638
+14-10-26 12:18:42: SoilW - Source 57, soil_raw: mean=0.8776 std=0.0003 min=0.8771 max=0.8781 | soil: mean=0.9103 std=0.0048 min=0.9022 max=0.9183 | plant: mean=1.0362 std=0.0052 min=1.0284 max=1.0466 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:42: Val - Source 57, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.1051, total loss: 0.7975
+14-10-26 12:18:42: Val - Source 57, Tomato seg: loss=1.1837, mIoU=0.2811, acc=0.5657
+14-10-26 12:18:42: Val - Source 57, Maize seg: loss=1.0764, mIoU=0.2630, acc=0.7026
+14-10-26 12:18:43: Eval(no-train) - Target 57, acc: 0.8571, avg acc: 0.8505, cls loss: 0.4876  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:46: Trn - Source 58, cls loss: 0.0036, seg loss: 1.2532, kendall s_cls: -0.3720, s_seg: 0.2655
+14-10-26 12:18:46: SoilW - Source 58, soil_raw: mean=0.8766 std=0.0003 min=0.8760 max=0.8770 | soil: mean=0.9088 std=0.0057 min=0.9006 max=0.9185 | plant: mean=1.0352 std=0.0062 min=1.0270 max=1.0473 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:47: Val - Source 58, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.1399, total loss: 0.8221
+14-10-26 12:18:47: Val - Source 58, Tomato seg: loss=1.1484, mIoU=0.3373, acc=0.6837
+14-10-26 12:18:47: Val - Source 58, Maize seg: loss=1.1369, mIoU=0.2574, acc=0.6992
+14-10-26 12:18:47: Eval(no-train) - Target 58, acc: 0.8571, avg acc: 0.8413, cls loss: 0.4174  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:51: Trn - Source 59, cls loss: 0.0045, seg loss: 1.2091, kendall s_cls: -0.3751, s_seg: 0.2672
+14-10-26 12:18:51: SoilW - Source 59, soil_raw: mean=0.8754 std=0.0003 min=0.8749 max=0.8759 | soil: mean=0.9106 std=0.0038 min=0.9026 max=0.9154 | plant: mean=1.0394 std=0.0048 min=1.0307 max=1.0460 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:51: Val - Source 59, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.1009, total loss: 0.7898
+14-10-26 12:18:51: Val - Source 59, Tomato seg: loss=1.1182, mIoU=0.3353, acc=0.6721
+14-10-26 12:18:51: Val - Source 59, Maize seg: loss=1.0945, mIoU=0.2673, acc=0.7181
+14-10-26 12:18:52: Eval(no-train) - Target 59, acc: 0.8571, avg acc: 0.8413, cls loss: 0.4770  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:55: Trn - Source 60, cls loss: 0.0373, seg loss: 1.2198, kendall s_cls: -0.3780, s_seg: 0.2687
+14-10-26 12:18:55: SoilW - Source 60, soil_raw: mean=0.8744 std=0.0003 min=0.8740 max=0.8748 | soil: mean=0.9080 std=0.0027 min=0.9051 max=0.9132 | plant: mean=1.0382 std=0.0027 min=1.0354 max=1.0439 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:18:56: Val - Source 60, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0002, seg loss: 1.1593, total loss: 0.8318
+14-10-26 12:18:56: Val - Source 60, Tomato seg: loss=1.0986, mIoU=0.3184, acc=0.6553
+14-10-26 12:18:56: Val - Source 60, Maize seg: loss=1.1814, mIoU=0.2584, acc=0.6822
+14-10-26 12:18:56: Eval(no-train) - Target 60, acc: 0.9048, avg acc: 0.8880, cls loss: 0.3567  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:18:59: Trn - Source 61, cls loss: 0.0143, seg loss: 1.2444, kendall s_cls: -0.3807, s_seg: 0.2702
+14-10-26 12:18:59: SoilW - Source 61, soil_raw: mean=0.8736 std=0.0002 min=0.8733 max=0.8739 | soil: mean=0.9070 std=0.0040 min=0.8982 max=0.9124 | plant: mean=1.0374 std=0.0048 min=1.0281 max=1.0441 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:00: Val - Source 61, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0681, total loss: 0.7607
+14-10-26 12:19:00: Val - Source 61, Tomato seg: loss=1.0750, mIoU=0.3224, acc=0.6635
+14-10-26 12:19:00: Val - Source 61, Maize seg: loss=1.0655, mIoU=0.2777, acc=0.7362
+14-10-26 12:19:01: Eval(no-train) - Target 61, acc: 0.8571, avg acc: 0.8598, cls loss: 0.3697  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:04: Trn - Source 62, cls loss: 0.0176, seg loss: 1.1981, kendall s_cls: -0.3834, s_seg: 0.2716
+14-10-26 12:19:04: SoilW - Source 62, soil_raw: mean=0.8728 std=0.0002 min=0.8725 max=0.8731 | soil: mean=0.9064 std=0.0031 min=0.9005 max=0.9122 | plant: mean=1.0380 std=0.0036 min=1.0318 max=1.0455 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:05: Val - Source 62, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0721, total loss: 0.7619
+14-10-26 12:19:05: Val - Source 62, Tomato seg: loss=1.0620, mIoU=0.3267, acc=0.6667
+14-10-26 12:19:05: Val - Source 62, Maize seg: loss=1.0757, mIoU=0.2912, acc=0.7379
+14-10-26 12:19:05: Eval(no-train) - Target 62, acc: 0.8413, avg acc: 0.8473, cls loss: 0.3958  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:08: Trn - Source 63, cls loss: 0.0187, seg loss: 1.1943, kendall s_cls: -0.3859, s_seg: 0.2730
+14-10-26 12:19:08: SoilW - Source 63, soil_raw: mean=0.8720 std=0.0002 min=0.8716 max=0.8724 | soil: mean=0.9061 std=0.0043 min=0.8994 max=0.9115 | plant: mean=1.0383 std=0.0048 min=1.0318 max=1.0453 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:09: Val - Source 63, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.1114, total loss: 0.7901
+14-10-26 12:19:09: Val - Source 63, Tomato seg: loss=1.0605, mIoU=0.3291, acc=0.6764
+14-10-26 12:19:09: Val - Source 63, Maize seg: loss=1.1299, mIoU=0.2919, acc=0.7090
+14-10-26 12:19:10: Eval(no-train) - Target 63, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4157  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:13: Trn - Source 64, cls loss: 0.0040, seg loss: 1.2037, kendall s_cls: -0.3883, s_seg: 0.2742
+14-10-26 12:19:13: SoilW - Source 64, soil_raw: mean=0.8712 std=0.0002 min=0.8709 max=0.8715 | soil: mean=0.9051 std=0.0038 min=0.8965 max=0.9103 | plant: mean=1.0382 std=0.0047 min=1.0288 max=1.0446 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:14: Val - Source 64, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0671, total loss: 0.7548
+14-10-26 12:19:14: Val - Source 64, Tomato seg: loss=1.0987, mIoU=0.3243, acc=0.6569
+14-10-26 12:19:14: Val - Source 64, Maize seg: loss=1.0556, mIoU=0.2960, acc=0.7494
+14-10-26 12:19:14: Eval(no-train) - Target 64, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5066  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:17: Trn - Source 65, cls loss: 0.0024, seg loss: 1.1763, kendall s_cls: -0.3906, s_seg: 0.2754
+14-10-26 12:19:17: SoilW - Source 65, soil_raw: mean=0.8705 std=0.0002 min=0.8703 max=0.8708 | soil: mean=0.9055 std=0.0038 min=0.8982 max=0.9109 | plant: mean=1.0394 std=0.0045 min=1.0314 max=1.0463 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:18: Val - Source 65, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.1314, total loss: 0.8023
+14-10-26 12:19:18: Val - Source 65, Tomato seg: loss=1.1430, mIoU=0.3247, acc=0.6642
+14-10-26 12:19:18: Val - Source 65, Maize seg: loss=1.1271, mIoU=0.2871, acc=0.7306
+14-10-26 12:19:19: Eval(no-train) - Target 65, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5197  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:22: Trn - Source 66, cls loss: 0.0677, seg loss: 1.1954, kendall s_cls: -0.3927, s_seg: 0.2765
+14-10-26 12:19:22: SoilW - Source 66, soil_raw: mean=0.8699 std=0.0002 min=0.8696 max=0.8702 | soil: mean=0.9047 std=0.0020 min=0.9017 max=0.9074 | plant: mean=1.0398 std=0.0025 min=1.0362 max=1.0434 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:23: Val - Source 66, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0015, seg loss: 1.2162, total loss: 0.8666
+14-10-26 12:19:23: Val - Source 66, Tomato seg: loss=1.1470, mIoU=0.3289, acc=0.7030
+14-10-26 12:19:23: Val - Source 66, Maize seg: loss=1.2414, mIoU=0.2763, acc=0.6751
+14-10-26 12:19:23: Eval(no-train) - Target 66, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5280  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:26: Trn - Source 67, cls loss: 0.0177, seg loss: 1.2208, kendall s_cls: -0.3947, s_seg: 0.2776
+14-10-26 12:19:26: SoilW - Source 67, soil_raw: mean=0.8693 std=0.0002 min=0.8690 max=0.8695 | soil: mean=0.9048 std=0.0042 min=0.8997 max=0.9107 | plant: mean=1.0401 std=0.0044 min=1.0353 max=1.0475 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:27: Val - Source 67, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0038, seg loss: 1.1509, total loss: 0.8191
+14-10-26 12:19:27: Val - Source 67, Tomato seg: loss=1.1164, mIoU=0.3266, acc=0.6569
+14-10-26 12:19:27: Val - Source 67, Maize seg: loss=1.1634, mIoU=0.2825, acc=0.6934
+14-10-26 12:19:28: Eval(no-train) - Target 67, acc: 0.8254, avg acc: 0.8348, cls loss: 0.6365  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:31: Trn - Source 68, cls loss: 0.0038, seg loss: 1.1754, kendall s_cls: -0.3966, s_seg: 0.2786
+14-10-26 12:19:31: SoilW - Source 68, soil_raw: mean=0.8685 std=0.0002 min=0.8683 max=0.8689 | soil: mean=0.9043 std=0.0052 min=0.8953 max=0.9110 | plant: mean=1.0399 std=0.0063 min=1.0304 max=1.0491 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:31: Val - Source 68, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.0799, total loss: 0.7600
+14-10-26 12:19:31: Val - Source 68, Tomato seg: loss=1.1326, mIoU=0.2993, acc=0.6094
+14-10-26 12:19:31: Val - Source 68, Maize seg: loss=1.0607, mIoU=0.2941, acc=0.7360
+14-10-26 12:19:32: Eval(no-train) - Target 68, acc: 0.7937, avg acc: 0.7913, cls loss: 0.6473  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:35: Trn - Source 69, cls loss: 0.0299, seg loss: 1.1869, kendall s_cls: -0.3984, s_seg: 0.2796
+14-10-26 12:19:35: SoilW - Source 69, soil_raw: mean=0.8679 std=0.0002 min=0.8677 max=0.8682 | soil: mean=0.9023 std=0.0041 min=0.8929 max=0.9071 | plant: mean=1.0388 std=0.0049 min=1.0291 max=1.0453 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:36: Val - Source 69, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.0732, total loss: 0.7534
+14-10-26 12:19:36: Val - Source 69, Tomato seg: loss=1.1223, mIoU=0.2874, acc=0.5990
+14-10-26 12:19:36: Val - Source 69, Maize seg: loss=1.0553, mIoU=0.3044, acc=0.7472
+14-10-26 12:19:37: Eval(no-train) - Target 69, acc: 0.7778, avg acc: 0.7788, cls loss: 0.6984  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:40: Trn - Source 70, cls loss: 0.0080, seg loss: 1.1443, kendall s_cls: -0.4001, s_seg: 0.2805
+14-10-26 12:19:40: SoilW - Source 70, soil_raw: mean=0.8674 std=0.0002 min=0.8671 max=0.8676 | soil: mean=0.9024 std=0.0046 min=0.8956 max=0.9093 | plant: mean=1.0394 std=0.0053 min=1.0325 max=1.0480 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:40: Val - Source 70, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0688, total loss: 0.7484
+14-10-26 12:19:40: Val - Source 70, Tomato seg: loss=1.1654, mIoU=0.2798, acc=0.5785
+14-10-26 12:19:40: Val - Source 70, Maize seg: loss=1.0337, mIoU=0.3009, acc=0.7499
+14-10-26 12:19:41: Eval(no-train) - Target 70, acc: 0.8095, avg acc: 0.8038, cls loss: 0.5623  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:44: Trn - Source 71, cls loss: 0.0102, seg loss: 1.1464, kendall s_cls: -0.4017, s_seg: 0.2813
+14-10-26 12:19:44: SoilW - Source 71, soil_raw: mean=0.8669 std=0.0001 min=0.8667 max=0.8671 | soil: mean=0.9017 std=0.0052 min=0.8939 max=0.9079 | plant: mean=1.0389 std=0.0061 min=1.0310 max=1.0472 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:45: Val - Source 71, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0685, total loss: 0.7469
+14-10-26 12:19:45: Val - Source 71, Tomato seg: loss=1.1537, mIoU=0.2983, acc=0.6017
+14-10-26 12:19:45: Val - Source 71, Maize seg: loss=1.0375, mIoU=0.3041, acc=0.7332
+14-10-26 12:19:46: Eval(no-train) - Target 71, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4737  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:49: Trn - Source 72, cls loss: 0.0089, seg loss: 1.1581, kendall s_cls: -0.4032, s_seg: 0.2820
+14-10-26 12:19:49: SoilW - Source 72, soil_raw: mean=0.8665 std=0.0002 min=0.8662 max=0.8667 | soil: mean=0.9025 std=0.0059 min=0.8912 max=0.9126 | plant: mean=1.0401 std=0.0065 min=1.0289 max=1.0530 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:49: Val - Source 72, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0807, total loss: 0.7552
+14-10-26 12:19:49: Val - Source 72, Tomato seg: loss=1.1238, mIoU=0.3172, acc=0.6412
+14-10-26 12:19:49: Val - Source 72, Maize seg: loss=1.0650, mIoU=0.2920, acc=0.7094
+14-10-26 12:19:50: Eval(no-train) - Target 72, acc: 0.8571, avg acc: 0.8413, cls loss: 0.4871  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:53: Trn - Source 73, cls loss: 0.0358, seg loss: 1.1663, kendall s_cls: -0.4046, s_seg: 0.2827
+14-10-26 12:19:53: SoilW - Source 73, soil_raw: mean=0.8660 std=0.0001 min=0.8658 max=0.8661 | soil: mean=0.9019 std=0.0048 min=0.8942 max=0.9082 | plant: mean=1.0404 std=0.0057 min=1.0324 max=1.0488 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:54: Val - Source 73, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0303, total loss: 0.7162
+14-10-26 12:19:54: Val - Source 73, Tomato seg: loss=1.0659, mIoU=0.3504, acc=0.7018
+14-10-26 12:19:54: Val - Source 73, Maize seg: loss=1.0174, mIoU=0.3144, acc=0.7549
+14-10-26 12:19:55: Eval(no-train) - Target 73, acc: 0.8254, avg acc: 0.8071, cls loss: 0.6183  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:19:58: Trn - Source 74, cls loss: 0.0077, seg loss: 1.1798, kendall s_cls: -0.4059, s_seg: 0.2834
+14-10-26 12:19:58: SoilW - Source 74, soil_raw: mean=0.8656 std=0.0001 min=0.8654 max=0.8658 | soil: mean=0.9014 std=0.0055 min=0.8932 max=0.9102 | plant: mean=1.0401 std=0.0062 min=1.0319 max=1.0518 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:19:58: Val - Source 74, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0523, total loss: 0.7319
+14-10-26 12:19:58: Val - Source 74, Tomato seg: loss=1.0777, mIoU=0.3521, acc=0.7071
+14-10-26 12:19:58: Val - Source 74, Maize seg: loss=1.0430, mIoU=0.3094, acc=0.7388
+14-10-26 12:19:59: Eval(no-train) - Target 74, acc: 0.8254, avg acc: 0.8071, cls loss: 0.6011  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:02: Trn - Source 75, cls loss: 0.0142, seg loss: 1.1781, kendall s_cls: -0.4071, s_seg: 0.2841
+14-10-26 12:20:02: SoilW - Source 75, soil_raw: mean=0.8653 std=0.0001 min=0.8651 max=0.8654 | soil: mean=0.9016 std=0.0046 min=0.8935 max=0.9062 | plant: mean=1.0410 std=0.0055 min=1.0328 max=1.0473 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:03: Val - Source 75, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0623, total loss: 0.7388
+14-10-26 12:20:03: Val - Source 75, Tomato seg: loss=1.0779, mIoU=0.3390, acc=0.6854
+14-10-26 12:20:03: Val - Source 75, Maize seg: loss=1.0567, mIoU=0.3024, acc=0.7272
+14-10-26 12:20:04: Eval(no-train) - Target 75, acc: 0.8095, avg acc: 0.7946, cls loss: 0.5641  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:07: Trn - Source 76, cls loss: 0.0035, seg loss: 1.1548, kendall s_cls: -0.4082, s_seg: 0.2846
+14-10-26 12:20:07: SoilW - Source 76, soil_raw: mean=0.8649 std=0.0001 min=0.8648 max=0.8651 | soil: mean=0.8991 std=0.0060 min=0.8898 max=0.9099 | plant: mean=1.0380 std=0.0065 min=1.0286 max=1.0522 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:07: Val - Source 76, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0535, total loss: 0.7319
+14-10-26 12:20:07: Val - Source 76, Tomato seg: loss=1.1333, mIoU=0.3100, acc=0.6232
+14-10-26 12:20:07: Val - Source 76, Maize seg: loss=1.0245, mIoU=0.3136, acc=0.7549
+14-10-26 12:20:08: Eval(no-train) - Target 76, acc: 0.8413, avg acc: 0.8288, cls loss: 0.5401  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:11: Trn - Source 77, cls loss: 0.0039, seg loss: 1.1585, kendall s_cls: -0.4093, s_seg: 0.2852
+14-10-26 12:20:11: SoilW - Source 77, soil_raw: mean=0.8646 std=0.0001 min=0.8645 max=0.8647 | soil: mean=0.8970 std=0.0033 min=0.8922 max=0.9022 | plant: mean=1.0369 std=0.0038 min=1.0320 max=1.0434 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:12: Val - Source 77, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0905, total loss: 0.7588
+14-10-26 12:20:12: Val - Source 77, Tomato seg: loss=1.1775, mIoU=0.2965, acc=0.5904
+14-10-26 12:20:12: Val - Source 77, Maize seg: loss=1.0588, mIoU=0.3081, acc=0.7528
+14-10-26 12:20:12: Eval(no-train) - Target 77, acc: 0.8413, avg acc: 0.8288, cls loss: 0.5207  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:16: Trn - Source 78, cls loss: 0.0071, seg loss: 1.1430, kendall s_cls: -0.4103, s_seg: 0.2857
+14-10-26 12:20:16: SoilW - Source 78, soil_raw: mean=0.8644 std=0.0001 min=0.8643 max=0.8645 | soil: mean=0.8991 std=0.0042 min=0.8926 max=0.9041 | plant: mean=1.0393 std=0.0050 min=1.0325 max=1.0458 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:16: Val - Source 78, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0723, total loss: 0.7445
+14-10-26 12:20:16: Val - Source 78, Tomato seg: loss=1.1096, mIoU=0.3192, acc=0.6471
+14-10-26 12:20:16: Val - Source 78, Maize seg: loss=1.0587, mIoU=0.3024, acc=0.7424
+14-10-26 12:20:17: Eval(no-train) - Target 78, acc: 0.8413, avg acc: 0.8288, cls loss: 0.5055  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:20: Trn - Source 79, cls loss: 0.0154, seg loss: 1.1174, kendall s_cls: -0.4111, s_seg: 0.2861
+14-10-26 12:20:20: SoilW - Source 79, soil_raw: mean=0.8642 std=0.0001 min=0.8641 max=0.8643 | soil: mean=0.8992 std=0.0055 min=0.8898 max=0.9083 | plant: mean=1.0392 std=0.0062 min=1.0298 max=1.0511 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:21: Val - Source 79, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0690, total loss: 0.7410
+14-10-26 12:20:21: Val - Source 79, Tomato seg: loss=1.1065, mIoU=0.3153, acc=0.6372
+14-10-26 12:20:21: Val - Source 79, Maize seg: loss=1.0553, mIoU=0.2933, acc=0.7366
+14-10-26 12:20:21: Eval(no-train) - Target 79, acc: 0.8571, avg acc: 0.8413, cls loss: 0.4955  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:25: Trn - Source 80, cls loss: 0.0140, seg loss: 1.1471, kendall s_cls: -0.4119, s_seg: 0.2865
+14-10-26 12:20:25: SoilW - Source 80, soil_raw: mean=0.8639 std=0.0001 min=0.8638 max=0.8640 | soil: mean=0.8995 std=0.0036 min=0.8924 max=0.9050 | plant: mean=1.0405 std=0.0042 min=1.0331 max=1.0477 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:25: Val - Source 80, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0540, total loss: 0.7293
+14-10-26 12:20:25: Val - Source 80, Tomato seg: loss=1.0982, mIoU=0.3244, acc=0.6564
+14-10-26 12:20:25: Val - Source 80, Maize seg: loss=1.0379, mIoU=0.2963, acc=0.7476
+14-10-26 12:20:26: Eval(no-train) - Target 80, acc: 0.8413, avg acc: 0.8196, cls loss: 0.5442  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:29: Trn - Source 81, cls loss: 0.0024, seg loss: 1.1542, kendall s_cls: -0.4127, s_seg: 0.2869
+14-10-26 12:20:29: SoilW - Source 81, soil_raw: mean=0.8637 std=0.0001 min=0.8636 max=0.8638 | soil: mean=0.9004 std=0.0048 min=0.8878 max=0.9062 | plant: mean=1.0413 std=0.0062 min=1.0280 max=1.0493 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:30: Val - Source 81, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0337, total loss: 0.7135
+14-10-26 12:20:30: Val - Source 81, Tomato seg: loss=1.0885, mIoU=0.3339, acc=0.6770
+14-10-26 12:20:30: Val - Source 81, Maize seg: loss=1.0138, mIoU=0.3025, acc=0.7554
+14-10-26 12:20:30: Eval(no-train) - Target 81, acc: 0.8254, avg acc: 0.8071, cls loss: 0.5686  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:34: Trn - Source 82, cls loss: 0.0049, seg loss: 1.1444, kendall s_cls: -0.4133, s_seg: 0.2872
+14-10-26 12:20:34: SoilW - Source 82, soil_raw: mean=0.8635 std=0.0000 min=0.8634 max=0.8636 | soil: mean=0.8984 std=0.0027 min=0.8937 max=0.9012 | plant: mean=1.0400 std=0.0032 min=1.0349 max=1.0437 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:34: Val - Source 82, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0106, total loss: 0.6957
+14-10-26 12:20:34: Val - Source 82, Tomato seg: loss=1.0820, mIoU=0.3415, acc=0.6908
+14-10-26 12:20:34: Val - Source 82, Maize seg: loss=0.9846, mIoU=0.3174, acc=0.7648
+14-10-26 12:20:35: Eval(no-train) - Target 82, acc: 0.8254, avg acc: 0.8071, cls loss: 0.5665  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:38: Trn - Source 83, cls loss: 0.0024, seg loss: 1.1462, kendall s_cls: -0.4139, s_seg: 0.2875
+14-10-26 12:20:38: SoilW - Source 83, soil_raw: mean=0.8633 std=0.0001 min=0.8632 max=0.8634 | soil: mean=0.8998 std=0.0081 min=0.8890 max=0.9133 | plant: mean=1.0396 std=0.0086 min=1.0297 max=1.0579 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:39: Val - Source 83, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 0.9984, total loss: 0.6862
+14-10-26 12:20:39: Val - Source 83, Tomato seg: loss=1.0866, mIoU=0.3363, acc=0.6798
+14-10-26 12:20:39: Val - Source 83, Maize seg: loss=0.9663, mIoU=0.3232, acc=0.7658
+14-10-26 12:20:39: Eval(no-train) - Target 83, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5343  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:43: Trn - Source 84, cls loss: 0.0016, seg loss: 1.1413, kendall s_cls: -0.4144, s_seg: 0.2878
+14-10-26 12:20:43: SoilW - Source 84, soil_raw: mean=0.8631 std=0.0000 min=0.8631 max=0.8632 | soil: mean=0.9002 std=0.0046 min=0.8928 max=0.9076 | plant: mean=1.0420 std=0.0052 min=1.0344 max=1.0515 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:43: Val - Source 84, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0007, total loss: 0.6876
+14-10-26 12:20:43: Val - Source 84, Tomato seg: loss=1.0931, mIoU=0.3302, acc=0.6708
+14-10-26 12:20:43: Val - Source 84, Maize seg: loss=0.9671, mIoU=0.3210, acc=0.7588
+14-10-26 12:20:44: Eval(no-train) - Target 84, acc: 0.8095, avg acc: 0.8038, cls loss: 0.5299  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:47: Trn - Source 85, cls loss: 0.0033, seg loss: 1.1333, kendall s_cls: -0.4149, s_seg: 0.2880
+14-10-26 12:20:47: SoilW - Source 85, soil_raw: mean=0.8630 std=0.0000 min=0.8629 max=0.8630 | soil: mean=0.8999 std=0.0047 min=0.8922 max=0.9087 | plant: mean=1.0419 std=0.0053 min=1.0339 max=1.0530 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:48: Val - Source 85, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 0.9979, total loss: 0.6852
+14-10-26 12:20:48: Val - Source 85, Tomato seg: loss=1.0910, mIoU=0.3275, acc=0.6641
+14-10-26 12:20:48: Val - Source 85, Maize seg: loss=0.9640, mIoU=0.3220, acc=0.7631
+14-10-26 12:20:48: Eval(no-train) - Target 85, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5450  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:52: Trn - Source 86, cls loss: 0.0143, seg loss: 1.1281, kendall s_cls: -0.4153, s_seg: 0.2882
+14-10-26 12:20:52: SoilW - Source 86, soil_raw: mean=0.8628 std=0.0000 min=0.8628 max=0.8629 | soil: mean=0.8981 std=0.0036 min=0.8934 max=0.9036 | plant: mean=1.0403 std=0.0040 min=1.0354 max=1.0473 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:52: Val - Source 86, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0157, total loss: 0.6983
+14-10-26 12:20:52: Val - Source 86, Tomato seg: loss=1.0968, mIoU=0.3197, acc=0.6477
+14-10-26 12:20:52: Val - Source 86, Maize seg: loss=0.9862, mIoU=0.3188, acc=0.7544
+14-10-26 12:20:53: Eval(no-train) - Target 86, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4899  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:20:56: Trn - Source 87, cls loss: 0.0030, seg loss: 1.1254, kendall s_cls: -0.4156, s_seg: 0.2884
+14-10-26 12:20:56: SoilW - Source 87, soil_raw: mean=0.8627 std=0.0000 min=0.8627 max=0.8628 | soil: mean=0.8987 std=0.0031 min=0.8945 max=0.9038 | plant: mean=1.0413 std=0.0035 min=1.0368 max=1.0476 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:20:57: Val - Source 87, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0307, total loss: 0.7092
+14-10-26 12:20:57: Val - Source 87, Tomato seg: loss=1.1101, mIoU=0.3177, acc=0.6441
+14-10-26 12:20:57: Val - Source 87, Maize seg: loss=1.0018, mIoU=0.3173, acc=0.7534
+14-10-26 12:20:57: Eval(no-train) - Target 87, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4732  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:01: Trn - Source 88, cls loss: 0.0045, seg loss: 1.1355, kendall s_cls: -0.4159, s_seg: 0.2885
+14-10-26 12:21:01: SoilW - Source 88, soil_raw: mean=0.8626 std=0.0000 min=0.8626 max=0.8627 | soil: mean=0.8993 std=0.0050 min=0.8935 max=0.9088 | plant: mean=1.0415 std=0.0055 min=1.0358 max=1.0535 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:01: Val - Source 88, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0228, total loss: 0.7031
+14-10-26 12:21:01: Val - Source 88, Tomato seg: loss=1.0992, mIoU=0.3213, acc=0.6513
+14-10-26 12:21:01: Val - Source 88, Maize seg: loss=0.9950, mIoU=0.3170, acc=0.7538
+14-10-26 12:21:02: Eval(no-train) - Target 88, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4735  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:05: Trn - Source 89, cls loss: 0.0038, seg loss: 1.0994, kendall s_cls: -0.4162, s_seg: 0.2886
+14-10-26 12:21:05: SoilW - Source 89, soil_raw: mean=0.8626 std=0.0000 min=0.8625 max=0.8626 | soil: mean=0.8995 std=0.0031 min=0.8934 max=0.9031 | plant: mean=1.0424 std=0.0037 min=1.0358 max=1.0471 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:06: Val - Source 89, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0107, total loss: 0.6939
+14-10-26 12:21:06: Val - Source 89, Tomato seg: loss=1.0953, mIoU=0.3248, acc=0.6574
+14-10-26 12:21:06: Val - Source 89, Maize seg: loss=0.9799, mIoU=0.3208, acc=0.7639
+14-10-26 12:21:06: Eval(no-train) - Target 89, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4725  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:09: Trn - Source 90, cls loss: 0.0047, seg loss: 1.1309, kendall s_cls: -0.4164, s_seg: 0.2887
+14-10-26 12:21:09: SoilW - Source 90, soil_raw: mean=0.8625 std=0.0000 min=0.8625 max=0.8625 | soil: mean=0.8985 std=0.0064 min=0.8888 max=0.9063 | plant: mean=1.0398 std=0.0076 min=1.0305 max=1.0508 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:10: Val - Source 90, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0087, total loss: 0.6924
+14-10-26 12:21:10: Val - Source 90, Tomato seg: loss=1.0830, mIoU=0.3310, acc=0.6674
+14-10-26 12:21:10: Val - Source 90, Maize seg: loss=0.9817, mIoU=0.3154, acc=0.7623
+14-10-26 12:21:11: Eval(no-train) - Target 90, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4748  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:14: Trn - Source 91, cls loss: 0.0153, seg loss: 1.1295, kendall s_cls: -0.4166, s_seg: 0.2888
+14-10-26 12:21:14: SoilW - Source 91, soil_raw: mean=0.8624 std=0.0000 min=0.8624 max=0.8625 | soil: mean=0.8985 std=0.0055 min=0.8894 max=0.9081 | plant: mean=1.0406 std=0.0061 min=1.0313 max=1.0530 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:15: Val - Source 91, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0075, total loss: 0.6914
+14-10-26 12:21:15: Val - Source 91, Tomato seg: loss=1.0857, mIoU=0.3354, acc=0.6769
+14-10-26 12:21:15: Val - Source 91, Maize seg: loss=0.9791, mIoU=0.3164, acc=0.7628
+14-10-26 12:21:15: Eval(no-train) - Target 91, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4879  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:18: Trn - Source 92, cls loss: 0.0012, seg loss: 1.1282, kendall s_cls: -0.4167, s_seg: 0.2889
+14-10-26 12:21:18: SoilW - Source 92, soil_raw: mean=0.8624 std=0.0000 min=0.8624 max=0.8624 | soil: mean=0.8979 std=0.0050 min=0.8870 max=0.9030 | plant: mean=1.0399 std=0.0062 min=1.0285 max=1.0471 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:19: Val - Source 92, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0066, total loss: 0.6907
+14-10-26 12:21:19: Val - Source 92, Tomato seg: loss=1.0758, mIoU=0.3342, acc=0.6725
+14-10-26 12:21:19: Val - Source 92, Maize seg: loss=0.9814, mIoU=0.3126, acc=0.7557
+14-10-26 12:21:20: Eval(no-train) - Target 92, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4917  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:23: Trn - Source 93, cls loss: 0.0011, seg loss: 1.1115, kendall s_cls: -0.4168, s_seg: 0.2890
+14-10-26 12:21:23: SoilW - Source 93, soil_raw: mean=0.8624 std=0.0000 min=0.8623 max=0.8624 | soil: mean=0.9003 std=0.0076 min=0.8897 max=0.9129 | plant: mean=1.0417 std=0.0081 min=1.0318 max=1.0586 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:23: Val - Source 93, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0013, total loss: 0.6866
+14-10-26 12:21:23: Val - Source 93, Tomato seg: loss=1.0804, mIoU=0.3330, acc=0.6709
+14-10-26 12:21:23: Val - Source 93, Maize seg: loss=0.9725, mIoU=0.3176, acc=0.7623
+14-10-26 12:21:24: Eval(no-train) - Target 93, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4846  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:27: Trn - Source 94, cls loss: 0.0030, seg loss: 1.1548, kendall s_cls: -0.4169, s_seg: 0.2890
+14-10-26 12:21:27: SoilW - Source 94, soil_raw: mean=0.8623 std=0.0000 min=0.8623 max=0.8623 | soil: mean=0.9000 std=0.0058 min=0.8873 max=0.9082 | plant: mean=1.0420 std=0.0072 min=1.0289 max=1.0531 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:28: Val - Source 94, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0061, total loss: 0.6902
+14-10-26 12:21:28: Val - Source 94, Tomato seg: loss=1.0773, mIoU=0.3317, acc=0.6684
+14-10-26 12:21:28: Val - Source 94, Maize seg: loss=0.9802, mIoU=0.3208, acc=0.7610
+14-10-26 12:21:29: Eval(no-train) - Target 94, acc: 0.8413, avg acc: 0.8288, cls loss: 0.4666  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:32: Trn - Source 95, cls loss: 0.0046, seg loss: 1.1172, kendall s_cls: -0.4169, s_seg: 0.2890
+14-10-26 12:21:32: SoilW - Source 95, soil_raw: mean=0.8623 std=0.0000 min=0.8623 max=0.8623 | soil: mean=0.8992 std=0.0060 min=0.8903 max=0.9087 | plant: mean=1.0413 std=0.0067 min=1.0325 max=1.0538 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:32: Val - Source 95, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0041, total loss: 0.6886
+14-10-26 12:21:32: Val - Source 95, Tomato seg: loss=1.0759, mIoU=0.3356, acc=0.6756
+14-10-26 12:21:32: Val - Source 95, Maize seg: loss=0.9781, mIoU=0.3164, acc=0.7608
+14-10-26 12:21:33: Eval(no-train) - Target 95, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4893  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:36: Trn - Source 96, cls loss: 0.0045, seg loss: 1.1300, kendall s_cls: -0.4170, s_seg: 0.2890
+14-10-26 12:21:36: SoilW - Source 96, soil_raw: mean=0.8623 std=0.0000 min=0.8623 max=0.8623 | soil: mean=0.8986 std=0.0034 min=0.8934 max=0.9043 | plant: mean=1.0416 std=0.0040 min=1.0361 max=1.0488 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:37: Val - Source 96, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0133, total loss: 0.6955
+14-10-26 12:21:37: Val - Source 96, Tomato seg: loss=1.0777, mIoU=0.3357, acc=0.6768
+14-10-26 12:21:37: Val - Source 96, Maize seg: loss=0.9899, mIoU=0.3133, acc=0.7575
+14-10-26 12:21:38: Eval(no-train) - Target 96, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5075  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:41: Trn - Source 97, cls loss: 0.0017, seg loss: 1.1259, kendall s_cls: -0.4170, s_seg: 0.2890
+14-10-26 12:21:41: SoilW - Source 97, soil_raw: mean=0.8623 std=0.0000 min=0.8623 max=0.8623 | soil: mean=0.8985 std=0.0054 min=0.8882 max=0.9079 | plant: mean=1.0406 std=0.0063 min=1.0300 max=1.0529 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:41: Val - Source 97, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0095, total loss: 0.6926
+14-10-26 12:21:41: Val - Source 97, Tomato seg: loss=1.0790, mIoU=0.3363, acc=0.6773
+14-10-26 12:21:41: Val - Source 97, Maize seg: loss=0.9843, mIoU=0.3183, acc=0.7618
+14-10-26 12:21:42: Eval(no-train) - Target 97, acc: 0.8254, avg acc: 0.8163, cls loss: 0.5024  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:45: Trn - Source 98, cls loss: 0.0097, seg loss: 1.0923, kendall s_cls: -0.4170, s_seg: 0.2891
+14-10-26 12:21:45: SoilW - Source 98, soil_raw: mean=0.8623 std=0.0000 min=0.8623 max=0.8623 | soil: mean=0.8976 std=0.0061 min=0.8851 max=0.9028 | plant: mean=1.0390 std=0.0076 min=1.0265 max=1.0470 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:46: Val - Source 98, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0090, total loss: 0.6922
+14-10-26 12:21:46: Val - Source 98, Tomato seg: loss=1.0788, mIoU=0.3363, acc=0.6811
+14-10-26 12:21:46: Val - Source 98, Maize seg: loss=0.9837, mIoU=0.3204, acc=0.7599
+14-10-26 12:21:46: Eval(no-train) - Target 98, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4838  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:50: Trn - Source 99, cls loss: 0.0071, seg loss: 1.1461, kendall s_cls: -0.4170, s_seg: 0.2891
+14-10-26 12:21:50: SoilW - Source 99, soil_raw: mean=0.8623 std=0.0000 min=0.8623 max=0.8623 | soil: mean=0.8978 std=0.0056 min=0.8845 max=0.9051 | plant: mean=1.0395 std=0.0072 min=1.0257 max=1.0497 | soil_raw at bounds: lo=0.0000 hi=0.0000
+14-10-26 12:21:50: Val - Source 99, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.0083, total loss: 0.6917
+14-10-26 12:21:50: Val - Source 99, Tomato seg: loss=1.0803, mIoU=0.3338, acc=0.6760
+14-10-26 12:21:50: Val - Source 99, Maize seg: loss=0.9822, mIoU=0.3191, acc=0.7622
+14-10-26 12:21:51: Eval(no-train) - Target 99, acc: 0.8254, avg acc: 0.8163, cls loss: 0.4914  <- domain gap indicator (DA-0 baseline, cls-only)
+14-10-26 12:21:51: Best model at epoch 85, source val total loss 0.6852
+14-10-26 12:21:51: FINAL best-model source val: cls acc: 1.0000, cls avg acc: 1.0000, seg loss: 0.9979
+14-10-26 12:21:51: FINAL best-model source val, Tomato seg: loss=1.0910, mIoU=0.3275, acc=0.6641
+14-10-26 12:21:51: FINAL best-model source val, Maize seg: loss=0.9640, mIoU=0.3220, acc=0.7631
+14-10-26 12:21:52: FINAL target (Pheno4D held-out) test accuracy: 0.8254, avg acc: 0.8163, loss: 0.5450  <- classification-only; target segmentation not evaluated (see module docstring)
+14-10-26 12:21:52: Confusion matrix (rows=true, cols=pred, order=['Tomato', 'Maize']):
+[[34  6]
+ [ 5 18]]
+14-10-26 12:21:52: Per-class precision/recall/F1 on target test:
+              precision    recall  f1-score   support
+
+      Tomato     0.8718    0.8500    0.8608        40
+       Maize     0.7500    0.7826    0.7660        23
+
+    accuracy                         0.8254        63
+   macro avg     0.8109    0.8163    0.8134        63
+weighted avg     0.8273    0.8254    0.8261        63
+
