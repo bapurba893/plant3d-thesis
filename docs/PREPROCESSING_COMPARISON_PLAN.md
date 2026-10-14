@@ -219,6 +219,8 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
       **Not done: before/after renders** — flagging this explicitly rather than ticking a
       two-part box half-true; no visual before/after comparison was made for the variant
       pipelines (unlike the shape/NaN/manifest-consistency checks below, which were done).
+      **Update 2026-10-14:** before/after renders since done for P4a vs P4 only (12 held-out
+      Pheno4D clouds) — see the Stage 5 item below; the other pipelines still have none.
 - [x] All 8 caches generated (P1–P4, P4a–P4d); point counts all = 4096 (verified: 531/531 rows
       per pipeline manifest, zero `n_final != 4096`, zero nulls in `n_final`/`norm_scale`, 120
       randomly-sampled `.npz` files checked directly for shape/NaN/Inf — zero problems). Known,
@@ -255,6 +257,19 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
       discussed with the user first
 - [x] PROGRESS_LOG.md milestone added (milestone 41)
 - [ ] Table + note sent to maam
+### Stage 5 — Follow-ups (soil cue) -> `step_notes/PP_3_Results.md`
+- [x] Single preprocessing function with a `remove_soil` switch
+      (`scripts/preprocessing_pipeline.py::preprocess_cloud`) verified against the P4a/P4 caches
+      on 531 of 531 clouds in both settings (1062/1062 match, max abs point difference 0.0,
+      labels and normalisation equal; `scripts/12_check_single_pipeline.py`,
+      `results/pp_checks/single_pipeline_check.csv`, run on the laptop, commit 6fd7e77)
+- [x] Learned soil-weight comparison (scalar and feature-based, 3 seeds each) vs P4a and P4
+      (`scripts/13_sw_summarize.py`, `results/pp_summary/sw_summary.md`, commit 39e129e).
+      Neither learned version passes the all-3-seeds rule against P4a
+- [x] Before/after renders, P4a vs P4, 12 held-out Pheno4D clouds, plus the Pheno4D
+      soil-removal inspection (`scripts/14_pheno4d_inspection.py`,
+      `results/pp_checks/pheno4d_before_after/`, commit a91dc3a)
+- [x] PROGRESS_LOG.md milestone added (milestone 42)
 
 ## 10. Rules for this block
 

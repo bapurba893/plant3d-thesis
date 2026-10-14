@@ -1364,6 +1364,48 @@ soil itself is quietly giving the species away.
 
 ---
 
+## 42. A Middle Path for the Soil Tested, and Where the Soil-Removed Recipe Actually Goes Wrong — 2026-10-14
+
+Three follow-ups to the soil question from the last milestone. First, a housekeeping step: the
+two preprocessing recipes that differ only in whether the soil is removed were merged into one
+function with a single on/off switch. Re-running it on all 531 plant scans from scratch gave
+exactly the same data as before in both settings, point for point, so nothing changed by
+merging them.
+
+Second, our supervisor suggested a middle path between keeping the soil and cutting it out: keep
+it, but let the model learn how much attention to pay to the soil points while it learns to
+label plant parts. Two versions were tried, three runs each. In one, a single learned number sets
+the weight for all soil points. In the other, a small learned function sets the weight per point
+from simple geometric features (how high up the point is, how far from the centre, how crowded
+its neighbourhood is). Neither version beat simply keeping the soil under our rule, which
+requires all three runs to come out ahead. The per-point version tied it on average (86.4% vs
+86.3%) and was the most consistent from run to run. The single-number version was slightly lower
+(85.0%). Both stayed far above cutting the soil out (70.3%). Interestingly, the per-point version
+learned to push the soil's weight down to the minimum allowed for many soil points, yet accuracy
+did not change. Whatever the model gets from the soil, it doesn't seem to depend on this weight.
+
+Third, we looked closely at where the soil-removed recipe loses its accuracy, scan by scan, with
+side-by-side pictures. The answer is narrow: almost all the extra mistakes are tomato plants from
+the first week or so of the season, which the soil-removed model calls maize. At that age the
+plants are only 3–6 cm tall. The soil cut removes about 95% of the soil, as designed, but on a
+plant that small the leftover soil still makes up around 40% of the points, sitting as a clump
+around the stem base. The more leftover soil, the more confidently the model says "maize". The
+check also showed that the soil-kept recipe doesn't truly recognise these young plants either: it
+calls every young plant "tomato", including the young maize ones, and it scores higher only
+because the test set happens to contain more young tomatoes than young maize. Outside the first
+week the two recipes are much closer (88.6% vs 93.5%). Some ideas were ruled out: the cut does
+not chop off the bottom of the stems, there is no leftover pot rim, and removing the soil
+actually makes the plants' overall shape *more* similar to the training data, not less. Plant
+size and the leftover-soil share rise and fall together here, so these data can't say which of
+the two is doing the damage.
+
+**In one sentence**: letting the model learn a soil weight doesn't beat simply keeping the soil,
+and the soil-removed recipe's big loss comes almost entirely from very young tomato plants, where
+a leftover clump of soil makes them look like maize. Neither recipe really recognises plants that
+young.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
