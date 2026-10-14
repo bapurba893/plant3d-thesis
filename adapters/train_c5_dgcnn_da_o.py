@@ -107,6 +107,9 @@ def parse_args():
     p.add_argument("--dropout", type=float, default=0.5)
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--gpu", type=int, default=0, help="-1 for cpu")
+    p.add_argument("--manifest", type=str, default=None,
+                   help="preprocessed cache manifest CSV (absolute, or relative to the repo "
+                        "root); default: data/preprocessed/preprocessed_manifest.csv")
     return p.parse_args()
 
 
@@ -236,6 +239,10 @@ def main():
 
     data_dir = _REPO_ROOT / "data"
     manifest_csv = data_dir / "preprocessed" / "preprocessed_manifest.csv"
+    if args.manifest is not None:
+        manifest_csv = Path(args.manifest)
+        if not manifest_csv.is_absolute():
+            manifest_csv = _REPO_ROOT / manifest_csv
 
     # "Labeled train/val" = Pheno4D's own annotated subset (Oracle's
     # analog of C1's Crops3D train/val), plant-disjoint from the held-out

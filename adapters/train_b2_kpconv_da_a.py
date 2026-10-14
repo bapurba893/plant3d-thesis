@@ -139,6 +139,9 @@ def parse_args():
                     help="kept at the safe default -- B1 found DataLoader(num_workers>0) made "
                          "things worse (deadlock/severe slowdown) with these compiled C++ "
                          "extensions, see step_notes/B1_KPConv_DA0.md")
+    p.add_argument("--manifest", type=str, default=None,
+                   help="preprocessed cache manifest CSV (absolute, or relative to the repo "
+                        "root); default: data/preprocessed/preprocessed_manifest.csv")
     return p.parse_args()
 
 
@@ -264,6 +267,10 @@ def main():
 
     data_dir = _REPO_ROOT / "data"
     manifest_csv = data_dir / "preprocessed" / "preprocessed_manifest.csv"
+    if args.manifest is not None:
+        manifest_csv = Path(args.manifest)
+        if not manifest_csv.is_absolute():
+            manifest_csv = _REPO_ROOT / manifest_csv
     src_train_set = PlantClsSegDataset(
         data_dir / "crops3d_train.csv", manifest_csv, augment=True, seed=args.seed)
     src_val_set = PlantClsSegDataset(

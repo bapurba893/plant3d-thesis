@@ -110,6 +110,9 @@ def parse_args():
                          "via dann.lambda_ent_schedule (see adapters/dann.py docstring)")
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--gpu", type=int, default=0, help="-1 for cpu")
+    p.add_argument("--manifest", type=str, default=None,
+                   help="preprocessed cache manifest CSV (absolute, or relative to the repo "
+                        "root); default: data/preprocessed/preprocessed_manifest.csv")
     return p.parse_args()
 
 
@@ -239,6 +242,10 @@ def main():
 
     data_dir = _REPO_ROOT / "data"
     manifest_csv = data_dir / "preprocessed" / "preprocessed_manifest.csv"
+    if args.manifest is not None:
+        manifest_csv = Path(args.manifest)
+        if not manifest_csv.is_absolute():
+            manifest_csv = _REPO_ROOT / manifest_csv
     src_train_set = PlantClsSegDataset(
         data_dir / "crops3d_train.csv", manifest_csv, augment=True, seed=args.seed,
         augment_mode=AUGMENT_MODE)

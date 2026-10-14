@@ -105,6 +105,9 @@ def parse_args():
                          "unlike the original default of 0, which serializes every collate call "
                          "in the main process and was found to make a full 100-epoch run take "
                          "far longer than the 4h SLURM limit (see step_notes/B1_KPConv_DA0.md).")
+    p.add_argument("--manifest", type=str, default=None,
+                   help="preprocessed cache manifest CSV (absolute, or relative to the repo "
+                        "root); default: data/preprocessed/preprocessed_manifest.csv")
     return p.parse_args()
 
 
@@ -232,6 +235,10 @@ def main():
 
     data_dir = _REPO_ROOT / "data"
     manifest_csv = data_dir / "preprocessed" / "preprocessed_manifest.csv"
+    if args.manifest is not None:
+        manifest_csv = Path(args.manifest)
+        if not manifest_csv.is_absolute():
+            manifest_csv = _REPO_ROOT / manifest_csv
     src_train_set = PlantClsSegDataset(
         data_dir / "crops3d_train.csv", manifest_csv, augment=True, seed=args.seed)
     src_val_set = PlantClsSegDataset(
