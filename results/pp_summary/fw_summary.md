@@ -14,6 +14,9 @@ Metrics: **full-run mean target accuracy** (mean over the 100 epochs of the per-
 | A2 | PointNet++ / DA-A / ALL | Full-run mean target acc (primary) | 0.633 | 0.499 | 0.563 | 0.565 ± 0.067 |
 |  |  | Full-run mean target bal. acc | 0.708 | 0.603 | 0.655 | 0.655 ± 0.053 |
 |  |  | Selected-checkpoint target acc | 0.635 | 0.397 | 0.508 | 0.513 ± 0.119 |
+| A3 | PointNet++ / DA-S / ALL | Full-run mean target acc (primary) | 0.793 | 0.613 | 0.788 | 0.731 ± 0.102 |
+|  |  | Full-run mean target bal. acc | 0.821 | 0.682 | 0.820 | 0.774 ± 0.080 |
+|  |  | Selected-checkpoint target acc | 0.889 | 0.476 | 0.952 | 0.772 ± 0.259 |
 | A4 | PointNet++ / DA-A / L-N | Full-run mean target acc (primary) | 0.500 | 0.574 | 0.557 | 0.544 ± 0.039 |
 |  |  | Full-run mean target bal. acc | 0.605 | 0.664 | 0.651 | 0.640 ± 0.031 |
 |  |  | Selected-checkpoint target acc | 0.397 | 0.603 | 0.556 | 0.519 ± 0.108 |
@@ -23,6 +26,18 @@ Metrics: **full-run mean target accuracy** (mean over the 100 epochs of the per-
 | A6 | PointNet++ / DA-D / ALL | Full-run mean target acc (primary) | 0.650 | 0.777 | 0.662 | 0.696 ± 0.070 |
 |  |  | Full-run mean target bal. acc | 0.723 | 0.823 | 0.734 | 0.760 ± 0.055 |
 |  |  | Selected-checkpoint target acc | 0.682 | 0.825 | 0.809 | 0.772 ± 0.078 |
+| C2 | DGCNN / DA-A / ALL | Full-run mean target acc (primary) | 0.606 | 0.627 | 0.696 | 0.643 ± 0.047 |
+|  |  | Full-run mean target bal. acc | 0.672 | 0.681 | 0.736 | 0.696 ± 0.035 |
+|  |  | Selected-checkpoint target acc | 0.571 | 0.921 | 0.905 | 0.799 ± 0.197 |
+| C4 | DGCNN / DA-A / L-N | Full-run mean target acc (primary) | 0.619 | 0.612 | 0.664 | 0.632 ± 0.028 |
+|  |  | Full-run mean target bal. acc | 0.685 | 0.668 | 0.715 | 0.690 ± 0.024 |
+|  |  | Selected-checkpoint target acc | 0.587 | 0.619 | 0.746 | 0.651 ± 0.084 |
+| C5 | DGCNN / DA-O / ALL | Full-run mean target acc (primary) | 0.890 | 0.888 | 0.896 | 0.891 ± 0.004 |
+|  |  | Full-run mean target bal. acc | 0.910 | 0.909 | 0.912 | 0.910 ± 0.001 |
+|  |  | Selected-checkpoint target acc | 1.000 | 0.936 | 0.921 | 0.952 ± 0.042 |
+| C6 | DGCNN / DA-D / ALL | Full-run mean target acc (primary) | 0.875 | 0.825 | 0.906 | 0.869 ± 0.041 |
+|  |  | Full-run mean target bal. acc | 0.881 | 0.824 | 0.893 | 0.866 ± 0.037 |
+|  |  | Selected-checkpoint target acc | 0.968 | 0.889 | 0.952 | 0.937 ± 0.042 |
 
 Majority-class reference (always 'Tomato'): 0.635 (40/63).
 
@@ -38,6 +53,9 @@ Each original is the run in the earlier strategy table (CLAUDE.md, step_notes), 
 | A2 | Full-run mean target acc (primary) | 0.554 | 0.565 ± 0.067 | +0.011 | 2/3 |
 |  | Full-run mean target bal. acc | 0.644 | 0.655 ± 0.053 | +0.012 | – |
 |  | Selected-checkpoint target acc | 0.444 | 0.513 ± 0.119 | +0.069 | – |
+| A3 | Full-run mean target acc (primary) | 0.800 | 0.731 ± 0.102 | -0.068 | 0/3 |
+|  | Full-run mean target bal. acc | 0.830 | 0.774 ± 0.080 | -0.055 | – |
+|  | Selected-checkpoint target acc | 0.889 | 0.772 ± 0.259 | -0.116 | – |
 | A4 | Full-run mean target acc (primary) | 0.586 | 0.544 ± 0.039 | -0.043 | 0/3 |
 |  | Full-run mean target bal. acc | 0.671 | 0.640 ± 0.031 | -0.031 | – |
 |  | Selected-checkpoint target acc | 0.540 | 0.519 ± 0.108 | -0.021 | – |
@@ -47,25 +65,32 @@ Each original is the run in the earlier strategy table (CLAUDE.md, step_notes), 
 | A6 | Full-run mean target acc (primary) | 0.649 | 0.696 ± 0.070 | +0.047 | 3/3 |
 |  | Full-run mean target bal. acc | 0.720 | 0.760 ± 0.055 | +0.040 | – |
 |  | Selected-checkpoint target acc | 0.571 | 0.772 ± 0.078 | +0.201 | – |
+| C2 | Full-run mean target acc (primary) | 0.633 | 0.643 ± 0.047 | +0.010 | 1/3 |
+|  | Full-run mean target bal. acc | 0.686 | 0.696 ± 0.035 | +0.010 | – |
+|  | Selected-checkpoint target acc | 0.667 | 0.799 ± 0.197 | +0.132 | – |
+| C4 | Full-run mean target acc (primary) | 0.613 | 0.632 ± 0.028 | +0.019 | 2/3 |
+|  | Full-run mean target bal. acc | 0.691 | 0.690 ± 0.024 | -0.001 | – |
+|  | Selected-checkpoint target acc | 0.556 | 0.651 ± 0.084 | +0.095 | – |
+| C5 | Full-run mean target acc (primary) | 0.925 | 0.891 ± 0.004 | -0.034 | 0/3 |
+|  | Full-run mean target bal. acc | 0.939 | 0.910 ± 0.001 | -0.028 | – |
+|  | Selected-checkpoint target acc | 1.000 | 0.952 ± 0.042 | -0.048 | – |
+| C6 | Full-run mean target acc (primary) | 0.816 | 0.869 ± 0.041 | +0.053 | 3/3 |
+|  | Full-run mean target bal. acc | 0.824 | 0.866 ± 0.037 | +0.042 | – |
+|  | Selected-checkpoint target acc | 0.857 | 0.937 ± 0.042 | +0.079 | – |
 
-Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2_pointnet2_da_a/run.log`; A4 `results/A4_pointnet2_da_a_ln/run.log`; A5 `results/A5_pointnet2_da_o/run.log`; A6 `results/A6_pointnet2_da_d/run.log`.
+Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2_pointnet2_da_a/run.log`; A3 `results/A3_pointnet2_da_s/run.log`; A4 `results/A4_pointnet2_da_a_ln/run.log`; A5 `results/A5_pointnet2_da_o/run.log`; A6 `results/A6_pointnet2_da_d/run.log`; C2 `results/C2_dgcnn_da_a/run.log`; C4 `results/C4_dgcnn_da_a_ln/run.log`; C5 `results/C5_dgcnn_da_o/run.log`; C6 `results/C6_dgcnn_da_d/run.log`.
 
 ## Not computed / pending
 
-- C2: no complete seed yet (incomplete: seed(s) 1)
-- C4: no complete seed yet (incomplete: seed(s) 1)
-- C5: no complete seed yet (incomplete: seed(s) 1)
-- C6: no complete seed yet (incomplete: seed(s) 1)
-- results/FW_C2_s1: incomplete, excluded from all aggregates -- only 3/100 epochs logged (running, or crashed); no FINAL target line -- selected-checkpoint accuracy missing
-- results/FW_C4_s1: incomplete, excluded from all aggregates -- only 3/100 epochs logged (running, or crashed); no FINAL target line -- selected-checkpoint accuracy missing
-- results/FW_C5_s1: incomplete, excluded from all aggregates -- only 0/100 epochs logged (running, or crashed); no FINAL target line -- selected-checkpoint accuracy missing
-- results/FW_C6_s1: incomplete, excluded from all aggregates -- only 3/100 epochs logged (running, or crashed); no FINAL target line -- selected-checkpoint accuracy missing
 - Segmentation mIoU: not reported (not comparable across rows).
 
 ## Run warnings (complete runs)
 
 - `results/FW_A1_s3`: FINAL target acc 0.4603 != epoch 92's logged 0.4762 (PointNet++ eval nondeterminism)
 - `results/FW_A2_s3`: FINAL target acc 0.5079 != epoch 54's logged 0.4921 (PointNet++ eval nondeterminism)
+- `results/FW_A3_s1`: FINAL target acc 0.8889 != epoch 77's logged 0.9206 (PointNet++ eval nondeterminism)
+- `results/FW_A3_s2`: FINAL target acc 0.4762 != epoch 88's logged 0.4444 (PointNet++ eval nondeterminism)
+- `results/FW_A3_s3`: FINAL target acc 0.9524 != epoch 82's logged 0.9365 (PointNet++ eval nondeterminism)
 - `results/FW_A4_s3`: FINAL target acc 0.5556 != epoch 54's logged 0.5397 (PointNet++ eval nondeterminism)
 - `results/FW_A5_s1`: FINAL target acc 0.9841 != epoch 93's logged 1.0000 (PointNet++ eval nondeterminism)
 - `results/FW_A6_s1`: FINAL target acc 0.6825 != epoch 97's logged 0.6508 (PointNet++ eval nondeterminism)
