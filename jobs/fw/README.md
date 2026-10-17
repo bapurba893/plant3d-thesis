@@ -1,6 +1,8 @@
 # Full workflow rerun (FW) on the soil-kept preprocessing (P4a): job set
 
-Status (2026-10-15): **prepared, nothing submitted.** Every A/B/C row is retrained with seeds 1, 2, 3
+Status (2026-10-17): **rounds 1 and 2 done, and C3 from round 3 done** (all seeds OK; C1 = reused
+`PP_P4a`). Results: `step_notes/FW_1_Results.md`. **KPConv rows (B1–B5, B3b) and Block D not
+started.** Every A/B/C row is retrained with seeds 1, 2, 3
 on `data/preprocessed_variants/P4a/preprocessed_manifest.csv` (soil kept; best baseline in Block PP,
 see `step_notes/PP_2_Results.md` and `PP_3_Results.md`). Results go to `results/FW_<row>_s<seed>/`.
 No existing result folder starts with `FW_`, so there is no clash. Block D is **not** prepared

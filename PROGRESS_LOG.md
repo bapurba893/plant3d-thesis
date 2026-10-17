@@ -1406,6 +1406,43 @@ young.
 
 ---
 
+## 43. The Two Faster Architectures Retrained on the Soil-Kept Recipe, Three Times Each — 2026-10-17
+
+After the soil experiments, we started retraining every row of the strategy table on the
+soil-kept preprocessing recipe, this time three runs each with different random starting points
+instead of one. The two faster architectures are now done: all PointNet++ rows and all DGCNN rows
+(the DGCNN no-adaptation baseline reuses the three runs from the preprocessing comparison, which
+were exactly the same setup). The third architecture (KPConv) and the fusion block have not
+started.
+
+The main result is a correction to the earlier story. Before, it looked as if the self-supervised
+method hurt DGCNN (70.3% against the baseline's 79.1%). On the new recipe with three runs each, it
+lands at 85.3%, about equal to the baseline's 86.3%, not better. The discrepancy-based method is
+slightly higher on average (86.9%) but only two of its three runs beat the baseline, so under our
+rule it doesn't count as a win. The adversarial method stays well behind (about 63–64%). So on
+DGCNN, no adaptation method clearly beats simply not adapting. The upper-bound reference, which
+trains directly on labelled scans from the target dataset, reaches 89.1%; it is a ceiling, not a
+candidate.
+
+PointNet++ does much worse on the new recipe. Its no-adaptation baseline (49.7%) is below what
+you'd get by always guessing the more common species (63.5%), in all three runs. The
+self-supervised and discrepancy-based methods lift it to 73.1% and 69.6%, but the self-supervised
+runs vary a lot (one run at 61.3%).
+
+Two honest caveats. First, only the DGCNN baseline is a fair before/after test of the
+preprocessing, because only it was run three times on the old recipe too (there the soil-kept
+recipe wins under our rule, by a small margin of about 2 points). Every other old result was a
+single run, so a few points' difference from it may just be run-to-run luck. Second, the new
+recipe keeps the soil, and earlier checks showed the models may partly use the soil, not the
+plant's shape, to tell the species apart. All these numbers may be inflated by that.
+
+**In one sentence**: on the soil-kept recipe with three runs per row, no adaptation method clearly
+beats the DGCNN no-adaptation baseline (the self-supervised one, which used to look harmful, now
+roughly ties it), PointNet++ falls below the always-guess-tomato level without adaptation, and the
+KPConv rows are still to come.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
