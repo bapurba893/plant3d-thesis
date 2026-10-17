@@ -400,6 +400,9 @@ were not — see Repository layout above).
   fails safely (stable training) rather than DA-A's failure mode (unstable, destabilizing).**
   Full trajectory/quartile/correlation breakdown and PointDA-10 comparison in
   `step_notes/C3_DGCNN_DA_S.md`.
+  **Update (full-workflow rerun):** the numbers above are the original single-seed,
+  old-preprocessing result (full-run mean 0.703). On soil-kept preprocessing (P4a) with 3 seeds,
+  C3 is 0.853 ± 0.012, about equal to C1 (0.863 ± 0.015) — see `step_notes/FW_1_Results.md`.
 
 **Done (continued):**
 - **Row C4 (DGCNN, DA-A, L-N) trained on the cluster** (2026-09-12, job 308634, ~13 min).
@@ -1010,11 +1013,12 @@ capacity — is what limits every non-Oracle row on every backbone.
    DIRECTION, not just magnitude — the project's most important qualitative finding.** DA-S hurt
    DGCNN in the original single-seed, old-preprocessing run (C1→C3 −0.088), but on soil-kept
    preprocessing with 3 seeds C3 (0.853) is about equal to C1 (0.863 ± 0.015), not worse and not
-   better (`step_notes/FW_1_Results.md`). In the original runs it helps PointNet++ (A1→A3 +0.201) and helps KPConv even more (B1→B3b
-   +0.231, the best non-Oracle result in the project). DA-D (only tested on KPConv, B3) also
-   produced a large win (+0.179) — best-supported reading (see B3's entry above): what predicts
-   success on KPConv is whether the DA loss is cooperative/Kendall-weighted (DA-S, DA-D) rather
-   than adversarial (DA-A) — not "any adaptation helps."
+   better (`step_notes/FW_1_Results.md`). In the original runs it helps PointNet++ (A1→A3
+   +0.201) and helps KPConv even more (B1→B3b +0.231, the best non-Oracle result in the
+   project). DA-D on KPConv (B3) also produced a large win (+0.179) — best-supported reading
+   (see B3's entry above): what predicts success on KPConv is whether the DA loss is
+   cooperative/Kendall-weighted (DA-S, DA-D) rather than adversarial (DA-A) — not "any
+   adaptation helps."
 3. **Augmentation-mix sensitivity is itself architecture-dependent.** DGCNN's DA-A story is
    insensitive to narrowing ALL→L-N (C2≈C4). PointNet++'s is NOT — narrowing to L-N substantially
    helps DA-A (A2→A4), evidence its density-sensitive ball-query mechanism interacts badly with

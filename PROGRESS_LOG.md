@@ -1470,7 +1470,7 @@ at-a-glance status.
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | **Done** — same underperformance vs. no-adaptation as C2, confirming it's not an augmentation-mix artifact (Milestone 14) | 0.632 ± 0.028 |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | **Done** — Block C complete. Near-perfect ceiling (0.925 full-run mean / 1.0000 selected) confirms real, ~13-25 point headroom above the no-adaptation baseline (Milestone 15) | 0.891 ± 0.004 (ceiling) |
 | C (DGCNN) | C6 (added) | Discrepancy-based adaptation | **Done** — added row (Milestone 39) | 0.869 ± 0.041 |
-| D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started | Not rerun yet |
+| D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | **Done** — original Block D run (Milestones 36–38) | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started | – |
 
 The last column is from the full-workflow rerun (Milestone 43, `step_notes/FW_1_Results.md`).
@@ -1479,25 +1479,16 @@ adaptation row clearly beats the DGCNN no-adaptation baseline C1 (0.863); C3 is 
 it, C6 has 2 of 3 runs above it, and C2/C4 are below it. A5 and C5 are upper-bound references.
 The KPConv rows (B1–B5, B3b) and Block D have not been rerun yet.
 
-**In one sentence:** All three architecture blocks (A/PointNet++, B/KPConv, C/DGCNN — 15 rows
-plus the added B3b, 16 total) are now fully done: self-supervised adaptation's effect ranges from
-hurting DGCNN, to helping PointNet++ with a segmentation cost, to helping KPConv even more (the
-best non-Oracle result in the project) with no segmentation cost at all; adversarial adaptation
-never clearly wins on any of the three (hurts DGCNN clearly, hurts PointNet++ mildly — and that
-mild PointNet++ effect turns out to be partly an augmentation-mix artifact that mostly disappears
-once the perturbation mix is narrowed — and roughly ties on KPConv, though it costs segmentation
-quality everywhere); a second, mechanistically distinct adaptation method (discrepancy-based)
-also lands as a clear KPConv-only win, together pointing at "cooperative losses help this
-backbone, adversarial doesn't" rather than "needs real target geometry" as the explanation; every
-architecture's recurring, misleading model-selection signal under domain adaptation is now
-confirmed, on all three, to be a sensor-mismatch artifact rather than a backbone flaw — it
-disappears entirely, becoming the most reliable signal of any row trained, once real target
-labels are available; and all three architectures' "ceiling" scores (given real target labels)
-land in a tight, similar band (roughly 92-94%), with the third architecture (KPConv) reaching the
-highest of the three. The strongest practical, non-ceiling result across the whole comparison —
-KPConv paired with the self-supervised method — is the natural first candidate for the project's
-next phase (Block D, combining this groundwork with real growth-curve/trait prediction); Block D
-(6 rows) and the optional Block E (3 rows) have not started.
+**In one sentence:** On the soil-kept preprocessing with three runs per row (Milestone 43,
+`step_notes/FW_1_Results.md`), no adaptation method clearly beats the DGCNN no-adaptation
+baseline (86.3%): the self-supervised method roughly ties it (85.3%), the discrepancy-based one is
+slightly higher on average (86.9%) but only two of its three runs beat the baseline, and the
+adversarial ones are well below it; PointNet++ without adaptation falls below the
+always-guess-tomato level (49.7% against 63.5%), and its best adaptation result (self-supervised,
+73.1%) varies a lot between runs; the upper-bound references (89.1% DGCNN, 92.8% PointNet++) are
+ceilings, not candidates. Only the DGCNN baseline is a fair before/after preprocessing test, the
+soil-kept recipe may let models use the soil rather than plant shape, and the KPConv rows (whose
+original single runs gave the best non-ceiling result) and Block D have not been rerun yet.
 
 ---
 
