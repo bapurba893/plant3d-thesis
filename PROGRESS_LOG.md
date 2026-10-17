@@ -1450,26 +1450,34 @@ under several domain-adaptation strategies, plus a fusion block and an optional 
 block). Full detail lives in `docs/Domain_Invariance_Strategy_Table.docx`; this is just the
 at-a-glance status.
 
-| Block | Row | What it is | Status |
-|---|---|---|---|
-| A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed |
-| A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) |
-| A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) |
-| A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | **Done** — unlike the second backbone, narrowing the augmentation mix genuinely helps here: better average result, far fewer collapsed epochs, and a fixed selection-signal problem (Milestone 32) |
-| A (PointNet++) | A5 | Oracle (upper-bound reference) | **Done** — Block A complete. Ceiling test confirms the same story as the other two architectures: the selection-signal problem is a sensor-mismatch artifact, not a backbone flaw (Milestone 34) |
-| B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) |
-| B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality |
-| B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here |
-| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost |
-| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project |
-| B (KPConv) | B5 | Oracle (upper-bound reference) | **Done** — Block B complete. Resolves the selection-signal mystery: the misleading signal disappears entirely under real target supervision, and the ceiling (0.9425 full-run mean) edges past DGCNN's own Oracle ceiling (Milestone 30) |
-| C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed |
-| C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now |
-| C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) |
-| C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | **Done** — same underperformance vs. no-adaptation as C2, confirming it's not an augmentation-mix artifact (Milestone 14) |
-| C (DGCNN) | C5 | Oracle (upper-bound reference) | **Done** — Block C complete. Near-perfect ceiling (0.925 full-run mean / 1.0000 selected) confirms real, ~13-25 point headroom above the no-adaptation baseline (Milestone 15) |
-| D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started |
-| E (deployment, optional) | E1–E3 | Model compression / distillation | Not started |
+| Block | Row | What it is | Status (original single-seed run, old preprocessing) | Soil-kept rerun (P4a, 3 seeds): full-run mean target acc |
+|---|---|---|---|---|
+| A (PointNet++) | A1 | No adaptation (baseline) | **Done** — full result committed | 0.497 ± 0.020 |
+| A (PointNet++) | A2 | Adversarial (anchor method) | **Done** — same underperformance-vs-DA-0 direction as C2, but much smaller/less clear-cut, because A1's own baseline is already unstable (Milestone 16) | 0.565 ± 0.067 |
+| A (PointNet++) | A3 | Self-supervised | **Done** — first adaptation method to clearly beat its own no-adaptation baseline (+20 pts full-run mean), but at a real cost to Tomato segmentation quality (Milestone 17) | 0.731 ± 0.102 |
+| A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | **Done** — unlike the second backbone, narrowing the augmentation mix genuinely helps here: better average result, far fewer collapsed epochs, and a fixed selection-signal problem (Milestone 32) | 0.544 ± 0.039 |
+| A (PointNet++) | A5 | Oracle (upper-bound reference) | **Done** — Block A complete. Ceiling test confirms the same story as the other two architectures: the selection-signal problem is a sensor-mismatch artifact, not a backbone flaw (Milestone 34) | 0.928 ± 0.011 (ceiling) |
+| A (PointNet++) | A6 (added) | Discrepancy-based adaptation | **Done** — added row (Milestone 39) | 0.696 ± 0.070 |
+| B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) | Not rerun yet |
+| B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality | Not rerun yet |
+| B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here | Not rerun yet |
+| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost | Not rerun yet |
+| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project | Not rerun yet |
+| B (KPConv) | B5 | Oracle (upper-bound reference) | **Done** — Block B complete. Resolves the selection-signal mystery: the misleading signal disappears entirely under real target supervision, and the ceiling (0.9425 full-run mean) edges past DGCNN's own Oracle ceiling (Milestone 30) | Not rerun yet |
+| C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed | 0.863 ± 0.015 |
+| C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now | 0.643 ± 0.047 |
+| C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) | 0.853 ± 0.012 |
+| C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | **Done** — same underperformance vs. no-adaptation as C2, confirming it's not an augmentation-mix artifact (Milestone 14) | 0.632 ± 0.028 |
+| C (DGCNN) | C5 | Oracle (upper-bound reference) | **Done** — Block C complete. Near-perfect ceiling (0.925 full-run mean / 1.0000 selected) confirms real, ~13-25 point headroom above the no-adaptation baseline (Milestone 15) | 0.891 ± 0.004 (ceiling) |
+| C (DGCNN) | C6 (added) | Discrepancy-based adaptation | **Done** — added row (Milestone 39) | 0.869 ± 0.041 |
+| D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | Not started | Not rerun yet |
+| E (deployment, optional) | E1–E3 | Model compression / distillation | Not started | – |
+
+The last column is from the full-workflow rerun (Milestone 43, `step_notes/FW_1_Results.md`).
+C1 there reuses the three soil-kept runs of the preprocessing comparison. On the rerun, no
+adaptation row clearly beats the DGCNN no-adaptation baseline C1 (0.863); C3 is about equal to
+it, C6 has 2 of 3 runs above it, and C2/C4 are below it. A5 and C5 are upper-bound references.
+The KPConv rows (B1–B5, B3b) and Block D have not been rerun yet.
 
 **In one sentence:** All three architecture blocks (A/PointNet++, B/KPConv, C/DGCNN — 15 rows
 plus the added B3b, 16 total) are now fully done: self-supervised adaptation's effect ranges from

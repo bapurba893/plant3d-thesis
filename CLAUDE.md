@@ -987,7 +987,14 @@ method found):**
 |---|---|---|---|---|
 | A (PointNet++) | 0.599 (A1) | 0.800 (A3, DA-S) | Self-supervised | +0.201 |
 | B (KPConv) | 0.629 (B1) | 0.860 (B3b, DA-S) | Self-supervised | +0.231 |
-| C (DGCNN) | 0.791 (C1) | 0.791 (C1 itself — no adaptation method beat it) | — | 0.000 |
+| C (DGCNN) | 0.791 (C1; original single-seed, old preprocessing) | 0.791 (C1 itself; original single-seed, old preprocessing) | — | 0.000 |
+
+**Corrected for DGCNN by the full-workflow rerun (`step_notes/FW_1_Results.md`):** on soil-kept
+preprocessing (P4a), 3 seeds each, C1 (DA-0) is 0.863 ± 0.015, C3 (DA-S) 0.853, C6 (DA-D) 0.869;
+C2 and C4 (DA-A) are below C1. No adaptation row clearly beats C1 (all-3-seeds rule: C6 2/3
+seeds above C1's mean, C3 1/3). The A and B rows above are still the original single-seed,
+old-preprocessing numbers; the PointNet++ P4a numbers are in `FW_1_Results.md`, and KPConv has
+not been rerun.
 
 **Oracle ceilings** (upper bound, never a candidate strategy): A5 0.9156, B5 0.9425 (highest),
 C5 0.925. All three land in a tight 0.92-0.94 band, confirming the sensor/domain gap — not model
@@ -1000,8 +1007,10 @@ capacity — is what limits every non-Oracle row on every backbone.
    dependent (A1→A2 −0.045 under ALL, but A1→A4 −0.013 i.e. nearly a tie under L-N only).
    KPConv: roughly a tie (B1→B2 +0.003).
 2. **DA-S (self-supervised/DefRec) and DA-D (discrepancy/CORAL) are architecture-dependent in
-   DIRECTION, not just magnitude — the project's most important qualitative finding.** DA-S hurts
-   DGCNN (C1→C3 −0.088) but helps PointNet++ (A1→A3 +0.201) and helps KPConv even more (B1→B3b
+   DIRECTION, not just magnitude — the project's most important qualitative finding.** DA-S hurt
+   DGCNN in the original single-seed, old-preprocessing run (C1→C3 −0.088), but on soil-kept
+   preprocessing with 3 seeds C3 (0.853) is about equal to C1 (0.863 ± 0.015), not worse and not
+   better (`step_notes/FW_1_Results.md`). In the original runs it helps PointNet++ (A1→A3 +0.201) and helps KPConv even more (B1→B3b
    +0.231, the best non-Oracle result in the project). DA-D (only tested on KPConv, B3) also
    produced a large win (+0.179) — best-supported reading (see B3's entry above): what predicts
    success on KPConv is whether the DA loss is cooperative/Kendall-weighted (DA-S, DA-D) rather
