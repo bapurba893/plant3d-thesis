@@ -26,6 +26,18 @@ Metrics: **full-run mean target accuracy** (mean over the 100 epochs of the per-
 | A6 | PointNet++ / DA-D / ALL | Full-run mean target acc (primary) | 0.650 | 0.777 | 0.662 | 0.696 ± 0.070 |
 |  |  | Full-run mean target bal. acc | 0.723 | 0.823 | 0.734 | 0.760 ± 0.055 |
 |  |  | Selected-checkpoint target acc | 0.682 | 0.825 | 0.809 | 0.772 ± 0.078 |
+| B1 | KPConv / DA-0 / ALL | Full-run mean target acc (primary) | 0.664 | 0.685 | 0.670 | 0.673 ± 0.011 |
+|  |  | Full-run mean target bal. acc | 0.714 | 0.729 | 0.723 | 0.722 ± 0.007 |
+|  |  | Selected-checkpoint target acc | 0.651 | 0.762 | 0.746 | 0.720 ± 0.060 |
+| B2 | KPConv / DA-A / ALL | Full-run mean target acc (primary) | 0.727 | 0.714 | 0.612 | 0.684 ± 0.063 |
+|  |  | Full-run mean target bal. acc | 0.749 | 0.738 | 0.664 | 0.717 ± 0.046 |
+|  |  | Selected-checkpoint target acc | 0.698 | 0.667 | 0.651 | 0.672 ± 0.024 |
+| B4 | KPConv / DA-0 / L-D | Full-run mean target acc (primary) | 0.830 | 0.751 | 0.779 | 0.787 ± 0.040 |
+|  |  | Full-run mean target bal. acc | 0.822 | 0.787 | 0.808 | 0.806 ± 0.017 |
+|  |  | Selected-checkpoint target acc | 0.841 | 0.492 | 0.556 | 0.630 ± 0.186 |
+| B5 | KPConv / DA-O / ALL | Full-run mean target acc (primary) | 0.960 | 0.949 | 0.954 | 0.954 ± 0.006 |
+|  |  | Full-run mean target bal. acc | 0.951 | 0.934 | 0.940 | 0.942 ± 0.008 |
+|  |  | Selected-checkpoint target acc | 0.984 | 1.000 | 1.000 | 0.995 ± 0.009 |
 | C2 | DGCNN / DA-A / ALL | Full-run mean target acc (primary) | 0.606 | 0.627 | 0.696 | 0.643 ± 0.047 |
 |  |  | Full-run mean target bal. acc | 0.672 | 0.681 | 0.736 | 0.696 ± 0.035 |
 |  |  | Selected-checkpoint target acc | 0.571 | 0.921 | 0.905 | 0.799 ± 0.197 |
@@ -68,6 +80,18 @@ Each original is the run in the earlier strategy table (CLAUDE.md, step_notes), 
 | A6 | Full-run mean target acc (primary) | 0.649 | 0.696 ± 0.070 | +0.047 | 3/3 |
 |  | Full-run mean target bal. acc | 0.720 | 0.760 ± 0.055 | +0.040 | – |
 |  | Selected-checkpoint target acc | 0.571 | 0.772 ± 0.078 | +0.201 | – |
+| B1 | Full-run mean target acc (primary) | 0.629 | 0.673 ± 0.011 | +0.043 | 3/3 |
+|  | Full-run mean target bal. acc | 0.688 | 0.722 ± 0.007 | +0.034 | – |
+|  | Selected-checkpoint target acc | 0.444 | 0.720 ± 0.060 | +0.275 | – |
+| B2 | Full-run mean target acc (primary) | 0.632 | 0.684 ± 0.063 | +0.053 | 2/3 |
+|  | Full-run mean target bal. acc | 0.683 | 0.717 ± 0.046 | +0.034 | – |
+|  | Selected-checkpoint target acc | 0.571 | 0.672 ± 0.024 | +0.101 | – |
+| B4 | Full-run mean target acc (primary) | 0.649 | 0.787 ± 0.040 | +0.137 | 3/3 |
+|  | Full-run mean target bal. acc | 0.713 | 0.806 ± 0.017 | +0.093 | – |
+|  | Selected-checkpoint target acc | 0.556 | 0.630 ± 0.186 | +0.074 | – |
+| B5 | Full-run mean target acc (primary) | 0.943 | 0.954 ± 0.006 | +0.012 | 3/3 |
+|  | Full-run mean target bal. acc | 0.934 | 0.942 ± 0.008 | +0.008 | – |
+|  | Selected-checkpoint target acc | 0.984 | 0.995 ± 0.009 | +0.011 | – |
 | C2 | Full-run mean target acc (primary) | 0.633 | 0.643 ± 0.047 | +0.010 | 1/3 |
 |  | Full-run mean target bal. acc | 0.686 | 0.696 ± 0.035 | +0.010 | – |
 |  | Selected-checkpoint target acc | 0.667 | 0.799 ± 0.197 | +0.132 | – |
@@ -84,7 +108,7 @@ Each original is the run in the earlier strategy table (CLAUDE.md, step_notes), 
 |  | Full-run mean target bal. acc | 0.824 | 0.866 ± 0.037 | +0.042 | – |
 |  | Selected-checkpoint target acc | 0.857 | 0.937 ± 0.042 | +0.079 | – |
 
-Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2_pointnet2_da_a/run.log`; A3 `results/A3_pointnet2_da_s/run.log`; A4 `results/A4_pointnet2_da_a_ln/run.log`; A5 `results/A5_pointnet2_da_o/run.log`; A6 `results/A6_pointnet2_da_d/run.log`; C2 `results/C2_dgcnn_da_a/run.log`; C3 `results/C3_dgcnn_da_s/run.log`; C4 `results/C4_dgcnn_da_a_ln/run.log`; C5 `results/C5_dgcnn_da_o/run.log`; C6 `results/C6_dgcnn_da_d/run.log`.
+Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2_pointnet2_da_a/run.log`; A3 `results/A3_pointnet2_da_s/run.log`; A4 `results/A4_pointnet2_da_a_ln/run.log`; A5 `results/A5_pointnet2_da_o/run.log`; A6 `results/A6_pointnet2_da_d/run.log`; B1 `results/B1_kpconv_da0/run.log`; B2 `results/B2_kpconv_da_a/run.log`; B4 `results/B4_kpconv_da0_ld/run.log`; B5 `results/B5_kpconv_da_o/run.log`; C2 `results/C2_dgcnn_da_a/run.log`; C3 `results/C3_dgcnn_da_s/run.log`; C4 `results/C4_dgcnn_da_a_ln/run.log`; C5 `results/C5_dgcnn_da_o/run.log`; C6 `results/C6_dgcnn_da_d/run.log`.
 
 ## Not computed / pending
 
@@ -101,5 +125,13 @@ Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2
 - `results/FW_A5_s1`: FINAL target acc 0.9841 != epoch 93's logged 1.0000 (PointNet++ eval nondeterminism)
 - `results/FW_A6_s1`: FINAL target acc 0.6825 != epoch 97's logged 0.6508 (PointNet++ eval nondeterminism)
 - `results/FW_A6_s2`: FINAL target acc 0.8254 != epoch 72's logged 0.7778 (PointNet++ eval nondeterminism)
+- `results/FW_B1_s1`: FINAL target acc 0.6508 != epoch 96's logged 0.7143
+- `results/FW_B1_s2`: FINAL target acc 0.7619 != epoch 86's logged 0.7302
+- `results/FW_B1_s3`: FINAL target acc 0.7460 != epoch 84's logged 0.7143
+- `results/FW_B2_s2`: FINAL target acc 0.6667 != epoch 55's logged 0.6825
+- `results/FW_B2_s3`: FINAL target acc 0.6508 != epoch 72's logged 0.6190
+- `results/FW_B4_s1`: FINAL target acc 0.8413 != epoch 82's logged 0.9206
+- `results/FW_B4_s3`: FINAL target acc 0.5556 != epoch 44's logged 0.5714
+- `results/FW_B5_s1`: FINAL target acc 0.9841 != epoch 74's logged 1.0000
 
 PointNet++ eval is not deterministic (random farthest-point-sampling start), so the FINAL re-evaluation of the selected checkpoint can differ by a cloud or two from that epoch's logged accuracy; see step_notes/PointNet2_Eval_Nondeterminism.md. The FINAL value is used, as in all earlier summaries.
