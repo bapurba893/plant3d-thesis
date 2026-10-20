@@ -51,13 +51,17 @@ from dataset import PlantSpeciesDataset  # noqa: E402
 
 
 def extract_features(checkpoint_path=DEFAULT_CHECKPOINT, dropout=0.5, device="cpu",
-                      batch_size=16, num_workers=0, out_dir=None, limit=None):
+                      batch_size=16, num_workers=0, out_dir=None, limit=None, manifest=None):
     if out_dir is None:
         out_dir = _REPO_ROOT / "data" / "features" / "Pheno4D"
     out_dir = Path(out_dir)
 
     data_dir = _REPO_ROOT / "data"
     manifest_csv = data_dir / "preprocessed" / "preprocessed_manifest.csv"
+    if manifest is not None:
+        manifest_csv = Path(manifest)
+        if not manifest_csv.is_absolute():
+            manifest_csv = _REPO_ROOT / manifest_csv
 
     pool_set = PlantSpeciesDataset(
         data_dir / "pheno4d_adaptation_pool.csv", manifest_csv, augment=False)
@@ -122,6 +126,9 @@ def parse_args():
     p.add_argument("--out_dir", type=str, default=None)
     p.add_argument("--limit", type=int, default=None,
                     help="only process the first N scans per split (for smoke testing)")
+    p.add_argument("--manifest", type=str, default=None,
+                   help="preprocessed cache manifest CSV (absolute, or relative to the repo "
+                        "root); default: data/preprocessed/preprocessed_manifest.csv")
     return p.parse_args()
 
 
@@ -131,4 +138,4 @@ if __name__ == "__main__":
     device = torch.device(f"cuda:{args.gpu}" if cuda else "cpu")
     print(f"Using {'GPU ' + str(args.gpu) if cuda else 'CPU'}")
     extract_features(args.checkpoint, args.dropout, device, args.batch_size,
-                      args.num_workers, args.out_dir, args.limit)
+                      args.num_workers, args.out_dir, args.limit, args.manifest)

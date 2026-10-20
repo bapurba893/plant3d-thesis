@@ -311,6 +311,9 @@ def parse_args():
     p.add_argument("--lambda_corr", type=float, default=0.5)
     p.add_argument("--seed", type=int, default=1)
     p.add_argument("--gpu", type=int, default=-1, help="-1 for cpu")
+    p.add_argument("--features_dir", type=str, default=None,
+                   help="cached pooled-feature folder (<species>/<stem>.npz; absolute, or relative "
+                        "to the repo root); default: data/features/Pheno4D")
     return p.parse_args()
 
 
@@ -330,6 +333,10 @@ def main():
     traits_csv = data_dir / "traits" / "pheno4d_traits_per_scan.csv"
     growth_csv = data_dir / "traits" / "pheno4d_growth_rate_targets.csv"
     features_dir = data_dir / "features" / "Pheno4D"
+    if args.features_dir is not None:
+        features_dir = Path(args.features_dir)
+        if not features_dir.is_absolute():
+            features_dir = _REPO_ROOT / features_dir
 
     train_table = build_scan_table(data_dir / "pheno4d_oracle_train.csv", traits_csv, growth_csv, features_dir)
     val_table = build_scan_table(data_dir / "pheno4d_oracle_val.csv", traits_csv, growth_csv, features_dir)

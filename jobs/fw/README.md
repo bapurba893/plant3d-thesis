@@ -101,12 +101,16 @@ checkpoint `results/B3b_kpconv_da_s/model.pt`:
 
 ## Open flags for the rerun
 
-- **`TOMATO_SOIL_CROPS3D_ID = 1` in `adapters/infer_segmentation.py:382`** contradicts the finding
-  that Crops3D tomato has no soil, so Crops3D tomato id 1 is a plant organ, not soil. The code
-  comment says it is "confirmed reliable (99.28–99.48% recall)": empirically, B3b's id-1 prediction
-  matches Pheno4D soil, but the name and rationale are wrong. It is used only in the tomato remap
-  paths of the segmentation step, so it affects the **tomato trait targets of D1–D6** (via D0).
-  It does not affect any A–C row. Not changed.
+- **`TOMATO_SOIL_CROPS3D_ID = 1` in `adapters/infer_segmentation.py`, now renamed
+  `TOMATO_SOIL_PROXY_CROPS3D_ID`** (value and behaviour unchanged). The old name and comment
+  contradicted the finding that Crops3D tomato has no soil: id 1 is a plant label (the most
+  frequent Crops3D tomato id, most likely leaf; inferred from label counts), used as a soil
+  *proxy* only because B3b's id-1 predictions empirically covered Pheno4D soil. Corrected
+  2026-10-20: it is read **only** by `remap_mode="geometric"`
+  (`run_inference_on_batch_tomato_geometric`, a validate-only experiment). `--mode full`, which
+  produced the D0 segmentation, uses `height_split`, which never reads it. So it does **not**
+  affect the D1–D6 trait targets (the earlier note here said it did), and it does not affect any
+  A–C row.
 - **Soil cue (Block PP).** P4a keeps soil and pot. `PP_3_Results.md` found that early-season clouds
   are close to species-blind under both P4 and P4a, so FW A–C target accuracy may partly reflect
   the soil cue rather than plant shape.

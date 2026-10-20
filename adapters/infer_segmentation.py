@@ -379,7 +379,14 @@ def build_hybrid_remap(model, config, device, batch_size=16, num_workers=0):
 ## working signal with an untested one for no reason.
 ## ---------------------------------------------------------------------
 
-TOMATO_SOIL_CROPS3D_ID = 1  # confirmed reliable (99.28-99.48% recall) across every remap attempt
+# Crops3D tomato id whose predictions on Pheno4D are treated as soil, in remap_mode="geometric"
+# ONLY (run_inference_on_batch_tomato_geometric, a validate-only experiment). Crops3D tomato has
+# NO soil (step_notes/PP_0_Prerequisite_Checks.md check 3), so id 1 is not a soil class: it is
+# the most frequent Crops3D tomato label (most likely leaf -- inferred from label counts, not
+# confirmed by name). It is used as a soil proxy only because B3b's id-1 predictions empirically
+# covered Pheno4D soil (99.28-99.48% recall across the remap attempts). Not used by --mode full
+# (height_split), so it does not affect the D0 trait targets. Renamed from TOMATO_SOIL_CROPS3D_ID.
+TOMATO_SOIL_PROXY_CROPS3D_ID = 1
 
 
 def local_linearity(points: np.ndarray, k: int = 12) -> np.ndarray:
@@ -486,7 +493,7 @@ def run_inference_on_batch_tomato_geometric(model, batch, maize_remap, device,
     ({species: (pred_organ, mask)}), but Tomato's stem/leaf split comes
     from geometric_stem_leaf_split on real point coordinates instead of a
     Crops3D-id remap (soil still comes from the model, via
-    TOMATO_SOIL_CROPS3D_ID -- only stem-vs-leaf is geometric). Maize is
+    TOMATO_SOIL_PROXY_CROPS3D_ID -- only stem-vs-leaf is geometric). Maize is
     untouched, routed through maize_remap exactly as run_inference_on_batch
     would (maize_remap only needs a "Maize" entry; a full data_driven
     remap dict works fine since its "Tomato" entry is simply never used
@@ -515,7 +522,7 @@ def run_inference_on_batch_tomato_geometric(model, batch, maize_remap, device,
         B_t, N = preds_crops3d.shape
         pred_organ_np = np.zeros((B_t, N), dtype=np.int64)
         for b in range(B_t):
-            soil_mask_b = preds_crops3d[b] == TOMATO_SOIL_CROPS3D_ID
+            soil_mask_b = preds_crops3d[b] == TOMATO_SOIL_PROXY_CROPS3D_ID
             plant_idx_b = np.where(~soil_mask_b)[0]
             if len(plant_idx_b) > 0:
                 plant_pts_b = pts_tomato[b, plant_idx_b]
