@@ -32,6 +32,12 @@ Metrics: **full-run mean target accuracy** (mean over the 100 epochs of the per-
 | B2 | KPConv / DA-A / ALL | Full-run mean target acc (primary) | 0.727 | 0.714 | 0.612 | 0.684 ± 0.063 |
 |  |  | Full-run mean target bal. acc | 0.749 | 0.738 | 0.664 | 0.717 ± 0.046 |
 |  |  | Selected-checkpoint target acc | 0.698 | 0.667 | 0.651 | 0.672 ± 0.024 |
+| B3 | KPConv / DA-D / ALL | Full-run mean target acc (primary) | 0.691 | 0.690 | 0.725 | 0.702 ± 0.020 |
+|  |  | Full-run mean target bal. acc | 0.733 | 0.732 | 0.734 | 0.733 ± 0.001 |
+|  |  | Selected-checkpoint target acc | 0.730 | 0.571 | 0.635 | 0.646 ± 0.080 |
+| B3b | KPConv / DA-S / ALL | Full-run mean target acc (primary) | 0.875 | 0.908 | 0.711 | 0.832 ± 0.105 |
+|  |  | Full-run mean target bal. acc | 0.871 | 0.879 | 0.758 | 0.836 ± 0.067 |
+|  |  | Selected-checkpoint target acc | 0.794 | 0.905 | 0.492 | 0.730 ± 0.214 |
 | B4 | KPConv / DA-0 / L-D | Full-run mean target acc (primary) | 0.830 | 0.751 | 0.779 | 0.787 ± 0.040 |
 |  |  | Full-run mean target bal. acc | 0.822 | 0.787 | 0.808 | 0.806 ± 0.017 |
 |  |  | Selected-checkpoint target acc | 0.841 | 0.492 | 0.556 | 0.630 ± 0.186 |
@@ -86,6 +92,12 @@ Each original is the run in the earlier strategy table (CLAUDE.md, step_notes), 
 | B2 | Full-run mean target acc (primary) | 0.632 | 0.684 ± 0.063 | +0.053 | 2/3 |
 |  | Full-run mean target bal. acc | 0.683 | 0.717 ± 0.046 | +0.034 | – |
 |  | Selected-checkpoint target acc | 0.571 | 0.672 ± 0.024 | +0.101 | – |
+| B3 | Full-run mean target acc (primary) | 0.808 | 0.702 ± 0.020 | -0.106 | 0/3 |
+|  | Full-run mean target bal. acc | 0.809 | 0.733 ± 0.001 | -0.076 | – |
+|  | Selected-checkpoint target acc | 0.682 | 0.646 ± 0.080 | -0.037 | – |
+| B3b | Full-run mean target acc (primary) | 0.860 | 0.832 ± 0.105 | -0.028 | 2/3 |
+|  | Full-run mean target bal. acc | 0.858 | 0.836 ± 0.067 | -0.023 | – |
+|  | Selected-checkpoint target acc | 0.714 | 0.730 ± 0.214 | +0.016 | – |
 | B4 | Full-run mean target acc (primary) | 0.649 | 0.787 ± 0.040 | +0.137 | 3/3 |
 |  | Full-run mean target bal. acc | 0.713 | 0.806 ± 0.017 | +0.093 | – |
 |  | Selected-checkpoint target acc | 0.556 | 0.630 ± 0.186 | +0.074 | – |
@@ -108,7 +120,7 @@ Each original is the run in the earlier strategy table (CLAUDE.md, step_notes), 
 |  | Full-run mean target bal. acc | 0.824 | 0.866 ± 0.037 | +0.042 | – |
 |  | Selected-checkpoint target acc | 0.857 | 0.937 ± 0.042 | +0.079 | – |
 
-Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2_pointnet2_da_a/run.log`; A3 `results/A3_pointnet2_da_s/run.log`; A4 `results/A4_pointnet2_da_a_ln/run.log`; A5 `results/A5_pointnet2_da_o/run.log`; A6 `results/A6_pointnet2_da_d/run.log`; B1 `results/B1_kpconv_da0/run.log`; B2 `results/B2_kpconv_da_a/run.log`; B4 `results/B4_kpconv_da0_ld/run.log`; B5 `results/B5_kpconv_da_o/run.log`; C2 `results/C2_dgcnn_da_a/run.log`; C3 `results/C3_dgcnn_da_s/run.log`; C4 `results/C4_dgcnn_da_a_ln/run.log`; C5 `results/C5_dgcnn_da_o/run.log`; C6 `results/C6_dgcnn_da_d/run.log`.
+Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2_pointnet2_da_a/run.log`; A3 `results/A3_pointnet2_da_s/run.log`; A4 `results/A4_pointnet2_da_a_ln/run.log`; A5 `results/A5_pointnet2_da_o/run.log`; A6 `results/A6_pointnet2_da_d/run.log`; B1 `results/B1_kpconv_da0/run.log`; B2 `results/B2_kpconv_da_a/run.log`; B3 `results/B3_kpconv_da_d/run.log`; B3b `results/B3b_kpconv_da_s/run.log`; B4 `results/B4_kpconv_da0_ld/run.log`; B5 `results/B5_kpconv_da_o/run.log`; C2 `results/C2_dgcnn_da_a/run.log`; C3 `results/C3_dgcnn_da_s/run.log`; C4 `results/C4_dgcnn_da_a_ln/run.log`; C5 `results/C5_dgcnn_da_o/run.log`; C6 `results/C6_dgcnn_da_d/run.log`.
 
 ## Not computed / pending
 
@@ -130,6 +142,11 @@ Original run files: A1 `results/A1_pointnet2_da0_clsseg/run.log`; A2 `results/A2
 - `results/FW_B1_s3`: FINAL target acc 0.7460 != epoch 84's logged 0.7143
 - `results/FW_B2_s2`: FINAL target acc 0.6667 != epoch 55's logged 0.6825
 - `results/FW_B2_s3`: FINAL target acc 0.6508 != epoch 72's logged 0.6190
+- `results/FW_B3_s1`: FINAL target acc 0.7302 != epoch 94's logged 0.7143
+- `results/FW_B3_s2`: FINAL target acc 0.5714 != epoch 93's logged 0.5397
+- `results/FW_B3_s3`: logged best epoch 83 != argmin of logged val total loss 87 (4-dp rounding tie?)
+- `results/FW_B3b_s1`: FINAL target acc 0.7937 != epoch 92's logged 0.7460
+- `results/FW_B3b_s3`: FINAL target acc 0.4921 != epoch 67's logged 0.4444
 - `results/FW_B4_s1`: FINAL target acc 0.8413 != epoch 82's logged 0.9206
 - `results/FW_B4_s3`: FINAL target acc 0.5556 != epoch 44's logged 0.5714
 - `results/FW_B5_s1`: FINAL target acc 0.9841 != epoch 74's logged 1.0000
