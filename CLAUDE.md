@@ -699,7 +699,7 @@ were not — see Repository layout above).
   though still comfortably inside it barring contention. Full design decisions and the bug
   writeup in `step_notes/B3b_KPConv_DA_S.md`.
 - **Row B3b (KPConv, DA-S, ALL) finished — the strongest non-Oracle result in the whole
-  project** (2026-09-13, job 309416, 4h58m, no contention). Best epoch 84.
+  project (original single-seed, old preprocessing)** (2026-09-13, job 309416, 4h58m, no contention). Best epoch 84.
 
   **Full-trajectory comparison** (target held-out cls acc, all 100 epochs):
 
@@ -733,6 +733,11 @@ were not — see Repository layout above).
   quirk appears structural to the backbone+dataset pairing, independent of which adaptation
   method sits on top of it. Full trajectory tables and reasoning in
   `step_notes/B3b_KPConv_DA_S.md`.
+  **Update (full-workflow rerun):** the numbers above are the original single-seed,
+  old-preprocessing result (full-run mean 0.860). On soil-kept preprocessing (P4a) with 3 seeds,
+  B3b is 0.832 ± 0.105: it beats B1 (0.673) on all 3 seeds, but has one weak seed (0.711) and does
+  not pass the all-3-seeds rule against B4 (0.787, L-D only), C1 (0.863) or C6 (0.869) — see
+  `step_notes/FW_2_Results.md`.
 - **Row B3 (KPConv, DA-D, ALL) submitted to the cluster** (2026-09-14, job 310284 on
   `cn11-dgx`, `--time=60:00:00`). The row CLAUDE.md's strategy table actually specifies as B3
   (discrepancy-based, not self-supervised) — see the Backbones/strategy-table entries above for
@@ -754,7 +759,7 @@ were not — see Repository layout above).
   run cleanly with sane, bounded per-batch costs — judged sufficient to proceed without a third
   attempt; see `step_notes/B3_KPConv_DA_D.md` for the full reasoning.
 - **Row B3 (KPConv, DA-D, ALL) finished — KPConv's SECOND clear adaptation win, landing next to
-  B3b (DA-S) not B2 (DA-A)** (2026-09-14/15, job 310284, 10h12m — a confirmed real GPU-contention
+  B3b (DA-S) not B2 (DA-A) (original single-seed, old preprocessing)** (2026-09-14/15, job 310284, 10h12m — a confirmed real GPU-contention
   episode mid-run, ~15x slowdown for several hours around epochs 69-79, checked directly via
   per-epoch timestamps, not guessed; absorbed fine by the 60h budget, second independent
   confirmation of this cluster-level risk after B1's original incident). Best epoch 94.
@@ -794,6 +799,12 @@ were not — see Repository layout above).
   DA method** (vs. B2's 0.2730, B3b's 0.2697), while **Maize mIoU (0.4150) is the highest of the
   three** (vs. B2's 0.3889, B3b's 0.3910) — no collapse in either case, both rise steadily over
   training. Full trajectory tables and reasoning in `step_notes/B3_KPConv_DA_D.md`.
+  **Update (full-workflow rerun):** the numbers above are the original single-seed,
+  old-preprocessing result (full-run mean 0.808). On soil-kept preprocessing (P4a) with 3 seeds,
+  B3 is 0.702 ± 0.020, about 0.106 below its original run (0/3 seeds above it); it beats B1 (0.673)
+  and B2 (0.684) on all 3 seeds but by small margins, and is below B4 (0.787). Its gain over B1
+  shrinks from +0.179 to +0.029, so the cooperative-vs-adversarial reading above is not confirmed
+  by the rerun — see `step_notes/FW_2_Results.md`.
 - **Row B4 (KPConv, DA-0, L-D only, ALL replaced with L-D) submitted to the cluster**
   (2026-09-15, job 311004 on `cn17-dgx`, `--time=60:00:00`). Per explicit user instruction:
   Block B's own deliberately-unadapted density-robustness check (per CLAUDE.md's strategy table
@@ -989,15 +1000,15 @@ method found):**
 | Backbone | DA-0 baseline | Best adaptation result | Method | Gain |
 |---|---|---|---|---|
 | A (PointNet++) | 0.599 (A1) | 0.800 (A3, DA-S) | Self-supervised | +0.201 |
-| B (KPConv) | 0.629 (B1) | 0.860 (B3b, DA-S) | Self-supervised | +0.231 |
+| B (KPConv) | 0.629 (B1; original single-seed, old preprocessing) | 0.860 (B3b, DA-S; original single-seed, old preprocessing) | Self-supervised | +0.231 |
 | C (DGCNN) | 0.791 (C1; original single-seed, old preprocessing) | 0.791 (C1 itself; original single-seed, old preprocessing) | — | 0.000 |
 
 **Corrected for DGCNN by the full-workflow rerun (`step_notes/FW_1_Results.md`):** on soil-kept
 preprocessing (P4a), 3 seeds each, C1 (DA-0) is 0.863 ± 0.015, C3 (DA-S) 0.853, C6 (DA-D) 0.869;
 C2 and C4 (DA-A) are below C1. No adaptation row clearly beats C1 (all-3-seeds rule: C6 2/3
 seeds above C1's mean, C3 1/3). The A and B rows above are still the original single-seed,
-old-preprocessing numbers; the PointNet++ P4a numbers are in `FW_1_Results.md`, and KPConv has
-not been rerun.
+old-preprocessing numbers; the PointNet++ P4a numbers are in `FW_1_Results.md` and the KPConv P4a
+numbers in `step_notes/FW_2_Results.md` (B1 0.673 ± 0.011, B3b 0.832 ± 0.105, B3 0.702 ± 0.020).
 
 **Oracle ceilings** (upper bound, never a candidate strategy): A5 0.9156, B5 0.9425 (highest),
 C5 0.925. All three land in a tight 0.92-0.94 band, confirming the sensor/domain gap — not model
@@ -1018,7 +1029,10 @@ capacity — is what limits every non-Oracle row on every backbone.
    project). DA-D on KPConv (B3) also produced a large win (+0.179) — best-supported reading
    (see B3's entry above): what predicts success on KPConv is whether the DA loss is
    cooperative/Kendall-weighted (DA-S, DA-D) rather than adversarial (DA-A) — not "any
-   adaptation helps."
+   adaptation helps." The +0.231 and +0.179 figures are original single-seed, old preprocessing.
+   On P4a with 3 seeds (`step_notes/FW_2_Results.md`) the gains over B1 are B3b +0.159, B3 +0.029
+   and B2 +0.012: B3b still beats B1 on all 3 seeds but does not pass against B4, C1 or C6, and the
+   cooperative-vs-adversarial reading is not confirmed by the rerun.
 3. **Augmentation-mix sensitivity is itself architecture-dependent.** DGCNN's DA-A story is
    insensitive to narrowing ALL→L-N (C2≈C4). PointNet++'s is NOT — narrowing to L-N substantially
    helps DA-A (A2→A4), evidence its density-sensitive ball-query mechanism interacts badly with
@@ -1039,7 +1053,8 @@ strongest non-Oracle candidate found (0.860 full-run mean, most stable trajector
 0 collapse epochs, no segmentation cost), with KPConv + DA-D (B3) a close, mechanistically
 distinct second (0.808). This is the natural default to carry into Block D unless a different
 consideration (e.g. compute cost — B3b's per-epoch cost is real, ~5h vs. B1's ~2h) argues
-otherwise.
+otherwise. (These are original single-seed, old-preprocessing numbers. On P4a with 3 seeds B3b is
+0.832 ± 0.105 and B3 0.702 ± 0.020, below B4's 0.787 — see `step_notes/FW_2_Results.md`.)
 
 **Next (in order):**
 1. Block D (fusion) planning: pick backbone+DA+augmentation to carry forward (see FINAL SUMMARY

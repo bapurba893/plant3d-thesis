@@ -1443,6 +1443,37 @@ KPConv rows are still to come.
 
 ---
 
+## 44. The Third Architecture (KPConv) Retrained on the Soil-Kept Recipe, Three Times Each — 2026-10-20
+
+The KPConv rows are now done too: every KPConv row of the strategy table was retrained three
+times on the soil-kept recipe. With this, all three architectures have been rerun. Only the
+fusion block has not.
+
+The main result again corrects the earlier story. Before, KPConv looked like the architecture
+where adaptation helps most: the self-supervised method gained 23 points over the baseline and
+the discrepancy-based method 18 points. Both of those were single runs. On the new recipe with
+three runs each, the baseline is 67.3%. The self-supervised method still beats it in all three
+runs and has the highest average of the KPConv rows (83.2%), but one of its runs is much weaker
+(71.1%). Because of that run, it doesn't count as a win against the DGCNN baseline (86.3%), the
+DGCNN discrepancy-based row (86.9%), or the KPConv baseline trained with cropping/dropout
+augmentation only (78.7%). The discrepancy-based method drops from 80.8% to 70.2%, with all three
+runs below its old single run. It still beats the baseline and the adversarial method in all
+three runs, but only by 2–3 points. The adversarial method is roughly level with the baseline
+(68.4%). The upper-bound reference, which trains directly on labelled target scans, reaches
+95.4%; it is a ceiling, not a candidate.
+
+Two honest caveats. First, every old KPConv result was a single run, so part of each difference
+may be run-to-run luck. Second, the soil-kept recipe may let the models use the soil rather than
+the plant's shape. Also, for most KPConv runs, re-scoring the chosen checkpoint at the end gives a
+slightly different accuracy than was logged during training. We don't yet know why.
+
+**In one sentence**: on the soil-kept recipe with three runs per row, KPConv's self-supervised
+row is still its best and beats its own baseline every time, but one weak run keeps it from
+clearly beating DGCNN or the cropping-only KPConv baseline, and the discrepancy-based row's
+earlier large win does not hold up.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -1458,12 +1489,12 @@ at-a-glance status.
 | A (PointNet++) | A4 | Adversarial, jitter-noise augmentation only (run as noise, not cropping/dropout, to match the second backbone's own version of this test — see Milestone 31) | **Done** — unlike the second backbone, narrowing the augmentation mix genuinely helps here: better average result, far fewer collapsed epochs, and a fixed selection-signal problem (Milestone 32) | 0.544 ± 0.039 |
 | A (PointNet++) | A5 | Oracle (upper-bound reference) | **Done** — Block A complete. Ceiling test confirms the same story as the other two architectures: the selection-signal problem is a sensor-mismatch artifact, not a backbone flaw (Milestone 34) | 0.928 ± 0.011 (ceiling) |
 | A (PointNet++) | A6 (added) | Discrepancy-based adaptation | **Done** — added row (Milestone 39) | 0.696 ± 0.070 |
-| B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) | Not rerun yet |
-| B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality | Not rerun yet |
-| B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here | Not rerun yet |
-| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost | Not rerun yet |
-| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project | Not rerun yet |
-| B (KPConv) | B5 | Oracle (upper-bound reference) | **Done** — Block B complete. Resolves the selection-signal mystery: the misleading signal disappears entirely under real target supervision, and the ceiling (0.9425 full-run mean) edges past DGCNN's own Oracle ceiling (Milestone 30) | Not rerun yet |
+| B (KPConv) | B1 | No adaptation (baseline) | **Done** — mixed stability signature vs. A1/C1 (steady like DGCNN on total-collapse, but the most erratic and least trustworthy selection signal of the three backbones); best segmentation of the three (Milestone 20) | 0.673 ± 0.011 |
+| B (KPConv) | B2 | Adversarial (anchor method) | **Done** — unlike both other backbones, adversarial adaptation does NOT hurt this one overall (Milestone 22); still costs segmentation quality | 0.684 ± 0.063 |
+| B (KPConv) | B3 | Discrepancy-based adaptation | **Done** — second clear win for this backbone (Milestone 26): +17.9 pts over baseline, second-most-stable run in the project, helps clarify why adaptation works here | 0.702 ± 0.020 (below its original 0.808 in all 3 runs) |
+| B (KPConv) | B3b (added) | Self-supervised — added for comparability with A3/C3 | **Done** — best non-Oracle result in the project (Milestone 24): +23 pts over baseline, most stable run yet, no segmentation cost | 0.832 ± 0.105 (one weak run, 0.711) |
+| B (KPConv) | B4 | Deliberately unadapted, cropping/dropout only | **Done** — mixed result (Milestone 28): slightly better raw accuracy, but worst selection-signal reliability of any row in the project | 0.787 ± 0.040 |
+| B (KPConv) | B5 | Oracle (upper-bound reference) | **Done** — Block B complete. Resolves the selection-signal mystery: the misleading signal disappears entirely under real target supervision, and the ceiling (0.9425 full-run mean) edges past DGCNN's own Oracle ceiling (Milestone 30) | 0.954 ± 0.006 (ceiling) |
 | C (DGCNN) | C1 | No adaptation (baseline) | **Done** — full result committed | 0.863 ± 0.015 |
 | C (DGCNN) | C2 | Adversarial (anchor method) | **Done** — a real bug found and fixed (Milestone 13); still doesn't beat no-adaptation overall, but far more stable now | 0.643 ± 0.047 |
 | C (DGCNN) | C3 | Self-supervised | **Done** — trained, doesn't help target accuracy but training stayed stable (see Milestone 12) | 0.853 ± 0.012 |
@@ -1473,11 +1504,13 @@ at-a-glance status.
 | D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | **Done** — original Block D run (Milestones 36–38) | Not started |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started | – |
 
-The last column is from the full-workflow rerun (Milestone 43, `step_notes/FW_1_Results.md`).
-C1 there reuses the three soil-kept runs of the preprocessing comparison. On the rerun, no
-adaptation row clearly beats the DGCNN no-adaptation baseline C1 (0.863); C3 is about equal to
-it, C6 has 2 of 3 runs above it, and C2/C4 are below it. A5 and C5 are upper-bound references.
-The KPConv rows (B1–B5, B3b) and Block D have not been rerun yet.
+The last column is from the full-workflow rerun (Milestones 43 and 44,
+`step_notes/FW_1_Results.md`, `step_notes/FW_2_Results.md`). C1 there reuses the three soil-kept
+runs of the preprocessing comparison. On the rerun, no adaptation row clearly beats the DGCNN
+no-adaptation baseline C1 (0.863); C3 is about equal to it, C6 has 2 of 3 runs above it, and C2/C4
+are below it. On KPConv, B3b and B3 beat their like-for-like baseline B1 (0.673) in all 3 runs;
+B3b has 2 of 3 runs above C1, C6 and B4 (B4 uses cropping/dropout augmentation only). A5, B5 and
+C5 are upper-bound references. Block D has not been rerun yet.
 
 **In one sentence:** On the soil-kept preprocessing with three runs per row (Milestone 43,
 `step_notes/FW_1_Results.md`), no adaptation method clearly beats the DGCNN no-adaptation
@@ -1486,9 +1519,13 @@ slightly higher on average (86.9%) but only two of its three runs beat the basel
 adversarial ones are well below it; PointNet++ without adaptation falls below the
 always-guess-tomato level (49.7% against 63.5%), and its best adaptation result (self-supervised,
 73.1%) varies a lot between runs; the upper-bound references (89.1% DGCNN, 92.8% PointNet++) are
-ceilings, not candidates. Only the DGCNN baseline is a fair before/after preprocessing test, the
-soil-kept recipe may let models use the soil rather than plant shape, and the KPConv rows (whose
-original single runs gave the best non-ceiling result) and Block D have not been rerun yet.
+ceilings, not candidates; on KPConv (Milestone 44, `step_notes/FW_2_Results.md`) the
+self-supervised method (83.2%) beats its no-adaptation baseline (67.3%) in all three runs but has
+one weak run (71.1%) and so does not clearly beat the DGCNN baseline, the DGCNN discrepancy-based
+row or the cropping-only KPConv baseline (78.7%), and the discrepancy-based method falls to 70.2%
+from its original 80.8%; the KPConv upper-bound reference reaches 95.4%. Only the DGCNN baseline is
+a fair before/after preprocessing test, the soil-kept recipe may let models use the soil rather
+than plant shape, and Block D has not been rerun yet.
 
 ---
 
