@@ -4,7 +4,8 @@ Scope: the first part of the full-workflow rerun described in `jobs/fw/README.md
 and Block C row was retrained with seeds 1, 2, 3 on the soil-kept preprocessing P4a
 (`data/preprocessed_variants/P4a/preprocessed_manifest.csv`), with each row's original arguments.
 P4a was chosen as the best baseline in Block PP (`step_notes/PP_2_Results.md`, `PP_3_Results.md`).
-KPConv rows (B1–B5, B3b) and Block D have not been run on P4a yet.
+KPConv rows (B1–B5, B3b) and Block D had not been run on P4a when this was written; Block D was run
+later (job 359157, `step_notes/FW_3_Results.md`).
 
 Every number below comes from a file in the repo:
 
@@ -165,7 +166,7 @@ comparison, but it can still inflate the absolute accuracies and the C1–C5 gap
 ## 4. Not done yet
 
 - KPConv rows B1–B5 and B3b on P4a (rounds 3 and 4 of `jobs/fw/README.md`, except C3): not started.
-- Block D on P4a: not prepared (open decisions in `jobs/fw/README.md`, "Block D").
+- Block D on P4a: run later (job 359157), see `step_notes/FW_3_Results.md`.
 - No FW row has been cross-evaluated on the soil-removed target cache (would test 3.3).
 - Segmentation mIoU: not reported (not comparable across rows).
 

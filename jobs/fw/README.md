@@ -1,12 +1,14 @@
 # Full workflow rerun (FW) on the soil-kept preprocessing (P4a): job set
 
-Status (2026-10-20): **rounds 1 to 4 done** (all seeds OK; C1 = reused `PP_P4a`). Results:
+Status (2026-10-21): **rounds 1 to 4 done** (all seeds OK; C1 = reused `PP_P4a`). Results:
 `step_notes/FW_1_Results.md` (PointNet++, DGCNN) and `step_notes/FW_2_Results.md` (KPConv).
-**Block D not started.** Every A/B/C row is retrained with seeds 1, 2, 3
-on `data/preprocessed_variants/P4a/preprocessed_manifest.csv` (soil kept; best baseline in Block PP,
+**Block D was run as job 359157** (3-task array, seeds 1, 2, 3, all finished; elapsed 32:48,
+19:14 and 36:42 per sacct); results in `step_notes/FW_3_Results.md`.
+Every A/B/C row is retrained with seeds 1, 2, 3 on
+`data/preprocessed_variants/P4a/preprocessed_manifest.csv` (soil kept; best baseline in Block PP,
 see `step_notes/PP_2_Results.md` and `PP_3_Results.md`). Results go to `results/FW_<row>_s<seed>/`.
-No existing result folder starts with `FW_`, so there is no clash. Block D is **not** prepared
-(see "Block D" below).
+No existing result folder starts with `FW_`, so there is no clash. For Block D see "Block D: what
+was run" below.
 
 All six split CSVs the rows use (Crops3D train/val, Pheno4D held-out, adaptation pool, oracle
 train/val) resolve 100% against the P4a manifest (checked 2026-10-14: 263, 45, 63, 160, 72, 18 rows).
@@ -49,12 +51,12 @@ Every A/B/C row needs 1 GPU (A100); D rows ran on CPU.
 | C4 | `train_c4_dgcnn_da_a_ln.py` | DGCNN | DA-A | L-N | added | 0.22 h | 0.7 h | 12 h |
 | C5 | `train_c5_dgcnn_da_o.py` | DGCNN | DA-O | ALL | added | 0.39 h | 1.2 h | 12 h |
 | C6 | `train_c6_dgcnn_da_d.py` | DGCNN | DA-D | ALL | added | 0.25 h | 0.8 h | 12 h |
-| D1 | `train_d1_fusion_baseline.py` | MLP head on frozen B3b features | (B3b: DA-S) | – | not applicable | < 1 min (CPU) | – | not prepared |
-| D2 | `train_d2_fusion_growth_curves.py` | same + growth-curve params | (B3b) | – | not applicable | ~1 min (CPU) | – | not prepared |
-| D3 | `train_d3_fusion_temporal.py` | same + temporal info | (B3b) | – | not applicable | < 1 min (CPU) | – | not prepared |
-| D4 | `train_d4_fusion_previous_stage.py` | same + previous stage | (B3b) | – | not applicable | < 1 min (CPU) | – | not prepared |
-| D5 | `train_d5_fusion_physics_logistic.py` | D4 + Logistic ODE loss | (B3b) | – | not applicable | ~2 min (CPU) | – | not prepared |
-| D6 | `train_d6_fusion_physics_gompertz.py` | D4 + Gompertz ODE loss | (B3b) | – | not applicable | ~1 min (CPU) | – | not prepared |
+| D1 | `train_d1_fusion_baseline.py` | MLP head on frozen B3b features | (B3b: DA-S) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished |
+| D2 | `train_d2_fusion_growth_curves.py` | same + growth-curve params | (B3b) | – | not applicable | ~1 min (CPU) | – | job 359157: 3 seeds, all finished |
+| D3 | `train_d3_fusion_temporal.py` | same + temporal info | (B3b) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished |
+| D4 | `train_d4_fusion_previous_stage.py` | same + previous stage | (B3b) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished |
+| D5 | `train_d5_fusion_physics_logistic.py` | D4 + Logistic ODE loss | (B3b) | – | not applicable | ~2 min (CPU) | – | job 359157: 3 seeds, all finished |
+| D6 | `train_d6_fusion_physics_gompertz.py` | D4 + Gompertz ODE loss | (B3b) | – | not applicable | ~1 min (CPU) | – | job 359157: 3 seeds, all finished |
 
 The 24 rows are the strategy table's 21 A–D rows plus the three added rows B3b, A6 and C6.
 Block E (optional) is not included.
@@ -79,25 +81,33 @@ Cheapest rows first. Submit a round once the previous round's jobs have finished
 
 C1 is optional because it repeats `results/PP_P4a_s{1,2,3}` exactly: same script, arguments, seeds
 and manifest. `PP_P4a` can be reused as FW C1, or C1 can be added as the 5th job of round 4.
-Block D comes after round 4 and the decisions below.
+Block D was run after round 4 as job 359157 (3 seeds, all finished; see "Block D: what was run" below).
 
-## Block D: not prepared, decisions needed
+## Block D: what was run (job 359157)
 
-D1–D6 do not read a manifest. They read hard-coded `data/features/Pheno4D/` (B3b pooled features)
-and `data/traits/*.csv` (trait and growth targets). Those inputs come from a chain run on the B3b
-checkpoint `results/B3b_kpconv_da_s/model.pt`:
-`adapters/infer_segmentation.py` (validate, then `--mode full`) → `scripts/trait_extraction.py` →
-`scripts/assemble_trait_timeseries.py` → `scripts/growth_curves.py` →
-`scripts/compute_growth_rate_targets.py`, plus `adapters/extract_b3b_features.py`. To rerun D on P4a:
+`fw_D.sbatch`, submitted as one 3-task array, job **359157** (one seed per task; 2026-10-21, tasks
+took 32, 19 and 36 min; every step `OK` in `results/logs/fw_D_359157_<task>.log`). Task `<seed>` did:
 
-1. `infer_segmentation.py` and `extract_b3b_features.py` hard-code the old P0 manifest (no
-   `--manifest`), so they would read the old preprocessing.
-2. D1–D6 have no options for their input paths. Rerunning them on new inputs means either
-   overwriting `data/features/` and `data/traits/` (which destroys the inputs of the current D
-   results) or adding path options to six scripts.
-3. Which FW B3b seed feeds Block D? Or should D's backbone be re-chosen from the FW A–C results?
-4. Should the trait **targets** be recomputed from the new segmentation, or kept fixed? Keeping them
-   fixed changes only the features, which keeps D comparable with the old D results.
+1. **Features (GPU):** `adapters/extract_b3b_features.py --checkpoint results/FW_B3b_s<seed>/model.pt
+   --manifest data/preprocessed_variants/P4a/preprocessed_manifest.csv` extracted the frozen
+   256-number pooled feature of that seed's FW B3b backbone (KPConv, DA-S, ALL, trained on P4a) for
+   all 223 Pheno4D scans, into `data/features_fw/P4a_B3b_s<seed>/` (log: `extract.log` there).
+2. **D rows (CPU):** D1, D2, D3, D4, D5, the D5 control, D6 and the D6 control, each with
+   `--features_dir data/features_fw/P4a_B3b_s<seed> --seed <seed>` and otherwise the original
+   arguments. The controls are the same scripts with `--lambda_phys 0 --lambda_mono 0`. D5, D6 and
+   both controls warm-start from the same seed's `results/FW_D4_s<seed>/model.pt` (`--init_from_d4`).
+
+Results: `results/FW_D<n>_s<seed>/` (controls: `results/FW_D5_ablation_s<seed>/`,
+`results/FW_D6_ablation_s<seed>/`). Summary: `step_notes/FW_3_Results.md`.
+
+How the four earlier open decisions were settled: `extract_b3b_features.py` gained `--manifest` (it already
+had `--out_dir`), and D1–D6 gained `--features_dir` (commit 5c7907d); Block D seed `<seed>` uses FW B3b
+seed `<seed>`; the trait and growth **targets were kept fixed** (every D script still reads the
+original `data/traits/*.csv`; `infer_segmentation.py` was not rerun), so only the input features
+changed.
+
+The original Block D files were **not overwritten**: `data/features/Pheno4D/`, `data/traits/` and
+`results/D*/` are unchanged (no diff in git).
 
 ## Open flags for the rerun
 

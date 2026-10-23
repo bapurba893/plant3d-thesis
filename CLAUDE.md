@@ -1057,10 +1057,9 @@ otherwise. (These are original single-seed, old-preprocessing numbers. On P4a wi
 0.832 ± 0.105 and B3 0.702 ± 0.020, below B4's 0.787 — see `step_notes/FW_2_Results.md`.)
 
 **Next (in order):**
-1. Block D (fusion) planning: pick backbone+DA+augmentation to carry forward (see FINAL SUMMARY
-   above — KPConv+DA-S/B3b is the current strongest candidate), then start D1 (deep features
-   only). Growth-curve/trait data integration has not yet been scoped for Block D and needs
-   review before D1 can be built.
+1. Block D status: run on the P4a B3b features (FW B3b backbone, KPConv+DA-S) with 3 seeds, job
+   359157 — see `step_notes/FW_3_Results.md`. The result showed no clear gain from the fusion
+   inputs or the physics loss.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

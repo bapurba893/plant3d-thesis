@@ -3,8 +3,8 @@
 Scope: the second part of the full-workflow rerun described in `jobs/fw/README.md`. Every Block B
 row (B1–B5, plus the added row B3b) was retrained with seeds 1, 2, 3 on the soil-kept
 preprocessing P4a (`data/preprocessed_variants/P4a/preprocessed_manifest.csv`), with each row's
-original arguments. The PointNet++ and DGCNN rows are in `step_notes/FW_1_Results.md`. Block D has
-not been run on P4a.
+original arguments. The PointNet++ and DGCNN rows are in `step_notes/FW_1_Results.md`. Block D was
+run on P4a later (job 359157), see `step_notes/FW_3_Results.md`.
 
 Every number below comes from `results/pp_summary/fw_summary.md` / `fw_by_row.csv`, written by
 `scripts/15_fw_summarize.py` from `results/FW_<row>_s<seed>/run.log` (regenerated in commit
@@ -137,7 +137,7 @@ cause, but this has not been tested. The FINAL value is used, as in all earlier 
 
 ## 7. Not done yet
 
-- Block D on P4a: not started (open decisions in `jobs/fw/README.md`, "Block D").
+- Block D on P4a: run later (job 359157), see `step_notes/FW_3_Results.md`.
 - No FW row has been cross-evaluated on the soil-removed target cache.
 - Cause of the KPConv selected-checkpoint mismatch: not investigated.
 
