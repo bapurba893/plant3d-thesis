@@ -1474,6 +1474,68 @@ earlier large win does not hold up.
 
 ---
 
+## 45. The Fusion Block (Block D) Rerun on the Soil-Kept KPConv Features, Three Times Each — 2026-10-21
+
+Block D (D1–D6, plus a control version of D5/D6 with the physics loss switched off) was rerun
+three times as job 359157 (three tasks, all finished on 2026-10-21). Each run uses the features of
+one of the three soil-kept KPConv self-supervised (B3b) models from Milestone 44. Only the input
+features changed: the trait and growth targets are still the ones derived from the original B3b
+segmentation. Results: `step_notes/FW_3_Results.md`.
+
+What was measured: no step from D1 to D4 clearly improves height, stem diameter, volume or height
+growth rate (a clear win needs all three runs above the reference's average). D4 beats D3 on leaf
+area and leaf count in all three runs, but D4–D6 are tested on 54 scans and D1–D3 on 63 (D4 drops
+scans without a trustworthy previous scan), so that comparison is not like-for-like. D5 and D6
+beat D4 on leaf area and volume, but so does the control without the physics loss, and neither D5
+nor D6 beats the control on any trait in all three runs. On height, the physics loss is ahead of
+the control in two runs and behind it in one, so the earlier single-run gain is not confirmed.
+
+Caveats. Our guess, not tested: the gain of D5, D6 and the control over D4 comes from the extra
+training they get on top of D4's checkpoint. Volume varies a lot between runs, mostly because of
+run 3, and run 3 also uses the weakest backbone, so backbone and training variation are mixed.
+Stem diameter is poorly predicted everywhere (R² about 0.10). The targets come from our own
+segmentation, not from hand measurements.
+
+**In one sentence**: on the soil-kept features with three runs each, neither the extra fusion
+inputs nor the physics loss gives a clear gain over the control, and the earlier single-run
+physics-loss gain on height does not hold up.
+
+---
+
+## 46. The Rerun Models Tested on Scans With the Soil Removed — 2026-10-23
+
+The 54 soil-kept rerun models of the A–C rows (Milestones 43 and 44, three runs per row) were
+scored, without retraining, on the 63 target test scans twice: as they were trained (soil kept)
+and with the soil removed. Jobs 361654 (DGCNN), 361785 (PointNet++) and the three-task array
+361787 (KPConv), all run on 2026-10-23. The PointNet++ and KPConv jobs show as "FAILED" only
+because the script returns an error code when a self-check fails; all their results were written.
+That check compares each model's soil-kept score with the score logged in training: DGCNN matches
+exactly in all 18 runs, 24 of the 36 PointNet++/KPConv runs fall inside the spread of three repeat
+scorings, and 12 are off by 1 or 2 of the 63 scans. Results: `step_notes/FW_4_Results.md`.
+
+What was measured: every DGCNN row falls in every run when the soil is removed (the no-adaptation
+baseline from 88.4% to 65.1%). PointNet++ and KPConv are mixed: some rows fall in every run
+(PointNet++ self-supervised, KPConv adversarial), PointNet++ without adaptation rises (42.9% to
+63.8%), and the rest go up in some runs and down in others. Without soil, no model calls any maize
+scan tomato. The scores of the non-reference rows bunch around the always-guess-tomato level
+(63.5%): 28 of 45 runs are within 10 points of it. The upper-bound references fall by 12–19
+points.
+
+Caveats. Removing the soil also changes the centre, scale and point density of each scan, because
+the scaling is redone on the plant alone; these changes are not separated from the soil effect.
+The models were trained with soil, so this shows what happens when the soil is taken away at test
+time, not what a model trained without soil could do. Our guess: the rise of PointNet++ without
+adaptation is a change of bias (with soil it called almost every tomato maize), not a real
+improvement. The scores are of the one chosen checkpoint, not the full-run averages of Milestones
+43 and 44. Not done yet: a version of the test scans with the soil removed but the original centre
+and scale, which would separate the two effects.
+
+**In one sentence**: taking the soil away at test time lowers every DGCNN row and moves PointNet++
+and KPConv rows in both directions, leaving most scores near the always-guess-tomato level, but
+part of that change may come from the rescaling rather than the soil itself.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -1510,7 +1572,7 @@ runs of the preprocessing comparison. On the rerun, no adaptation row clearly be
 no-adaptation baseline C1 (0.863); C3 is about equal to it, C6 has 2 of 3 runs above it, and C2/C4
 are below it. On KPConv, B3b and B3 beat their like-for-like baseline B1 (0.673) in all 3 runs;
 B3b has 2 of 3 runs above C1, C6 and B4 (B4 uses cropping/dropout augmentation only). A5, B5 and
-C5 are upper-bound references. Block D has not been rerun yet.
+C5 are upper-bound references. Block D was rerun as job 359157 (`step_notes/FW_3_Results.md`).
 
 **In one sentence:** On the soil-kept preprocessing with three runs per row (Milestone 43,
 `step_notes/FW_1_Results.md`), no adaptation method clearly beats the DGCNN no-adaptation
@@ -1525,7 +1587,7 @@ one weak run (71.1%) and so does not clearly beat the DGCNN baseline, the DGCNN 
 row or the cropping-only KPConv baseline (78.7%), and the discrepancy-based method falls to 70.2%
 from its original 80.8%; the KPConv upper-bound reference reaches 95.4%. Only the DGCNN baseline is
 a fair before/after preprocessing test, the soil-kept recipe may let models use the soil rather
-than plant shape, and Block D has not been rerun yet.
+than plant shape, and Block D was rerun as job 359157 (`step_notes/FW_3_Results.md`).
 
 ---
 
