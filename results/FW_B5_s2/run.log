@@ -1,0 +1,1431 @@
+17-10-26 20:37:27: Namespace(exp_name='FW_B5_s2', out_path='/home/pearl/25m0301/plant3d-thesis/results', epochs=100, batch_size=8, test_batch_size=16, lr=0.001, wd=5e-05, dropout=0.5, seed=2, gpu=0, verbose_batches=True, num_workers=0, manifest='data/preprocessed_variants/P4a/preprocessed_manifest.csv')
+17-10-26 20:37:27: Using GPU 0: NVIDIA A100-SXM4-80GB
+17-10-26 20:37:28: Pheno4D oracle train: 72 {'Tomato': 44, 'Maize': 28}
+17-10-26 20:37:28: Pheno4D oracle val:   18 {'Tomato': 11, 'Maize': 7}
+17-10-26 20:37:28: Pheno4D held-out eval (target test, never trained on, cls): 63 {'Tomato': 40, 'Maize': 23}
+17-10-26 20:37:28: Pheno4D held-out eval (target test, annotated subset, seg): 36 {'Tomato': 22, 'Maize': 14}  <- Oracle-only metric, NOT comparable to B1-B4's source-val seg mIoU (different domain/label space, see PHENO4D_SEG_NUM_CLASSES docstring)
+17-10-26 20:37:29: L_cls class weights (w_c=(f_c+eps)^-1, normalized): {'Tomato': 0.7777782082557678, 'Maize': 1.2222217321395874}
+17-10-26 20:37:29: L_seg class weights for Tomato (counts=[109632, 11056, 59536]): [0.23515842854976654, 2.3318119049072266, 0.4330296516418457]
+17-10-26 20:37:29: L_seg class weights for Maize (counts=[66556, 25070, 23062]): [0.4586630165576935, 1.2176581621170044, 1.3236786127090454]
+17-10-26 20:37:40: Calibrated neighborhood_limits (per layer, 90th-percentile cap): [499, 37, 29]
+17-10-26 20:38:19:   epoch 0 batch 0: collate wait 1.0s, fwd+bwd+step 21.2s
+17-10-26 20:38:21:   epoch 0 batch 1: collate wait 1.3s, fwd+bwd+step 0.2s
+17-10-26 20:38:22:   epoch 0 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:38:23:   epoch 0 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:38:24:   epoch 0 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:38:25:   epoch 0 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:38:27:   epoch 0 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:38:29:   epoch 0 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:38:31:   epoch 0 batch 8: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:38:31: Trn - Oracle 0, cls loss: 0.4833, seg loss: 1.6046, kendall s_cls: 0.0022, s_seg: 0.0089
+17-10-26 20:38:33: Val - Oracle 0, cls acc: 0.9444, cls avg acc: 0.9286, cls loss: 0.4674, seg loss: 1.7504, total loss: 2.2068
+17-10-26 20:38:33: Val - Oracle 0, Tomato seg: loss=1.7572, mIoU=0.1985, acc=0.5954
+17-10-26 20:38:33: Val - Oracle 0, Maize seg: loss=1.7397, mIoU=0.2470, acc=0.5281
+17-10-26 20:38:42: Eval(no-train) - Target 'test' 0, acc: 0.9048, avg acc: 0.8696, cls loss: 0.4657  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:38:44:   epoch 1 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:38:45:   epoch 1 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:38:47:   epoch 1 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:38:48:   epoch 1 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:38:49:   epoch 1 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:38:51:   epoch 1 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:38:52:   epoch 1 batch 6: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:38:53:   epoch 1 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:38:55:   epoch 1 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:38:55: Trn - Oracle 1, cls loss: 0.4089, seg loss: 1.2903, kendall s_cls: -0.0002, s_seg: 0.0171
+17-10-26 20:38:57: Val - Oracle 1, cls acc: 0.6667, cls avg acc: 0.5714, cls loss: 0.5852, seg loss: 1.7163, total loss: 2.2810
+17-10-26 20:38:57: Val - Oracle 1, Tomato seg: loss=1.8325, mIoU=0.1985, acc=0.5954
+17-10-26 20:38:57: Val - Oracle 1, Maize seg: loss=1.5336, mIoU=0.3094, acc=0.5905
+17-10-26 20:39:06: Eval(no-train) - Target 'test' 1, acc: 0.8254, avg acc: 0.7609, cls loss: 0.4636  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:39:07:   epoch 2 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:39:09:   epoch 2 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:39:10:   epoch 2 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:39:12:   epoch 2 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:39:13:   epoch 2 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:39:14:   epoch 2 batch 5: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:39:16:   epoch 2 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:39:17:   epoch 2 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:39:18:   epoch 2 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:39:18: Trn - Oracle 2, cls loss: 0.2772, seg loss: 1.1196, kendall s_cls: -0.0046, s_seg: 0.0245
+17-10-26 20:39:21: Val - Oracle 2, cls acc: 0.6111, cls avg acc: 0.5000, cls loss: 0.7456, seg loss: 1.5592, total loss: 2.2804
+17-10-26 20:39:21: Val - Oracle 2, Tomato seg: loss=1.7510, mIoU=0.1986, acc=0.5956
+17-10-26 20:39:21: Val - Oracle 2, Maize seg: loss=1.2578, mIoU=0.4150, acc=0.6849
+17-10-26 20:39:30: Eval(no-train) - Target 'test' 2, acc: 0.6508, avg acc: 0.5217, cls loss: 0.5747  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:39:32:   epoch 3 batch 0: collate wait 2.2s, fwd+bwd+step 0.4s
+17-10-26 20:39:33:   epoch 3 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:39:35:   epoch 3 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:39:36:   epoch 3 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:39:38:   epoch 3 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:39:39:   epoch 3 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:39:40:   epoch 3 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:39:41:   epoch 3 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:39:43:   epoch 3 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:39:43: Trn - Oracle 3, cls loss: 0.3586, seg loss: 1.0500, kendall s_cls: -0.0093, s_seg: 0.0314
+17-10-26 20:39:45: Val - Oracle 3, cls acc: 0.6111, cls avg acc: 0.5000, cls loss: 0.8112, seg loss: 1.4921, total loss: 2.2759
+17-10-26 20:39:45: Val - Oracle 3, Tomato seg: loss=1.5488, mIoU=0.2351, acc=0.6484
+17-10-26 20:39:45: Val - Oracle 3, Maize seg: loss=1.4031, mIoU=0.3677, acc=0.7112
+17-10-26 20:39:54: Eval(no-train) - Target 'test' 3, acc: 0.6349, avg acc: 0.5000, cls loss: 0.6232  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:39:55:   epoch 4 batch 0: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:39:57:   epoch 4 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:39:58:   epoch 4 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:40:00:   epoch 4 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:40:01:   epoch 4 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:03:   epoch 4 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:04:   epoch 4 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:40:06:   epoch 4 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:07:   epoch 4 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:07: Trn - Oracle 4, cls loss: 0.2758, seg loss: 0.9967, kendall s_cls: -0.0147, s_seg: 0.0376
+17-10-26 20:40:10: Val - Oracle 4, cls acc: 0.6111, cls avg acc: 0.5000, cls loss: 0.8340, seg loss: 1.3680, total loss: 2.1752
+17-10-26 20:40:10: Val - Oracle 4, Tomato seg: loss=1.4751, mIoU=0.3009, acc=0.7231
+17-10-26 20:40:10: Val - Oracle 4, Maize seg: loss=1.1996, mIoU=0.4584, acc=0.7554
+17-10-26 20:40:18: Eval(no-train) - Target 'test' 4, acc: 0.6508, avg acc: 0.5217, cls loss: 0.6285  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:40:20:   epoch 5 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:21:   epoch 5 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:40:23:   epoch 5 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:25:   epoch 5 batch 3: collate wait 1.9s, fwd+bwd+step 0.1s
+17-10-26 20:40:26:   epoch 5 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:28:   epoch 5 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:40:29:   epoch 5 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:40:30:   epoch 5 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:40:32:   epoch 5 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:40:32: Trn - Oracle 5, cls loss: 0.2367, seg loss: 1.0150, kendall s_cls: -0.0221, s_seg: 0.0438
+17-10-26 20:40:34: Val - Oracle 5, cls acc: 0.6111, cls avg acc: 0.5000, cls loss: 0.9533, seg loss: 1.3265, total loss: 2.2551
+17-10-26 20:40:34: Val - Oracle 5, Tomato seg: loss=1.4627, mIoU=0.2936, acc=0.6961
+17-10-26 20:40:34: Val - Oracle 5, Maize seg: loss=1.1124, mIoU=0.4639, acc=0.7622
+17-10-26 20:40:43: Eval(no-train) - Target 'test' 5, acc: 0.6349, avg acc: 0.5000, cls loss: 0.6934  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:40:45:   epoch 6 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:40:46:   epoch 6 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:40:48:   epoch 6 batch 2: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:40:49:   epoch 6 batch 3: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:40:50:   epoch 6 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:40:51:   epoch 6 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:40:53:   epoch 6 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:40:54:   epoch 6 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:40:55:   epoch 6 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:40:55: Trn - Oracle 6, cls loss: 0.3600, seg loss: 0.9653, kendall s_cls: -0.0276, s_seg: 0.0499
+17-10-26 20:40:58: Val - Oracle 6, cls acc: 0.6111, cls avg acc: 0.5000, cls loss: 0.8544, seg loss: 1.3273, total loss: 2.1521
+17-10-26 20:40:58: Val - Oracle 6, Tomato seg: loss=1.5167, mIoU=0.2848, acc=0.6998
+17-10-26 20:40:58: Val - Oracle 6, Maize seg: loss=1.0297, mIoU=0.4742, acc=0.7764
+17-10-26 20:41:07: Eval(no-train) - Target 'test' 6, acc: 0.6349, avg acc: 0.5000, cls loss: 0.6507  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:41:08:   epoch 7 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:41:09:   epoch 7 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:41:10:   epoch 7 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:41:12:   epoch 7 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:41:13:   epoch 7 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:41:14:   epoch 7 batch 5: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:41:16:   epoch 7 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:41:17:   epoch 7 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:41:19:   epoch 7 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:41:19: Trn - Oracle 7, cls loss: 0.1760, seg loss: 1.0062, kendall s_cls: -0.0342, s_seg: 0.0560
+17-10-26 20:41:21: Val - Oracle 7, cls acc: 0.6111, cls avg acc: 0.5000, cls loss: 0.6068, seg loss: 1.2405, total loss: 1.8117
+17-10-26 20:41:21: Val - Oracle 7, Tomato seg: loss=1.3958, mIoU=0.3890, acc=0.7557
+17-10-26 20:41:21: Val - Oracle 7, Maize seg: loss=0.9965, mIoU=0.5169, acc=0.7965
+17-10-26 20:41:30: Eval(no-train) - Target 'test' 7, acc: 0.6825, avg acc: 0.5652, cls loss: 0.4858  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:41:32:   epoch 8 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:41:33:   epoch 8 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:41:35:   epoch 8 batch 2: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:41:36:   epoch 8 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:41:38:   epoch 8 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:41:39:   epoch 8 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:41:40:   epoch 8 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:41:42:   epoch 8 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:41:43:   epoch 8 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:41:43: Trn - Oracle 8, cls loss: 0.2128, seg loss: 0.9074, kendall s_cls: -0.0424, s_seg: 0.0613
+17-10-26 20:41:46: Val - Oracle 8, cls acc: 0.7222, cls avg acc: 0.6429, cls loss: 0.6186, seg loss: 1.1131, total loss: 1.7018
+17-10-26 20:41:46: Val - Oracle 8, Tomato seg: loss=1.2132, mIoU=0.5623, acc=0.8531
+17-10-26 20:41:46: Val - Oracle 8, Maize seg: loss=0.9559, mIoU=0.5694, acc=0.8299
+17-10-26 20:41:55: Eval(no-train) - Target 'test' 8, acc: 0.6825, avg acc: 0.5652, cls loss: 0.4895  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:41:57:   epoch 9 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:41:58:   epoch 9 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:42:00:   epoch 9 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:42:01:   epoch 9 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:42:02:   epoch 9 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:42:04:   epoch 9 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:42:05:   epoch 9 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:42:07:   epoch 9 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:42:08:   epoch 9 batch 8: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:42:08: Trn - Oracle 9, cls loss: 0.1344, seg loss: 0.8854, kendall s_cls: -0.0505, s_seg: 0.0666
+17-10-26 20:42:11: Val - Oracle 9, cls acc: 0.7778, cls avg acc: 0.7143, cls loss: 0.4419, seg loss: 0.9710, total loss: 1.3813
+17-10-26 20:42:11: Val - Oracle 9, Tomato seg: loss=0.9864, mIoU=0.6772, acc=0.9057
+17-10-26 20:42:11: Val - Oracle 9, Maize seg: loss=0.9468, mIoU=0.5962, acc=0.8375
+17-10-26 20:42:20: Eval(no-train) - Target 'test' 9, acc: 0.7619, avg acc: 0.6739, cls loss: 0.3628  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:42:22:   epoch 10 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:42:23:   epoch 10 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:42:24:   epoch 10 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:42:26:   epoch 10 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:42:27:   epoch 10 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:42:28:   epoch 10 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:42:29:   epoch 10 batch 6: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:42:31:   epoch 10 batch 7: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 20:42:32:   epoch 10 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:42:32: Trn - Oracle 10, cls loss: 0.1927, seg loss: 0.9357, kendall s_cls: -0.0590, s_seg: 0.0719
+17-10-26 20:42:35: Val - Oracle 10, cls acc: 0.7222, cls avg acc: 0.6429, cls loss: 0.5469, seg loss: 0.9749, total loss: 1.4939
+17-10-26 20:42:35: Val - Oracle 10, Tomato seg: loss=1.0132, mIoU=0.6613, acc=0.9213
+17-10-26 20:42:35: Val - Oracle 10, Maize seg: loss=0.9149, mIoU=0.5635, acc=0.8275
+17-10-26 20:42:44: Eval(no-train) - Target 'test' 10, acc: 0.6984, avg acc: 0.5870, cls loss: 0.4030  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:42:45:   epoch 11 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:42:47:   epoch 11 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:42:48:   epoch 11 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:42:49:   epoch 11 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:42:50:   epoch 11 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:42:52:   epoch 11 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:42:54:   epoch 11 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:42:55:   epoch 11 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:42:56:   epoch 11 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:42:56: Trn - Oracle 11, cls loss: 0.1839, seg loss: 0.7874, kendall s_cls: -0.0676, s_seg: 0.0767
+17-10-26 20:42:59: Val - Oracle 11, cls acc: 0.7222, cls avg acc: 0.6429, cls loss: 0.6249, seg loss: 0.8367, total loss: 1.4481
+17-10-26 20:42:59: Val - Oracle 11, Tomato seg: loss=0.8075, mIoU=0.7195, acc=0.9210
+17-10-26 20:42:59: Val - Oracle 11, Maize seg: loss=0.8828, mIoU=0.6292, acc=0.8527
+17-10-26 20:43:08: Eval(no-train) - Target 'test' 11, acc: 0.6984, avg acc: 0.5870, cls loss: 0.4402  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:43:09:   epoch 12 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:43:10:   epoch 12 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:43:12:   epoch 12 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:43:13:   epoch 12 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:43:14:   epoch 12 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:43:15:   epoch 12 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:43:17:   epoch 12 batch 6: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 20:43:18:   epoch 12 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:43:20:   epoch 12 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:43:20: Trn - Oracle 12, cls loss: 0.1066, seg loss: 0.7618, kendall s_cls: -0.0763, s_seg: 0.0808
+17-10-26 20:43:22: Val - Oracle 12, cls acc: 0.8333, cls avg acc: 0.7857, cls loss: 0.4112, seg loss: 0.8118, total loss: 1.1948
+17-10-26 20:43:22: Val - Oracle 12, Tomato seg: loss=0.7737, mIoU=0.7661, acc=0.9244
+17-10-26 20:43:22: Val - Oracle 12, Maize seg: loss=0.8718, mIoU=0.5406, acc=0.8378
+17-10-26 20:43:31: Eval(no-train) - Target 'test' 12, acc: 0.7143, avg acc: 0.6087, cls loss: 0.4090  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:43:33:   epoch 13 batch 0: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:43:34:   epoch 13 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:43:36:   epoch 13 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:43:37:   epoch 13 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:43:39:   epoch 13 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:43:40:   epoch 13 batch 5: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:43:41:   epoch 13 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:43:43:   epoch 13 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:43:44:   epoch 13 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:43:44: Trn - Oracle 13, cls loss: 0.1468, seg loss: 0.8619, kendall s_cls: -0.0850, s_seg: 0.0850
+17-10-26 20:43:46: Val - Oracle 13, cls acc: 0.9444, cls avg acc: 0.9286, cls loss: 0.2679, seg loss: 0.8306, total loss: 1.0546
+17-10-26 20:43:46: Val - Oracle 13, Tomato seg: loss=0.7818, mIoU=0.7464, acc=0.9156
+17-10-26 20:43:46: Val - Oracle 13, Maize seg: loss=0.9073, mIoU=0.5197, acc=0.8305
+17-10-26 20:43:55: Eval(no-train) - Target 'test' 13, acc: 0.9048, avg acc: 0.8696, cls loss: 0.3184  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:43:57:   epoch 14 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:43:58:   epoch 14 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:43:59:   epoch 14 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:44:00:   epoch 14 batch 3: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:44:01:   epoch 14 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:44:03:   epoch 14 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:44:04:   epoch 14 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:44:05:   epoch 14 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:44:07:   epoch 14 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:44:07: Trn - Oracle 14, cls loss: 0.1139, seg loss: 0.8731, kendall s_cls: -0.0939, s_seg: 0.0898
+17-10-26 20:44:10: Val - Oracle 14, cls acc: 0.7778, cls avg acc: 0.7143, cls loss: 0.3912, seg loss: 0.9146, total loss: 1.2638
+17-10-26 20:44:10: Val - Oracle 14, Tomato seg: loss=0.8758, mIoU=0.7508, acc=0.9461
+17-10-26 20:44:10: Val - Oracle 14, Maize seg: loss=0.9756, mIoU=0.4515, acc=0.7795
+17-10-26 20:44:18: Eval(no-train) - Target 'test' 14, acc: 0.8889, avg acc: 0.8478, cls loss: 0.2637  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:44:20:   epoch 15 batch 0: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:44:22:   epoch 15 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:44:23:   epoch 15 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:44:24:   epoch 15 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:44:26:   epoch 15 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:44:27:   epoch 15 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:44:28:   epoch 15 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:44:29:   epoch 15 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:44:30:   epoch 15 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:44:30: Trn - Oracle 15, cls loss: 0.3515, seg loss: 0.9222, kendall s_cls: -0.1015, s_seg: 0.0949
+17-10-26 20:44:33: Val - Oracle 15, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0942, seg loss: 0.7230, total loss: 0.7585
+17-10-26 20:44:33: Val - Oracle 15, Tomato seg: loss=0.6503, mIoU=0.7409, acc=0.9335
+17-10-26 20:44:33: Val - Oracle 15, Maize seg: loss=0.8372, mIoU=0.5183, acc=0.8330
+17-10-26 20:44:43: Eval(no-train) - Target 'test' 15, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0801  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:44:44:   epoch 16 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:44:45:   epoch 16 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:44:47:   epoch 16 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:44:48:   epoch 16 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:44:50:   epoch 16 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:44:51:   epoch 16 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:44:53:   epoch 16 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:44:54:   epoch 16 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:44:55:   epoch 16 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:44:55: Trn - Oracle 16, cls loss: 0.1619, seg loss: 0.8745, kendall s_cls: -0.1066, s_seg: 0.0998
+17-10-26 20:44:58: Val - Oracle 16, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0980, seg loss: 0.7209, total loss: 0.7580
+17-10-26 20:44:58: Val - Oracle 16, Tomato seg: loss=0.6754, mIoU=0.7860, acc=0.9414
+17-10-26 20:44:58: Val - Oracle 16, Maize seg: loss=0.7924, mIoU=0.6102, acc=0.8580
+17-10-26 20:45:07: Eval(no-train) - Target 'test' 16, acc: 1.0000, avg acc: 1.0000, cls loss: 0.1079  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:45:09:   epoch 17 batch 0: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:45:10:   epoch 17 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:45:12:   epoch 17 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:45:14:   epoch 17 batch 3: collate wait 2.0s, fwd+bwd+step 0.1s
+17-10-26 20:45:15:   epoch 17 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:45:16:   epoch 17 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:45:17:   epoch 17 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:45:19:   epoch 17 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:45:20:   epoch 17 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:45:20: Trn - Oracle 17, cls loss: 0.1625, seg loss: 0.8256, kendall s_cls: -0.1133, s_seg: 0.1045
+17-10-26 20:45:22: Val - Oracle 17, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.1135, seg loss: 0.7077, total loss: 0.7602
+17-10-26 20:45:22: Val - Oracle 17, Tomato seg: loss=0.6287, mIoU=0.7660, acc=0.9453
+17-10-26 20:45:22: Val - Oracle 17, Maize seg: loss=0.8319, mIoU=0.6005, acc=0.8318
+17-10-26 20:45:31: Eval(no-train) - Target 'test' 17, acc: 0.9365, avg acc: 0.9130, cls loss: 0.0997  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:45:32:   epoch 18 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:45:34:   epoch 18 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:45:35:   epoch 18 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:45:37:   epoch 18 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:45:39:   epoch 18 batch 4: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:45:40:   epoch 18 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:45:41:   epoch 18 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:45:42:   epoch 18 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:45:44:   epoch 18 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:45:44: Trn - Oracle 18, cls loss: 0.1314, seg loss: 0.9728, kendall s_cls: -0.1206, s_seg: 0.1098
+17-10-26 20:45:47: Val - Oracle 18, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0986, seg loss: 0.7430, total loss: 0.7715
+17-10-26 20:45:47: Val - Oracle 18, Tomato seg: loss=0.6569, mIoU=0.7703, acc=0.9328
+17-10-26 20:45:47: Val - Oracle 18, Maize seg: loss=0.8783, mIoU=0.5714, acc=0.8014
+17-10-26 20:45:56: Eval(no-train) - Target 'test' 18, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0848  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:45:57:   epoch 19 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:45:59:   epoch 19 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:00:   epoch 19 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:46:01:   epoch 19 batch 3: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:02:   epoch 19 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:46:04:   epoch 19 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:46:06:   epoch 19 batch 6: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:07:   epoch 19 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:46:08:   epoch 19 batch 8: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:46:08: Trn - Oracle 19, cls loss: 0.3340, seg loss: 0.8144, kendall s_cls: -0.1261, s_seg: 0.1148
+17-10-26 20:46:11: Val - Oracle 19, cls acc: 0.8333, cls avg acc: 0.7857, cls loss: 0.2749, seg loss: 0.7548, total loss: 0.9791
+17-10-26 20:46:11: Val - Oracle 19, Tomato seg: loss=0.6927, mIoU=0.7897, acc=0.9478
+17-10-26 20:46:11: Val - Oracle 19, Maize seg: loss=0.8526, mIoU=0.5461, acc=0.8305
+17-10-26 20:46:19: Eval(no-train) - Target 'test' 19, acc: 0.8730, avg acc: 0.8261, cls loss: 0.2196  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:46:21:   epoch 20 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:46:22:   epoch 20 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:46:23:   epoch 20 batch 2: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:25:   epoch 20 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:46:27:   epoch 20 batch 4: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:28:   epoch 20 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:46:29:   epoch 20 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:46:30:   epoch 20 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:46:32:   epoch 20 batch 8: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:32: Trn - Oracle 20, cls loss: 0.3020, seg loss: 0.9366, kendall s_cls: -0.1299, s_seg: 0.1193
+17-10-26 20:46:35: Val - Oracle 20, cls acc: 0.8889, cls avg acc: 0.8571, cls loss: 0.1758, seg loss: 0.7203, total loss: 0.8342
+17-10-26 20:46:35: Val - Oracle 20, Tomato seg: loss=0.6310, mIoU=0.8027, acc=0.9535
+17-10-26 20:46:35: Val - Oracle 20, Maize seg: loss=0.8605, mIoU=0.5496, acc=0.8360
+17-10-26 20:46:44: Eval(no-train) - Target 'test' 20, acc: 0.9524, avg acc: 0.9348, cls loss: 0.1155  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:46:45:   epoch 21 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:46:47:   epoch 21 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:46:48:   epoch 21 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:46:49:   epoch 21 batch 3: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:46:51:   epoch 21 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:46:52:   epoch 21 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:46:53:   epoch 21 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:46:55:   epoch 21 batch 7: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 20:46:56:   epoch 21 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:46:56: Trn - Oracle 21, cls loss: 0.3346, seg loss: 0.8429, kendall s_cls: -0.1327, s_seg: 0.1243
+17-10-26 20:46:59: Val - Oracle 21, cls acc: 0.8889, cls avg acc: 0.8571, cls loss: 0.2761, seg loss: 0.7655, total loss: 0.9871
+17-10-26 20:46:59: Val - Oracle 21, Tomato seg: loss=0.6601, mIoU=0.7945, acc=0.9454
+17-10-26 20:46:59: Val - Oracle 21, Maize seg: loss=0.9313, mIoU=0.5683, acc=0.8336
+17-10-26 20:47:08: Eval(no-train) - Target 'test' 21, acc: 0.9206, avg acc: 0.8913, cls loss: 0.1493  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:47:09:   epoch 22 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:47:11:   epoch 22 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:47:12:   epoch 22 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:47:13:   epoch 22 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:47:15:   epoch 22 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:47:16:   epoch 22 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:47:17:   epoch 22 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:47:18:   epoch 22 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:47:20:   epoch 22 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:47:20: Trn - Oracle 22, cls loss: 0.1658, seg loss: 0.8283, kendall s_cls: -0.1369, s_seg: 0.1286
+17-10-26 20:47:22: Val - Oracle 22, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.1054, seg loss: 0.7518, total loss: 0.7778
+17-10-26 20:47:22: Val - Oracle 22, Tomato seg: loss=0.6046, mIoU=0.8188, acc=0.9518
+17-10-26 20:47:22: Val - Oracle 22, Maize seg: loss=0.9831, mIoU=0.4514, acc=0.6594
+17-10-26 20:47:31: Eval(no-train) - Target 'test' 22, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0669  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:47:33:   epoch 23 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:47:34:   epoch 23 batch 1: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:47:36:   epoch 23 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:47:37:   epoch 23 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:47:38:   epoch 23 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:47:40:   epoch 23 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:47:41:   epoch 23 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:47:42:   epoch 23 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:47:44:   epoch 23 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:47:44: Trn - Oracle 23, cls loss: 0.1664, seg loss: 0.8058, kendall s_cls: -0.1430, s_seg: 0.1326
+17-10-26 20:47:46: Val - Oracle 23, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0609, seg loss: 0.7391, total loss: 0.7124
+17-10-26 20:47:46: Val - Oracle 23, Tomato seg: loss=0.6564, mIoU=0.7660, acc=0.9417
+17-10-26 20:47:46: Val - Oracle 23, Maize seg: loss=0.8690, mIoU=0.6320, acc=0.8560
+17-10-26 20:47:55: Eval(no-train) - Target 'test' 23, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0526  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:47:57:   epoch 24 batch 0: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:47:59:   epoch 24 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:47:59:   epoch 24 batch 2: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:48:01:   epoch 24 batch 3: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:48:03:   epoch 24 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:48:04:   epoch 24 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:48:06:   epoch 24 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:48:07:   epoch 24 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:48:08:   epoch 24 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:48:08: Trn - Oracle 24, cls loss: 0.2803, seg loss: 0.8481, kendall s_cls: -0.1476, s_seg: 0.1368
+17-10-26 20:48:10: Val - Oracle 24, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0811, seg loss: 0.6895, total loss: 0.6900
+17-10-26 20:48:10: Val - Oracle 24, Tomato seg: loss=0.5884, mIoU=0.7856, acc=0.9534
+17-10-26 20:48:10: Val - Oracle 24, Maize seg: loss=0.8484, mIoU=0.5359, acc=0.8438
+17-10-26 20:48:19: Eval(no-train) - Target 'test' 24, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0751  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:48:21:   epoch 25 batch 0: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:48:22:   epoch 25 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:48:23:   epoch 25 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:48:25:   epoch 25 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:48:26:   epoch 25 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:48:28:   epoch 25 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:48:29:   epoch 25 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:48:31:   epoch 25 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:48:32:   epoch 25 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:48:32: Trn - Oracle 25, cls loss: 0.0705, seg loss: 0.8089, kendall s_cls: -0.1535, s_seg: 0.1405
+17-10-26 20:48:35: Val - Oracle 25, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0676, seg loss: 0.6753, total loss: 0.6591
+17-10-26 20:48:35: Val - Oracle 25, Tomato seg: loss=0.5736, mIoU=0.7930, acc=0.9437
+17-10-26 20:48:35: Val - Oracle 25, Maize seg: loss=0.8349, mIoU=0.6489, acc=0.8559
+17-10-26 20:48:44: Eval(no-train) - Target 'test' 25, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0705  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:48:45:   epoch 26 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:48:47:   epoch 26 batch 1: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 20:48:49:   epoch 26 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:48:50:   epoch 26 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:48:52:   epoch 26 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:48:53:   epoch 26 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:48:54:   epoch 26 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:48:55:   epoch 26 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:48:57:   epoch 26 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:48:57: Trn - Oracle 26, cls loss: 0.1324, seg loss: 0.7822, kendall s_cls: -0.1603, s_seg: 0.1440
+17-10-26 20:49:00: Val - Oracle 26, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0447, seg loss: 0.7190, total loss: 0.6668
+17-10-26 20:49:00: Val - Oracle 26, Tomato seg: loss=0.6426, mIoU=0.7887, acc=0.9504
+17-10-26 20:49:00: Val - Oracle 26, Maize seg: loss=0.8390, mIoU=0.6790, acc=0.8652
+17-10-26 20:49:09: Eval(no-train) - Target 'test' 26, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0525  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:49:10:   epoch 27 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:49:11:   epoch 27 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:49:13:   epoch 27 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:49:14:   epoch 27 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:49:15:   epoch 27 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:49:16:   epoch 27 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:49:18:   epoch 27 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:49:19:   epoch 27 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:49:21:   epoch 27 batch 8: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:49:21: Trn - Oracle 27, cls loss: 0.2838, seg loss: 0.7685, kendall s_cls: -0.1652, s_seg: 0.1470
+17-10-26 20:49:23: Val - Oracle 27, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.1509, seg loss: 0.7026, total loss: 0.7755
+17-10-26 20:49:23: Val - Oracle 27, Tomato seg: loss=0.6572, mIoU=0.7791, acc=0.9434
+17-10-26 20:49:23: Val - Oracle 27, Maize seg: loss=0.7739, mIoU=0.6622, acc=0.8689
+17-10-26 20:49:33: Eval(no-train) - Target 'test' 27, acc: 0.8889, avg acc: 0.9125, cls loss: 0.1739  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:49:34:   epoch 28 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:49:35:   epoch 28 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:49:38:   epoch 28 batch 2: collate wait 2.1s, fwd+bwd+step 0.1s
+17-10-26 20:49:39:   epoch 28 batch 3: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:49:40:   epoch 28 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:49:41:   epoch 28 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:49:43:   epoch 28 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:49:44:   epoch 28 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:49:46:   epoch 28 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:49:46: Trn - Oracle 28, cls loss: 0.0867, seg loss: 0.7858, kendall s_cls: -0.1708, s_seg: 0.1501
+17-10-26 20:49:49: Val - Oracle 28, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0449, seg loss: 0.7395, total loss: 0.6793
+17-10-26 20:49:49: Val - Oracle 28, Tomato seg: loss=0.6738, mIoU=0.7438, acc=0.9335
+17-10-26 20:49:49: Val - Oracle 28, Maize seg: loss=0.8426, mIoU=0.6154, acc=0.8319
+17-10-26 20:49:57: Eval(no-train) - Target 'test' 28, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0475  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:49:58:   epoch 29 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:49:59:   epoch 29 batch 1: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 20:50:01:   epoch 29 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:50:02:   epoch 29 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:50:03:   epoch 29 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:50:04:   epoch 29 batch 5: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:50:06:   epoch 29 batch 6: collate wait 1.9s, fwd+bwd+step 0.1s
+17-10-26 20:50:08:   epoch 29 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:50:09:   epoch 29 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:50:09: Trn - Oracle 29, cls loss: 0.2234, seg loss: 0.7479, kendall s_cls: -0.1758, s_seg: 0.1529
+17-10-26 20:50:12: Val - Oracle 29, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0941, seg loss: 0.6927, total loss: 0.6952
+17-10-26 20:50:12: Val - Oracle 29, Tomato seg: loss=0.5856, mIoU=0.7964, acc=0.9557
+17-10-26 20:50:12: Val - Oracle 29, Maize seg: loss=0.8610, mIoU=0.5634, acc=0.8132
+17-10-26 20:50:21: Eval(no-train) - Target 'test' 29, acc: 0.9841, avg acc: 0.9783, cls loss: 0.1036  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:50:22:   epoch 30 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:50:23:   epoch 30 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:50:24:   epoch 30 batch 2: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:50:26:   epoch 30 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:50:27:   epoch 30 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:50:28:   epoch 30 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:50:30:   epoch 30 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:50:31:   epoch 30 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:50:33:   epoch 30 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:50:33: Trn - Oracle 30, cls loss: 0.1249, seg loss: 0.7892, kendall s_cls: -0.1816, s_seg: 0.1559
+17-10-26 20:50:35: Val - Oracle 30, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0670, seg loss: 0.7031, total loss: 0.6691
+17-10-26 20:50:35: Val - Oracle 30, Tomato seg: loss=0.5862, mIoU=0.7588, acc=0.9395
+17-10-26 20:50:35: Val - Oracle 30, Maize seg: loss=0.8869, mIoU=0.5930, acc=0.8179
+17-10-26 20:50:44: Eval(no-train) - Target 'test' 30, acc: 0.9365, avg acc: 0.9500, cls loss: 0.1114  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:50:45:   epoch 31 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:50:47:   epoch 31 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:50:48:   epoch 31 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:50:49:   epoch 31 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:50:51:   epoch 31 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:50:52:   epoch 31 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:50:54:   epoch 31 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:50:56:   epoch 31 batch 7: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:50:57:   epoch 31 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:50:57: Trn - Oracle 31, cls loss: 0.0502, seg loss: 0.7517, kendall s_cls: -0.1882, s_seg: 0.1585
+17-10-26 20:51:00: Val - Oracle 31, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0622, seg loss: 0.6574, total loss: 0.6212
+17-10-26 20:51:00: Val - Oracle 31, Tomato seg: loss=0.5777, mIoU=0.8000, acc=0.9503
+17-10-26 20:51:00: Val - Oracle 31, Maize seg: loss=0.7827, mIoU=0.6302, acc=0.8730
+17-10-26 20:51:09: Eval(no-train) - Target 'test' 31, acc: 0.9683, avg acc: 0.9750, cls loss: 0.1056  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:51:10:   epoch 32 batch 0: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:51:12:   epoch 32 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:51:13:   epoch 32 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:51:14:   epoch 32 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:51:16:   epoch 32 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:51:17:   epoch 32 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:51:18:   epoch 32 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:51:20:   epoch 32 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:51:21:   epoch 32 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:51:21: Trn - Oracle 32, cls loss: 0.1406, seg loss: 0.8244, kendall s_cls: -0.1948, s_seg: 0.1615
+17-10-26 20:51:24: Val - Oracle 32, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0486, seg loss: 0.6493, total loss: 0.5948
+17-10-26 20:51:24: Val - Oracle 32, Tomato seg: loss=0.5739, mIoU=0.8134, acc=0.9581
+17-10-26 20:51:24: Val - Oracle 32, Maize seg: loss=0.7677, mIoU=0.6547, acc=0.8836
+17-10-26 20:51:33: Eval(no-train) - Target 'test' 32, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0374  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:51:34:   epoch 33 batch 0: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:51:35:   epoch 33 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:51:37:   epoch 33 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:51:38:   epoch 33 batch 3: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:51:39:   epoch 33 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:51:41:   epoch 33 batch 5: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 20:51:43:   epoch 33 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:51:44:   epoch 33 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:51:45:   epoch 33 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:51:45: Trn - Oracle 33, cls loss: 0.0476, seg loss: 0.7415, kendall s_cls: -0.2014, s_seg: 0.1644
+17-10-26 20:51:48: Val - Oracle 33, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0604, seg loss: 0.6634, total loss: 0.6183
+17-10-26 20:51:48: Val - Oracle 33, Tomato seg: loss=0.5963, mIoU=0.7989, acc=0.9530
+17-10-26 20:51:48: Val - Oracle 33, Maize seg: loss=0.7689, mIoU=0.6744, acc=0.8685
+17-10-26 20:51:57: Eval(no-train) - Target 'test' 33, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0774  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:51:58:   epoch 34 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:00:   epoch 34 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:52:02:   epoch 34 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:03:   epoch 34 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:52:04:   epoch 34 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:05:   epoch 34 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:52:06:   epoch 34 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:52:08:   epoch 34 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:52:09:   epoch 34 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:09: Trn - Oracle 34, cls loss: 0.0445, seg loss: 0.7532, kendall s_cls: -0.2085, s_seg: 0.1668
+17-10-26 20:52:12: Val - Oracle 34, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.0953, seg loss: 0.6632, total loss: 0.6579
+17-10-26 20:52:12: Val - Oracle 34, Tomato seg: loss=0.5977, mIoU=0.7949, acc=0.9533
+17-10-26 20:52:12: Val - Oracle 34, Maize seg: loss=0.7663, mIoU=0.6933, acc=0.8668
+17-10-26 20:52:21: Eval(no-train) - Target 'test' 34, acc: 0.9365, avg acc: 0.9500, cls loss: 0.1568  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:52:22:   epoch 35 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:52:24:   epoch 35 batch 1: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:52:26:   epoch 35 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:52:27:   epoch 35 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:52:28:   epoch 35 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:52:30:   epoch 35 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:52:31:   epoch 35 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:52:32:   epoch 35 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:34:   epoch 35 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:52:34: Trn - Oracle 35, cls loss: 0.2604, seg loss: 0.7489, kendall s_cls: -0.2144, s_seg: 0.1690
+17-10-26 20:52:36: Val - Oracle 35, cls acc: 0.8889, cls avg acc: 0.9091, cls loss: 0.1661, seg loss: 0.6808, total loss: 0.7580
+17-10-26 20:52:36: Val - Oracle 35, Tomato seg: loss=0.6002, mIoU=0.7764, acc=0.9527
+17-10-26 20:52:36: Val - Oracle 35, Maize seg: loss=0.8074, mIoU=0.6379, acc=0.8459
+17-10-26 20:52:45: Eval(no-train) - Target 'test' 35, acc: 0.8889, avg acc: 0.9125, cls loss: 0.1812  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:52:46:   epoch 36 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:52:48:   epoch 36 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:52:49:   epoch 36 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:51:   epoch 36 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:52:52:   epoch 36 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:53:   epoch 36 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:52:54:   epoch 36 batch 6: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:52:56:   epoch 36 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:52:57:   epoch 36 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:52:57: Trn - Oracle 36, cls loss: 0.0417, seg loss: 0.7513, kendall s_cls: -0.2194, s_seg: 0.1714
+17-10-26 20:53:00: Val - Oracle 36, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0321, seg loss: 0.7095, total loss: 0.6137
+17-10-26 20:53:00: Val - Oracle 36, Tomato seg: loss=0.6405, mIoU=0.7949, acc=0.9522
+17-10-26 20:53:00: Val - Oracle 36, Maize seg: loss=0.8179, mIoU=0.5581, acc=0.8463
+17-10-26 20:53:09: Eval(no-train) - Target 'test' 36, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0593  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:53:10:   epoch 37 batch 0: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:53:11:   epoch 37 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:13:   epoch 37 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:53:15:   epoch 37 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:53:16:   epoch 37 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:17:   epoch 37 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:53:19:   epoch 37 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:20:   epoch 37 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:22:   epoch 37 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:53:22: Trn - Oracle 37, cls loss: 0.1585, seg loss: 0.7417, kendall s_cls: -0.2243, s_seg: 0.1738
+17-10-26 20:53:24: Val - Oracle 37, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0397, seg loss: 0.6559, total loss: 0.5757
+17-10-26 20:53:24: Val - Oracle 37, Tomato seg: loss=0.5845, mIoU=0.7348, acc=0.9308
+17-10-26 20:53:24: Val - Oracle 37, Maize seg: loss=0.7681, mIoU=0.6025, acc=0.8594
+17-10-26 20:53:33: Eval(no-train) - Target 'test' 37, acc: 0.9683, avg acc: 0.9750, cls loss: 0.0688  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:53:35:   epoch 38 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:53:36:   epoch 38 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:37:   epoch 38 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:53:39:   epoch 38 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:40:   epoch 38 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:53:41:   epoch 38 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:53:43:   epoch 38 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:44:   epoch 38 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:53:46:   epoch 38 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:53:46: Trn - Oracle 38, cls loss: 0.0836, seg loss: 0.7505, kendall s_cls: -0.2299, s_seg: 0.1760
+17-10-26 20:53:48: Val - Oracle 38, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0395, seg loss: 0.7081, total loss: 0.6166
+17-10-26 20:53:48: Val - Oracle 38, Tomato seg: loss=0.6652, mIoU=0.7892, acc=0.9447
+17-10-26 20:53:48: Val - Oracle 38, Maize seg: loss=0.7755, mIoU=0.6384, acc=0.8441
+17-10-26 20:53:58: Eval(no-train) - Target 'test' 38, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0734  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:53:59:   epoch 39 batch 0: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:54:00:   epoch 39 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:54:01:   epoch 39 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:54:03:   epoch 39 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:54:04:   epoch 39 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:54:06:   epoch 39 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:54:07:   epoch 39 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:54:09:   epoch 39 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:54:10:   epoch 39 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:54:10: Trn - Oracle 39, cls loss: 0.0528, seg loss: 0.7228, kendall s_cls: -0.2358, s_seg: 0.1779
+17-10-26 20:54:12: Val - Oracle 39, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0363, seg loss: 0.7280, total loss: 0.6263
+17-10-26 20:54:12: Val - Oracle 39, Tomato seg: loss=0.6446, mIoU=0.7250, acc=0.9340
+17-10-26 20:54:12: Val - Oracle 39, Maize seg: loss=0.8590, mIoU=0.5939, acc=0.7944
+17-10-26 20:54:21: Eval(no-train) - Target 'test' 39, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0481  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:54:23:   epoch 40 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:54:24:   epoch 40 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:54:25:   epoch 40 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:54:27:   epoch 40 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:54:28:   epoch 40 batch 4: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:54:29:   epoch 40 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:54:31:   epoch 40 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:54:32:   epoch 40 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:54:34:   epoch 40 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:54:34: Trn - Oracle 40, cls loss: 0.0327, seg loss: 0.7325, kendall s_cls: -0.2421, s_seg: 0.1796
+17-10-26 20:54:36: Val - Oracle 40, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0219, seg loss: 0.6869, total loss: 0.5707
+17-10-26 20:54:36: Val - Oracle 40, Tomato seg: loss=0.6366, mIoU=0.7729, acc=0.9417
+17-10-26 20:54:36: Val - Oracle 40, Maize seg: loss=0.7661, mIoU=0.6848, acc=0.8772
+17-10-26 20:54:45: Eval(no-train) - Target 'test' 40, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0339  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:54:47:   epoch 41 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:54:48:   epoch 41 batch 1: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:54:50:   epoch 41 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:54:51:   epoch 41 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:54:52:   epoch 41 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:54:54:   epoch 41 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:54:55:   epoch 41 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:54:57:   epoch 41 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:54:58:   epoch 41 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:54:58: Trn - Oracle 41, cls loss: 0.0514, seg loss: 0.6930, kendall s_cls: -0.2481, s_seg: 0.1813
+17-10-26 20:55:01: Val - Oracle 41, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0207, seg loss: 0.7068, total loss: 0.5826
+17-10-26 20:55:01: Val - Oracle 41, Tomato seg: loss=0.6647, mIoU=0.7697, acc=0.9361
+17-10-26 20:55:01: Val - Oracle 41, Maize seg: loss=0.7728, mIoU=0.6322, acc=0.8684
+17-10-26 20:55:10: Eval(no-train) - Target 'test' 41, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0381  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:55:12:   epoch 42 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:55:13:   epoch 42 batch 1: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:55:15:   epoch 42 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:55:17:   epoch 42 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:55:18:   epoch 42 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:55:19:   epoch 42 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:55:21:   epoch 42 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:55:22:   epoch 42 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:55:24:   epoch 42 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:55:24: Trn - Oracle 42, cls loss: 0.0406, seg loss: 0.6850, kendall s_cls: -0.2541, s_seg: 0.1826
+17-10-26 20:55:26: Val - Oracle 42, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0197, seg loss: 0.6781, total loss: 0.5546
+17-10-26 20:55:26: Val - Oracle 42, Tomato seg: loss=0.6142, mIoU=0.7882, acc=0.9472
+17-10-26 20:55:26: Val - Oracle 42, Maize seg: loss=0.7786, mIoU=0.6204, acc=0.8651
+17-10-26 20:55:35: Eval(no-train) - Target 'test' 42, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0273  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:55:37:   epoch 43 batch 0: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:55:38:   epoch 43 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:55:40:   epoch 43 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:55:41:   epoch 43 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:55:42:   epoch 43 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:55:43:   epoch 43 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:55:45:   epoch 43 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:55:46:   epoch 43 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:55:48:   epoch 43 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:55:48: Trn - Oracle 43, cls loss: 0.0392, seg loss: 0.7027, kendall s_cls: -0.2602, s_seg: 0.1838
+17-10-26 20:55:50: Val - Oracle 43, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0257, seg loss: 0.6833, total loss: 0.5637
+17-10-26 20:55:50: Val - Oracle 43, Tomato seg: loss=0.6370, mIoU=0.7670, acc=0.9403
+17-10-26 20:55:50: Val - Oracle 43, Maize seg: loss=0.7560, mIoU=0.6450, acc=0.8864
+17-10-26 20:56:00: Eval(no-train) - Target 'test' 43, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0261  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:56:01:   epoch 44 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:56:02:   epoch 44 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:56:03:   epoch 44 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:56:05:   epoch 44 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:56:07:   epoch 44 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:56:08:   epoch 44 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:56:09:   epoch 44 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:56:10:   epoch 44 batch 7: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:56:12:   epoch 44 batch 8: collate wait 1.9s, fwd+bwd+step 0.1s
+17-10-26 20:56:12: Trn - Oracle 44, cls loss: 0.2416, seg loss: 0.7243, kendall s_cls: -0.2653, s_seg: 0.1852
+17-10-26 20:56:15: Val - Oracle 44, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0182, seg loss: 0.6798, total loss: 0.5486
+17-10-26 20:56:15: Val - Oracle 44, Tomato seg: loss=0.6310, mIoU=0.7928, acc=0.9454
+17-10-26 20:56:15: Val - Oracle 44, Maize seg: loss=0.7564, mIoU=0.6631, acc=0.8768
+17-10-26 20:56:24: Eval(no-train) - Target 'test' 44, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0491  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:56:25:   epoch 45 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:56:26:   epoch 45 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:56:28:   epoch 45 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:56:30:   epoch 45 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:56:31:   epoch 45 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:56:33:   epoch 45 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:56:34:   epoch 45 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:56:36:   epoch 45 batch 7: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:56:37:   epoch 45 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:56:37: Trn - Oracle 45, cls loss: 0.0891, seg loss: 0.7307, kendall s_cls: -0.2690, s_seg: 0.1866
+17-10-26 20:56:40: Val - Oracle 45, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0586, seg loss: 0.7374, total loss: 0.6473
+17-10-26 20:56:40: Val - Oracle 45, Tomato seg: loss=0.6421, mIoU=0.7989, acc=0.9545
+17-10-26 20:56:40: Val - Oracle 45, Maize seg: loss=0.8870, mIoU=0.6265, acc=0.8185
+17-10-26 20:56:49: Eval(no-train) - Target 'test' 45, acc: 0.8889, avg acc: 0.9125, cls loss: 0.1936  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:56:50:   epoch 46 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:56:51:   epoch 46 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:56:52:   epoch 46 batch 2: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:56:54:   epoch 46 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:56:55:   epoch 46 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:56:57:   epoch 46 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:56:59:   epoch 46 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:57:00:   epoch 46 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:57:01:   epoch 46 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:57:01: Trn - Oracle 46, cls loss: 0.0472, seg loss: 0.7885, kendall s_cls: -0.2733, s_seg: 0.1885
+17-10-26 20:57:04: Val - Oracle 46, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0314, seg loss: 0.7107, total loss: 0.5874
+17-10-26 20:57:04: Val - Oracle 46, Tomato seg: loss=0.6653, mIoU=0.7728, acc=0.9544
+17-10-26 20:57:04: Val - Oracle 46, Maize seg: loss=0.7820, mIoU=0.6311, acc=0.8682
+17-10-26 20:57:13: Eval(no-train) - Target 'test' 46, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0666  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:57:14:   epoch 47 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:57:15:   epoch 47 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:57:17:   epoch 47 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:57:18:   epoch 47 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:57:19:   epoch 47 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:57:21:   epoch 47 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:57:22:   epoch 47 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:57:23:   epoch 47 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:57:25:   epoch 47 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:57:25: Trn - Oracle 47, cls loss: 0.0338, seg loss: 0.7302, kendall s_cls: -0.2781, s_seg: 0.1903
+17-10-26 20:57:27: Val - Oracle 47, cls acc: 0.9444, cls avg acc: 0.9545, cls loss: 0.1179, seg loss: 0.6790, total loss: 0.6732
+17-10-26 20:57:27: Val - Oracle 47, Tomato seg: loss=0.6339, mIoU=0.7739, acc=0.9422
+17-10-26 20:57:27: Val - Oracle 47, Maize seg: loss=0.7500, mIoU=0.6241, acc=0.8848
+17-10-26 20:57:36: Eval(no-train) - Target 'test' 47, acc: 0.9365, avg acc: 0.9500, cls loss: 0.1459  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:57:38:   epoch 48 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:57:39:   epoch 48 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:57:40:   epoch 48 batch 2: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 20:57:41:   epoch 48 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:57:43:   epoch 48 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:57:44:   epoch 48 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:57:46:   epoch 48 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:57:47:   epoch 48 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:57:49:   epoch 48 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:57:49: Trn - Oracle 48, cls loss: 0.0694, seg loss: 0.7687, kendall s_cls: -0.2828, s_seg: 0.1922
+17-10-26 20:57:51: Val - Oracle 48, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0210, seg loss: 0.6761, total loss: 0.5404
+17-10-26 20:57:51: Val - Oracle 48, Tomato seg: loss=0.6340, mIoU=0.7790, acc=0.9387
+17-10-26 20:57:51: Val - Oracle 48, Maize seg: loss=0.7421, mIoU=0.6467, acc=0.8950
+17-10-26 20:58:00: Eval(no-train) - Target 'test' 48, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0585  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:58:02:   epoch 49 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:58:03:   epoch 49 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:58:04:   epoch 49 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:58:06:   epoch 49 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:58:07:   epoch 49 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:58:08:   epoch 49 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:58:10:   epoch 49 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:58:11:   epoch 49 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:58:13:   epoch 49 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:58:13: Trn - Oracle 49, cls loss: 0.1183, seg loss: 0.6917, kendall s_cls: -0.2871, s_seg: 0.1936
+17-10-26 20:58:15: Val - Oracle 49, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0163, seg loss: 0.6696, total loss: 0.5266
+17-10-26 20:58:15: Val - Oracle 49, Tomato seg: loss=0.6173, mIoU=0.7590, acc=0.9288
+17-10-26 20:58:15: Val - Oracle 49, Maize seg: loss=0.7517, mIoU=0.6744, acc=0.8897
+17-10-26 20:58:24: Eval(no-train) - Target 'test' 49, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0421  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:58:26:   epoch 50 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:58:27:   epoch 50 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:58:29:   epoch 50 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:58:30:   epoch 50 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:58:31:   epoch 50 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 20:58:32:   epoch 50 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:58:33:   epoch 50 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:58:35:   epoch 50 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:58:37:   epoch 50 batch 8: collate wait 2.1s, fwd+bwd+step 0.1s
+17-10-26 20:58:37: Trn - Oracle 50, cls loss: 0.2171, seg loss: 0.7834, kendall s_cls: -0.2906, s_seg: 0.1951
+17-10-26 20:58:40: Val - Oracle 50, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0531, seg loss: 0.7073, total loss: 0.6051
+17-10-26 20:58:40: Val - Oracle 50, Tomato seg: loss=0.6573, mIoU=0.7721, acc=0.9374
+17-10-26 20:58:40: Val - Oracle 50, Maize seg: loss=0.7858, mIoU=0.6590, acc=0.8826
+17-10-26 20:58:49: Eval(no-train) - Target 'test' 50, acc: 0.8889, avg acc: 0.9125, cls loss: 0.2409  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:58:50:   epoch 51 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:58:52:   epoch 51 batch 1: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:58:54:   epoch 51 batch 2: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 20:58:55:   epoch 51 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:58:57:   epoch 51 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:58:58:   epoch 51 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:59:00:   epoch 51 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:59:01:   epoch 51 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:59:02:   epoch 51 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:59:02: Trn - Oracle 51, cls loss: 0.0720, seg loss: 0.7117, kendall s_cls: -0.2937, s_seg: 0.1966
+17-10-26 20:59:05: Val - Oracle 51, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0147, seg loss: 0.6989, total loss: 0.5453
+17-10-26 20:59:05: Val - Oracle 51, Tomato seg: loss=0.6413, mIoU=0.7645, acc=0.9336
+17-10-26 20:59:05: Val - Oracle 51, Maize seg: loss=0.7895, mIoU=0.6427, acc=0.8645
+17-10-26 20:59:14: Eval(no-train) - Target 'test' 51, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0327  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:59:15:   epoch 52 batch 0: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:59:17:   epoch 52 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:59:18:   epoch 52 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:59:19:   epoch 52 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 20:59:21:   epoch 52 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:59:22:   epoch 52 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:59:23:   epoch 52 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:59:24:   epoch 52 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 20:59:26:   epoch 52 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:59:26: Trn - Oracle 52, cls loss: 0.0319, seg loss: 0.7002, kendall s_cls: -0.2976, s_seg: 0.1978
+17-10-26 20:59:29: Val - Oracle 52, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0287, seg loss: 0.6996, total loss: 0.5628
+17-10-26 20:59:29: Val - Oracle 52, Tomato seg: loss=0.6745, mIoU=0.7520, acc=0.9318
+17-10-26 20:59:29: Val - Oracle 52, Maize seg: loss=0.7390, mIoU=0.6872, acc=0.9047
+17-10-26 20:59:38: Eval(no-train) - Target 'test' 52, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0146  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 20:59:39:   epoch 53 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 20:59:41:   epoch 53 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:59:42:   epoch 53 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:59:43:   epoch 53 batch 3: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 20:59:44:   epoch 53 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 20:59:46:   epoch 53 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 20:59:47:   epoch 53 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:59:49:   epoch 53 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 20:59:50:   epoch 53 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 20:59:50: Trn - Oracle 53, cls loss: 0.1819, seg loss: 0.7233, kendall s_cls: -0.3008, s_seg: 0.1990
+17-10-26 20:59:53: Val - Oracle 53, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0217, seg loss: 0.7015, total loss: 0.5534
+17-10-26 20:59:53: Val - Oracle 53, Tomato seg: loss=0.6623, mIoU=0.7555, acc=0.9364
+17-10-26 20:59:53: Val - Oracle 53, Maize seg: loss=0.7632, mIoU=0.6679, acc=0.8927
+17-10-26 21:00:02: Eval(no-train) - Target 'test' 53, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0203  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:00:03:   epoch 54 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:00:05:   epoch 54 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:00:06:   epoch 54 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:00:07:   epoch 54 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:00:09:   epoch 54 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:00:10:   epoch 54 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:00:12:   epoch 54 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:00:13:   epoch 54 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:00:15:   epoch 54 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:00:15: Trn - Oracle 54, cls loss: 0.0307, seg loss: 0.8245, kendall s_cls: -0.3044, s_seg: 0.2006
+17-10-26 21:00:17: Val - Oracle 54, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0293, seg loss: 0.6811, total loss: 0.5451
+17-10-26 21:00:17: Val - Oracle 54, Tomato seg: loss=0.6436, mIoU=0.7804, acc=0.9405
+17-10-26 21:00:17: Val - Oracle 54, Maize seg: loss=0.7399, mIoU=0.6827, acc=0.8978
+17-10-26 21:00:26: Eval(no-train) - Target 'test' 54, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0213  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:00:28:   epoch 55 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:00:29:   epoch 55 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:00:30:   epoch 55 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:00:32:   epoch 55 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:00:33:   epoch 55 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:00:35:   epoch 55 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:00:36:   epoch 55 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:00:37:   epoch 55 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:00:38:   epoch 55 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:00:38: Trn - Oracle 55, cls loss: 0.0406, seg loss: 0.6727, kendall s_cls: -0.3082, s_seg: 0.2019
+17-10-26 21:00:41: Val - Oracle 55, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0193, seg loss: 0.6924, total loss: 0.5390
+17-10-26 21:00:41: Val - Oracle 55, Tomato seg: loss=0.6559, mIoU=0.7727, acc=0.9418
+17-10-26 21:00:41: Val - Oracle 55, Maize seg: loss=0.7497, mIoU=0.6908, acc=0.8935
+17-10-26 21:00:50: Eval(no-train) - Target 'test' 55, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0248  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:00:51:   epoch 56 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:00:52:   epoch 56 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:00:54:   epoch 56 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:00:55:   epoch 56 batch 3: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:00:57:   epoch 56 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:00:58:   epoch 56 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:01:00:   epoch 56 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:01:01:   epoch 56 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:01:02:   epoch 56 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:01:02: Trn - Oracle 56, cls loss: 0.1294, seg loss: 0.7390, kendall s_cls: -0.3116, s_seg: 0.2030
+17-10-26 21:01:05: Val - Oracle 56, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0228, seg loss: 0.6692, total loss: 0.5232
+17-10-26 21:01:05: Val - Oracle 56, Tomato seg: loss=0.6239, mIoU=0.7834, acc=0.9425
+17-10-26 21:01:05: Val - Oracle 56, Maize seg: loss=0.7404, mIoU=0.6827, acc=0.8983
+17-10-26 21:01:14: Eval(no-train) - Target 'test' 56, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0351  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:01:15:   epoch 57 batch 0: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:01:17:   epoch 57 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:01:18:   epoch 57 batch 2: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:01:20:   epoch 57 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:01:21:   epoch 57 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:01:22:   epoch 57 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:01:24:   epoch 57 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:01:25:   epoch 57 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:01:26:   epoch 57 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:01:26: Trn - Oracle 57, cls loss: 0.2015, seg loss: 0.7006, kendall s_cls: -0.3139, s_seg: 0.2039
+17-10-26 21:01:29: Val - Oracle 57, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0136, seg loss: 0.6648, total loss: 0.5058
+17-10-26 21:01:29: Val - Oracle 57, Tomato seg: loss=0.6200, mIoU=0.7887, acc=0.9489
+17-10-26 21:01:29: Val - Oracle 57, Maize seg: loss=0.7352, mIoU=0.6984, acc=0.9065
+17-10-26 21:01:38: Eval(no-train) - Target 'test' 57, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0110  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:01:39:   epoch 58 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:01:41:   epoch 58 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:01:42:   epoch 58 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:01:44:   epoch 58 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:01:45:   epoch 58 batch 4: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 21:01:47:   epoch 58 batch 5: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:01:48:   epoch 58 batch 6: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:01:49:   epoch 58 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:01:51:   epoch 58 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:01:51: Trn - Oracle 58, cls loss: 0.6175, seg loss: 0.7729, kendall s_cls: -0.3145, s_seg: 0.2050
+17-10-26 21:01:53: Val - Oracle 58, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0132, seg loss: 0.6315, total loss: 0.4778
+17-10-26 21:01:53: Val - Oracle 58, Tomato seg: loss=0.5795, mIoU=0.7859, acc=0.9456
+17-10-26 21:01:53: Val - Oracle 58, Maize seg: loss=0.7133, mIoU=0.6758, acc=0.9027
+17-10-26 21:02:02: Eval(no-train) - Target 'test' 58, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0126  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:02:03:   epoch 59 batch 0: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:02:05:   epoch 59 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:02:06:   epoch 59 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:02:08:   epoch 59 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:02:09:   epoch 59 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:02:11:   epoch 59 batch 5: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:02:13:   epoch 59 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:02:14:   epoch 59 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:02:16:   epoch 59 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:02:16: Trn - Oracle 59, cls loss: 0.0500, seg loss: 0.6730, kendall s_cls: -0.3151, s_seg: 0.2060
+17-10-26 21:02:18: Val - Oracle 59, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0270, seg loss: 0.6589, total loss: 0.5187
+17-10-26 21:02:18: Val - Oracle 59, Tomato seg: loss=0.6240, mIoU=0.8019, acc=0.9539
+17-10-26 21:02:18: Val - Oracle 59, Maize seg: loss=0.7138, mIoU=0.6905, acc=0.8956
+17-10-26 21:02:28: Eval(no-train) - Target 'test' 59, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0350  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:02:29:   epoch 60 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:02:31:   epoch 60 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:02:32:   epoch 60 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:02:33:   epoch 60 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:02:34:   epoch 60 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:02:36:   epoch 60 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:02:37:   epoch 60 batch 6: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:02:39:   epoch 60 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:02:40:   epoch 60 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:02:40: Trn - Oracle 60, cls loss: 0.0980, seg loss: 0.6770, kendall s_cls: -0.3170, s_seg: 0.2066
+17-10-26 21:02:43: Val - Oracle 60, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0214, seg loss: 0.6604, total loss: 0.5113
+17-10-26 21:02:43: Val - Oracle 60, Tomato seg: loss=0.6461, mIoU=0.7850, acc=0.9517
+17-10-26 21:02:43: Val - Oracle 60, Maize seg: loss=0.6828, mIoU=0.7257, acc=0.9139
+17-10-26 21:02:51: Eval(no-train) - Target 'test' 60, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0268  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:02:53:   epoch 61 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:02:54:   epoch 61 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:02:55:   epoch 61 batch 2: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:02:57:   epoch 61 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:02:58:   epoch 61 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:03:00:   epoch 61 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:03:00:   epoch 61 batch 6: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 21:03:02:   epoch 61 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:03:03:   epoch 61 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:03:03: Trn - Oracle 61, cls loss: 0.1177, seg loss: 0.6601, kendall s_cls: -0.3188, s_seg: 0.2072
+17-10-26 21:03:06: Val - Oracle 61, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0289, seg loss: 0.6460, total loss: 0.5090
+17-10-26 21:03:06: Val - Oracle 61, Tomato seg: loss=0.6043, mIoU=0.7983, acc=0.9548
+17-10-26 21:03:06: Val - Oracle 61, Maize seg: loss=0.7114, mIoU=0.6980, acc=0.8956
+17-10-26 21:03:15: Eval(no-train) - Target 'test' 61, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0200  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:03:16:   epoch 62 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:03:17:   epoch 62 batch 1: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:03:19:   epoch 62 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:03:20:   epoch 62 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:03:22:   epoch 62 batch 4: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:03:24:   epoch 62 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:03:25:   epoch 62 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:03:26:   epoch 62 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:03:28:   epoch 62 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:03:28: Trn - Oracle 62, cls loss: 0.0397, seg loss: 0.6680, kendall s_cls: -0.3209, s_seg: 0.2076
+17-10-26 21:03:30: Val - Oracle 62, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0315, seg loss: 0.6743, total loss: 0.5347
+17-10-26 21:03:30: Val - Oracle 62, Tomato seg: loss=0.6365, mIoU=0.7773, acc=0.9519
+17-10-26 21:03:30: Val - Oracle 62, Maize seg: loss=0.7336, mIoU=0.7092, acc=0.8944
+17-10-26 21:03:39: Eval(no-train) - Target 'test' 62, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0189  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:03:41:   epoch 63 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:03:42:   epoch 63 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:03:44:   epoch 63 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:03:45:   epoch 63 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:03:46:   epoch 63 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:03:48:   epoch 63 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:03:49:   epoch 63 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:03:50:   epoch 63 batch 7: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:03:51:   epoch 63 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:03:51: Trn - Oracle 63, cls loss: 0.0480, seg loss: 0.6598, kendall s_cls: -0.3231, s_seg: 0.2080
+17-10-26 21:03:54: Val - Oracle 63, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0225, seg loss: 0.6631, total loss: 0.5121
+17-10-26 21:03:54: Val - Oracle 63, Tomato seg: loss=0.6301, mIoU=0.8027, acc=0.9522
+17-10-26 21:03:54: Val - Oracle 63, Maize seg: loss=0.7150, mIoU=0.6712, acc=0.8972
+17-10-26 21:04:03: Eval(no-train) - Target 'test' 63, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0222  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:04:04:   epoch 64 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:04:05:   epoch 64 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:04:07:   epoch 64 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:04:09:   epoch 64 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:04:10:   epoch 64 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:04:11:   epoch 64 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:04:12:   epoch 64 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:04:14:   epoch 64 batch 7: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:04:15:   epoch 64 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:04:15: Trn - Oracle 64, cls loss: 0.0842, seg loss: 0.7195, kendall s_cls: -0.3252, s_seg: 0.2085
+17-10-26 21:04:18: Val - Oracle 64, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0286, seg loss: 0.6632, total loss: 0.5196
+17-10-26 21:04:18: Val - Oracle 64, Tomato seg: loss=0.6296, mIoU=0.8038, acc=0.9537
+17-10-26 21:04:18: Val - Oracle 64, Maize seg: loss=0.7160, mIoU=0.6711, acc=0.8969
+17-10-26 21:04:27: Eval(no-train) - Target 'test' 64, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0234  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:04:29:   epoch 65 batch 0: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:04:30:   epoch 65 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:04:31:   epoch 65 batch 2: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:04:32:   epoch 65 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:04:34:   epoch 65 batch 4: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:04:35:   epoch 65 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:04:36:   epoch 65 batch 6: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:04:38:   epoch 65 batch 7: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:04:39:   epoch 65 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:04:39: Trn - Oracle 65, cls loss: 0.0455, seg loss: 0.6518, kendall s_cls: -0.3272, s_seg: 0.2089
+17-10-26 21:04:42: Val - Oracle 65, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0245, seg loss: 0.6841, total loss: 0.5301
+17-10-26 21:04:42: Val - Oracle 65, Tomato seg: loss=0.6586, mIoU=0.7870, acc=0.9526
+17-10-26 21:04:42: Val - Oracle 65, Maize seg: loss=0.7242, mIoU=0.6501, acc=0.8946
+17-10-26 21:04:51: Eval(no-train) - Target 'test' 65, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0208  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:04:52:   epoch 66 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:04:54:   epoch 66 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:04:56:   epoch 66 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:04:57:   epoch 66 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:04:58:   epoch 66 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:05:00:   epoch 66 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:05:01:   epoch 66 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:05:02:   epoch 66 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:05:04:   epoch 66 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:05:04: Trn - Oracle 66, cls loss: 0.0210, seg loss: 0.6437, kendall s_cls: -0.3293, s_seg: 0.2092
+17-10-26 21:05:06: Val - Oracle 66, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0228, seg loss: 0.6739, total loss: 0.5183
+17-10-26 21:05:06: Val - Oracle 66, Tomato seg: loss=0.6431, mIoU=0.7767, acc=0.9515
+17-10-26 21:05:06: Val - Oracle 66, Maize seg: loss=0.7222, mIoU=0.6888, acc=0.8972
+17-10-26 21:05:15: Eval(no-train) - Target 'test' 66, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0265  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:05:17:   epoch 67 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:05:19:   epoch 67 batch 1: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:05:20:   epoch 67 batch 2: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:05:21:   epoch 67 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:05:23:   epoch 67 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:05:24:   epoch 67 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:05:26:   epoch 67 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:05:27:   epoch 67 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:05:28:   epoch 67 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:05:28: Trn - Oracle 67, cls loss: 0.0237, seg loss: 0.7030, kendall s_cls: -0.3313, s_seg: 0.2096
+17-10-26 21:05:31: Val - Oracle 67, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0205, seg loss: 0.6277, total loss: 0.4768
+17-10-26 21:05:31: Val - Oracle 67, Tomato seg: loss=0.5787, mIoU=0.8001, acc=0.9559
+17-10-26 21:05:31: Val - Oracle 67, Maize seg: loss=0.7049, mIoU=0.6853, acc=0.8992
+17-10-26 21:05:40: Eval(no-train) - Target 'test' 67, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0222  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:05:41:   epoch 68 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:05:42:   epoch 68 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:05:43:   epoch 68 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:05:45:   epoch 68 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:05:46:   epoch 68 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:05:48:   epoch 68 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:05:49:   epoch 68 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:05:50:   epoch 68 batch 7: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:05:52:   epoch 68 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:05:52: Trn - Oracle 68, cls loss: 0.0306, seg loss: 0.6592, kendall s_cls: -0.3333, s_seg: 0.2099
+17-10-26 21:05:54: Val - Oracle 68, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0241, seg loss: 0.6437, total loss: 0.4937
+17-10-26 21:05:54: Val - Oracle 68, Tomato seg: loss=0.5966, mIoU=0.8071, acc=0.9576
+17-10-26 21:05:54: Val - Oracle 68, Maize seg: loss=0.7176, mIoU=0.6889, acc=0.9019
+17-10-26 21:06:04: Eval(no-train) - Target 'test' 68, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0232  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:06:05:   epoch 69 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:06:   epoch 69 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:06:08:   epoch 69 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:06:09:   epoch 69 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:10:   epoch 69 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:12:   epoch 69 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:06:13:   epoch 69 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:06:14:   epoch 69 batch 7: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:06:16:   epoch 69 batch 8: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:06:16: Trn - Oracle 69, cls loss: 0.0814, seg loss: 0.6288, kendall s_cls: -0.3350, s_seg: 0.2101
+17-10-26 21:06:18: Val - Oracle 69, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0229, seg loss: 0.6143, total loss: 0.4676
+17-10-26 21:06:18: Val - Oracle 69, Tomato seg: loss=0.5550, mIoU=0.8151, acc=0.9605
+17-10-26 21:06:18: Val - Oracle 69, Maize seg: loss=0.7077, mIoU=0.6830, acc=0.9057
+17-10-26 21:06:27: Eval(no-train) - Target 'test' 69, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0179  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:06:29:   epoch 70 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:06:30:   epoch 70 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:06:32:   epoch 70 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:06:34:   epoch 70 batch 3: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:06:35:   epoch 70 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:06:36:   epoch 70 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:38:   epoch 70 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:39:   epoch 70 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:40:   epoch 70 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:06:40: Trn - Oracle 70, cls loss: 0.0159, seg loss: 0.6689, kendall s_cls: -0.3366, s_seg: 0.2103
+17-10-26 21:06:43: Val - Oracle 70, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0251, seg loss: 0.6425, total loss: 0.4927
+17-10-26 21:06:43: Val - Oracle 70, Tomato seg: loss=0.6102, mIoU=0.8082, acc=0.9512
+17-10-26 21:06:43: Val - Oracle 70, Maize seg: loss=0.6933, mIoU=0.6981, acc=0.9061
+17-10-26 21:06:52: Eval(no-train) - Target 'test' 70, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0216  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:06:53:   epoch 71 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:06:54:   epoch 71 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:06:56:   epoch 71 batch 2: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:06:57:   epoch 71 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:06:58:   epoch 71 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:07:00:   epoch 71 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:07:01:   epoch 71 batch 6: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:07:02:   epoch 71 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:07:04:   epoch 71 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:07:04: Trn - Oracle 71, cls loss: 0.1424, seg loss: 0.6487, kendall s_cls: -0.3381, s_seg: 0.2105
+17-10-26 21:07:06: Val - Oracle 71, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0139, seg loss: 0.6387, total loss: 0.4732
+17-10-26 21:07:06: Val - Oracle 71, Tomato seg: loss=0.5897, mIoU=0.7934, acc=0.9518
+17-10-26 21:07:06: Val - Oracle 71, Maize seg: loss=0.7157, mIoU=0.6662, acc=0.8980
+17-10-26 21:07:15: Eval(no-train) - Target 'test' 71, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0222  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:07:16:   epoch 72 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:07:18:   epoch 72 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:07:19:   epoch 72 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:07:21:   epoch 72 batch 3: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:07:22:   epoch 72 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:07:23:   epoch 72 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:07:25:   epoch 72 batch 6: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:07:27:   epoch 72 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:07:27:   epoch 72 batch 8: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 21:07:27: Trn - Oracle 72, cls loss: 0.0887, seg loss: 0.7281, kendall s_cls: -0.3392, s_seg: 0.2108
+17-10-26 21:07:30: Val - Oracle 72, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0238, seg loss: 0.6342, total loss: 0.4829
+17-10-26 21:07:30: Val - Oracle 72, Tomato seg: loss=0.5950, mIoU=0.7857, acc=0.9591
+17-10-26 21:07:30: Val - Oracle 72, Maize seg: loss=0.6957, mIoU=0.6665, acc=0.8948
+17-10-26 21:07:39: Eval(no-train) - Target 'test' 72, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0195  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:07:40:   epoch 73 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:07:41:   epoch 73 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:07:42:   epoch 73 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:07:44:   epoch 73 batch 3: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:07:46:   epoch 73 batch 4: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:07:47:   epoch 73 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:07:49:   epoch 73 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:07:50:   epoch 73 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:07:52:   epoch 73 batch 8: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:07:52: Trn - Oracle 73, cls loss: 0.0597, seg loss: 0.7096, kendall s_cls: -0.3404, s_seg: 0.2112
+17-10-26 21:07:55: Val - Oracle 73, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0189, seg loss: 0.6549, total loss: 0.4922
+17-10-26 21:07:55: Val - Oracle 73, Tomato seg: loss=0.6421, mIoU=0.7662, acc=0.9552
+17-10-26 21:07:55: Val - Oracle 73, Maize seg: loss=0.6750, mIoU=0.6757, acc=0.9003
+17-10-26 21:08:04: Eval(no-train) - Target 'test' 73, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0144  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:08:05:   epoch 74 batch 0: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:08:07:   epoch 74 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:08:   epoch 74 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:10:   epoch 74 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:11:   epoch 74 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:12:   epoch 74 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:13:   epoch 74 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:08:15:   epoch 74 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:16:   epoch 74 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:16: Trn - Oracle 74, cls loss: 0.1011, seg loss: 0.6701, kendall s_cls: -0.3414, s_seg: 0.2115
+17-10-26 21:08:19: Val - Oracle 74, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0218, seg loss: 0.6670, total loss: 0.5055
+17-10-26 21:08:19: Val - Oracle 74, Tomato seg: loss=0.6516, mIoU=0.7795, acc=0.9524
+17-10-26 21:08:19: Val - Oracle 74, Maize seg: loss=0.6911, mIoU=0.7530, acc=0.9130
+17-10-26 21:08:28: Eval(no-train) - Target 'test' 74, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0175  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:08:29:   epoch 75 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:30:   epoch 75 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:08:32:   epoch 75 batch 2: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:08:34:   epoch 75 batch 3: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:35:   epoch 75 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:08:36:   epoch 75 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:38:   epoch 75 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:08:39:   epoch 75 batch 7: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:08:40:   epoch 75 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:40: Trn - Oracle 75, cls loss: 0.0336, seg loss: 0.7130, kendall s_cls: -0.3426, s_seg: 0.2119
+17-10-26 21:08:43: Val - Oracle 75, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0213, seg loss: 0.6203, total loss: 0.4666
+17-10-26 21:08:43: Val - Oracle 75, Tomato seg: loss=0.5742, mIoU=0.8154, acc=0.9588
+17-10-26 21:08:43: Val - Oracle 75, Maize seg: loss=0.6928, mIoU=0.7049, acc=0.9056
+17-10-26 21:08:52: Eval(no-train) - Target 'test' 75, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0169  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:08:53:   epoch 76 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:54:   epoch 76 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:08:56:   epoch 76 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:08:57:   epoch 76 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:08:58:   epoch 76 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:09:00:   epoch 76 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:09:01:   epoch 76 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:09:02:   epoch 76 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:09:04:   epoch 76 batch 8: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:09:04: Trn - Oracle 76, cls loss: 0.0244, seg loss: 0.6920, kendall s_cls: -0.3437, s_seg: 0.2122
+17-10-26 21:09:06: Val - Oracle 76, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0210, seg loss: 0.6300, total loss: 0.4734
+17-10-26 21:09:06: Val - Oracle 76, Tomato seg: loss=0.5805, mIoU=0.7989, acc=0.9601
+17-10-26 21:09:06: Val - Oracle 76, Maize seg: loss=0.7078, mIoU=0.7107, acc=0.9074
+17-10-26 21:09:15: Eval(no-train) - Target 'test' 76, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0188  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:09:17:   epoch 77 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:09:18:   epoch 77 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:09:18:   epoch 77 batch 2: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:09:20:   epoch 77 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:09:21:   epoch 77 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:09:23:   epoch 77 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:09:24:   epoch 77 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:09:26:   epoch 77 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:09:27:   epoch 77 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:09:27: Trn - Oracle 77, cls loss: 0.1605, seg loss: 0.5957, kendall s_cls: -0.3445, s_seg: 0.2123
+17-10-26 21:09:30: Val - Oracle 77, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0233, seg loss: 0.6736, total loss: 0.5116
+17-10-26 21:09:30: Val - Oracle 77, Tomato seg: loss=0.6641, mIoU=0.7722, acc=0.9489
+17-10-26 21:09:30: Val - Oracle 77, Maize seg: loss=0.6886, mIoU=0.7110, acc=0.9154
+17-10-26 21:09:39: Eval(no-train) - Target 'test' 77, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0238  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:09:40:   epoch 78 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:09:41:   epoch 78 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:09:43:   epoch 78 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:09:45:   epoch 78 batch 3: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:09:46:   epoch 78 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:09:47:   epoch 78 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:09:49:   epoch 78 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:09:50:   epoch 78 batch 7: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:09:52:   epoch 78 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:09:52: Trn - Oracle 78, cls loss: 0.1816, seg loss: 0.7317, kendall s_cls: -0.3451, s_seg: 0.2125
+17-10-26 21:09:54: Val - Oracle 78, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0225, seg loss: 0.6569, total loss: 0.4967
+17-10-26 21:09:54: Val - Oracle 78, Tomato seg: loss=0.6311, mIoU=0.8011, acc=0.9533
+17-10-26 21:09:54: Val - Oracle 78, Maize seg: loss=0.6974, mIoU=0.7034, acc=0.9016
+17-10-26 21:10:03: Eval(no-train) - Target 'test' 78, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0188  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:10:05:   epoch 79 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:10:06:   epoch 79 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:10:07:   epoch 79 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:10:08:   epoch 79 batch 3: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:10:10:   epoch 79 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:10:11:   epoch 79 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:10:13:   epoch 79 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:10:14:   epoch 79 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:10:15:   epoch 79 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:10:15: Trn - Oracle 79, cls loss: 0.0308, seg loss: 0.6289, kendall s_cls: -0.3458, s_seg: 0.2126
+17-10-26 21:10:18: Val - Oracle 79, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0231, seg loss: 0.6356, total loss: 0.4799
+17-10-26 21:10:18: Val - Oracle 79, Tomato seg: loss=0.6023, mIoU=0.7952, acc=0.9562
+17-10-26 21:10:18: Val - Oracle 79, Maize seg: loss=0.6881, mIoU=0.7111, acc=0.9048
+17-10-26 21:10:27: Eval(no-train) - Target 'test' 79, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0372  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:10:28:   epoch 80 batch 0: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 21:10:29:   epoch 80 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:10:31:   epoch 80 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:10:32:   epoch 80 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:10:33:   epoch 80 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:10:35:   epoch 80 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:10:37:   epoch 80 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:10:38:   epoch 80 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:10:40:   epoch 80 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:10:40: Trn - Oracle 80, cls loss: 0.0275, seg loss: 0.6363, kendall s_cls: -0.3465, s_seg: 0.2127
+17-10-26 21:10:42: Val - Oracle 80, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0255, seg loss: 0.6573, total loss: 0.5004
+17-10-26 21:10:42: Val - Oracle 80, Tomato seg: loss=0.6347, mIoU=0.7856, acc=0.9538
+17-10-26 21:10:42: Val - Oracle 80, Maize seg: loss=0.6928, mIoU=0.6606, acc=0.8937
+17-10-26 21:10:51: Eval(no-train) - Target 'test' 80, acc: 0.9841, avg acc: 0.9875, cls loss: 0.0368  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:10:52:   epoch 81 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:10:54:   epoch 81 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:10:55:   epoch 81 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:10:56:   epoch 81 batch 3: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:10:58:   epoch 81 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:10:59:   epoch 81 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:11:00:   epoch 81 batch 6: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:11:02:   epoch 81 batch 7: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:11:03:   epoch 81 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:11:03: Trn - Oracle 81, cls loss: 0.0246, seg loss: 0.6113, kendall s_cls: -0.3473, s_seg: 0.2127
+17-10-26 21:11:05: Val - Oracle 81, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0203, seg loss: 0.6224, total loss: 0.4646
+17-10-26 21:11:05: Val - Oracle 81, Tomato seg: loss=0.5880, mIoU=0.8015, acc=0.9521
+17-10-26 21:11:05: Val - Oracle 81, Maize seg: loss=0.6764, mIoU=0.7045, acc=0.9085
+17-10-26 21:11:14: Eval(no-train) - Target 'test' 81, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0306  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:11:15:   epoch 82 batch 0: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:11:17:   epoch 82 batch 1: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:11:18:   epoch 82 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:11:20:   epoch 82 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:11:21:   epoch 82 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:11:22:   epoch 82 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:11:24:   epoch 82 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:11:25:   epoch 82 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:11:27:   epoch 82 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:11:27: Trn - Oracle 82, cls loss: 0.1012, seg loss: 0.6552, kendall s_cls: -0.3478, s_seg: 0.2128
+17-10-26 21:11:29: Val - Oracle 82, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0149, seg loss: 0.6143, total loss: 0.4501
+17-10-26 21:11:29: Val - Oracle 82, Tomato seg: loss=0.5806, mIoU=0.7983, acc=0.9576
+17-10-26 21:11:29: Val - Oracle 82, Maize seg: loss=0.6672, mIoU=0.6944, acc=0.9023
+17-10-26 21:11:38: Eval(no-train) - Target 'test' 82, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0259  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:11:40:   epoch 83 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:11:41:   epoch 83 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:11:42:   epoch 83 batch 2: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:11:44:   epoch 83 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:11:45:   epoch 83 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:11:46:   epoch 83 batch 5: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:11:48:   epoch 83 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:11:49:   epoch 83 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:11:51:   epoch 83 batch 8: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:11:51: Trn - Oracle 83, cls loss: 0.0305, seg loss: 0.6244, kendall s_cls: -0.3484, s_seg: 0.2128
+17-10-26 21:11:53: Val - Oracle 83, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0219, seg loss: 0.6416, total loss: 0.4818
+17-10-26 21:11:53: Val - Oracle 83, Tomato seg: loss=0.6091, mIoU=0.7776, acc=0.9543
+17-10-26 21:11:53: Val - Oracle 83, Maize seg: loss=0.6926, mIoU=0.6618, acc=0.8809
+17-10-26 21:12:02: Eval(no-train) - Target 'test' 83, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0216  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:12:03:   epoch 84 batch 0: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:12:04:   epoch 84 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:12:06:   epoch 84 batch 2: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:12:07:   epoch 84 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:12:09:   epoch 84 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:12:10:   epoch 84 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:12:12:   epoch 84 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:12:13:   epoch 84 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:12:14:   epoch 84 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:12:14: Trn - Oracle 84, cls loss: 0.0408, seg loss: 0.6941, kendall s_cls: -0.3489, s_seg: 0.2129
+17-10-26 21:12:17: Val - Oracle 84, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0244, seg loss: 0.6422, total loss: 0.4857
+17-10-26 21:12:17: Val - Oracle 84, Tomato seg: loss=0.6269, mIoU=0.7881, acc=0.9527
+17-10-26 21:12:17: Val - Oracle 84, Maize seg: loss=0.6661, mIoU=0.7003, acc=0.9086
+17-10-26 21:12:26: Eval(no-train) - Target 'test' 84, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0250  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:12:28:   epoch 85 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:12:29:   epoch 85 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:12:30:   epoch 85 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:12:32:   epoch 85 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:12:34:   epoch 85 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:12:35:   epoch 85 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:12:36:   epoch 85 batch 6: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:12:37:   epoch 85 batch 7: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 21:12:38:   epoch 85 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:12:38: Trn - Oracle 85, cls loss: 0.0274, seg loss: 0.6656, kendall s_cls: -0.3493, s_seg: 0.2129
+17-10-26 21:12:41: Val - Oracle 85, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0208, seg loss: 0.6394, total loss: 0.4781
+17-10-26 21:12:41: Val - Oracle 85, Tomato seg: loss=0.6287, mIoU=0.7658, acc=0.9508
+17-10-26 21:12:41: Val - Oracle 85, Maize seg: loss=0.6562, mIoU=0.6998, acc=0.9075
+17-10-26 21:12:50: Eval(no-train) - Target 'test' 85, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0232  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:12:51:   epoch 86 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:12:53:   epoch 86 batch 1: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:12:54:   epoch 86 batch 2: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:12:55:   epoch 86 batch 3: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:12:56:   epoch 86 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:12:58:   epoch 86 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:12:59:   epoch 86 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:13:01:   epoch 86 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:13:02:   epoch 86 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:13:02: Trn - Oracle 86, cls loss: 0.0454, seg loss: 0.6581, kendall s_cls: -0.3497, s_seg: 0.2130
+17-10-26 21:13:05: Val - Oracle 86, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0209, seg loss: 0.6170, total loss: 0.4599
+17-10-26 21:13:05: Val - Oracle 86, Tomato seg: loss=0.5765, mIoU=0.7986, acc=0.9593
+17-10-26 21:13:05: Val - Oracle 86, Maize seg: loss=0.6804, mIoU=0.6983, acc=0.9041
+17-10-26 21:13:14: Eval(no-train) - Target 'test' 86, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0189  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:13:15:   epoch 87 batch 0: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:13:16:   epoch 87 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:13:18:   epoch 87 batch 2: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:13:20:   epoch 87 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:13:21:   epoch 87 batch 4: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:13:22:   epoch 87 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:13:23:   epoch 87 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:13:25:   epoch 87 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:13:26:   epoch 87 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:13:26: Trn - Oracle 87, cls loss: 0.0593, seg loss: 0.6740, kendall s_cls: -0.3500, s_seg: 0.2131
+17-10-26 21:13:29: Val - Oracle 87, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0167, seg loss: 0.6270, total loss: 0.4619
+17-10-26 21:13:29: Val - Oracle 87, Tomato seg: loss=0.5818, mIoU=0.8151, acc=0.9606
+17-10-26 21:13:29: Val - Oracle 87, Maize seg: loss=0.6981, mIoU=0.6765, acc=0.8931
+17-10-26 21:13:38: Eval(no-train) - Target 'test' 87, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0151  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:13:40:   epoch 88 batch 0: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:13:41:   epoch 88 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:13:43:   epoch 88 batch 2: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:13:44:   epoch 88 batch 3: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:13:45:   epoch 88 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:13:47:   epoch 88 batch 5: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:13:48:   epoch 88 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:13:50:   epoch 88 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:13:51:   epoch 88 batch 8: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:13:51: Trn - Oracle 88, cls loss: 0.0213, seg loss: 0.6108, kendall s_cls: -0.3503, s_seg: 0.2131
+17-10-26 21:13:54: Val - Oracle 88, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0135, seg loss: 0.5924, total loss: 0.4292
+17-10-26 21:13:54: Val - Oracle 88, Tomato seg: loss=0.5383, mIoU=0.8110, acc=0.9616
+17-10-26 21:13:54: Val - Oracle 88, Maize seg: loss=0.6774, mIoU=0.7018, acc=0.9044
+17-10-26 21:14:03: Eval(no-train) - Target 'test' 88, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0139  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:14:04:   epoch 89 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:14:05:   epoch 89 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:14:07:   epoch 89 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:14:08:   epoch 89 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:14:09:   epoch 89 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:14:11:   epoch 89 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:14:12:   epoch 89 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:14:14:   epoch 89 batch 7: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:14:15:   epoch 89 batch 8: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:14:15: Trn - Oracle 89, cls loss: 0.0333, seg loss: 0.6612, kendall s_cls: -0.3506, s_seg: 0.2131
+17-10-26 21:14:18: Val - Oracle 89, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0170, seg loss: 0.6047, total loss: 0.4440
+17-10-26 21:14:18: Val - Oracle 89, Tomato seg: loss=0.5695, mIoU=0.8171, acc=0.9584
+17-10-26 21:14:18: Val - Oracle 89, Maize seg: loss=0.6599, mIoU=0.7434, acc=0.9223
+17-10-26 21:14:27: Eval(no-train) - Target 'test' 89, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0145  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:14:29:   epoch 90 batch 0: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:14:30:   epoch 90 batch 1: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:14:31:   epoch 90 batch 2: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:14:33:   epoch 90 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:14:34:   epoch 90 batch 4: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:14:35:   epoch 90 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:14:37:   epoch 90 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:14:38:   epoch 90 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:14:40:   epoch 90 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:14:40: Trn - Oracle 90, cls loss: 0.0143, seg loss: 0.6069, kendall s_cls: -0.3508, s_seg: 0.2132
+17-10-26 21:14:42: Val - Oracle 90, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0212, seg loss: 0.6279, total loss: 0.4687
+17-10-26 21:14:42: Val - Oracle 90, Tomato seg: loss=0.6040, mIoU=0.8040, acc=0.9523
+17-10-26 21:14:42: Val - Oracle 90, Maize seg: loss=0.6655, mIoU=0.7131, acc=0.9084
+17-10-26 21:14:51: Eval(no-train) - Target 'test' 90, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0296  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:14:53:   epoch 91 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:14:54:   epoch 91 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:14:56:   epoch 91 batch 2: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:14:57:   epoch 91 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:14:59:   epoch 91 batch 4: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:15:00:   epoch 91 batch 5: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:15:01:   epoch 91 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:15:03:   epoch 91 batch 7: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:15:04:   epoch 91 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:15:04: Trn - Oracle 91, cls loss: 0.0132, seg loss: 0.6316, kendall s_cls: -0.3510, s_seg: 0.2131
+17-10-26 21:15:07: Val - Oracle 91, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0178, seg loss: 0.6235, total loss: 0.4602
+17-10-26 21:15:07: Val - Oracle 91, Tomato seg: loss=0.5954, mIoU=0.7805, acc=0.9527
+17-10-26 21:15:07: Val - Oracle 91, Maize seg: loss=0.6677, mIoU=0.6778, acc=0.9010
+17-10-26 21:15:16: Eval(no-train) - Target 'test' 91, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0168  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:15:17:   epoch 92 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:15:19:   epoch 92 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:15:20:   epoch 92 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:15:21:   epoch 92 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:15:22:   epoch 92 batch 4: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:15:24:   epoch 92 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:15:25:   epoch 92 batch 6: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:15:27:   epoch 92 batch 7: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:15:28:   epoch 92 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:15:28: Trn - Oracle 92, cls loss: 0.0258, seg loss: 0.6415, kendall s_cls: -0.3511, s_seg: 0.2132
+17-10-26 21:15:31: Val - Oracle 92, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0234, seg loss: 0.6389, total loss: 0.4806
+17-10-26 21:15:31: Val - Oracle 92, Tomato seg: loss=0.6122, mIoU=0.8075, acc=0.9571
+17-10-26 21:15:31: Val - Oracle 92, Maize seg: loss=0.6810, mIoU=0.6775, acc=0.8998
+17-10-26 21:15:40: Eval(no-train) - Target 'test' 92, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0183  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:15:42:   epoch 93 batch 0: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:15:43:   epoch 93 batch 1: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:15:45:   epoch 93 batch 2: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:15:46:   epoch 93 batch 3: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:15:47:   epoch 93 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:15:49:   epoch 93 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:15:50:   epoch 93 batch 6: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:15:51:   epoch 93 batch 7: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:15:52:   epoch 93 batch 8: collate wait 0.7s, fwd+bwd+step 0.1s
+17-10-26 21:15:52: Trn - Oracle 93, cls loss: 0.0388, seg loss: 0.6704, kendall s_cls: -0.3512, s_seg: 0.2132
+17-10-26 21:15:55: Val - Oracle 93, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0148, seg loss: 0.6308, total loss: 0.4618
+17-10-26 21:15:55: Val - Oracle 93, Tomato seg: loss=0.6048, mIoU=0.7909, acc=0.9560
+17-10-26 21:15:55: Val - Oracle 93, Maize seg: loss=0.6717, mIoU=0.7197, acc=0.9158
+17-10-26 21:16:04: Eval(no-train) - Target 'test' 93, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0175  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:16:05:   epoch 94 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:16:06:   epoch 94 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:16:08:   epoch 94 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:16:10:   epoch 94 batch 3: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:16:11:   epoch 94 batch 4: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:16:12:   epoch 94 batch 5: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:16:15:   epoch 94 batch 6: collate wait 1.9s, fwd+bwd+step 0.1s
+17-10-26 21:16:16:   epoch 94 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:16:17:   epoch 94 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:16:17: Trn - Oracle 94, cls loss: 0.0210, seg loss: 0.6636, kendall s_cls: -0.3513, s_seg: 0.2132
+17-10-26 21:16:20: Val - Oracle 94, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0207, seg loss: 0.6531, total loss: 0.4881
+17-10-26 21:16:20: Val - Oracle 94, Tomato seg: loss=0.6398, mIoU=0.7857, acc=0.9545
+17-10-26 21:16:20: Val - Oracle 94, Maize seg: loss=0.6740, mIoU=0.7069, acc=0.9110
+17-10-26 21:16:29: Eval(no-train) - Target 'test' 94, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0172  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:16:30:   epoch 95 batch 0: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:16:31:   epoch 95 batch 1: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:16:33:   epoch 95 batch 2: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:16:34:   epoch 95 batch 3: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:16:35:   epoch 95 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:16:37:   epoch 95 batch 5: collate wait 1.8s, fwd+bwd+step 0.1s
+17-10-26 21:16:39:   epoch 95 batch 6: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:16:41:   epoch 95 batch 7: collate wait 1.7s, fwd+bwd+step 0.1s
+17-10-26 21:16:42:   epoch 95 batch 8: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:16:42: Trn - Oracle 95, cls loss: 0.0450, seg loss: 0.6369, kendall s_cls: -0.3513, s_seg: 0.2132
+17-10-26 21:16:44: Val - Oracle 95, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0133, seg loss: 0.6180, total loss: 0.4492
+17-10-26 21:16:44: Val - Oracle 95, Tomato seg: loss=0.5921, mIoU=0.8030, acc=0.9559
+17-10-26 21:16:44: Val - Oracle 95, Maize seg: loss=0.6588, mIoU=0.7190, acc=0.9104
+17-10-26 21:16:53: Eval(no-train) - Target 'test' 95, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0144  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:16:54:   epoch 96 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:16:56:   epoch 96 batch 1: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:16:58:   epoch 96 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:16:59:   epoch 96 batch 3: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:17:00:   epoch 96 batch 4: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:17:01:   epoch 96 batch 5: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:17:03:   epoch 96 batch 6: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:17:04:   epoch 96 batch 7: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:17:06:   epoch 96 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:17:06: Trn - Oracle 96, cls loss: 0.2072, seg loss: 0.6627, kendall s_cls: -0.3514, s_seg: 0.2132
+17-10-26 21:17:08: Val - Oracle 96, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0148, seg loss: 0.6518, total loss: 0.4786
+17-10-26 21:17:08: Val - Oracle 96, Tomato seg: loss=0.6127, mIoU=0.7964, acc=0.9518
+17-10-26 21:17:08: Val - Oracle 96, Maize seg: loss=0.7131, mIoU=0.6714, acc=0.8830
+17-10-26 21:17:17: Eval(no-train) - Target 'test' 96, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0106  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:17:18:   epoch 97 batch 0: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:17:20:   epoch 97 batch 1: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:17:21:   epoch 97 batch 2: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:17:23:   epoch 97 batch 3: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:17:24:   epoch 97 batch 4: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:17:26:   epoch 97 batch 5: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:17:27:   epoch 97 batch 6: collate wait 1.1s, fwd+bwd+step 0.1s
+17-10-26 21:17:28:   epoch 97 batch 7: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:17:30:   epoch 97 batch 8: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:17:30: Trn - Oracle 97, cls loss: 0.0304, seg loss: 0.6378, kendall s_cls: -0.3514, s_seg: 0.2132
+17-10-26 21:17:33: Val - Oracle 97, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0200, seg loss: 0.6413, total loss: 0.4775
+17-10-26 21:17:33: Val - Oracle 97, Tomato seg: loss=0.6174, mIoU=0.7861, acc=0.9506
+17-10-26 21:17:33: Val - Oracle 97, Maize seg: loss=0.6789, mIoU=0.7091, acc=0.9072
+17-10-26 21:17:42: Eval(no-train) - Target 'test' 97, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0177  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:17:43:   epoch 98 batch 0: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:17:44:   epoch 98 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:17:46:   epoch 98 batch 2: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:17:47:   epoch 98 batch 3: collate wait 0.8s, fwd+bwd+step 0.1s
+17-10-26 21:17:48:   epoch 98 batch 4: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:17:50:   epoch 98 batch 5: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:17:51:   epoch 98 batch 6: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:17:52:   epoch 98 batch 7: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:17:54:   epoch 98 batch 8: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:17:54: Trn - Oracle 98, cls loss: 0.0265, seg loss: 0.7490, kendall s_cls: -0.3514, s_seg: 0.2132
+17-10-26 21:17:56: Val - Oracle 98, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0156, seg loss: 0.6228, total loss: 0.4563
+17-10-26 21:17:56: Val - Oracle 98, Tomato seg: loss=0.5931, mIoU=0.7919, acc=0.9538
+17-10-26 21:17:56: Val - Oracle 98, Maize seg: loss=0.6695, mIoU=0.6938, acc=0.9031
+17-10-26 21:18:05: Eval(no-train) - Target 'test' 98, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0148  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:18:07:   epoch 99 batch 0: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:18:08:   epoch 99 batch 1: collate wait 0.9s, fwd+bwd+step 0.1s
+17-10-26 21:18:09:   epoch 99 batch 2: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:18:11:   epoch 99 batch 3: collate wait 1.3s, fwd+bwd+step 0.1s
+17-10-26 21:18:12:   epoch 99 batch 4: collate wait 1.4s, fwd+bwd+step 0.1s
+17-10-26 21:18:14:   epoch 99 batch 5: collate wait 1.2s, fwd+bwd+step 0.1s
+17-10-26 21:18:15:   epoch 99 batch 6: collate wait 1.5s, fwd+bwd+step 0.1s
+17-10-26 21:18:17:   epoch 99 batch 7: collate wait 1.0s, fwd+bwd+step 0.1s
+17-10-26 21:18:18:   epoch 99 batch 8: collate wait 1.6s, fwd+bwd+step 0.1s
+17-10-26 21:18:18: Trn - Oracle 99, cls loss: 0.0271, seg loss: 0.6526, kendall s_cls: -0.3514, s_seg: 0.2132
+17-10-26 21:18:21: Val - Oracle 99, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0150, seg loss: 0.5990, total loss: 0.4361
+17-10-26 21:18:21: Val - Oracle 99, Tomato seg: loss=0.5613, mIoU=0.8097, acc=0.9600
+17-10-26 21:18:21: Val - Oracle 99, Maize seg: loss=0.6582, mIoU=0.7125, acc=0.9007
+17-10-26 21:18:30: Eval(no-train) - Target 'test' 99, acc: 1.0000, avg acc: 1.0000, cls loss: 0.0136  <- comparable to B1-B4's target cls acc; DA-O trains ON Pheno4D directly (upper bound, never a candidate strategy per CLAUDE.md)
+17-10-26 21:18:30: Best model at epoch 88, oracle val total loss 0.4292
+17-10-26 21:18:33: FINAL best-model oracle val: cls acc: 1.0000, cls avg acc: 1.0000, seg loss: 0.6316
+17-10-26 21:18:33: FINAL best-model oracle val, Tomato seg: loss=0.5985, mIoU=0.7948, acc=0.9551
+17-10-26 21:18:33: FINAL best-model oracle val, Maize seg: loss=0.6836, mIoU=0.6903, acc=0.8956
+17-10-26 21:18:42: FINAL target (Pheno4D held-out) test accuracy: 1.0000, avg acc: 1.0000, loss: 0.0115  <- directly comparable to B1-B4's target cls acc (same file/metric)
+17-10-26 21:18:42: Confusion matrix (rows=true, cols=pred, order=['Tomato', 'Maize']):
+[[40  0]
+ [ 0 23]]
+17-10-26 21:18:42: Per-class precision/recall/F1 on target test:
+              precision    recall  f1-score   support
+
+      Tomato     1.0000    1.0000    1.0000        40
+       Maize     1.0000    1.0000    1.0000        23
+
+    accuracy                         1.0000        63
+   macro avg     1.0000    1.0000    1.0000        63
+weighted avg     1.0000    1.0000    1.0000        63
+
+17-10-26 21:18:47: FINAL target (Pheno4D held-out, annotated subset) segmentation -- Oracle-only metric, NOT comparable to B1-B4's source-val seg mIoU (different domain/label space):
+17-10-26 21:18:47: FINAL target seg, Tomato: loss=0.4708, mIoU=0.8109, acc=0.9639
+17-10-26 21:18:47: FINAL target seg, Maize: loss=0.7702, mIoU=0.6198, acc=0.8488

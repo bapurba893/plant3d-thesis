@@ -1,0 +1,54 @@
+21-10-26 01:00:36: Namespace(exp_name='FW_D1_s3', out_path='/home/pearl/25m0301/plant3d-thesis/results', epochs=200, batch_size=16, lr=0.001, wd=0.01, hidden_dim=0, dropout=0.3, lambda_corr=0.5, seed=3, gpu=-1, features_dir='data/features_fw/P4a_B3b_s3')
+21-10-26 01:00:36: Using CPU
+21-10-26 01:00:39: train: 72 scans, val: 18, test: 63
+21-10-26 01:00:39: norm_stats (mean, std), fit on train split only: {'height': (125.70627890247846, 105.73147630629923), 'stem_diameter': (17.195734096454892, 11.545218295478202), 'leaf_area': (4583.231925644059, 4745.577679704467), 'leaf_count': (4.63768115942029, 2.9702991258197713), 'volume': (867792.1545647155, 1557889.2316019658), 'height_rate': (12.342439244077807, 11.137362766172451), 'stem_diameter_rate': (2.5979457643982875, 11.175289622254086)}
+21-10-26 01:00:39: TraitFusionHead parameter count: 1799 (confirms this is a small MLP, not a KPConv-scale encoder -- see module docstring's 'frozen backbone' audit-trail note)
+21-10-26 01:01:31: Epoch 0: train_loss=2.8440, val_loss=1.7110
+21-10-26 01:01:34: Epoch 10: train_loss=1.7645, val_loss=1.1064
+21-10-26 01:01:36: Epoch 20: train_loss=1.5195, val_loss=0.9781
+21-10-26 01:01:37: Epoch 30: train_loss=1.3772, val_loss=0.8867
+21-10-26 01:01:37: Epoch 40: train_loss=0.9400, val_loss=0.8996
+21-10-26 01:01:38: Epoch 50: train_loss=0.8629, val_loss=0.7855
+21-10-26 01:01:39: Epoch 60: train_loss=0.7300, val_loss=0.6879
+21-10-26 01:01:40: Epoch 70: train_loss=0.7677, val_loss=0.6752
+21-10-26 01:01:41: Epoch 80: train_loss=0.4581, val_loss=0.6024
+21-10-26 01:01:42: Epoch 90: train_loss=0.5072, val_loss=0.6355
+21-10-26 01:01:43: Epoch 100: train_loss=0.4548, val_loss=0.5792
+21-10-26 01:01:44: Epoch 110: train_loss=0.3519, val_loss=0.5269
+21-10-26 01:01:45: Epoch 120: train_loss=0.2632, val_loss=0.5028
+21-10-26 01:01:46: Epoch 130: train_loss=0.1707, val_loss=0.4870
+21-10-26 01:01:47: Epoch 140: train_loss=0.1543, val_loss=0.4725
+21-10-26 01:01:48: Epoch 150: train_loss=0.1310, val_loss=0.4705
+21-10-26 01:01:49: Epoch 160: train_loss=0.1406, val_loss=0.4777
+21-10-26 01:01:50: Epoch 170: train_loss=0.3867, val_loss=0.4599
+21-10-26 01:01:51: Epoch 180: train_loss=0.1785, val_loss=0.4635
+21-10-26 01:01:51: Epoch 190: train_loss=0.3031, val_loss=0.4625
+21-10-26 01:01:52: Epoch 199: train_loss=0.1919, val_loss=0.4627
+21-10-26 01:01:52: Best model at epoch 168, val total loss 0.4573
+21-10-26 01:01:53: 
+=== FINAL train metrics (best epoch 168) ===
+21-10-26 01:01:53:   height              : n= 72, RMSE=21.0866, MAE=15.9086, R2=0.9597
+21-10-26 01:01:53:   stem_diameter       : n= 71, RMSE=8.9738, MAE=5.7372, R2=0.3872
+21-10-26 01:01:53:   leaf_area           : n= 69, RMSE=2864.6099, MAE=2143.1458, R2=0.6303
+21-10-26 01:01:53:   leaf_count          : n= 69, RMSE=2.2188, MAE=1.4112, R2=0.4338
+21-10-26 01:01:53:   volume              : n= 72, RMSE=882715.1875, MAE=446349.1250, R2=0.6744
+21-10-26 01:01:53:   height_rate         : n= 72, RMSE=4.4096, MAE=3.3151, R2=0.8410
+21-10-26 01:01:53:   stem_diameter_rate  : n= 71, RMSE=8.8399, MAE=5.7526, R2=0.3653
+21-10-26 01:01:53: 
+=== FINAL val metrics (best epoch 168) ===
+21-10-26 01:01:53:   height              : n= 18, RMSE=28.9734, MAE=22.2890, R2=0.9462
+21-10-26 01:01:53:   stem_diameter       : n= 17, RMSE=8.1600, MAE=6.8438, R2=0.1198
+21-10-26 01:01:53:   leaf_area           : n= 17, RMSE=3120.3257, MAE=2664.7244, R2=-0.3923
+21-10-26 01:01:53:   leaf_count          : n= 17, RMSE=3.1993, MAE=2.1661, R2=0.1563
+21-10-26 01:01:53:   volume              : n= 18, RMSE=1027081.8750, MAE=673769.2500, R2=0.6621
+21-10-26 01:01:53:   height_rate         : n= 18, RMSE=5.6498, MAE=4.0273, R2=0.7505
+21-10-26 01:01:53:   stem_diameter_rate  : n= 17, RMSE=15.3227, MAE=8.7984, R2=-0.2097
+21-10-26 01:01:53: 
+=== FINAL test metrics (best epoch 168) ===
+21-10-26 01:01:53:   height              : n= 63, RMSE=32.3250, MAE=19.3473, R2=0.9094
+21-10-26 01:01:53:   stem_diameter       : n= 61, RMSE=23.2653, MAE=12.4903, R2=0.0972
+21-10-26 01:01:53:   leaf_area           : n= 58, RMSE=2736.0432, MAE=2268.2395, R2=0.3327
+21-10-26 01:01:53:   leaf_count          : n= 58, RMSE=2.3254, MAE=1.8296, R2=0.3669
+21-10-26 01:01:53:   volume              : n= 63, RMSE=634087.3750, MAE=418996.4375, R2=0.5157
+21-10-26 01:01:53:   height_rate         : n= 63, RMSE=7.4091, MAE=4.6036, R2=0.6780
+21-10-26 01:01:53:   stem_diameter_rate  : n= 61, RMSE=17.7637, MAE=8.6859, R2=0.1365

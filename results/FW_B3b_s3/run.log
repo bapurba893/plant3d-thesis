@@ -1,0 +1,2129 @@
+19-10-26 02:32:18: Namespace(exp_name='FW_B3b_s3', out_path='/home/pearl/25m0301/plant3d-thesis/results', epochs=100, batch_size=16, test_batch_size=16, lr=0.001, wd=5e-05, dropout=0.5, DefRec_dist='volume_based_voxels', num_regions=3, DefRec_weight=1.0, seed=3, gpu=0, verbose_batches=True, num_workers=0, manifest='data/preprocessed_variants/P4a/preprocessed_manifest.csv')
+19-10-26 02:32:18: Using GPU 0: NVIDIA A100-SXM4-80GB
+19-10-26 02:32:18: Crops3D train (source): 263 {'Tomato': 71, 'Maize': 192}
+19-10-26 02:32:18: Crops3D val (source):   45 {'Tomato': 12, 'Maize': 33}
+19-10-26 02:32:18: Pheno4D adaptation pool (target, DefRec-only -- self-supervised, no labels used, species shown for bookkeeping only): 160 {'Tomato': 100, 'Maize': 60}
+19-10-26 02:32:18: Pheno4D held-out eval (target, never trained on, cls-only): 63 {'Tomato': 40, 'Maize': 23}
+19-10-26 02:32:19: L_cls class weights (w_c=(f_c+eps)^-1, normalized): {'Tomato': 1.4600751399993896, 'Maize': 0.5399248600006104}
+19-10-26 02:32:19: L_seg class weights for Tomato (counts=[59742, 228498, 2576]): [0.12269575148820877, 0.03207956627011299, 2.845224618911743]
+19-10-26 02:32:19: L_seg class weights for Maize (counts=[105192, 53378, 475470, 3861, 3510, 145021]): [0.09816843271255493, 0.19345910847187042, 0.021718710660934448, 2.6740505695343018, 2.9413957595825195, 0.07120731472969055]
+19-10-26 02:33:18: Calibrated neighborhood_limits: source-only=[499, 45, 32], target-only=[499, 36, 29], combined (elementwise max, used)=[499, 45, 32]
+19-10-26 02:33:18: Batches/epoch: source=16 (drives epoch length), target_adapt=10 (cycled)
+19-10-26 02:33:34:   epoch 0 batch 0: collate wait 5.6s, fwd+bwd+step 8.4s
+19-10-26 02:33:47:   epoch 0 batch 1: collate wait 5.3s, fwd+bwd+step 7.9s
+19-10-26 02:34:01:   epoch 0 batch 2: collate wait 5.8s, fwd+bwd+step 8.9s
+19-10-26 02:34:13:   epoch 0 batch 3: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 02:34:27:   epoch 0 batch 4: collate wait 6.0s, fwd+bwd+step 8.2s
+19-10-26 02:34:40:   epoch 0 batch 5: collate wait 5.6s, fwd+bwd+step 6.7s
+19-10-26 02:34:51:   epoch 0 batch 6: collate wait 5.4s, fwd+bwd+step 6.2s
+19-10-26 02:35:02:   epoch 0 batch 7: collate wait 5.0s, fwd+bwd+step 6.1s
+19-10-26 02:35:14:   epoch 0 batch 8: collate wait 5.2s, fwd+bwd+step 6.2s
+19-10-26 02:35:25:   epoch 0 batch 9: collate wait 4.7s, fwd+bwd+step 6.7s
+19-10-26 02:35:38:   epoch 0 batch 10: collate wait 3.5s, fwd+bwd+step 9.3s
+19-10-26 02:35:46:   epoch 0 batch 11: collate wait 2.7s, fwd+bwd+step 5.7s
+19-10-26 02:35:56:   epoch 0 batch 12: collate wait 3.2s, fwd+bwd+step 6.7s
+19-10-26 02:36:07:   epoch 0 batch 13: collate wait 2.7s, fwd+bwd+step 7.8s
+19-10-26 02:36:21:   epoch 0 batch 14: collate wait 3.0s, fwd+bwd+step 11.2s
+19-10-26 02:36:31:   epoch 0 batch 15: collate wait 2.9s, fwd+bwd+step 7.0s
+19-10-26 02:36:31: Trn - Source+Target 0, cls loss: 0.3644, seg loss: 2.2597, defrec loss (src+trgt): 7.3165, kendall s_cls: -0.0022, s_seg: 0.0157, s_defrec: 0.0137
+19-10-26 02:36:56: Val - Source 0, cls acc: 0.2889, cls avg acc: 0.5152, cls loss: 1.0486, seg loss: 2.3385, defrec loss: 12.5575, total loss: 9.5600
+19-10-26 02:36:56: Val - Source 0, Tomato seg: loss=1.7491, mIoU=0.2698, acc=0.8058
+19-10-26 02:36:56: Val - Source 0, Maize seg: loss=2.5528, mIoU=0.0619, acc=0.1252
+19-10-26 02:37:04: Eval(no-train) - Target 0, acc: 0.7460, avg acc: 0.6522, cls loss: 0.5920  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:37:15:   epoch 1 batch 0: collate wait 5.2s, fwd+bwd+step 6.0s
+19-10-26 02:37:30:   epoch 1 batch 1: collate wait 6.1s, fwd+bwd+step 8.7s
+19-10-26 02:37:44:   epoch 1 batch 2: collate wait 5.9s, fwd+bwd+step 8.4s
+19-10-26 02:37:56:   epoch 1 batch 3: collate wait 5.1s, fwd+bwd+step 6.5s
+19-10-26 02:38:09:   epoch 1 batch 4: collate wait 5.7s, fwd+bwd+step 7.3s
+19-10-26 02:38:22:   epoch 1 batch 5: collate wait 5.7s, fwd+bwd+step 6.9s
+19-10-26 02:38:32:   epoch 1 batch 6: collate wait 4.7s, fwd+bwd+step 6.0s
+19-10-26 02:38:44:   epoch 1 batch 7: collate wait 5.3s, fwd+bwd+step 6.5s
+19-10-26 02:38:57:   epoch 1 batch 8: collate wait 5.6s, fwd+bwd+step 7.8s
+19-10-26 02:39:09:   epoch 1 batch 9: collate wait 5.0s, fwd+bwd+step 6.8s
+19-10-26 02:39:18:   epoch 1 batch 10: collate wait 2.7s, fwd+bwd+step 5.8s
+19-10-26 02:39:31:   epoch 1 batch 11: collate wait 3.8s, fwd+bwd+step 9.2s
+19-10-26 02:39:41:   epoch 1 batch 12: collate wait 3.2s, fwd+bwd+step 7.0s
+19-10-26 02:39:52:   epoch 1 batch 13: collate wait 3.3s, fwd+bwd+step 7.5s
+19-10-26 02:40:02:   epoch 1 batch 14: collate wait 2.9s, fwd+bwd+step 7.6s
+19-10-26 02:40:11:   epoch 1 batch 15: collate wait 2.5s, fwd+bwd+step 6.1s
+19-10-26 02:40:11: Trn - Source+Target 1, cls loss: 0.2189, seg loss: 1.9891, defrec loss (src+trgt): 5.8048, kendall s_cls: -0.0172, s_seg: 0.0306, s_defrec: 0.0266
+19-10-26 02:40:35: Val - Source 1, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0627, seg loss: 2.1020, defrec loss: 9.5928, total loss: 6.7928
+19-10-26 02:40:35: Val - Source 1, Tomato seg: loss=1.7469, mIoU=0.3185, acc=0.6991
+19-10-26 02:40:35: Val - Source 1, Maize seg: loss=2.2311, mIoU=0.1136, acc=0.1854
+19-10-26 02:40:43: Eval(no-train) - Target 1, acc: 0.9365, avg acc: 0.9408, cls loss: 0.2541  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:40:55:   epoch 2 batch 0: collate wait 5.3s, fwd+bwd+step 6.6s
+19-10-26 02:41:07:   epoch 2 batch 1: collate wait 5.1s, fwd+bwd+step 7.0s
+19-10-26 02:41:22:   epoch 2 batch 2: collate wait 5.7s, fwd+bwd+step 9.0s
+19-10-26 02:41:33:   epoch 2 batch 3: collate wait 4.9s, fwd+bwd+step 5.8s
+19-10-26 02:41:43:   epoch 2 batch 4: collate wait 4.9s, fwd+bwd+step 5.9s
+19-10-26 02:41:56:   epoch 2 batch 5: collate wait 5.3s, fwd+bwd+step 7.5s
+19-10-26 02:42:27:   epoch 2 batch 6: collate wait 5.2s, fwd+bwd+step 25.9s
+19-10-26 02:42:42:   epoch 2 batch 7: collate wait 6.6s, fwd+bwd+step 7.9s
+19-10-26 02:42:55:   epoch 2 batch 8: collate wait 5.6s, fwd+bwd+step 7.2s
+19-10-26 02:43:06:   epoch 2 batch 9: collate wait 5.1s, fwd+bwd+step 6.5s
+19-10-26 02:43:16:   epoch 2 batch 10: collate wait 2.9s, fwd+bwd+step 6.9s
+19-10-26 02:43:25:   epoch 2 batch 11: collate wait 3.1s, fwd+bwd+step 6.2s
+19-10-26 02:43:34:   epoch 2 batch 12: collate wait 2.6s, fwd+bwd+step 6.2s
+19-10-26 02:43:45:   epoch 2 batch 13: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 02:43:55:   epoch 2 batch 14: collate wait 3.4s, fwd+bwd+step 7.2s
+19-10-26 02:44:05:   epoch 2 batch 15: collate wait 2.9s, fwd+bwd+step 7.3s
+19-10-26 02:44:05: Trn - Source+Target 2, cls loss: 0.1049, seg loss: 1.8031, defrec loss (src+trgt): 4.5635, kendall s_cls: -0.0348, s_seg: 0.0444, s_defrec: 0.0382
+19-10-26 02:44:30: Val - Source 2, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0223, seg loss: 1.9815, defrec loss: 7.5658, total loss: 5.5835
+19-10-26 02:44:30: Val - Source 2, Tomato seg: loss=1.7198, mIoU=0.2437, acc=0.5240
+19-10-26 02:44:30: Val - Source 2, Maize seg: loss=2.0767, mIoU=0.1448, acc=0.2687
+19-10-26 02:44:39: Eval(no-train) - Target 2, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1782  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:44:50:   epoch 3 batch 0: collate wait 4.7s, fwd+bwd+step 6.7s
+19-10-26 02:45:04:   epoch 3 batch 1: collate wait 6.1s, fwd+bwd+step 7.6s
+19-10-26 02:45:16:   epoch 3 batch 2: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 02:45:28:   epoch 3 batch 3: collate wait 5.2s, fwd+bwd+step 6.5s
+19-10-26 02:45:41:   epoch 3 batch 4: collate wait 5.8s, fwd+bwd+step 8.0s
+19-10-26 02:45:55:   epoch 3 batch 5: collate wait 5.8s, fwd+bwd+step 7.5s
+19-10-26 02:46:05:   epoch 3 batch 6: collate wait 4.6s, fwd+bwd+step 6.1s
+19-10-26 02:46:17:   epoch 3 batch 7: collate wait 4.8s, fwd+bwd+step 6.9s
+19-10-26 02:46:29:   epoch 3 batch 8: collate wait 5.4s, fwd+bwd+step 6.8s
+19-10-26 02:46:42:   epoch 3 batch 9: collate wait 5.5s, fwd+bwd+step 7.5s
+19-10-26 02:46:52:   epoch 3 batch 10: collate wait 3.4s, fwd+bwd+step 6.0s
+19-10-26 02:47:03:   epoch 3 batch 11: collate wait 3.1s, fwd+bwd+step 7.8s
+19-10-26 02:47:13:   epoch 3 batch 12: collate wait 2.9s, fwd+bwd+step 7.9s
+19-10-26 02:47:23:   epoch 3 batch 13: collate wait 2.8s, fwd+bwd+step 6.6s
+19-10-26 02:47:34:   epoch 3 batch 14: collate wait 3.1s, fwd+bwd+step 8.1s
+19-10-26 02:47:45:   epoch 3 batch 15: collate wait 2.8s, fwd+bwd+step 8.1s
+19-10-26 02:47:45: Trn - Source+Target 3, cls loss: 0.1131, seg loss: 1.7929, defrec loss (src+trgt): 4.5395, kendall s_cls: -0.0518, s_seg: 0.0579, s_defrec: 0.0490
+19-10-26 02:48:11: Val - Source 3, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0255, seg loss: 1.8670, defrec loss: 6.5806, total loss: 4.9491
+19-10-26 02:48:11: Val - Source 3, Tomato seg: loss=1.9512, mIoU=0.2760, acc=0.5956
+19-10-26 02:48:11: Val - Source 3, Maize seg: loss=1.8363, mIoU=0.1659, acc=0.2898
+19-10-26 02:48:19: Eval(no-train) - Target 3, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1498  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:48:34:   epoch 4 batch 0: collate wait 6.0s, fwd+bwd+step 8.9s
+19-10-26 02:48:45:   epoch 4 batch 1: collate wait 4.9s, fwd+bwd+step 5.8s
+19-10-26 02:48:57:   epoch 4 batch 2: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 02:49:09:   epoch 4 batch 3: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 02:49:22:   epoch 4 batch 4: collate wait 5.5s, fwd+bwd+step 7.3s
+19-10-26 02:49:34:   epoch 4 batch 5: collate wait 5.6s, fwd+bwd+step 6.5s
+19-10-26 02:49:46:   epoch 4 batch 6: collate wait 5.3s, fwd+bwd+step 6.2s
+19-10-26 02:49:59:   epoch 4 batch 7: collate wait 5.9s, fwd+bwd+step 7.8s
+19-10-26 02:50:10:   epoch 4 batch 8: collate wait 5.0s, fwd+bwd+step 5.9s
+19-10-26 02:50:23:   epoch 4 batch 9: collate wait 5.9s, fwd+bwd+step 7.4s
+19-10-26 02:50:33:   epoch 4 batch 10: collate wait 2.6s, fwd+bwd+step 7.0s
+19-10-26 02:50:42:   epoch 4 batch 11: collate wait 2.6s, fwd+bwd+step 6.1s
+19-10-26 02:50:52:   epoch 4 batch 12: collate wait 3.3s, fwd+bwd+step 6.4s
+19-10-26 02:51:04:   epoch 4 batch 13: collate wait 2.6s, fwd+bwd+step 9.5s
+19-10-26 02:51:14:   epoch 4 batch 14: collate wait 2.9s, fwd+bwd+step 7.6s
+19-10-26 02:51:27:   epoch 4 batch 15: collate wait 3.5s, fwd+bwd+step 9.0s
+19-10-26 02:51:27: Trn - Source+Target 4, cls loss: 0.0673, seg loss: 1.6941, defrec loss (src+trgt): 3.4411, kendall s_cls: -0.0702, s_seg: 0.0712, s_defrec: 0.0586
+19-10-26 02:51:51: Val - Source 4, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0051, seg loss: 1.9333, defrec loss: 4.7048, total loss: 4.0542
+19-10-26 02:51:51: Val - Source 4, Tomato seg: loss=2.3854, mIoU=0.2316, acc=0.5048
+19-10-26 02:51:51: Val - Source 4, Maize seg: loss=1.7690, mIoU=0.1961, acc=0.3972
+19-10-26 02:52:00: Eval(no-train) - Target 4, acc: 0.9206, avg acc: 0.8913, cls loss: 0.2566  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:52:13:   epoch 5 batch 0: collate wait 5.3s, fwd+bwd+step 7.7s
+19-10-26 02:52:25:   epoch 5 batch 1: collate wait 4.7s, fwd+bwd+step 7.3s
+19-10-26 02:52:37:   epoch 5 batch 2: collate wait 5.4s, fwd+bwd+step 6.8s
+19-10-26 02:52:50:   epoch 5 batch 3: collate wait 5.5s, fwd+bwd+step 7.5s
+19-10-26 02:53:02:   epoch 5 batch 4: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 02:53:16:   epoch 5 batch 5: collate wait 5.9s, fwd+bwd+step 8.0s
+19-10-26 02:53:29:   epoch 5 batch 6: collate wait 5.8s, fwd+bwd+step 7.3s
+19-10-26 02:53:44:   epoch 5 batch 7: collate wait 6.1s, fwd+bwd+step 8.5s
+19-10-26 02:53:56:   epoch 5 batch 8: collate wait 4.8s, fwd+bwd+step 7.0s
+19-10-26 02:54:09:   epoch 5 batch 9: collate wait 5.5s, fwd+bwd+step 8.3s
+19-10-26 02:54:21:   epoch 5 batch 10: collate wait 2.8s, fwd+bwd+step 8.9s
+19-10-26 02:54:33:   epoch 5 batch 11: collate wait 3.2s, fwd+bwd+step 8.6s
+19-10-26 02:54:43:   epoch 5 batch 12: collate wait 3.0s, fwd+bwd+step 6.8s
+19-10-26 02:54:52:   epoch 5 batch 13: collate wait 2.9s, fwd+bwd+step 6.5s
+19-10-26 02:55:02:   epoch 5 batch 14: collate wait 3.0s, fwd+bwd+step 7.2s
+19-10-26 02:55:11:   epoch 5 batch 15: collate wait 2.6s, fwd+bwd+step 6.0s
+19-10-26 02:55:11: Trn - Source+Target 5, cls loss: 0.0864, seg loss: 1.6020, defrec loss (src+trgt): 3.0837, kendall s_cls: -0.0879, s_seg: 0.0836, s_defrec: 0.0664
+19-10-26 02:55:36: Val - Source 5, cls acc: 0.9556, cls avg acc: 0.9697, cls loss: 0.0675, seg loss: 1.5496, defrec loss: 4.6310, total loss: 3.6968
+19-10-26 02:55:36: Val - Source 5, Tomato seg: loss=1.3544, mIoU=0.2601, acc=0.5409
+19-10-26 02:55:36: Val - Source 5, Maize seg: loss=1.6206, mIoU=0.2095, acc=0.4100
+19-10-26 02:55:45: Eval(no-train) - Target 5, acc: 0.8730, avg acc: 0.8261, cls loss: 0.4031  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:55:59:   epoch 6 batch 0: collate wait 5.8s, fwd+bwd+step 8.1s
+19-10-26 02:56:11:   epoch 6 batch 1: collate wait 5.5s, fwd+bwd+step 7.1s
+19-10-26 02:56:26:   epoch 6 batch 2: collate wait 6.0s, fwd+bwd+step 8.6s
+19-10-26 02:56:39:   epoch 6 batch 3: collate wait 5.4s, fwd+bwd+step 7.5s
+19-10-26 02:56:53:   epoch 6 batch 4: collate wait 5.6s, fwd+bwd+step 8.8s
+19-10-26 02:57:06:   epoch 6 batch 5: collate wait 4.8s, fwd+bwd+step 7.6s
+19-10-26 02:57:17:   epoch 6 batch 6: collate wait 5.0s, fwd+bwd+step 6.4s
+19-10-26 02:57:31:   epoch 6 batch 7: collate wait 6.2s, fwd+bwd+step 7.5s
+19-10-26 02:57:43:   epoch 6 batch 8: collate wait 5.7s, fwd+bwd+step 7.0s
+19-10-26 02:57:58:   epoch 6 batch 9: collate wait 5.3s, fwd+bwd+step 8.9s
+19-10-26 02:58:07:   epoch 6 batch 10: collate wait 2.7s, fwd+bwd+step 7.1s
+19-10-26 02:58:18:   epoch 6 batch 11: collate wait 2.8s, fwd+bwd+step 7.6s
+19-10-26 02:58:29:   epoch 6 batch 12: collate wait 3.3s, fwd+bwd+step 7.8s
+19-10-26 02:58:39:   epoch 6 batch 13: collate wait 3.0s, fwd+bwd+step 6.9s
+19-10-26 02:58:50:   epoch 6 batch 14: collate wait 3.1s, fwd+bwd+step 8.0s
+19-10-26 02:59:00:   epoch 6 batch 15: collate wait 3.0s, fwd+bwd+step 7.2s
+19-10-26 02:59:00: Trn - Source+Target 6, cls loss: 0.0846, seg loss: 1.5772, defrec loss (src+trgt): 3.2068, kendall s_cls: -0.1044, s_seg: 0.0957, s_defrec: 0.0746
+19-10-26 02:59:25: Val - Source 6, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0024, seg loss: 1.5487, defrec loss: 4.9294, total loss: 3.7307
+19-10-26 02:59:25: Val - Source 6, Tomato seg: loss=1.5574, mIoU=0.2223, acc=0.4766
+19-10-26 02:59:25: Val - Source 6, Maize seg: loss=1.5455, mIoU=0.2212, acc=0.4662
+19-10-26 02:59:34: Eval(no-train) - Target 6, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1667  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 02:59:48:   epoch 7 batch 0: collate wait 5.8s, fwd+bwd+step 8.5s
+19-10-26 03:00:00:   epoch 7 batch 1: collate wait 5.1s, fwd+bwd+step 6.8s
+19-10-26 03:00:13:   epoch 7 batch 2: collate wait 6.0s, fwd+bwd+step 7.1s
+19-10-26 03:00:26:   epoch 7 batch 3: collate wait 5.9s, fwd+bwd+step 6.8s
+19-10-26 03:00:38:   epoch 7 batch 4: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 03:00:50:   epoch 7 batch 5: collate wait 5.6s, fwd+bwd+step 6.6s
+19-10-26 03:01:03:   epoch 7 batch 6: collate wait 5.1s, fwd+bwd+step 8.0s
+19-10-26 03:01:14:   epoch 7 batch 7: collate wait 5.2s, fwd+bwd+step 6.3s
+19-10-26 03:01:26:   epoch 7 batch 8: collate wait 5.1s, fwd+bwd+step 6.7s
+19-10-26 03:01:40:   epoch 7 batch 9: collate wait 5.5s, fwd+bwd+step 8.3s
+19-10-26 03:01:50:   epoch 7 batch 10: collate wait 2.5s, fwd+bwd+step 7.4s
+19-10-26 03:02:00:   epoch 7 batch 11: collate wait 2.9s, fwd+bwd+step 6.5s
+19-10-26 03:02:11:   epoch 7 batch 12: collate wait 3.3s, fwd+bwd+step 7.8s
+19-10-26 03:02:19:   epoch 7 batch 13: collate wait 2.8s, fwd+bwd+step 6.1s
+19-10-26 03:02:29:   epoch 7 batch 14: collate wait 2.7s, fwd+bwd+step 6.8s
+19-10-26 03:02:39:   epoch 7 batch 15: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 03:02:39: Trn - Source+Target 7, cls loss: 0.0951, seg loss: 1.5842, defrec loss (src+trgt): 3.4087, kendall s_cls: -0.1211, s_seg: 0.1078, s_defrec: 0.0830
+19-10-26 03:03:05: Val - Source 7, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0187, seg loss: 1.4123, defrec loss: 3.1308, total loss: 2.7647
+19-10-26 03:03:05: Val - Source 7, Tomato seg: loss=1.6208, mIoU=0.2366, acc=0.4942
+19-10-26 03:03:05: Val - Source 7, Maize seg: loss=1.3365, mIoU=0.2674, acc=0.5842
+19-10-26 03:03:14: Eval(no-train) - Target 7, acc: 0.9048, avg acc: 0.9158, cls loss: 0.2754  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:03:26:   epoch 8 batch 0: collate wait 5.1s, fwd+bwd+step 7.6s
+19-10-26 03:03:38:   epoch 8 batch 1: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 03:03:50:   epoch 8 batch 2: collate wait 5.1s, fwd+bwd+step 6.4s
+19-10-26 03:04:02:   epoch 8 batch 3: collate wait 5.1s, fwd+bwd+step 7.3s
+19-10-26 03:04:16:   epoch 8 batch 4: collate wait 5.3s, fwd+bwd+step 8.3s
+19-10-26 03:04:32:   epoch 8 batch 5: collate wait 6.7s, fwd+bwd+step 9.6s
+19-10-26 03:04:44:   epoch 8 batch 6: collate wait 5.4s, fwd+bwd+step 6.8s
+19-10-26 03:04:57:   epoch 8 batch 7: collate wait 5.8s, fwd+bwd+step 6.9s
+19-10-26 03:05:09:   epoch 8 batch 8: collate wait 5.0s, fwd+bwd+step 6.9s
+19-10-26 03:05:23:   epoch 8 batch 9: collate wait 5.7s, fwd+bwd+step 7.6s
+19-10-26 03:05:34:   epoch 8 batch 10: collate wait 3.2s, fwd+bwd+step 8.3s
+19-10-26 03:05:43:   epoch 8 batch 11: collate wait 2.7s, fwd+bwd+step 6.0s
+19-10-26 03:05:52:   epoch 8 batch 12: collate wait 2.9s, fwd+bwd+step 6.6s
+19-10-26 03:06:02:   epoch 8 batch 13: collate wait 3.3s, fwd+bwd+step 7.0s
+19-10-26 03:06:11:   epoch 8 batch 14: collate wait 2.7s, fwd+bwd+step 6.1s
+19-10-26 03:06:21:   epoch 8 batch 15: collate wait 2.5s, fwd+bwd+step 7.7s
+19-10-26 03:06:21: Trn - Source+Target 8, cls loss: 0.0468, seg loss: 1.5196, defrec loss (src+trgt): 3.0647, kendall s_cls: -0.1384, s_seg: 0.1192, s_defrec: 0.0910
+19-10-26 03:06:47: Val - Source 8, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0520, seg loss: 1.4091, defrec loss: 2.8462, total loss: 2.6456
+19-10-26 03:06:47: Val - Source 8, Tomato seg: loss=1.6862, mIoU=0.2518, acc=0.5316
+19-10-26 03:06:47: Val - Source 8, Maize seg: loss=1.3084, mIoU=0.2709, acc=0.5885
+19-10-26 03:06:56: Eval(no-train) - Target 8, acc: 0.8730, avg acc: 0.8630, cls loss: 0.3055  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:07:10:   epoch 9 batch 0: collate wait 5.6s, fwd+bwd+step 8.2s
+19-10-26 03:07:22:   epoch 9 batch 1: collate wait 5.6s, fwd+bwd+step 7.3s
+19-10-26 03:07:34:   epoch 9 batch 2: collate wait 5.0s, fwd+bwd+step 6.9s
+19-10-26 03:07:46:   epoch 9 batch 3: collate wait 5.7s, fwd+bwd+step 6.5s
+19-10-26 03:08:00:   epoch 9 batch 4: collate wait 5.4s, fwd+bwd+step 8.5s
+19-10-26 03:08:12:   epoch 9 batch 5: collate wait 5.5s, fwd+bwd+step 6.5s
+19-10-26 03:08:23:   epoch 9 batch 6: collate wait 4.9s, fwd+bwd+step 6.0s
+19-10-26 03:08:44:   epoch 9 batch 7: collate wait 6.2s, fwd+bwd+step 14.5s
+19-10-26 03:08:56:   epoch 9 batch 8: collate wait 4.7s, fwd+bwd+step 6.9s
+19-10-26 03:09:08:   epoch 9 batch 9: collate wait 5.7s, fwd+bwd+step 6.5s
+19-10-26 03:09:20:   epoch 9 batch 10: collate wait 3.6s, fwd+bwd+step 8.7s
+19-10-26 03:09:32:   epoch 9 batch 11: collate wait 3.2s, fwd+bwd+step 9.1s
+19-10-26 03:09:43:   epoch 9 batch 12: collate wait 2.7s, fwd+bwd+step 7.4s
+19-10-26 03:09:54:   epoch 9 batch 13: collate wait 3.2s, fwd+bwd+step 7.9s
+19-10-26 03:10:05:   epoch 9 batch 14: collate wait 3.4s, fwd+bwd+step 7.9s
+19-10-26 03:10:16:   epoch 9 batch 15: collate wait 3.2s, fwd+bwd+step 7.6s
+19-10-26 03:10:16: Trn - Source+Target 9, cls loss: 0.0352, seg loss: 1.4229, defrec loss (src+trgt): 2.8698, kendall s_cls: -0.1561, s_seg: 0.1303, s_defrec: 0.0984
+19-10-26 03:10:41: Val - Source 9, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0051, seg loss: 1.3744, defrec loss: 2.4962, total loss: 2.3799
+19-10-26 03:10:41: Val - Source 9, Tomato seg: loss=1.4556, mIoU=0.2642, acc=0.5498
+19-10-26 03:10:41: Val - Source 9, Maize seg: loss=1.3448, mIoU=0.2945, acc=0.6494
+19-10-26 03:10:49: Eval(no-train) - Target 9, acc: 0.9206, avg acc: 0.8913, cls loss: 0.3338  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:11:04:   epoch 10 batch 0: collate wait 5.7s, fwd+bwd+step 8.0s
+19-10-26 03:11:17:   epoch 10 batch 1: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 03:11:29:   epoch 10 batch 2: collate wait 4.9s, fwd+bwd+step 7.0s
+19-10-26 03:11:41:   epoch 10 batch 3: collate wait 5.6s, fwd+bwd+step 6.7s
+19-10-26 03:11:55:   epoch 10 batch 4: collate wait 5.9s, fwd+bwd+step 8.4s
+19-10-26 03:12:09:   epoch 10 batch 5: collate wait 6.0s, fwd+bwd+step 7.4s
+19-10-26 03:12:20:   epoch 10 batch 6: collate wait 5.2s, fwd+bwd+step 6.3s
+19-10-26 03:12:33:   epoch 10 batch 7: collate wait 5.3s, fwd+bwd+step 7.4s
+19-10-26 03:12:46:   epoch 10 batch 8: collate wait 5.5s, fwd+bwd+step 7.7s
+19-10-26 03:12:59:   epoch 10 batch 9: collate wait 5.1s, fwd+bwd+step 7.4s
+19-10-26 03:13:08:   epoch 10 batch 10: collate wait 2.4s, fwd+bwd+step 6.7s
+19-10-26 03:13:18:   epoch 10 batch 11: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 03:13:26:   epoch 10 batch 12: collate wait 2.7s, fwd+bwd+step 5.6s
+19-10-26 03:13:35:   epoch 10 batch 13: collate wait 2.6s, fwd+bwd+step 5.9s
+19-10-26 03:13:47:   epoch 10 batch 14: collate wait 3.3s, fwd+bwd+step 8.4s
+19-10-26 03:13:58:   epoch 10 batch 15: collate wait 3.4s, fwd+bwd+step 7.9s
+19-10-26 03:13:58: Trn - Source+Target 10, cls loss: 0.0463, seg loss: 1.4364, defrec loss (src+trgt): 3.0663, kendall s_cls: -0.1733, s_seg: 0.1407, s_defrec: 0.1065
+19-10-26 03:14:23: Val - Source 10, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0127, seg loss: 1.3355, defrec loss: 5.0269, total loss: 3.4719
+19-10-26 03:14:23: Val - Source 10, Tomato seg: loss=1.3866, mIoU=0.2656, acc=0.5486
+19-10-26 03:14:23: Val - Source 10, Maize seg: loss=1.3170, mIoU=0.2860, acc=0.6413
+19-10-26 03:14:31: Eval(no-train) - Target 10, acc: 0.9524, avg acc: 0.9348, cls loss: 0.1886  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:14:45:   epoch 11 batch 0: collate wait 5.8s, fwd+bwd+step 7.8s
+19-10-26 03:14:57:   epoch 11 batch 1: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 03:15:09:   epoch 11 batch 2: collate wait 5.1s, fwd+bwd+step 7.4s
+19-10-26 03:15:27:   epoch 11 batch 3: collate wait 5.4s, fwd+bwd+step 12.4s
+19-10-26 03:15:38:   epoch 11 batch 4: collate wait 5.2s, fwd+bwd+step 5.9s
+19-10-26 03:15:51:   epoch 11 batch 5: collate wait 5.0s, fwd+bwd+step 7.2s
+19-10-26 03:16:07:   epoch 11 batch 6: collate wait 6.1s, fwd+bwd+step 10.1s
+19-10-26 03:16:20:   epoch 11 batch 7: collate wait 5.6s, fwd+bwd+step 7.5s
+19-10-26 03:16:35:   epoch 11 batch 8: collate wait 6.0s, fwd+bwd+step 8.9s
+19-10-26 03:16:48:   epoch 11 batch 9: collate wait 5.6s, fwd+bwd+step 7.3s
+19-10-26 03:16:58:   epoch 11 batch 10: collate wait 2.9s, fwd+bwd+step 7.2s
+19-10-26 03:17:08:   epoch 11 batch 11: collate wait 2.5s, fwd+bwd+step 7.9s
+19-10-26 03:17:18:   epoch 11 batch 12: collate wait 3.0s, fwd+bwd+step 6.8s
+19-10-26 03:17:29:   epoch 11 batch 13: collate wait 2.9s, fwd+bwd+step 7.9s
+19-10-26 03:17:39:   epoch 11 batch 14: collate wait 3.2s, fwd+bwd+step 7.1s
+19-10-26 03:17:51:   epoch 11 batch 15: collate wait 3.3s, fwd+bwd+step 8.6s
+19-10-26 03:17:51: Trn - Source+Target 11, cls loss: 0.2138, seg loss: 1.3993, defrec loss (src+trgt): 3.9489, kendall s_cls: -0.1846, s_seg: 0.1510, s_defrec: 0.1171
+19-10-26 03:18:16: Val - Source 11, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0152, seg loss: 1.4445, defrec loss: 2.8957, total loss: 2.5899
+19-10-26 03:18:16: Val - Source 11, Tomato seg: loss=1.7967, mIoU=0.2368, acc=0.4879
+19-10-26 03:18:16: Val - Source 11, Maize seg: loss=1.3164, mIoU=0.2644, acc=0.5354
+19-10-26 03:18:25: Eval(no-train) - Target 11, acc: 0.8730, avg acc: 0.8723, cls loss: 0.2888  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:18:37:   epoch 12 batch 0: collate wait 5.5s, fwd+bwd+step 6.7s
+19-10-26 03:18:46:   epoch 12 batch 1: collate wait 4.2s, fwd+bwd+step 5.3s
+19-10-26 03:19:01:   epoch 12 batch 2: collate wait 6.1s, fwd+bwd+step 8.6s
+19-10-26 03:19:14:   epoch 12 batch 3: collate wait 5.2s, fwd+bwd+step 7.6s
+19-10-26 03:19:26:   epoch 12 batch 4: collate wait 5.2s, fwd+bwd+step 7.2s
+19-10-26 03:19:39:   epoch 12 batch 5: collate wait 5.6s, fwd+bwd+step 6.7s
+19-10-26 03:19:51:   epoch 12 batch 6: collate wait 5.8s, fwd+bwd+step 7.1s
+19-10-26 03:20:04:   epoch 12 batch 7: collate wait 5.8s, fwd+bwd+step 7.3s
+19-10-26 03:20:17:   epoch 12 batch 8: collate wait 5.5s, fwd+bwd+step 6.8s
+19-10-26 03:20:28:   epoch 12 batch 9: collate wait 4.9s, fwd+bwd+step 5.9s
+19-10-26 03:20:39:   epoch 12 batch 10: collate wait 3.1s, fwd+bwd+step 8.6s
+19-10-26 03:20:50:   epoch 12 batch 11: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 03:21:01:   epoch 12 batch 12: collate wait 3.0s, fwd+bwd+step 8.7s
+19-10-26 03:21:12:   epoch 12 batch 13: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 03:21:22:   epoch 12 batch 14: collate wait 2.9s, fwd+bwd+step 7.0s
+19-10-26 03:21:31:   epoch 12 batch 15: collate wait 3.0s, fwd+bwd+step 6.7s
+19-10-26 03:21:31: Trn - Source+Target 12, cls loss: 0.1223, seg loss: 1.4082, defrec loss (src+trgt): 2.8067, kendall s_cls: -0.1969, s_seg: 0.1615, s_defrec: 0.1254
+19-10-26 03:21:56: Val - Source 12, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0110, seg loss: 1.3733, defrec loss: 2.4674, total loss: 2.3151
+19-10-26 03:21:56: Val - Source 12, Tomato seg: loss=1.6963, mIoU=0.2859, acc=0.5880
+19-10-26 03:21:56: Val - Source 12, Maize seg: loss=1.2558, mIoU=0.2863, acc=0.6092
+19-10-26 03:22:05: Eval(no-train) - Target 12, acc: 0.8889, avg acc: 0.8848, cls loss: 0.2544  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:22:16:   epoch 13 batch 0: collate wait 5.0s, fwd+bwd+step 6.7s
+19-10-26 03:22:29:   epoch 13 batch 1: collate wait 5.7s, fwd+bwd+step 7.1s
+19-10-26 03:22:44:   epoch 13 batch 2: collate wait 6.3s, fwd+bwd+step 7.9s
+19-10-26 03:22:57:   epoch 13 batch 3: collate wait 6.0s, fwd+bwd+step 7.2s
+19-10-26 03:23:09:   epoch 13 batch 4: collate wait 5.1s, fwd+bwd+step 6.9s
+19-10-26 03:23:21:   epoch 13 batch 5: collate wait 5.2s, fwd+bwd+step 7.2s
+19-10-26 03:23:32:   epoch 13 batch 6: collate wait 4.8s, fwd+bwd+step 6.2s
+19-10-26 03:23:45:   epoch 13 batch 7: collate wait 5.5s, fwd+bwd+step 7.7s
+19-10-26 03:23:57:   epoch 13 batch 8: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 03:24:10:   epoch 13 batch 9: collate wait 5.4s, fwd+bwd+step 7.3s
+19-10-26 03:24:18:   epoch 13 batch 10: collate wait 2.7s, fwd+bwd+step 5.7s
+19-10-26 03:24:29:   epoch 13 batch 11: collate wait 3.0s, fwd+bwd+step 7.5s
+19-10-26 03:24:38:   epoch 13 batch 12: collate wait 2.6s, fwd+bwd+step 6.7s
+19-10-26 03:24:49:   epoch 13 batch 13: collate wait 2.9s, fwd+bwd+step 8.1s
+19-10-26 03:25:01:   epoch 13 batch 14: collate wait 3.1s, fwd+bwd+step 8.5s
+19-10-26 03:25:12:   epoch 13 batch 15: collate wait 3.4s, fwd+bwd+step 8.0s
+19-10-26 03:25:12: Trn - Source+Target 13, cls loss: 0.1354, seg loss: 1.3761, defrec loss (src+trgt): 3.2543, kendall s_cls: -0.2081, s_seg: 0.1715, s_defrec: 0.1339
+19-10-26 03:25:37: Val - Source 13, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0127, seg loss: 1.3080, defrec loss: 2.6287, total loss: 2.3158
+19-10-26 03:25:37: Val - Source 13, Tomato seg: loss=1.4687, mIoU=0.2355, acc=0.4855
+19-10-26 03:25:37: Val - Source 13, Maize seg: loss=1.2496, mIoU=0.2915, acc=0.6199
+19-10-26 03:25:46: Eval(no-train) - Target 13, acc: 0.9365, avg acc: 0.9130, cls loss: 0.2132  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:26:01:   epoch 14 batch 0: collate wait 6.0s, fwd+bwd+step 9.1s
+19-10-26 03:26:12:   epoch 14 batch 1: collate wait 5.1s, fwd+bwd+step 6.5s
+19-10-26 03:26:24:   epoch 14 batch 2: collate wait 4.8s, fwd+bwd+step 6.5s
+19-10-26 03:26:36:   epoch 14 batch 3: collate wait 5.3s, fwd+bwd+step 7.2s
+19-10-26 03:26:49:   epoch 14 batch 4: collate wait 5.1s, fwd+bwd+step 7.4s
+19-10-26 03:27:01:   epoch 14 batch 5: collate wait 5.2s, fwd+bwd+step 6.8s
+19-10-26 03:27:13:   epoch 14 batch 6: collate wait 5.2s, fwd+bwd+step 7.2s
+19-10-26 03:27:26:   epoch 14 batch 7: collate wait 5.1s, fwd+bwd+step 8.1s
+19-10-26 03:27:38:   epoch 14 batch 8: collate wait 5.1s, fwd+bwd+step 7.0s
+19-10-26 03:27:53:   epoch 14 batch 9: collate wait 5.5s, fwd+bwd+step 8.9s
+19-10-26 03:28:02:   epoch 14 batch 10: collate wait 2.7s, fwd+bwd+step 6.4s
+19-10-26 03:28:12:   epoch 14 batch 11: collate wait 3.4s, fwd+bwd+step 6.7s
+19-10-26 03:28:22:   epoch 14 batch 12: collate wait 3.1s, fwd+bwd+step 6.9s
+19-10-26 03:28:35:   epoch 14 batch 13: collate wait 3.5s, fwd+bwd+step 9.0s
+19-10-26 03:28:46:   epoch 14 batch 14: collate wait 3.3s, fwd+bwd+step 7.6s
+19-10-26 03:28:55:   epoch 14 batch 15: collate wait 2.7s, fwd+bwd+step 6.9s
+19-10-26 03:28:55: Trn - Source+Target 14, cls loss: 0.1073, seg loss: 1.4083, defrec loss (src+trgt): 3.1834, kendall s_cls: -0.2212, s_seg: 0.1817, s_defrec: 0.1421
+19-10-26 03:29:22: Val - Source 14, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0187, seg loss: 1.3352, defrec loss: 2.2802, total loss: 2.1771
+19-10-26 03:29:22: Val - Source 14, Tomato seg: loss=1.6707, mIoU=0.2291, acc=0.4760
+19-10-26 03:29:22: Val - Source 14, Maize seg: loss=1.2132, mIoU=0.2808, acc=0.5919
+19-10-26 03:29:31: Eval(no-train) - Target 14, acc: 0.9048, avg acc: 0.8696, cls loss: 0.3546  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:29:43:   epoch 15 batch 0: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 03:29:55:   epoch 15 batch 1: collate wait 5.7s, fwd+bwd+step 6.8s
+19-10-26 03:30:09:   epoch 15 batch 2: collate wait 5.8s, fwd+bwd+step 7.8s
+19-10-26 03:30:23:   epoch 15 batch 3: collate wait 6.1s, fwd+bwd+step 7.7s
+19-10-26 03:30:36:   epoch 15 batch 4: collate wait 6.0s, fwd+bwd+step 7.7s
+19-10-26 03:30:48:   epoch 15 batch 5: collate wait 4.8s, fwd+bwd+step 7.1s
+19-10-26 03:30:58:   epoch 15 batch 6: collate wait 4.5s, fwd+bwd+step 5.7s
+19-10-26 03:31:13:   epoch 15 batch 7: collate wait 5.9s, fwd+bwd+step 9.0s
+19-10-26 03:31:25:   epoch 15 batch 8: collate wait 5.4s, fwd+bwd+step 6.1s
+19-10-26 03:31:37:   epoch 15 batch 9: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 03:31:48:   epoch 15 batch 10: collate wait 3.1s, fwd+bwd+step 7.9s
+19-10-26 03:31:58:   epoch 15 batch 11: collate wait 2.9s, fwd+bwd+step 7.3s
+19-10-26 03:32:12:   epoch 15 batch 12: collate wait 3.4s, fwd+bwd+step 10.1s
+19-10-26 03:32:22:   epoch 15 batch 13: collate wait 2.6s, fwd+bwd+step 7.7s
+19-10-26 03:32:32:   epoch 15 batch 14: collate wait 3.1s, fwd+bwd+step 7.4s
+19-10-26 03:32:42:   epoch 15 batch 15: collate wait 2.9s, fwd+bwd+step 7.1s
+19-10-26 03:32:42: Trn - Source+Target 15, cls loss: 0.0394, seg loss: 1.3246, defrec loss (src+trgt): 2.6401, kendall s_cls: -0.2356, s_seg: 0.1913, s_defrec: 0.1500
+19-10-26 03:33:09: Val - Source 15, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0295, seg loss: 1.2728, defrec loss: 2.2549, total loss: 2.1117
+19-10-26 03:33:09: Val - Source 15, Tomato seg: loss=1.4329, mIoU=0.2244, acc=0.4545
+19-10-26 03:33:09: Val - Source 15, Maize seg: loss=1.2146, mIoU=0.2907, acc=0.6061
+19-10-26 03:33:18: Eval(no-train) - Target 15, acc: 0.9206, avg acc: 0.9005, cls loss: 0.2401  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:33:29:   epoch 16 batch 0: collate wait 5.2s, fwd+bwd+step 6.1s
+19-10-26 03:33:42:   epoch 16 batch 1: collate wait 5.3s, fwd+bwd+step 7.9s
+19-10-26 03:33:55:   epoch 16 batch 2: collate wait 5.9s, fwd+bwd+step 6.8s
+19-10-26 03:34:07:   epoch 16 batch 3: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 03:34:21:   epoch 16 batch 4: collate wait 6.4s, fwd+bwd+step 8.1s
+19-10-26 03:34:33:   epoch 16 batch 5: collate wait 5.1s, fwd+bwd+step 6.1s
+19-10-26 03:34:46:   epoch 16 batch 6: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 03:34:59:   epoch 16 batch 7: collate wait 5.4s, fwd+bwd+step 7.6s
+19-10-26 03:35:39:   epoch 16 batch 8: collate wait 6.7s, fwd+bwd+step 32.8s
+19-10-26 03:35:54:   epoch 16 batch 9: collate wait 6.6s, fwd+bwd+step 8.5s
+19-10-26 03:36:03:   epoch 16 batch 10: collate wait 3.1s, fwd+bwd+step 6.4s
+19-10-26 03:36:15:   epoch 16 batch 11: collate wait 3.7s, fwd+bwd+step 8.3s
+19-10-26 03:36:26:   epoch 16 batch 12: collate wait 3.2s, fwd+bwd+step 7.9s
+19-10-26 03:36:38:   epoch 16 batch 13: collate wait 3.2s, fwd+bwd+step 8.5s
+19-10-26 03:36:49:   epoch 16 batch 14: collate wait 2.8s, fwd+bwd+step 7.7s
+19-10-26 03:36:59:   epoch 16 batch 15: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 03:36:59: Trn - Source+Target 16, cls loss: 0.0621, seg loss: 1.3066, defrec loss (src+trgt): 2.2057, kendall s_cls: -0.2504, s_seg: 0.2004, s_defrec: 0.1557
+19-10-26 03:37:26: Val - Source 16, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0111, seg loss: 1.2808, defrec loss: 3.6972, total loss: 2.6973
+19-10-26 03:37:26: Val - Source 16, Tomato seg: loss=1.7198, mIoU=0.2385, acc=0.5068
+19-10-26 03:37:26: Val - Source 16, Maize seg: loss=1.1212, mIoU=0.3223, acc=0.6841
+19-10-26 03:37:34: Eval(no-train) - Target 16, acc: 0.9206, avg acc: 0.8913, cls loss: 0.2204  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:37:47:   epoch 17 batch 0: collate wait 5.7s, fwd+bwd+step 7.2s
+19-10-26 03:38:00:   epoch 17 batch 1: collate wait 5.6s, fwd+bwd+step 6.8s
+19-10-26 03:38:12:   epoch 17 batch 2: collate wait 5.1s, fwd+bwd+step 7.4s
+19-10-26 03:38:26:   epoch 17 batch 3: collate wait 5.5s, fwd+bwd+step 8.0s
+19-10-26 03:38:40:   epoch 17 batch 4: collate wait 5.8s, fwd+bwd+step 8.1s
+19-10-26 03:38:51:   epoch 17 batch 5: collate wait 4.9s, fwd+bwd+step 6.7s
+19-10-26 03:39:08:   epoch 17 batch 6: collate wait 6.7s, fwd+bwd+step 10.3s
+19-10-26 03:39:21:   epoch 17 batch 7: collate wait 6.0s, fwd+bwd+step 7.0s
+19-10-26 03:39:36:   epoch 17 batch 8: collate wait 6.2s, fwd+bwd+step 8.8s
+19-10-26 03:39:48:   epoch 17 batch 9: collate wait 4.8s, fwd+bwd+step 6.6s
+19-10-26 03:39:58:   epoch 17 batch 10: collate wait 2.9s, fwd+bwd+step 7.1s
+19-10-26 03:40:07:   epoch 17 batch 11: collate wait 3.0s, fwd+bwd+step 6.4s
+19-10-26 03:40:17:   epoch 17 batch 12: collate wait 2.7s, fwd+bwd+step 7.4s
+19-10-26 03:40:27:   epoch 17 batch 13: collate wait 3.0s, fwd+bwd+step 6.6s
+19-10-26 03:40:37:   epoch 17 batch 14: collate wait 3.2s, fwd+bwd+step 7.6s
+19-10-26 03:40:46:   epoch 17 batch 15: collate wait 2.6s, fwd+bwd+step 5.8s
+19-10-26 03:40:46: Trn - Source+Target 17, cls loss: 0.0411, seg loss: 1.3504, defrec loss (src+trgt): 2.3331, kendall s_cls: -0.2654, s_seg: 0.2095, s_defrec: 0.1605
+19-10-26 03:41:10: Val - Source 17, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0025, seg loss: 1.3043, defrec loss: 3.3100, total loss: 2.5229
+19-10-26 03:41:10: Val - Source 17, Tomato seg: loss=1.7241, mIoU=0.2387, acc=0.4911
+19-10-26 03:41:10: Val - Source 17, Maize seg: loss=1.1517, mIoU=0.3057, acc=0.6488
+19-10-26 03:41:19: Eval(no-train) - Target 17, acc: 0.9365, avg acc: 0.9315, cls loss: 0.1880  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:41:35:   epoch 18 batch 0: collate wait 6.0s, fwd+bwd+step 9.3s
+19-10-26 03:41:48:   epoch 18 batch 1: collate wait 5.4s, fwd+bwd+step 7.6s
+19-10-26 03:42:01:   epoch 18 batch 2: collate wait 5.3s, fwd+bwd+step 7.9s
+19-10-26 03:42:12:   epoch 18 batch 3: collate wait 5.1s, fwd+bwd+step 6.2s
+19-10-26 03:42:25:   epoch 18 batch 4: collate wait 5.4s, fwd+bwd+step 7.5s
+19-10-26 03:42:37:   epoch 18 batch 5: collate wait 5.6s, fwd+bwd+step 7.0s
+19-10-26 03:42:53:   epoch 18 batch 6: collate wait 5.9s, fwd+bwd+step 9.2s
+19-10-26 03:43:06:   epoch 18 batch 7: collate wait 5.6s, fwd+bwd+step 8.2s
+19-10-26 03:43:17:   epoch 18 batch 8: collate wait 4.8s, fwd+bwd+step 5.9s
+19-10-26 03:43:30:   epoch 18 batch 9: collate wait 5.6s, fwd+bwd+step 7.3s
+19-10-26 03:43:42:   epoch 18 batch 10: collate wait 3.3s, fwd+bwd+step 9.1s
+19-10-26 03:43:53:   epoch 18 batch 11: collate wait 3.5s, fwd+bwd+step 7.0s
+19-10-26 03:44:04:   epoch 18 batch 12: collate wait 3.3s, fwd+bwd+step 8.1s
+19-10-26 03:44:13:   epoch 18 batch 13: collate wait 2.8s, fwd+bwd+step 6.2s
+19-10-26 03:44:24:   epoch 18 batch 14: collate wait 3.0s, fwd+bwd+step 8.0s
+19-10-26 03:44:34:   epoch 18 batch 15: collate wait 3.3s, fwd+bwd+step 6.4s
+19-10-26 03:44:34: Trn - Source+Target 18, cls loss: 0.0600, seg loss: 1.2886, defrec loss (src+trgt): 2.1560, kendall s_cls: -0.2801, s_seg: 0.2183, s_defrec: 0.1655
+19-10-26 03:44:59: Val - Source 18, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0327, seg loss: 1.2466, defrec loss: 2.0542, total loss: 1.9677
+19-10-26 03:44:59: Val - Source 18, Tomato seg: loss=1.3028, mIoU=0.2401, acc=0.4967
+19-10-26 03:44:59: Val - Source 18, Maize seg: loss=1.2261, mIoU=0.3205, acc=0.7136
+19-10-26 03:45:07: Eval(no-train) - Target 18, acc: 0.5873, avg acc: 0.6750, cls loss: 0.7183  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:45:21:   epoch 19 batch 0: collate wait 5.7s, fwd+bwd+step 7.5s
+19-10-26 03:45:35:   epoch 19 batch 1: collate wait 5.6s, fwd+bwd+step 8.8s
+19-10-26 03:45:47:   epoch 19 batch 2: collate wait 4.4s, fwd+bwd+step 7.7s
+19-10-26 03:46:00:   epoch 19 batch 3: collate wait 5.5s, fwd+bwd+step 7.1s
+19-10-26 03:46:11:   epoch 19 batch 4: collate wait 4.8s, fwd+bwd+step 6.6s
+19-10-26 03:46:25:   epoch 19 batch 5: collate wait 6.1s, fwd+bwd+step 7.6s
+19-10-26 03:46:40:   epoch 19 batch 6: collate wait 5.8s, fwd+bwd+step 9.4s
+19-10-26 03:46:52:   epoch 19 batch 7: collate wait 5.3s, fwd+bwd+step 6.3s
+19-10-26 03:47:02:   epoch 19 batch 8: collate wait 4.7s, fwd+bwd+step 5.8s
+19-10-26 03:47:16:   epoch 19 batch 9: collate wait 5.9s, fwd+bwd+step 8.2s
+19-10-26 03:47:27:   epoch 19 batch 10: collate wait 3.2s, fwd+bwd+step 7.1s
+19-10-26 03:47:36:   epoch 19 batch 11: collate wait 2.6s, fwd+bwd+step 7.1s
+19-10-26 03:47:46:   epoch 19 batch 12: collate wait 3.2s, fwd+bwd+step 6.3s
+19-10-26 03:47:58:   epoch 19 batch 13: collate wait 2.9s, fwd+bwd+step 8.8s
+19-10-26 03:48:07:   epoch 19 batch 14: collate wait 3.2s, fwd+bwd+step 6.5s
+19-10-26 03:48:18:   epoch 19 batch 15: collate wait 3.0s, fwd+bwd+step 7.7s
+19-10-26 03:48:18: Trn - Source+Target 19, cls loss: 0.0419, seg loss: 1.2859, defrec loss (src+trgt): 2.1423, kendall s_cls: -0.2948, s_seg: 0.2267, s_defrec: 0.1695
+19-10-26 03:48:44: Val - Source 19, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0489, seg loss: 1.1298, defrec loss: 2.3082, total loss: 1.9911
+19-10-26 03:48:44: Val - Source 19, Tomato seg: loss=1.2986, mIoU=0.2580, acc=0.5282
+19-10-26 03:48:44: Val - Source 19, Maize seg: loss=1.0684, mIoU=0.3333, acc=0.7250
+19-10-26 03:48:52: Eval(no-train) - Target 19, acc: 0.9206, avg acc: 0.9005, cls loss: 0.2247  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:49:08:   epoch 20 batch 0: collate wait 6.5s, fwd+bwd+step 9.2s
+19-10-26 03:49:24:   epoch 20 batch 1: collate wait 6.1s, fwd+bwd+step 9.9s
+19-10-26 03:49:35:   epoch 20 batch 2: collate wait 5.2s, fwd+bwd+step 5.9s
+19-10-26 03:49:48:   epoch 20 batch 3: collate wait 5.6s, fwd+bwd+step 7.2s
+19-10-26 03:50:00:   epoch 20 batch 4: collate wait 5.6s, fwd+bwd+step 6.6s
+19-10-26 03:50:11:   epoch 20 batch 5: collate wait 4.8s, fwd+bwd+step 5.9s
+19-10-26 03:50:24:   epoch 20 batch 6: collate wait 5.7s, fwd+bwd+step 7.3s
+19-10-26 03:50:37:   epoch 20 batch 7: collate wait 5.4s, fwd+bwd+step 7.7s
+19-10-26 03:50:50:   epoch 20 batch 8: collate wait 5.2s, fwd+bwd+step 7.5s
+19-10-26 03:51:04:   epoch 20 batch 9: collate wait 5.8s, fwd+bwd+step 8.9s
+19-10-26 03:51:13:   epoch 20 batch 10: collate wait 2.5s, fwd+bwd+step 6.5s
+19-10-26 03:51:24:   epoch 20 batch 11: collate wait 3.1s, fwd+bwd+step 7.9s
+19-10-26 03:51:34:   epoch 20 batch 12: collate wait 3.0s, fwd+bwd+step 6.5s
+19-10-26 03:51:45:   epoch 20 batch 13: collate wait 3.2s, fwd+bwd+step 8.2s
+19-10-26 03:51:55:   epoch 20 batch 14: collate wait 2.7s, fwd+bwd+step 7.1s
+19-10-26 03:52:04:   epoch 20 batch 15: collate wait 2.5s, fwd+bwd+step 6.2s
+19-10-26 03:52:04: Trn - Source+Target 20, cls loss: 0.0399, seg loss: 1.2608, defrec loss (src+trgt): 2.6635, kendall s_cls: -0.3094, s_seg: 0.2351, s_defrec: 0.1753
+19-10-26 03:52:28: Val - Source 20, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0104, seg loss: 1.1887, defrec loss: 2.3240, total loss: 1.9794
+19-10-26 03:52:28: Val - Source 20, Tomato seg: loss=1.3930, mIoU=0.2345, acc=0.4884
+19-10-26 03:52:28: Val - Source 20, Maize seg: loss=1.1144, mIoU=0.3428, acc=0.7449
+19-10-26 03:52:37: Eval(no-train) - Target 20, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1661  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:52:50:   epoch 21 batch 0: collate wait 5.4s, fwd+bwd+step 7.5s
+19-10-26 03:53:02:   epoch 21 batch 1: collate wait 5.1s, fwd+bwd+step 7.1s
+19-10-26 03:53:14:   epoch 21 batch 2: collate wait 5.2s, fwd+bwd+step 6.4s
+19-10-26 03:53:27:   epoch 21 batch 3: collate wait 5.3s, fwd+bwd+step 7.4s
+19-10-26 03:53:38:   epoch 21 batch 4: collate wait 5.1s, fwd+bwd+step 6.3s
+19-10-26 03:53:49:   epoch 21 batch 5: collate wait 5.2s, fwd+bwd+step 6.1s
+19-10-26 03:54:03:   epoch 21 batch 6: collate wait 5.9s, fwd+bwd+step 7.9s
+19-10-26 03:54:17:   epoch 21 batch 7: collate wait 5.6s, fwd+bwd+step 7.9s
+19-10-26 03:54:29:   epoch 21 batch 8: collate wait 5.2s, fwd+bwd+step 7.2s
+19-10-26 03:54:43:   epoch 21 batch 9: collate wait 5.6s, fwd+bwd+step 8.4s
+19-10-26 03:54:53:   epoch 21 batch 10: collate wait 3.2s, fwd+bwd+step 7.0s
+19-10-26 03:55:03:   epoch 21 batch 11: collate wait 3.3s, fwd+bwd+step 7.0s
+19-10-26 03:55:15:   epoch 21 batch 12: collate wait 3.5s, fwd+bwd+step 7.8s
+19-10-26 03:55:23:   epoch 21 batch 13: collate wait 2.4s, fwd+bwd+step 6.4s
+19-10-26 03:55:34:   epoch 21 batch 14: collate wait 3.8s, fwd+bwd+step 6.2s
+19-10-26 03:55:46:   epoch 21 batch 15: collate wait 3.5s, fwd+bwd+step 9.4s
+19-10-26 03:55:46: Trn - Source+Target 21, cls loss: 0.0382, seg loss: 1.2923, defrec loss (src+trgt): 2.3572, kendall s_cls: -0.3241, s_seg: 0.2433, s_defrec: 0.1814
+19-10-26 03:56:12: Val - Source 21, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0114, seg loss: 1.2345, defrec loss: 2.9036, total loss: 2.2449
+19-10-26 03:56:12: Val - Source 21, Tomato seg: loss=1.4178, mIoU=0.2562, acc=0.5304
+19-10-26 03:56:12: Val - Source 21, Maize seg: loss=1.1679, mIoU=0.3098, acc=0.6766
+19-10-26 03:56:21: Eval(no-train) - Target 21, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1938  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 03:56:34:   epoch 22 batch 0: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 03:56:47:   epoch 22 batch 1: collate wait 6.1s, fwd+bwd+step 7.0s
+19-10-26 03:56:59:   epoch 22 batch 2: collate wait 5.2s, fwd+bwd+step 6.8s
+19-10-26 03:57:10:   epoch 22 batch 3: collate wait 4.9s, fwd+bwd+step 5.6s
+19-10-26 03:57:24:   epoch 22 batch 4: collate wait 6.0s, fwd+bwd+step 8.3s
+19-10-26 03:57:38:   epoch 22 batch 5: collate wait 5.7s, fwd+bwd+step 8.3s
+19-10-26 03:57:52:   epoch 22 batch 6: collate wait 5.9s, fwd+bwd+step 8.2s
+19-10-26 03:58:06:   epoch 22 batch 7: collate wait 6.2s, fwd+bwd+step 7.4s
+19-10-26 03:58:17:   epoch 22 batch 8: collate wait 4.5s, fwd+bwd+step 7.0s
+19-10-26 03:58:29:   epoch 22 batch 9: collate wait 5.1s, fwd+bwd+step 6.8s
+19-10-26 03:58:41:   epoch 22 batch 10: collate wait 3.1s, fwd+bwd+step 8.2s
+19-10-26 03:58:50:   epoch 22 batch 11: collate wait 2.5s, fwd+bwd+step 6.9s
+19-10-26 03:58:59:   epoch 22 batch 12: collate wait 3.0s, fwd+bwd+step 6.0s
+19-10-26 03:59:08:   epoch 22 batch 13: collate wait 3.0s, fwd+bwd+step 6.5s
+19-10-26 03:59:18:   epoch 22 batch 14: collate wait 2.8s, fwd+bwd+step 7.0s
+19-10-26 03:59:29:   epoch 22 batch 15: collate wait 2.7s, fwd+bwd+step 7.7s
+19-10-26 03:59:29: Trn - Source+Target 22, cls loss: 0.0856, seg loss: 1.2504, defrec loss (src+trgt): 2.2848, kendall s_cls: -0.3371, s_seg: 0.2515, s_defrec: 0.1865
+19-10-26 03:59:54: Val - Source 22, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0069, seg loss: 1.2115, defrec loss: 3.3923, total loss: 2.4098
+19-10-26 03:59:54: Val - Source 22, Tomato seg: loss=1.5849, mIoU=0.2685, acc=0.5540
+19-10-26 03:59:54: Val - Source 22, Maize seg: loss=1.0757, mIoU=0.3226, acc=0.6967
+19-10-26 04:00:03: Eval(no-train) - Target 22, acc: 0.9048, avg acc: 0.8696, cls loss: 0.5141  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:00:15:   epoch 23 batch 0: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 04:00:28:   epoch 23 batch 1: collate wait 5.6s, fwd+bwd+step 6.9s
+19-10-26 04:00:40:   epoch 23 batch 2: collate wait 5.8s, fwd+bwd+step 6.6s
+19-10-26 04:00:52:   epoch 23 batch 3: collate wait 5.3s, fwd+bwd+step 6.6s
+19-10-26 04:01:03:   epoch 23 batch 4: collate wait 4.7s, fwd+bwd+step 6.2s
+19-10-26 04:01:17:   epoch 23 batch 5: collate wait 6.1s, fwd+bwd+step 7.9s
+19-10-26 04:01:29:   epoch 23 batch 6: collate wait 5.4s, fwd+bwd+step 6.9s
+19-10-26 04:01:40:   epoch 23 batch 7: collate wait 4.7s, fwd+bwd+step 6.3s
+19-10-26 04:01:51:   epoch 23 batch 8: collate wait 5.3s, fwd+bwd+step 6.1s
+19-10-26 04:02:09:   epoch 23 batch 9: collate wait 5.5s, fwd+bwd+step 12.4s
+19-10-26 04:02:26:   epoch 23 batch 10: collate wait 3.6s, fwd+bwd+step 12.7s
+19-10-26 04:02:37:   epoch 23 batch 11: collate wait 3.1s, fwd+bwd+step 8.3s
+19-10-26 04:02:49:   epoch 23 batch 12: collate wait 3.7s, fwd+bwd+step 8.8s
+19-10-26 04:03:00:   epoch 23 batch 13: collate wait 2.7s, fwd+bwd+step 8.0s
+19-10-26 04:03:12:   epoch 23 batch 14: collate wait 3.6s, fwd+bwd+step 8.7s
+19-10-26 04:03:23:   epoch 23 batch 15: collate wait 3.0s, fwd+bwd+step 7.2s
+19-10-26 04:03:23: Trn - Source+Target 23, cls loss: 0.0643, seg loss: 1.2264, defrec loss (src+trgt): 2.8207, kendall s_cls: -0.3499, s_seg: 0.2588, s_defrec: 0.1931
+19-10-26 04:03:48: Val - Source 23, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0346, seg loss: 1.1717, defrec loss: 2.6920, total loss: 2.1143
+19-10-26 04:03:48: Val - Source 23, Tomato seg: loss=1.2482, mIoU=0.2739, acc=0.5753
+19-10-26 04:03:48: Val - Source 23, Maize seg: loss=1.1439, mIoU=0.3428, acc=0.7537
+19-10-26 04:03:57: Eval(no-train) - Target 23, acc: 0.9206, avg acc: 0.9005, cls loss: 0.3499  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:04:09:   epoch 24 batch 0: collate wait 4.9s, fwd+bwd+step 6.6s
+19-10-26 04:04:22:   epoch 24 batch 1: collate wait 5.9s, fwd+bwd+step 7.7s
+19-10-26 04:04:35:   epoch 24 batch 2: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 04:04:45:   epoch 24 batch 3: collate wait 5.0s, fwd+bwd+step 5.8s
+19-10-26 04:04:57:   epoch 24 batch 4: collate wait 4.8s, fwd+bwd+step 7.3s
+19-10-26 04:05:11:   epoch 24 batch 5: collate wait 6.2s, fwd+bwd+step 7.6s
+19-10-26 04:05:26:   epoch 24 batch 6: collate wait 5.8s, fwd+bwd+step 8.5s
+19-10-26 04:05:36:   epoch 24 batch 7: collate wait 4.8s, fwd+bwd+step 5.6s
+19-10-26 04:05:50:   epoch 24 batch 8: collate wait 5.7s, fwd+bwd+step 8.1s
+19-10-26 04:06:02:   epoch 24 batch 9: collate wait 5.1s, fwd+bwd+step 7.3s
+19-10-26 04:06:11:   epoch 24 batch 10: collate wait 2.6s, fwd+bwd+step 6.0s
+19-10-26 04:06:21:   epoch 24 batch 11: collate wait 3.1s, fwd+bwd+step 6.9s
+19-10-26 04:06:31:   epoch 24 batch 12: collate wait 3.1s, fwd+bwd+step 7.3s
+19-10-26 04:06:40:   epoch 24 batch 13: collate wait 2.5s, fwd+bwd+step 6.2s
+19-10-26 04:06:52:   epoch 24 batch 14: collate wait 3.7s, fwd+bwd+step 7.9s
+19-10-26 04:07:01:   epoch 24 batch 15: collate wait 2.7s, fwd+bwd+step 7.1s
+19-10-26 04:07:01: Trn - Source+Target 24, cls loss: 0.0359, seg loss: 1.2329, defrec loss (src+trgt): 2.2153, kendall s_cls: -0.3634, s_seg: 0.2666, s_defrec: 0.1982
+19-10-26 04:07:26: Val - Source 24, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0044, seg loss: 1.1577, defrec loss: 2.8977, total loss: 2.1321
+19-10-26 04:07:26: Val - Source 24, Tomato seg: loss=1.2412, mIoU=0.2516, acc=0.5284
+19-10-26 04:07:26: Val - Source 24, Maize seg: loss=1.1273, mIoU=0.3495, acc=0.7671
+19-10-26 04:07:35: Eval(no-train) - Target 24, acc: 0.9206, avg acc: 0.9005, cls loss: 0.2675  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:07:45:   epoch 25 batch 0: collate wait 4.7s, fwd+bwd+step 5.7s
+19-10-26 04:07:58:   epoch 25 batch 1: collate wait 5.7s, fwd+bwd+step 7.2s
+19-10-26 04:08:11:   epoch 25 batch 2: collate wait 5.6s, fwd+bwd+step 7.1s
+19-10-26 04:08:24:   epoch 25 batch 3: collate wait 5.7s, fwd+bwd+step 7.5s
+19-10-26 04:08:37:   epoch 25 batch 4: collate wait 5.7s, fwd+bwd+step 7.0s
+19-10-26 04:08:50:   epoch 25 batch 5: collate wait 5.7s, fwd+bwd+step 8.1s
+19-10-26 04:09:05:   epoch 25 batch 6: collate wait 6.1s, fwd+bwd+step 8.1s
+19-10-26 04:09:21:   epoch 25 batch 7: collate wait 6.0s, fwd+bwd+step 11.0s
+19-10-26 04:09:35:   epoch 25 batch 8: collate wait 5.4s, fwd+bwd+step 8.5s
+19-10-26 04:09:48:   epoch 25 batch 9: collate wait 5.2s, fwd+bwd+step 7.0s
+19-10-26 04:09:57:   epoch 25 batch 10: collate wait 3.2s, fwd+bwd+step 6.6s
+19-10-26 04:10:07:   epoch 25 batch 11: collate wait 2.8s, fwd+bwd+step 7.1s
+19-10-26 04:10:18:   epoch 25 batch 12: collate wait 3.1s, fwd+bwd+step 8.0s
+19-10-26 04:10:29:   epoch 25 batch 13: collate wait 2.7s, fwd+bwd+step 8.0s
+19-10-26 04:10:41:   epoch 25 batch 14: collate wait 2.6s, fwd+bwd+step 8.7s
+19-10-26 04:10:51:   epoch 25 batch 15: collate wait 2.9s, fwd+bwd+step 8.0s
+19-10-26 04:10:51: Trn - Source+Target 25, cls loss: 0.0129, seg loss: 1.1776, defrec loss (src+trgt): 2.0887, kendall s_cls: -0.3777, s_seg: 0.2736, s_defrec: 0.2034
+19-10-26 04:11:16: Val - Source 25, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0013, seg loss: 1.1709, defrec loss: 1.8697, total loss: 1.7049
+19-10-26 04:11:16: Val - Source 25, Tomato seg: loss=1.3868, mIoU=0.2848, acc=0.5936
+19-10-26 04:11:16: Val - Source 25, Maize seg: loss=1.0923, mIoU=0.3378, acc=0.7117
+19-10-26 04:11:25: Eval(no-train) - Target 25, acc: 0.5556, avg acc: 0.6500, cls loss: 0.6684  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:11:37:   epoch 26 batch 0: collate wait 5.2s, fwd+bwd+step 7.0s
+19-10-26 04:11:51:   epoch 26 batch 1: collate wait 6.6s, fwd+bwd+step 7.7s
+19-10-26 04:12:04:   epoch 26 batch 2: collate wait 5.3s, fwd+bwd+step 7.5s
+19-10-26 04:12:17:   epoch 26 batch 3: collate wait 5.6s, fwd+bwd+step 7.8s
+19-10-26 04:12:28:   epoch 26 batch 4: collate wait 4.6s, fwd+bwd+step 5.8s
+19-10-26 04:12:44:   epoch 26 batch 5: collate wait 6.3s, fwd+bwd+step 9.9s
+19-10-26 04:12:54:   epoch 26 batch 6: collate wait 4.4s, fwd+bwd+step 5.8s
+19-10-26 04:13:08:   epoch 26 batch 7: collate wait 5.3s, fwd+bwd+step 8.4s
+19-10-26 04:13:20:   epoch 26 batch 8: collate wait 5.4s, fwd+bwd+step 7.1s
+19-10-26 04:13:34:   epoch 26 batch 9: collate wait 5.3s, fwd+bwd+step 8.2s
+19-10-26 04:13:44:   epoch 26 batch 10: collate wait 3.3s, fwd+bwd+step 6.8s
+19-10-26 04:13:54:   epoch 26 batch 11: collate wait 2.6s, fwd+bwd+step 7.3s
+19-10-26 04:14:03:   epoch 26 batch 12: collate wait 2.9s, fwd+bwd+step 6.1s
+19-10-26 04:14:14:   epoch 26 batch 13: collate wait 3.1s, fwd+bwd+step 7.8s
+19-10-26 04:14:23:   epoch 26 batch 14: collate wait 3.0s, fwd+bwd+step 6.3s
+19-10-26 04:14:35:   epoch 26 batch 15: collate wait 3.2s, fwd+bwd+step 8.7s
+19-10-26 04:14:35: Trn - Source+Target 26, cls loss: 0.0113, seg loss: 1.1908, defrec loss (src+trgt): 2.4847, kendall s_cls: -0.3922, s_seg: 0.2802, s_defrec: 0.2081
+19-10-26 04:15:00: Val - Source 26, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.1486, defrec loss: 3.2210, total loss: 2.2251
+19-10-26 04:15:00: Val - Source 26, Tomato seg: loss=1.2615, mIoU=0.2708, acc=0.5572
+19-10-26 04:15:00: Val - Source 26, Maize seg: loss=1.1075, mIoU=0.3555, acc=0.7811
+19-10-26 04:15:08: Eval(no-train) - Target 26, acc: 0.4286, avg acc: 0.5500, cls loss: 1.4180  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:15:22:   epoch 27 batch 0: collate wait 6.1s, fwd+bwd+step 7.8s
+19-10-26 04:15:34:   epoch 27 batch 1: collate wait 5.4s, fwd+bwd+step 6.3s
+19-10-26 04:15:45:   epoch 27 batch 2: collate wait 5.1s, fwd+bwd+step 6.4s
+19-10-26 04:15:57:   epoch 27 batch 3: collate wait 4.8s, fwd+bwd+step 6.8s
+19-10-26 04:16:08:   epoch 27 batch 4: collate wait 5.2s, fwd+bwd+step 6.2s
+19-10-26 04:16:22:   epoch 27 batch 5: collate wait 5.4s, fwd+bwd+step 8.4s
+19-10-26 04:16:35:   epoch 27 batch 6: collate wait 5.6s, fwd+bwd+step 7.1s
+19-10-26 04:16:47:   epoch 27 batch 7: collate wait 5.4s, fwd+bwd+step 6.5s
+19-10-26 04:17:01:   epoch 27 batch 8: collate wait 5.7s, fwd+bwd+step 8.3s
+19-10-26 04:17:14:   epoch 27 batch 9: collate wait 5.5s, fwd+bwd+step 7.7s
+19-10-26 04:17:24:   epoch 27 batch 10: collate wait 2.9s, fwd+bwd+step 6.9s
+19-10-26 04:17:35:   epoch 27 batch 11: collate wait 3.3s, fwd+bwd+step 7.4s
+19-10-26 04:17:44:   epoch 27 batch 12: collate wait 3.1s, fwd+bwd+step 6.3s
+19-10-26 04:17:56:   epoch 27 batch 13: collate wait 3.5s, fwd+bwd+step 7.8s
+19-10-26 04:18:05:   epoch 27 batch 14: collate wait 2.7s, fwd+bwd+step 6.6s
+19-10-26 04:18:14:   epoch 27 batch 15: collate wait 2.9s, fwd+bwd+step 6.8s
+19-10-26 04:18:14: Trn - Source+Target 27, cls loss: 0.0088, seg loss: 1.1777, defrec loss (src+trgt): 2.0947, kendall s_cls: -0.4068, s_seg: 0.2868, s_defrec: 0.2126
+19-10-26 04:18:39: Val - Source 27, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.2865, defrec loss: 2.5116, total loss: 2.0288
+19-10-26 04:18:39: Val - Source 27, Tomato seg: loss=1.5380, mIoU=0.2498, acc=0.5190
+19-10-26 04:18:39: Val - Source 27, Maize seg: loss=1.1950, mIoU=0.3430, acc=0.7730
+19-10-26 04:18:48: Eval(no-train) - Target 27, acc: 0.7778, avg acc: 0.8158, cls loss: 0.4084  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:18:59:   epoch 28 batch 0: collate wait 4.9s, fwd+bwd+step 6.1s
+19-10-26 04:19:12:   epoch 28 batch 1: collate wait 5.4s, fwd+bwd+step 7.5s
+19-10-26 04:19:24:   epoch 28 batch 2: collate wait 5.1s, fwd+bwd+step 7.1s
+19-10-26 04:19:36:   epoch 28 batch 3: collate wait 5.1s, fwd+bwd+step 7.1s
+19-10-26 04:19:50:   epoch 28 batch 4: collate wait 5.8s, fwd+bwd+step 8.0s
+19-10-26 04:20:03:   epoch 28 batch 5: collate wait 5.6s, fwd+bwd+step 7.5s
+19-10-26 04:20:16:   epoch 28 batch 6: collate wait 4.7s, fwd+bwd+step 7.7s
+19-10-26 04:20:27:   epoch 28 batch 7: collate wait 5.5s, fwd+bwd+step 6.2s
+19-10-26 04:20:40:   epoch 28 batch 8: collate wait 5.6s, fwd+bwd+step 7.2s
+19-10-26 04:20:53:   epoch 28 batch 9: collate wait 5.2s, fwd+bwd+step 7.3s
+19-10-26 04:21:05:   epoch 28 batch 10: collate wait 3.9s, fwd+bwd+step 8.0s
+19-10-26 04:21:15:   epoch 28 batch 11: collate wait 2.6s, fwd+bwd+step 8.0s
+19-10-26 04:21:27:   epoch 28 batch 12: collate wait 3.2s, fwd+bwd+step 9.1s
+19-10-26 04:21:36:   epoch 28 batch 13: collate wait 2.5s, fwd+bwd+step 6.4s
+19-10-26 04:21:47:   epoch 28 batch 14: collate wait 3.1s, fwd+bwd+step 7.1s
+19-10-26 04:21:57:   epoch 28 batch 15: collate wait 3.2s, fwd+bwd+step 7.4s
+19-10-26 04:21:57: Trn - Source+Target 28, cls loss: 0.0306, seg loss: 1.2097, defrec loss (src+trgt): 1.9102, kendall s_cls: -0.4205, s_seg: 0.2933, s_defrec: 0.2161
+19-10-26 04:22:23: Val - Source 28, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.2593, defrec loss: 2.6055, total loss: 2.0350
+19-10-26 04:22:23: Val - Source 28, Tomato seg: loss=1.5465, mIoU=0.2880, acc=0.5997
+19-10-26 04:22:23: Val - Source 28, Maize seg: loss=1.1549, mIoU=0.3260, acc=0.7142
+19-10-26 04:22:32: Eval(no-train) - Target 28, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1975  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:22:43:   epoch 29 batch 0: collate wait 4.8s, fwd+bwd+step 6.1s
+19-10-26 04:22:58:   epoch 29 batch 1: collate wait 6.0s, fwd+bwd+step 9.3s
+19-10-26 04:23:09:   epoch 29 batch 2: collate wait 4.6s, fwd+bwd+step 6.2s
+19-10-26 04:23:19:   epoch 29 batch 3: collate wait 4.6s, fwd+bwd+step 6.0s
+19-10-26 04:23:32:   epoch 29 batch 4: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 04:23:43:   epoch 29 batch 5: collate wait 5.2s, fwd+bwd+step 6.1s
+19-10-26 04:23:58:   epoch 29 batch 6: collate wait 5.3s, fwd+bwd+step 9.3s
+19-10-26 04:24:10:   epoch 29 batch 7: collate wait 5.3s, fwd+bwd+step 6.9s
+19-10-26 04:24:25:   epoch 29 batch 8: collate wait 6.2s, fwd+bwd+step 8.5s
+19-10-26 04:24:37:   epoch 29 batch 9: collate wait 4.6s, fwd+bwd+step 7.3s
+19-10-26 04:24:47:   epoch 29 batch 10: collate wait 2.8s, fwd+bwd+step 7.4s
+19-10-26 04:24:59:   epoch 29 batch 11: collate wait 3.3s, fwd+bwd+step 8.5s
+19-10-26 04:25:08:   epoch 29 batch 12: collate wait 3.0s, fwd+bwd+step 6.0s
+19-10-26 04:25:21:   epoch 29 batch 13: collate wait 3.5s, fwd+bwd+step 9.3s
+19-10-26 04:25:31:   epoch 29 batch 14: collate wait 2.9s, fwd+bwd+step 7.6s
+19-10-26 04:25:42:   epoch 29 batch 15: collate wait 3.0s, fwd+bwd+step 7.8s
+19-10-26 04:25:42: Trn - Source+Target 29, cls loss: 0.0225, seg loss: 1.1391, defrec loss (src+trgt): 1.9132, kendall s_cls: -0.4337, s_seg: 0.2996, s_defrec: 0.2195
+19-10-26 04:26:10: Val - Source 29, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.3241, defrec loss: 1.7780, total loss: 1.7384
+19-10-26 04:26:10: Val - Source 29, Tomato seg: loss=1.7413, mIoU=0.2715, acc=0.5659
+19-10-26 04:26:10: Val - Source 29, Maize seg: loss=1.1724, mIoU=0.3652, acc=0.8059
+19-10-26 04:26:19: Eval(no-train) - Target 29, acc: 0.7460, avg acc: 0.7908, cls loss: 0.4611  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:26:34:   epoch 30 batch 0: collate wait 5.6s, fwd+bwd+step 9.5s
+19-10-26 04:26:49:   epoch 30 batch 1: collate wait 5.6s, fwd+bwd+step 9.1s
+19-10-26 04:27:02:   epoch 30 batch 2: collate wait 5.3s, fwd+bwd+step 8.7s
+19-10-26 04:27:15:   epoch 30 batch 3: collate wait 5.3s, fwd+bwd+step 7.5s
+19-10-26 04:27:27:   epoch 30 batch 4: collate wait 5.0s, fwd+bwd+step 6.6s
+19-10-26 04:27:37:   epoch 30 batch 5: collate wait 4.6s, fwd+bwd+step 5.8s
+19-10-26 04:27:50:   epoch 30 batch 6: collate wait 5.3s, fwd+bwd+step 7.3s
+19-10-26 04:28:04:   epoch 30 batch 7: collate wait 6.2s, fwd+bwd+step 8.1s
+19-10-26 04:28:17:   epoch 30 batch 8: collate wait 5.3s, fwd+bwd+step 7.3s
+19-10-26 04:28:36:   epoch 30 batch 9: collate wait 6.5s, fwd+bwd+step 12.8s
+19-10-26 04:28:51:   epoch 30 batch 10: collate wait 5.5s, fwd+bwd+step 9.6s
+19-10-26 04:29:00:   epoch 30 batch 11: collate wait 2.7s, fwd+bwd+step 6.0s
+19-10-26 04:29:09:   epoch 30 batch 12: collate wait 3.0s, fwd+bwd+step 6.1s
+19-10-26 04:29:20:   epoch 30 batch 13: collate wait 3.2s, fwd+bwd+step 8.1s
+19-10-26 04:29:32:   epoch 30 batch 14: collate wait 3.8s, fwd+bwd+step 7.6s
+19-10-26 04:29:43:   epoch 30 batch 15: collate wait 3.7s, fwd+bwd+step 7.5s
+19-10-26 04:29:43: Trn - Source+Target 30, cls loss: 0.0104, seg loss: 1.1378, defrec loss (src+trgt): 1.8552, kendall s_cls: -0.4473, s_seg: 0.3054, s_defrec: 0.2223
+19-10-26 04:30:08: Val - Source 30, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.1113, defrec loss: 2.2384, total loss: 1.7569
+19-10-26 04:30:08: Val - Source 30, Tomato seg: loss=1.4043, mIoU=0.2597, acc=0.5420
+19-10-26 04:30:08: Val - Source 30, Maize seg: loss=1.0047, mIoU=0.3575, acc=0.7853
+19-10-26 04:30:17: Eval(no-train) - Target 30, acc: 0.7937, avg acc: 0.8283, cls loss: 0.3945  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:30:30:   epoch 31 batch 0: collate wait 6.0s, fwd+bwd+step 7.5s
+19-10-26 04:30:42:   epoch 31 batch 1: collate wait 4.9s, fwd+bwd+step 6.5s
+19-10-26 04:30:55:   epoch 31 batch 2: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 04:31:08:   epoch 31 batch 3: collate wait 5.4s, fwd+bwd+step 7.2s
+19-10-26 04:31:18:   epoch 31 batch 4: collate wait 4.6s, fwd+bwd+step 6.0s
+19-10-26 04:31:31:   epoch 31 batch 5: collate wait 5.2s, fwd+bwd+step 7.4s
+19-10-26 04:31:44:   epoch 31 batch 6: collate wait 5.7s, fwd+bwd+step 7.0s
+19-10-26 04:31:57:   epoch 31 batch 7: collate wait 5.9s, fwd+bwd+step 7.9s
+19-10-26 04:32:11:   epoch 31 batch 8: collate wait 5.5s, fwd+bwd+step 8.6s
+19-10-26 04:32:23:   epoch 31 batch 9: collate wait 5.3s, fwd+bwd+step 6.5s
+19-10-26 04:32:33:   epoch 31 batch 10: collate wait 3.0s, fwd+bwd+step 6.8s
+19-10-26 04:32:46:   epoch 31 batch 11: collate wait 3.5s, fwd+bwd+step 9.0s
+19-10-26 04:32:55:   epoch 31 batch 12: collate wait 2.9s, fwd+bwd+step 7.0s
+19-10-26 04:33:05:   epoch 31 batch 13: collate wait 2.9s, fwd+bwd+step 6.4s
+19-10-26 04:33:14:   epoch 31 batch 14: collate wait 3.0s, fwd+bwd+step 6.7s
+19-10-26 04:33:26:   epoch 31 batch 15: collate wait 3.5s, fwd+bwd+step 7.8s
+19-10-26 04:33:26: Trn - Source+Target 31, cls loss: 0.0337, seg loss: 1.1531, defrec loss (src+trgt): 1.5202, kendall s_cls: -0.4603, s_seg: 0.3110, s_defrec: 0.2245
+19-10-26 04:33:51: Val - Source 31, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0022, seg loss: 1.2425, defrec loss: 1.6306, total loss: 1.6029
+19-10-26 04:33:51: Val - Source 31, Tomato seg: loss=1.4356, mIoU=0.2901, acc=0.6027
+19-10-26 04:33:51: Val - Source 31, Maize seg: loss=1.1723, mIoU=0.3732, acc=0.8135
+19-10-26 04:34:00: Eval(no-train) - Target 31, acc: 0.5873, avg acc: 0.6750, cls loss: 0.8429  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:34:12:   epoch 32 batch 0: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 04:34:26:   epoch 32 batch 1: collate wait 6.0s, fwd+bwd+step 7.4s
+19-10-26 04:34:39:   epoch 32 batch 2: collate wait 5.2s, fwd+bwd+step 7.9s
+19-10-26 04:34:50:   epoch 32 batch 3: collate wait 4.9s, fwd+bwd+step 6.6s
+19-10-26 04:35:04:   epoch 32 batch 4: collate wait 4.9s, fwd+bwd+step 9.0s
+19-10-26 04:35:16:   epoch 32 batch 5: collate wait 5.1s, fwd+bwd+step 6.7s
+19-10-26 04:35:28:   epoch 32 batch 6: collate wait 5.0s, fwd+bwd+step 6.7s
+19-10-26 04:35:41:   epoch 32 batch 7: collate wait 5.9s, fwd+bwd+step 7.5s
+19-10-26 04:35:55:   epoch 32 batch 8: collate wait 5.4s, fwd+bwd+step 8.0s
+19-10-26 04:36:07:   epoch 32 batch 9: collate wait 5.0s, fwd+bwd+step 6.8s
+19-10-26 04:36:19:   epoch 32 batch 10: collate wait 3.0s, fwd+bwd+step 9.6s
+19-10-26 04:36:32:   epoch 32 batch 11: collate wait 3.6s, fwd+bwd+step 9.2s
+19-10-26 04:36:43:   epoch 32 batch 12: collate wait 2.9s, fwd+bwd+step 7.7s
+19-10-26 04:36:52:   epoch 32 batch 13: collate wait 2.8s, fwd+bwd+step 6.6s
+19-10-26 04:37:03:   epoch 32 batch 14: collate wait 3.0s, fwd+bwd+step 7.7s
+19-10-26 04:37:11:   epoch 32 batch 15: collate wait 2.7s, fwd+bwd+step 6.1s
+19-10-26 04:37:11: Trn - Source+Target 32, cls loss: 0.1748, seg loss: 1.1262, defrec loss (src+trgt): 1.9392, kendall s_cls: -0.4700, s_seg: 0.3168, s_defrec: 0.2267
+19-10-26 04:37:36: Val - Source 32, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0022, seg loss: 1.3119, defrec loss: 1.3044, total loss: 1.5159
+19-10-26 04:37:36: Val - Source 32, Tomato seg: loss=1.5369, mIoU=0.2964, acc=0.6276
+19-10-26 04:37:36: Val - Source 32, Maize seg: loss=1.2301, mIoU=0.3565, acc=0.7777
+19-10-26 04:37:44: Eval(no-train) - Target 32, acc: 0.7778, avg acc: 0.8158, cls loss: 0.4312  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:37:57:   epoch 33 batch 0: collate wait 5.8s, fwd+bwd+step 6.9s
+19-10-26 04:38:10:   epoch 33 batch 1: collate wait 5.6s, fwd+bwd+step 7.1s
+19-10-26 04:38:23:   epoch 33 batch 2: collate wait 5.3s, fwd+bwd+step 7.7s
+19-10-26 04:38:37:   epoch 33 batch 3: collate wait 5.5s, fwd+bwd+step 8.3s
+19-10-26 04:38:49:   epoch 33 batch 4: collate wait 5.4s, fwd+bwd+step 6.9s
+19-10-26 04:39:03:   epoch 33 batch 5: collate wait 5.8s, fwd+bwd+step 7.7s
+19-10-26 04:39:14:   epoch 33 batch 6: collate wait 4.7s, fwd+bwd+step 7.2s
+19-10-26 04:39:25:   epoch 33 batch 7: collate wait 4.5s, fwd+bwd+step 5.6s
+19-10-26 04:39:36:   epoch 33 batch 8: collate wait 5.2s, fwd+bwd+step 6.0s
+19-10-26 04:39:50:   epoch 33 batch 9: collate wait 5.2s, fwd+bwd+step 9.1s
+19-10-26 04:40:00:   epoch 33 batch 10: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 04:40:10:   epoch 33 batch 11: collate wait 3.0s, fwd+bwd+step 7.1s
+19-10-26 04:40:22:   epoch 33 batch 12: collate wait 3.2s, fwd+bwd+step 8.3s
+19-10-26 04:40:34:   epoch 33 batch 13: collate wait 3.1s, fwd+bwd+step 8.9s
+19-10-26 04:40:44:   epoch 33 batch 14: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 04:40:56:   epoch 33 batch 15: collate wait 3.5s, fwd+bwd+step 7.8s
+19-10-26 04:40:56: Trn - Source+Target 33, cls loss: 0.0293, seg loss: 1.1295, defrec loss (src+trgt): 1.3542, kendall s_cls: -0.4785, s_seg: 0.3222, s_defrec: 0.2284
+19-10-26 04:41:21: Val - Source 33, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0047, seg loss: 1.2185, defrec loss: 2.8731, total loss: 2.0698
+19-10-26 04:41:21: Val - Source 33, Tomato seg: loss=1.5049, mIoU=0.2757, acc=0.5763
+19-10-26 04:41:21: Val - Source 33, Maize seg: loss=1.1144, mIoU=0.3825, acc=0.8292
+19-10-26 04:41:30: Eval(no-train) - Target 33, acc: 0.9048, avg acc: 0.8696, cls loss: 0.2158  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:41:43:   epoch 34 batch 0: collate wait 6.0s, fwd+bwd+step 7.5s
+19-10-26 04:41:57:   epoch 34 batch 1: collate wait 5.8s, fwd+bwd+step 7.9s
+19-10-26 04:42:08:   epoch 34 batch 2: collate wait 5.2s, fwd+bwd+step 6.1s
+19-10-26 04:42:24:   epoch 34 batch 3: collate wait 5.7s, fwd+bwd+step 10.2s
+19-10-26 04:42:35:   epoch 34 batch 4: collate wait 5.0s, fwd+bwd+step 6.3s
+19-10-26 04:42:46:   epoch 34 batch 5: collate wait 4.8s, fwd+bwd+step 6.0s
+19-10-26 04:43:00:   epoch 34 batch 6: collate wait 5.7s, fwd+bwd+step 8.1s
+19-10-26 04:43:11:   epoch 34 batch 7: collate wait 5.0s, fwd+bwd+step 5.7s
+19-10-26 04:43:25:   epoch 34 batch 8: collate wait 5.6s, fwd+bwd+step 8.6s
+19-10-26 04:43:36:   epoch 34 batch 9: collate wait 5.1s, fwd+bwd+step 5.7s
+19-10-26 04:43:49:   epoch 34 batch 10: collate wait 3.6s, fwd+bwd+step 9.4s
+19-10-26 04:43:57:   epoch 34 batch 11: collate wait 2.7s, fwd+bwd+step 5.9s
+19-10-26 04:44:07:   epoch 34 batch 12: collate wait 3.1s, fwd+bwd+step 6.1s
+19-10-26 04:44:16:   epoch 34 batch 13: collate wait 2.7s, fwd+bwd+step 6.4s
+19-10-26 04:44:25:   epoch 34 batch 14: collate wait 2.7s, fwd+bwd+step 7.1s
+19-10-26 04:44:36:   epoch 34 batch 15: collate wait 3.5s, fwd+bwd+step 7.3s
+19-10-26 04:44:36: Trn - Source+Target 34, cls loss: 0.0394, seg loss: 1.0981, defrec loss (src+trgt): 1.6492, kendall s_cls: -0.4892, s_seg: 0.3273, s_defrec: 0.2297
+19-10-26 04:45:01: Val - Source 34, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0016, seg loss: 1.2653, defrec loss: 1.3754, total loss: 1.4951
+19-10-26 04:45:01: Val - Source 34, Tomato seg: loss=1.4258, mIoU=0.2916, acc=0.6094
+19-10-26 04:45:01: Val - Source 34, Maize seg: loss=1.2069, mIoU=0.3755, acc=0.8244
+19-10-26 04:45:10: Eval(no-train) - Target 34, acc: 0.4762, avg acc: 0.5875, cls loss: 1.1982  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:45:22:   epoch 35 batch 0: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 04:45:36:   epoch 35 batch 1: collate wait 5.7s, fwd+bwd+step 8.8s
+19-10-26 04:45:50:   epoch 35 batch 2: collate wait 5.4s, fwd+bwd+step 8.4s
+19-10-26 04:46:03:   epoch 35 batch 3: collate wait 5.3s, fwd+bwd+step 7.7s
+19-10-26 04:46:15:   epoch 35 batch 4: collate wait 5.3s, fwd+bwd+step 6.9s
+19-10-26 04:46:27:   epoch 35 batch 5: collate wait 4.8s, fwd+bwd+step 7.0s
+19-10-26 04:46:40:   epoch 35 batch 6: collate wait 5.8s, fwd+bwd+step 6.8s
+19-10-26 04:46:51:   epoch 35 batch 7: collate wait 4.9s, fwd+bwd+step 5.9s
+19-10-26 04:47:04:   epoch 35 batch 8: collate wait 5.6s, fwd+bwd+step 7.4s
+19-10-26 04:47:16:   epoch 35 batch 9: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 04:47:27:   epoch 35 batch 10: collate wait 3.4s, fwd+bwd+step 7.7s
+19-10-26 04:47:40:   epoch 35 batch 11: collate wait 3.3s, fwd+bwd+step 10.0s
+19-10-26 04:47:52:   epoch 35 batch 12: collate wait 3.1s, fwd+bwd+step 8.1s
+19-10-26 04:48:01:   epoch 35 batch 13: collate wait 2.6s, fwd+bwd+step 6.6s
+19-10-26 04:48:11:   epoch 35 batch 14: collate wait 3.4s, fwd+bwd+step 6.7s
+19-10-26 04:48:19:   epoch 35 batch 15: collate wait 2.4s, fwd+bwd+step 5.5s
+19-10-26 04:48:19: Trn - Source+Target 35, cls loss: 0.0773, seg loss: 1.1262, defrec loss (src+trgt): 1.6879, kendall s_cls: -0.4989, s_seg: 0.3323, s_defrec: 0.2314
+19-10-26 04:48:45: Val - Source 35, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.1317, defrec loss: 1.5595, total loss: 1.4645
+19-10-26 04:48:45: Val - Source 35, Tomato seg: loss=1.4123, mIoU=0.2740, acc=0.5755
+19-10-26 04:48:45: Val - Source 35, Maize seg: loss=1.0297, mIoU=0.3518, acc=0.7624
+19-10-26 04:48:53: Eval(no-train) - Target 35, acc: 0.9206, avg acc: 0.9283, cls loss: 0.2423  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:49:07:   epoch 36 batch 0: collate wait 6.1s, fwd+bwd+step 7.6s
+19-10-26 04:49:24:   epoch 36 batch 1: collate wait 6.7s, fwd+bwd+step 10.1s
+19-10-26 04:49:37:   epoch 36 batch 2: collate wait 5.1s, fwd+bwd+step 7.9s
+19-10-26 04:49:49:   epoch 36 batch 3: collate wait 5.6s, fwd+bwd+step 6.5s
+19-10-26 04:50:05:   epoch 36 batch 4: collate wait 6.3s, fwd+bwd+step 9.5s
+19-10-26 04:50:16:   epoch 36 batch 5: collate wait 5.4s, fwd+bwd+step 6.2s
+19-10-26 04:50:29:   epoch 36 batch 6: collate wait 5.4s, fwd+bwd+step 7.2s
+19-10-26 04:50:42:   epoch 36 batch 7: collate wait 5.7s, fwd+bwd+step 7.7s
+19-10-26 04:50:54:   epoch 36 batch 8: collate wait 4.8s, fwd+bwd+step 7.0s
+19-10-26 04:51:07:   epoch 36 batch 9: collate wait 5.4s, fwd+bwd+step 7.1s
+19-10-26 04:51:16:   epoch 36 batch 10: collate wait 3.0s, fwd+bwd+step 6.2s
+19-10-26 04:51:29:   epoch 36 batch 11: collate wait 3.5s, fwd+bwd+step 9.9s
+19-10-26 04:51:38:   epoch 36 batch 12: collate wait 2.7s, fwd+bwd+step 6.2s
+19-10-26 04:51:47:   epoch 36 batch 13: collate wait 2.2s, fwd+bwd+step 6.5s
+19-10-26 04:51:57:   epoch 36 batch 14: collate wait 2.7s, fwd+bwd+step 8.0s
+19-10-26 04:52:07:   epoch 36 batch 15: collate wait 3.1s, fwd+bwd+step 6.3s
+19-10-26 04:52:07: Trn - Source+Target 36, cls loss: 0.1122, seg loss: 1.1550, defrec loss (src+trgt): 1.8283, kendall s_cls: -0.5070, s_seg: 0.3376, s_defrec: 0.2336
+19-10-26 04:52:33: Val - Source 36, cls acc: 0.9333, cls avg acc: 0.8750, cls loss: 0.2294, seg loss: 1.0966, defrec loss: 0.9942, total loss: 1.5889
+19-10-26 04:52:33: Val - Source 36, Tomato seg: loss=1.4594, mIoU=0.2824, acc=0.5947
+19-10-26 04:52:33: Val - Source 36, Maize seg: loss=0.9646, mIoU=0.3702, acc=0.8012
+19-10-26 04:52:41: Eval(no-train) - Target 36, acc: 0.6667, avg acc: 0.7375, cls loss: 0.5716  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:52:52:   epoch 37 batch 0: collate wait 5.2s, fwd+bwd+step 6.0s
+19-10-26 04:53:05:   epoch 37 batch 1: collate wait 5.6s, fwd+bwd+step 7.4s
+19-10-26 04:53:18:   epoch 37 batch 2: collate wait 5.8s, fwd+bwd+step 7.2s
+19-10-26 04:53:30:   epoch 37 batch 3: collate wait 5.3s, fwd+bwd+step 6.3s
+19-10-26 04:53:42:   epoch 37 batch 4: collate wait 5.3s, fwd+bwd+step 6.4s
+19-10-26 04:53:58:   epoch 37 batch 5: collate wait 6.5s, fwd+bwd+step 10.5s
+19-10-26 04:54:11:   epoch 37 batch 6: collate wait 5.7s, fwd+bwd+step 6.5s
+19-10-26 04:54:22:   epoch 37 batch 7: collate wait 5.6s, fwd+bwd+step 6.1s
+19-10-26 04:54:35:   epoch 37 batch 8: collate wait 4.9s, fwd+bwd+step 7.3s
+19-10-26 04:54:47:   epoch 37 batch 9: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 04:54:56:   epoch 37 batch 10: collate wait 2.9s, fwd+bwd+step 5.8s
+19-10-26 04:55:06:   epoch 37 batch 11: collate wait 3.1s, fwd+bwd+step 7.6s
+19-10-26 04:55:19:   epoch 37 batch 12: collate wait 2.8s, fwd+bwd+step 10.4s
+19-10-26 04:55:45:   epoch 37 batch 13: collate wait 3.2s, fwd+bwd+step 22.3s
+19-10-26 04:55:55:   epoch 37 batch 14: collate wait 3.3s, fwd+bwd+step 6.5s
+19-10-26 04:56:04:   epoch 37 batch 15: collate wait 2.6s, fwd+bwd+step 6.9s
+19-10-26 04:56:04: Trn - Source+Target 37, cls loss: 0.0803, seg loss: 1.1634, defrec loss (src+trgt): 1.8064, kendall s_cls: -0.5158, s_seg: 0.3431, s_defrec: 0.2360
+19-10-26 04:56:30: Val - Source 37, cls acc: 0.9778, cls avg acc: 0.9583, cls loss: 0.0266, seg loss: 1.2083, defrec loss: 1.9239, total loss: 1.6933
+19-10-26 04:56:30: Val - Source 37, Tomato seg: loss=1.8556, mIoU=0.2896, acc=0.6179
+19-10-26 04:56:30: Val - Source 37, Maize seg: loss=0.9729, mIoU=0.3594, acc=0.7516
+19-10-26 04:56:39: Eval(no-train) - Target 37, acc: 0.8413, avg acc: 0.8750, cls loss: 0.3374  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 04:56:53:   epoch 38 batch 0: collate wait 6.1s, fwd+bwd+step 7.7s
+19-10-26 04:57:07:   epoch 38 batch 1: collate wait 6.0s, fwd+bwd+step 8.2s
+19-10-26 04:57:19:   epoch 38 batch 2: collate wait 5.4s, fwd+bwd+step 7.1s
+19-10-26 04:57:34:   epoch 38 batch 3: collate wait 6.3s, fwd+bwd+step 8.2s
+19-10-26 04:57:44:   epoch 38 batch 4: collate wait 4.9s, fwd+bwd+step 5.7s
+19-10-26 04:57:56:   epoch 38 batch 5: collate wait 4.9s, fwd+bwd+step 6.3s
+19-10-26 04:58:08:   epoch 38 batch 6: collate wait 5.5s, fwd+bwd+step 6.6s
+19-10-26 04:58:20:   epoch 38 batch 7: collate wait 5.7s, fwd+bwd+step 6.8s
+19-10-26 04:58:32:   epoch 38 batch 8: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 04:58:45:   epoch 38 batch 9: collate wait 5.7s, fwd+bwd+step 7.7s
+19-10-26 04:58:55:   epoch 38 batch 10: collate wait 2.7s, fwd+bwd+step 7.1s
+19-10-26 04:59:05:   epoch 38 batch 11: collate wait 2.8s, fwd+bwd+step 6.9s
+19-10-26 04:59:14:   epoch 38 batch 12: collate wait 2.8s, fwd+bwd+step 6.2s
+19-10-26 04:59:25:   epoch 38 batch 13: collate wait 3.2s, fwd+bwd+step 7.9s
+19-10-26 04:59:36:   epoch 38 batch 14: collate wait 3.2s, fwd+bwd+step 8.1s
+19-10-26 04:59:44:   epoch 38 batch 15: collate wait 2.1s, fwd+bwd+step 5.7s
+19-10-26 04:59:44: Trn - Source+Target 38, cls loss: 0.0597, seg loss: 1.0892, defrec loss (src+trgt): 1.8122, kendall s_cls: -0.5247, s_seg: 0.3476, s_defrec: 0.2385
+19-10-26 05:00:08: Val - Source 38, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0020, seg loss: 1.2868, defrec loss: 1.9234, total loss: 1.7007
+19-10-26 05:00:08: Val - Source 38, Tomato seg: loss=1.8809, mIoU=0.2992, acc=0.6400
+19-10-26 05:00:08: Val - Source 38, Maize seg: loss=1.0708, mIoU=0.3484, acc=0.7625
+19-10-26 05:00:17: Eval(no-train) - Target 38, acc: 0.6190, avg acc: 0.7000, cls loss: 0.7433  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:00:31:   epoch 39 batch 0: collate wait 5.8s, fwd+bwd+step 7.8s
+19-10-26 05:00:43:   epoch 39 batch 1: collate wait 5.0s, fwd+bwd+step 7.2s
+19-10-26 05:00:54:   epoch 39 batch 2: collate wait 4.9s, fwd+bwd+step 6.6s
+19-10-26 05:01:06:   epoch 39 batch 3: collate wait 5.1s, fwd+bwd+step 6.4s
+19-10-26 05:01:19:   epoch 39 batch 4: collate wait 5.4s, fwd+bwd+step 7.4s
+19-10-26 05:01:32:   epoch 39 batch 5: collate wait 5.5s, fwd+bwd+step 8.1s
+19-10-26 05:01:45:   epoch 39 batch 6: collate wait 5.5s, fwd+bwd+step 6.7s
+19-10-26 05:01:58:   epoch 39 batch 7: collate wait 5.8s, fwd+bwd+step 7.9s
+19-10-26 05:02:10:   epoch 39 batch 8: collate wait 5.2s, fwd+bwd+step 6.6s
+19-10-26 05:02:23:   epoch 39 batch 9: collate wait 4.9s, fwd+bwd+step 8.1s
+19-10-26 05:02:33:   epoch 39 batch 10: collate wait 3.4s, fwd+bwd+step 6.7s
+19-10-26 05:02:42:   epoch 39 batch 11: collate wait 2.8s, fwd+bwd+step 5.9s
+19-10-26 05:02:53:   epoch 39 batch 12: collate wait 3.2s, fwd+bwd+step 8.0s
+19-10-26 05:03:05:   epoch 39 batch 13: collate wait 3.5s, fwd+bwd+step 8.7s
+19-10-26 05:03:15:   epoch 39 batch 14: collate wait 3.0s, fwd+bwd+step 7.2s
+19-10-26 05:03:26:   epoch 39 batch 15: collate wait 3.3s, fwd+bwd+step 7.2s
+19-10-26 05:03:26: Trn - Source+Target 39, cls loss: 0.0230, seg loss: 1.0863, defrec loss (src+trgt): 1.5220, kendall s_cls: -0.5341, s_seg: 0.3521, s_defrec: 0.2403
+19-10-26 05:03:50: Val - Source 39, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0028, seg loss: 1.2965, defrec loss: 1.6450, total loss: 1.5924
+19-10-26 05:03:50: Val - Source 39, Tomato seg: loss=1.7417, mIoU=0.2875, acc=0.6154
+19-10-26 05:03:50: Val - Source 39, Maize seg: loss=1.1346, mIoU=0.3563, acc=0.7956
+19-10-26 05:03:59: Eval(no-train) - Target 39, acc: 0.9365, avg acc: 0.9408, cls loss: 0.1854  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:04:13:   epoch 40 batch 0: collate wait 6.4s, fwd+bwd+step 7.6s
+19-10-26 05:04:26:   epoch 40 batch 1: collate wait 5.6s, fwd+bwd+step 7.6s
+19-10-26 05:04:39:   epoch 40 batch 2: collate wait 5.7s, fwd+bwd+step 7.7s
+19-10-26 05:04:50:   epoch 40 batch 3: collate wait 4.8s, fwd+bwd+step 5.8s
+19-10-26 05:05:04:   epoch 40 batch 4: collate wait 5.9s, fwd+bwd+step 8.4s
+19-10-26 05:05:20:   epoch 40 batch 5: collate wait 5.8s, fwd+bwd+step 10.2s
+19-10-26 05:05:32:   epoch 40 batch 6: collate wait 4.9s, fwd+bwd+step 6.9s
+19-10-26 05:05:45:   epoch 40 batch 7: collate wait 5.8s, fwd+bwd+step 7.6s
+19-10-26 05:05:56:   epoch 40 batch 8: collate wait 4.8s, fwd+bwd+step 5.8s
+19-10-26 05:06:08:   epoch 40 batch 9: collate wait 5.2s, fwd+bwd+step 6.9s
+19-10-26 05:06:16:   epoch 40 batch 10: collate wait 2.4s, fwd+bwd+step 5.7s
+19-10-26 05:06:25:   epoch 40 batch 11: collate wait 2.8s, fwd+bwd+step 6.1s
+19-10-26 05:06:35:   epoch 40 batch 12: collate wait 2.4s, fwd+bwd+step 7.7s
+19-10-26 05:06:48:   epoch 40 batch 13: collate wait 3.3s, fwd+bwd+step 9.2s
+19-10-26 05:06:58:   epoch 40 batch 14: collate wait 2.7s, fwd+bwd+step 8.0s
+19-10-26 05:07:09:   epoch 40 batch 15: collate wait 2.6s, fwd+bwd+step 7.5s
+19-10-26 05:07:09: Trn - Source+Target 40, cls loss: 0.1296, seg loss: 1.1011, defrec loss (src+trgt): 1.3998, kendall s_cls: -0.5407, s_seg: 0.3565, s_defrec: 0.2414
+19-10-26 05:07:34: Val - Source 40, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0030, seg loss: 1.1877, defrec loss: 1.5121, total loss: 1.4591
+19-10-26 05:07:34: Val - Source 40, Tomato seg: loss=1.8332, mIoU=0.2999, acc=0.6258
+19-10-26 05:07:34: Val - Source 40, Maize seg: loss=0.9529, mIoU=0.3859, acc=0.8287
+19-10-26 05:07:43: Eval(no-train) - Target 40, acc: 0.9365, avg acc: 0.9130, cls loss: 0.1469  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:07:58:   epoch 41 batch 0: collate wait 4.6s, fwd+bwd+step 10.0s
+19-10-26 05:08:11:   epoch 41 batch 1: collate wait 5.2s, fwd+bwd+step 7.7s
+19-10-26 05:08:23:   epoch 41 batch 2: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 05:08:38:   epoch 41 batch 3: collate wait 6.0s, fwd+bwd+step 9.0s
+19-10-26 05:08:50:   epoch 41 batch 4: collate wait 5.1s, fwd+bwd+step 7.8s
+19-10-26 05:09:01:   epoch 41 batch 5: collate wait 5.0s, fwd+bwd+step 5.9s
+19-10-26 05:09:14:   epoch 41 batch 6: collate wait 5.1s, fwd+bwd+step 7.6s
+19-10-26 05:09:27:   epoch 41 batch 7: collate wait 5.6s, fwd+bwd+step 7.4s
+19-10-26 05:09:40:   epoch 41 batch 8: collate wait 5.7s, fwd+bwd+step 7.2s
+19-10-26 05:09:51:   epoch 41 batch 9: collate wait 5.0s, fwd+bwd+step 6.1s
+19-10-26 05:10:02:   epoch 41 batch 10: collate wait 3.2s, fwd+bwd+step 7.8s
+19-10-26 05:10:11:   epoch 41 batch 11: collate wait 2.8s, fwd+bwd+step 6.4s
+19-10-26 05:10:19:   epoch 41 batch 12: collate wait 2.5s, fwd+bwd+step 5.5s
+19-10-26 05:10:29:   epoch 41 batch 13: collate wait 3.1s, fwd+bwd+step 6.7s
+19-10-26 05:10:39:   epoch 41 batch 14: collate wait 2.7s, fwd+bwd+step 7.3s
+19-10-26 05:10:50:   epoch 41 batch 15: collate wait 2.9s, fwd+bwd+step 7.6s
+19-10-26 05:10:50: Trn - Source+Target 41, cls loss: 0.0171, seg loss: 1.0884, defrec loss (src+trgt): 1.2780, kendall s_cls: -0.5499, s_seg: 0.3608, s_defrec: 0.2415
+19-10-26 05:11:14: Val - Source 41, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0021, seg loss: 1.1578, defrec loss: 1.0853, total loss: 1.2632
+19-10-26 05:11:14: Val - Source 41, Tomato seg: loss=1.5786, mIoU=0.3002, acc=0.6256
+19-10-26 05:11:14: Val - Source 41, Maize seg: loss=1.0048, mIoU=0.3823, acc=0.8155
+19-10-26 05:11:23: Eval(no-train) - Target 41, acc: 0.9048, avg acc: 0.9250, cls loss: 0.2289  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:11:35:   epoch 42 batch 0: collate wait 5.3s, fwd+bwd+step 6.9s
+19-10-26 05:11:47:   epoch 42 batch 1: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 05:11:59:   epoch 42 batch 2: collate wait 4.8s, fwd+bwd+step 6.9s
+19-10-26 05:12:11:   epoch 42 batch 3: collate wait 5.2s, fwd+bwd+step 6.4s
+19-10-26 05:12:22:   epoch 42 batch 4: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 05:12:34:   epoch 42 batch 5: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 05:12:46:   epoch 42 batch 6: collate wait 4.8s, fwd+bwd+step 6.9s
+19-10-26 05:12:59:   epoch 42 batch 7: collate wait 5.4s, fwd+bwd+step 7.1s
+19-10-26 05:13:11:   epoch 42 batch 8: collate wait 5.1s, fwd+bwd+step 6.9s
+19-10-26 05:13:25:   epoch 42 batch 9: collate wait 6.0s, fwd+bwd+step 8.1s
+19-10-26 05:13:37:   epoch 42 batch 10: collate wait 3.6s, fwd+bwd+step 8.8s
+19-10-26 05:13:47:   epoch 42 batch 11: collate wait 2.9s, fwd+bwd+step 7.2s
+19-10-26 05:13:58:   epoch 42 batch 12: collate wait 3.4s, fwd+bwd+step 7.1s
+19-10-26 05:14:07:   epoch 42 batch 13: collate wait 2.8s, fwd+bwd+step 6.8s
+19-10-26 05:14:17:   epoch 42 batch 14: collate wait 2.9s, fwd+bwd+step 6.2s
+19-10-26 05:14:27:   epoch 42 batch 15: collate wait 3.3s, fwd+bwd+step 7.0s
+19-10-26 05:14:27: Trn - Source+Target 42, cls loss: 0.0147, seg loss: 1.0575, defrec loss (src+trgt): 2.0195, kendall s_cls: -0.5595, s_seg: 0.3646, s_defrec: 0.2430
+19-10-26 05:14:54: Val - Source 42, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0017, seg loss: 1.0779, defrec loss: 1.2729, total loss: 1.2748
+19-10-26 05:14:54: Val - Source 42, Tomato seg: loss=1.3692, mIoU=0.2938, acc=0.6121
+19-10-26 05:14:54: Val - Source 42, Maize seg: loss=0.9720, mIoU=0.3679, acc=0.7837
+19-10-26 05:15:03: Eval(no-train) - Target 42, acc: 0.8413, avg acc: 0.8750, cls loss: 0.3207  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:15:16:   epoch 43 batch 0: collate wait 5.5s, fwd+bwd+step 7.5s
+19-10-26 05:15:29:   epoch 43 batch 1: collate wait 5.2s, fwd+bwd+step 7.8s
+19-10-26 05:15:41:   epoch 43 batch 2: collate wait 5.5s, fwd+bwd+step 6.8s
+19-10-26 05:15:52:   epoch 43 batch 3: collate wait 5.0s, fwd+bwd+step 6.4s
+19-10-26 05:16:06:   epoch 43 batch 4: collate wait 5.5s, fwd+bwd+step 8.1s
+19-10-26 05:16:17:   epoch 43 batch 5: collate wait 5.2s, fwd+bwd+step 6.2s
+19-10-26 05:16:28:   epoch 43 batch 6: collate wait 5.0s, fwd+bwd+step 5.9s
+19-10-26 05:16:39:   epoch 43 batch 7: collate wait 4.5s, fwd+bwd+step 6.2s
+19-10-26 05:16:53:   epoch 43 batch 8: collate wait 5.3s, fwd+bwd+step 8.4s
+19-10-26 05:17:05:   epoch 43 batch 9: collate wait 5.6s, fwd+bwd+step 6.7s
+19-10-26 05:17:16:   epoch 43 batch 10: collate wait 3.2s, fwd+bwd+step 7.9s
+19-10-26 05:17:26:   epoch 43 batch 11: collate wait 3.2s, fwd+bwd+step 6.8s
+19-10-26 05:17:38:   epoch 43 batch 12: collate wait 3.4s, fwd+bwd+step 8.2s
+19-10-26 05:17:48:   epoch 43 batch 13: collate wait 3.1s, fwd+bwd+step 7.2s
+19-10-26 05:18:00:   epoch 43 batch 14: collate wait 3.5s, fwd+bwd+step 8.4s
+19-10-26 05:18:11:   epoch 43 batch 15: collate wait 3.5s, fwd+bwd+step 7.4s
+19-10-26 05:18:11: Trn - Source+Target 43, cls loss: 0.0275, seg loss: 1.0919, defrec loss (src+trgt): 1.7736, kendall s_cls: -0.5687, s_seg: 0.3684, s_defrec: 0.2457
+19-10-26 05:18:36: Val - Source 43, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0025, seg loss: 1.0120, defrec loss: 2.1228, total loss: 1.5575
+19-10-26 05:18:36: Val - Source 43, Tomato seg: loss=1.3021, mIoU=0.2981, acc=0.6105
+19-10-26 05:18:36: Val - Source 43, Maize seg: loss=0.9065, mIoU=0.3955, acc=0.8394
+19-10-26 05:18:45: Eval(no-train) - Target 43, acc: 0.9206, avg acc: 0.9098, cls loss: 0.1862  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:18:59:   epoch 44 batch 0: collate wait 5.5s, fwd+bwd+step 8.4s
+19-10-26 05:19:14:   epoch 44 batch 1: collate wait 6.1s, fwd+bwd+step 9.1s
+19-10-26 05:19:25:   epoch 44 batch 2: collate wait 5.1s, fwd+bwd+step 6.1s
+19-10-26 05:19:39:   epoch 44 batch 3: collate wait 6.0s, fwd+bwd+step 7.8s
+19-10-26 05:19:53:   epoch 44 batch 4: collate wait 6.0s, fwd+bwd+step 8.3s
+19-10-26 05:20:05:   epoch 44 batch 5: collate wait 5.4s, fwd+bwd+step 6.2s
+19-10-26 05:20:17:   epoch 44 batch 6: collate wait 5.4s, fwd+bwd+step 7.0s
+19-10-26 05:20:28:   epoch 44 batch 7: collate wait 4.8s, fwd+bwd+step 6.1s
+19-10-26 05:20:40:   epoch 44 batch 8: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 05:20:52:   epoch 44 batch 9: collate wait 5.2s, fwd+bwd+step 6.6s
+19-10-26 05:21:04:   epoch 44 batch 10: collate wait 3.4s, fwd+bwd+step 8.7s
+19-10-26 05:21:13:   epoch 44 batch 11: collate wait 2.5s, fwd+bwd+step 6.6s
+19-10-26 05:21:23:   epoch 44 batch 12: collate wait 2.9s, fwd+bwd+step 6.5s
+19-10-26 05:21:37:   epoch 44 batch 13: collate wait 3.4s, fwd+bwd+step 10.8s
+19-10-26 05:21:48:   epoch 44 batch 14: collate wait 3.6s, fwd+bwd+step 7.3s
+19-10-26 05:21:59:   epoch 44 batch 15: collate wait 3.3s, fwd+bwd+step 7.7s
+19-10-26 05:21:59: Trn - Source+Target 44, cls loss: 0.0125, seg loss: 1.0715, defrec loss (src+trgt): 1.4922, kendall s_cls: -0.5780, s_seg: 0.3721, s_defrec: 0.2468
+19-10-26 05:22:31: Val - Source 44, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0024, seg loss: 1.1025, defrec loss: 1.1024, total loss: 1.2153
+19-10-26 05:22:31: Val - Source 44, Tomato seg: loss=1.6297, mIoU=0.2846, acc=0.5986
+19-10-26 05:22:31: Val - Source 44, Maize seg: loss=0.9108, mIoU=0.3825, acc=0.8196
+19-10-26 05:22:43: Eval(no-train) - Target 44, acc: 0.9206, avg acc: 0.9005, cls loss: 0.1638  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:22:56:   epoch 45 batch 0: collate wait 5.2s, fwd+bwd+step 7.5s
+19-10-26 05:23:09:   epoch 45 batch 1: collate wait 5.4s, fwd+bwd+step 8.0s
+19-10-26 05:23:23:   epoch 45 batch 2: collate wait 6.0s, fwd+bwd+step 7.5s
+19-10-26 05:23:38:   epoch 45 batch 3: collate wait 6.5s, fwd+bwd+step 8.7s
+19-10-26 05:23:51:   epoch 45 batch 4: collate wait 6.0s, fwd+bwd+step 7.3s
+19-10-26 05:24:04:   epoch 45 batch 5: collate wait 5.4s, fwd+bwd+step 7.3s
+19-10-26 05:24:17:   epoch 45 batch 6: collate wait 5.1s, fwd+bwd+step 7.7s
+19-10-26 05:24:30:   epoch 45 batch 7: collate wait 5.2s, fwd+bwd+step 7.8s
+19-10-26 05:24:44:   epoch 45 batch 8: collate wait 5.9s, fwd+bwd+step 7.9s
+19-10-26 05:24:57:   epoch 45 batch 9: collate wait 5.5s, fwd+bwd+step 7.6s
+19-10-26 05:25:06:   epoch 45 batch 10: collate wait 2.8s, fwd+bwd+step 6.9s
+19-10-26 05:25:16:   epoch 45 batch 11: collate wait 3.1s, fwd+bwd+step 6.8s
+19-10-26 05:25:28:   epoch 45 batch 12: collate wait 3.2s, fwd+bwd+step 8.1s
+19-10-26 05:25:38:   epoch 45 batch 13: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 05:25:49:   epoch 45 batch 14: collate wait 3.1s, fwd+bwd+step 7.8s
+19-10-26 05:25:58:   epoch 45 batch 15: collate wait 2.4s, fwd+bwd+step 6.8s
+19-10-26 05:25:58: Trn - Source+Target 45, cls loss: 0.0154, seg loss: 1.0676, defrec loss (src+trgt): 1.4876, kendall s_cls: -0.5872, s_seg: 0.3758, s_defrec: 0.2477
+19-10-26 05:26:26: Val - Source 45, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 0.9534, defrec loss: 1.3713, total loss: 1.2092
+19-10-26 05:26:26: Val - Source 45, Tomato seg: loss=1.1973, mIoU=0.2828, acc=0.5950
+19-10-26 05:26:26: Val - Source 45, Maize seg: loss=0.8648, mIoU=0.3928, acc=0.8330
+19-10-26 05:26:35: Eval(no-train) - Target 45, acc: 0.8889, avg acc: 0.9125, cls loss: 0.2365  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:26:47:   epoch 46 batch 0: collate wait 5.4s, fwd+bwd+step 7.2s
+19-10-26 05:26:59:   epoch 46 batch 1: collate wait 5.3s, fwd+bwd+step 6.6s
+19-10-26 05:27:12:   epoch 46 batch 2: collate wait 5.8s, fwd+bwd+step 6.8s
+19-10-26 05:27:24:   epoch 46 batch 3: collate wait 5.5s, fwd+bwd+step 7.0s
+19-10-26 05:27:36:   epoch 46 batch 4: collate wait 4.6s, fwd+bwd+step 6.7s
+19-10-26 05:27:50:   epoch 46 batch 5: collate wait 5.4s, fwd+bwd+step 8.8s
+19-10-26 05:28:03:   epoch 46 batch 6: collate wait 5.3s, fwd+bwd+step 8.0s
+19-10-26 05:28:17:   epoch 46 batch 7: collate wait 5.4s, fwd+bwd+step 8.5s
+19-10-26 05:28:29:   epoch 46 batch 8: collate wait 5.5s, fwd+bwd+step 6.6s
+19-10-26 05:28:43:   epoch 46 batch 9: collate wait 5.2s, fwd+bwd+step 8.7s
+19-10-26 05:28:54:   epoch 46 batch 10: collate wait 3.6s, fwd+bwd+step 7.7s
+19-10-26 05:29:04:   epoch 46 batch 11: collate wait 2.7s, fwd+bwd+step 6.7s
+19-10-26 05:29:14:   epoch 46 batch 12: collate wait 2.9s, fwd+bwd+step 7.6s
+19-10-26 05:29:24:   epoch 46 batch 13: collate wait 2.3s, fwd+bwd+step 7.1s
+19-10-26 05:29:33:   epoch 46 batch 14: collate wait 2.9s, fwd+bwd+step 6.6s
+19-10-26 05:29:45:   epoch 46 batch 15: collate wait 3.2s, fwd+bwd+step 8.3s
+19-10-26 05:29:45: Trn - Source+Target 46, cls loss: 0.0024, seg loss: 1.0350, defrec loss (src+trgt): 0.9524, kendall s_cls: -0.5961, s_seg: 0.3790, s_defrec: 0.2476
+19-10-26 05:30:10: Val - Source 46, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0199, defrec loss: 1.6383, total loss: 1.3538
+19-10-26 05:30:10: Val - Source 46, Tomato seg: loss=1.1985, mIoU=0.2914, acc=0.6160
+19-10-26 05:30:10: Val - Source 46, Maize seg: loss=0.9550, mIoU=0.3737, acc=0.8057
+19-10-26 05:30:18: Eval(no-train) - Target 46, acc: 0.6667, avg acc: 0.7375, cls loss: 0.9967  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:30:32:   epoch 47 batch 0: collate wait 5.0s, fwd+bwd+step 8.8s
+19-10-26 05:30:45:   epoch 47 batch 1: collate wait 5.1s, fwd+bwd+step 7.3s
+19-10-26 05:30:57:   epoch 47 batch 2: collate wait 5.6s, fwd+bwd+step 7.2s
+19-10-26 05:31:10:   epoch 47 batch 3: collate wait 5.5s, fwd+bwd+step 7.3s
+19-10-26 05:31:23:   epoch 47 batch 4: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 05:31:38:   epoch 47 batch 5: collate wait 5.9s, fwd+bwd+step 8.8s
+19-10-26 05:31:52:   epoch 47 batch 6: collate wait 6.5s, fwd+bwd+step 7.8s
+19-10-26 05:32:05:   epoch 47 batch 7: collate wait 5.5s, fwd+bwd+step 6.9s
+19-10-26 05:32:16:   epoch 47 batch 8: collate wait 5.1s, fwd+bwd+step 6.2s
+19-10-26 05:32:28:   epoch 47 batch 9: collate wait 5.7s, fwd+bwd+step 6.9s
+19-10-26 05:32:38:   epoch 47 batch 10: collate wait 3.0s, fwd+bwd+step 6.1s
+19-10-26 05:32:48:   epoch 47 batch 11: collate wait 2.7s, fwd+bwd+step 7.6s
+19-10-26 05:32:58:   epoch 47 batch 12: collate wait 2.7s, fwd+bwd+step 7.4s
+19-10-26 05:33:08:   epoch 47 batch 13: collate wait 2.6s, fwd+bwd+step 7.1s
+19-10-26 05:33:20:   epoch 47 batch 14: collate wait 2.8s, fwd+bwd+step 9.0s
+19-10-26 05:33:31:   epoch 47 batch 15: collate wait 3.5s, fwd+bwd+step 8.0s
+19-10-26 05:33:31: Trn - Source+Target 47, cls loss: 0.0061, seg loss: 1.0267, defrec loss (src+trgt): 1.4875, kendall s_cls: -0.6049, s_seg: 0.3820, s_defrec: 0.2479
+19-10-26 05:33:56: Val - Source 47, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0077, defrec loss: 1.3865, total loss: 1.2426
+19-10-26 05:33:56: Val - Source 47, Tomato seg: loss=1.2011, mIoU=0.2735, acc=0.5670
+19-10-26 05:33:56: Val - Source 47, Maize seg: loss=0.9374, mIoU=0.3844, acc=0.8184
+19-10-26 05:34:05: Eval(no-train) - Target 47, acc: 0.6667, avg acc: 0.7375, cls loss: 0.8518  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:34:18:   epoch 48 batch 0: collate wait 6.1s, fwd+bwd+step 7.4s
+19-10-26 05:34:29:   epoch 48 batch 1: collate wait 4.9s, fwd+bwd+step 6.4s
+19-10-26 05:34:43:   epoch 48 batch 2: collate wait 5.2s, fwd+bwd+step 8.3s
+19-10-26 05:34:58:   epoch 48 batch 3: collate wait 5.3s, fwd+bwd+step 9.6s
+19-10-26 05:35:10:   epoch 48 batch 4: collate wait 5.2s, fwd+bwd+step 6.8s
+19-10-26 05:35:25:   epoch 48 batch 5: collate wait 6.4s, fwd+bwd+step 9.1s
+19-10-26 05:35:38:   epoch 48 batch 6: collate wait 5.1s, fwd+bwd+step 7.3s
+19-10-26 05:35:49:   epoch 48 batch 7: collate wait 4.7s, fwd+bwd+step 7.1s
+19-10-26 05:36:03:   epoch 48 batch 8: collate wait 6.1s, fwd+bwd+step 7.8s
+19-10-26 05:36:15:   epoch 48 batch 9: collate wait 5.2s, fwd+bwd+step 6.8s
+19-10-26 05:36:26:   epoch 48 batch 10: collate wait 2.9s, fwd+bwd+step 7.5s
+19-10-26 05:36:35:   epoch 48 batch 11: collate wait 3.4s, fwd+bwd+step 6.4s
+19-10-26 05:36:47:   epoch 48 batch 12: collate wait 3.9s, fwd+bwd+step 7.2s
+19-10-26 05:36:56:   epoch 48 batch 13: collate wait 3.1s, fwd+bwd+step 6.8s
+19-10-26 05:37:06:   epoch 48 batch 14: collate wait 2.9s, fwd+bwd+step 6.9s
+19-10-26 05:37:16:   epoch 48 batch 15: collate wait 2.9s, fwd+bwd+step 6.7s
+19-10-26 05:37:16: Trn - Source+Target 48, cls loss: 0.0069, seg loss: 1.0236, defrec loss (src+trgt): 1.5006, kendall s_cls: -0.6135, s_seg: 0.3849, s_defrec: 0.2482
+19-10-26 05:37:42: Val - Source 48, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0173, defrec loss: 1.3485, total loss: 1.2288
+19-10-26 05:37:42: Val - Source 48, Tomato seg: loss=1.3281, mIoU=0.2906, acc=0.6054
+19-10-26 05:37:42: Val - Source 48, Maize seg: loss=0.9043, mIoU=0.3842, acc=0.8083
+19-10-26 05:37:51: Eval(no-train) - Target 48, acc: 0.7143, avg acc: 0.7750, cls loss: 0.5447  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:38:04:   epoch 49 batch 0: collate wait 5.2s, fwd+bwd+step 7.7s
+19-10-26 05:38:17:   epoch 49 batch 1: collate wait 5.2s, fwd+bwd+step 7.8s
+19-10-26 05:38:29:   epoch 49 batch 2: collate wait 5.6s, fwd+bwd+step 7.3s
+19-10-26 05:38:46:   epoch 49 batch 3: collate wait 6.2s, fwd+bwd+step 10.0s
+19-10-26 05:38:59:   epoch 49 batch 4: collate wait 5.7s, fwd+bwd+step 7.2s
+19-10-26 05:39:13:   epoch 49 batch 5: collate wait 5.6s, fwd+bwd+step 8.4s
+19-10-26 05:39:25:   epoch 49 batch 6: collate wait 5.4s, fwd+bwd+step 7.4s
+19-10-26 05:39:37:   epoch 49 batch 7: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 05:39:50:   epoch 49 batch 8: collate wait 5.6s, fwd+bwd+step 6.9s
+19-10-26 05:40:02:   epoch 49 batch 9: collate wait 5.1s, fwd+bwd+step 7.0s
+19-10-26 05:40:12:   epoch 49 batch 10: collate wait 3.2s, fwd+bwd+step 6.9s
+19-10-26 05:40:22:   epoch 49 batch 11: collate wait 3.4s, fwd+bwd+step 6.7s
+19-10-26 05:40:32:   epoch 49 batch 12: collate wait 3.0s, fwd+bwd+step 6.8s
+19-10-26 05:40:42:   epoch 49 batch 13: collate wait 2.8s, fwd+bwd+step 7.0s
+19-10-26 05:40:53:   epoch 49 batch 14: collate wait 2.5s, fwd+bwd+step 8.3s
+19-10-26 05:41:02:   epoch 49 batch 15: collate wait 2.8s, fwd+bwd+step 6.2s
+19-10-26 05:41:02: Trn - Source+Target 49, cls loss: 0.0086, seg loss: 1.0313, defrec loss (src+trgt): 1.5826, kendall s_cls: -0.6218, s_seg: 0.3878, s_defrec: 0.2491
+19-10-26 05:41:27: Val - Source 49, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0080, defrec loss: 1.6963, total loss: 1.3535
+19-10-26 05:41:27: Val - Source 49, Tomato seg: loss=1.2809, mIoU=0.2916, acc=0.6105
+19-10-26 05:41:27: Val - Source 49, Maize seg: loss=0.9087, mIoU=0.3841, acc=0.8223
+19-10-26 05:41:35: Eval(no-train) - Target 49, acc: 0.6349, avg acc: 0.7125, cls loss: 0.9052  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:41:49:   epoch 50 batch 0: collate wait 5.6s, fwd+bwd+step 8.5s
+19-10-26 05:42:03:   epoch 50 batch 1: collate wait 6.1s, fwd+bwd+step 7.3s
+19-10-26 05:42:13:   epoch 50 batch 2: collate wait 4.8s, fwd+bwd+step 5.9s
+19-10-26 05:42:27:   epoch 50 batch 3: collate wait 5.8s, fwd+bwd+step 7.8s
+19-10-26 05:42:40:   epoch 50 batch 4: collate wait 5.0s, fwd+bwd+step 8.2s
+19-10-26 05:42:56:   epoch 50 batch 5: collate wait 6.1s, fwd+bwd+step 9.3s
+19-10-26 05:43:08:   epoch 50 batch 6: collate wait 5.3s, fwd+bwd+step 7.4s
+19-10-26 05:43:21:   epoch 50 batch 7: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 05:43:32:   epoch 50 batch 8: collate wait 4.8s, fwd+bwd+step 6.4s
+19-10-26 05:43:44:   epoch 50 batch 9: collate wait 5.1s, fwd+bwd+step 7.2s
+19-10-26 05:43:54:   epoch 50 batch 10: collate wait 3.1s, fwd+bwd+step 7.0s
+19-10-26 05:44:06:   epoch 50 batch 11: collate wait 3.0s, fwd+bwd+step 8.6s
+19-10-26 05:44:15:   epoch 50 batch 12: collate wait 2.9s, fwd+bwd+step 6.8s
+19-10-26 05:44:28:   epoch 50 batch 13: collate wait 3.1s, fwd+bwd+step 9.0s
+19-10-26 05:44:38:   epoch 50 batch 14: collate wait 2.8s, fwd+bwd+step 7.5s
+19-10-26 05:44:50:   epoch 50 batch 15: collate wait 3.1s, fwd+bwd+step 8.6s
+19-10-26 05:44:50: Trn - Source+Target 50, cls loss: 0.0074, seg loss: 1.0294, defrec loss (src+trgt): 1.4516, kendall s_cls: -0.6298, s_seg: 0.3906, s_defrec: 0.2500
+19-10-26 05:45:14: Val - Source 50, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.1080, defrec loss: 2.2248, total loss: 1.6227
+19-10-26 05:45:14: Val - Source 50, Tomato seg: loss=1.4851, mIoU=0.2872, acc=0.6085
+19-10-26 05:45:14: Val - Source 50, Maize seg: loss=0.9708, mIoU=0.3897, acc=0.8270
+19-10-26 05:45:22: Eval(no-train) - Target 50, acc: 0.7143, avg acc: 0.7750, cls loss: 0.5589  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:45:37:   epoch 51 batch 0: collate wait 6.1s, fwd+bwd+step 8.7s
+19-10-26 05:45:52:   epoch 51 batch 1: collate wait 6.2s, fwd+bwd+step 9.1s
+19-10-26 05:46:07:   epoch 51 batch 2: collate wait 5.6s, fwd+bwd+step 8.5s
+19-10-26 05:46:17:   epoch 51 batch 3: collate wait 4.9s, fwd+bwd+step 5.9s
+19-10-26 05:46:32:   epoch 51 batch 4: collate wait 6.5s, fwd+bwd+step 8.4s
+19-10-26 05:46:42:   epoch 51 batch 5: collate wait 4.6s, fwd+bwd+step 5.6s
+19-10-26 05:46:54:   epoch 51 batch 6: collate wait 4.8s, fwd+bwd+step 6.7s
+19-10-26 05:47:09:   epoch 51 batch 7: collate wait 6.0s, fwd+bwd+step 8.9s
+19-10-26 05:47:21:   epoch 51 batch 8: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 05:47:33:   epoch 51 batch 9: collate wait 5.4s, fwd+bwd+step 6.3s
+19-10-26 05:47:41:   epoch 51 batch 10: collate wait 2.3s, fwd+bwd+step 6.0s
+19-10-26 05:47:52:   epoch 51 batch 11: collate wait 3.1s, fwd+bwd+step 7.6s
+19-10-26 05:48:05:   epoch 51 batch 12: collate wait 3.5s, fwd+bwd+step 9.5s
+19-10-26 05:48:14:   epoch 51 batch 13: collate wait 2.8s, fwd+bwd+step 6.3s
+19-10-26 05:48:24:   epoch 51 batch 14: collate wait 2.7s, fwd+bwd+step 7.4s
+19-10-26 05:48:32:   epoch 51 batch 15: collate wait 2.9s, fwd+bwd+step 5.7s
+19-10-26 05:48:32: Trn - Source+Target 51, cls loss: 0.0064, seg loss: 1.0377, defrec loss (src+trgt): 1.2034, kendall s_cls: -0.6376, s_seg: 0.3934, s_defrec: 0.2503
+19-10-26 05:48:58: Val - Source 51, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0002, seg loss: 1.2257, defrec loss: 1.5441, total loss: 1.4317
+19-10-26 05:48:58: Val - Source 51, Tomato seg: loss=1.7871, mIoU=0.2877, acc=0.6073
+19-10-26 05:48:58: Val - Source 51, Maize seg: loss=1.0216, mIoU=0.3758, acc=0.8155
+19-10-26 05:49:07: Eval(no-train) - Target 51, acc: 0.8413, avg acc: 0.8750, cls loss: 0.2904  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:49:18:   epoch 52 batch 0: collate wait 4.8s, fwd+bwd+step 6.5s
+19-10-26 05:49:31:   epoch 52 batch 1: collate wait 5.8s, fwd+bwd+step 6.7s
+19-10-26 05:49:44:   epoch 52 batch 2: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 05:50:00:   epoch 52 batch 3: collate wait 4.4s, fwd+bwd+step 11.1s
+19-10-26 05:50:16:   epoch 52 batch 4: collate wait 5.8s, fwd+bwd+step 11.0s
+19-10-26 05:50:29:   epoch 52 batch 5: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 05:50:42:   epoch 52 batch 6: collate wait 5.9s, fwd+bwd+step 7.2s
+19-10-26 05:50:55:   epoch 52 batch 7: collate wait 5.8s, fwd+bwd+step 7.6s
+19-10-26 05:51:06:   epoch 52 batch 8: collate wait 5.0s, fwd+bwd+step 6.2s
+19-10-26 05:51:20:   epoch 52 batch 9: collate wait 5.9s, fwd+bwd+step 7.9s
+19-10-26 05:51:29:   epoch 52 batch 10: collate wait 2.8s, fwd+bwd+step 5.8s
+19-10-26 05:51:38:   epoch 52 batch 11: collate wait 3.0s, fwd+bwd+step 6.5s
+19-10-26 05:51:50:   epoch 52 batch 12: collate wait 3.4s, fwd+bwd+step 8.6s
+19-10-26 05:52:01:   epoch 52 batch 13: collate wait 3.2s, fwd+bwd+step 7.3s
+19-10-26 05:52:14:   epoch 52 batch 14: collate wait 3.3s, fwd+bwd+step 9.9s
+19-10-26 05:52:24:   epoch 52 batch 15: collate wait 3.0s, fwd+bwd+step 6.8s
+19-10-26 05:52:24: Trn - Source+Target 52, cls loss: 0.0100, seg loss: 1.0221, defrec loss (src+trgt): 1.4505, kendall s_cls: -0.6451, s_seg: 0.3958, s_defrec: 0.2505
+19-10-26 05:52:49: Val - Source 52, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 1.1483, defrec loss: 0.9965, total loss: 1.1619
+19-10-26 05:52:49: Val - Source 52, Tomato seg: loss=1.5950, mIoU=0.2771, acc=0.5847
+19-10-26 05:52:49: Val - Source 52, Maize seg: loss=0.9859, mIoU=0.3847, acc=0.8209
+19-10-26 05:52:57: Eval(no-train) - Target 52, acc: 0.5556, avg acc: 0.6500, cls loss: 1.1225  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:53:12:   epoch 53 batch 0: collate wait 6.6s, fwd+bwd+step 8.5s
+19-10-26 05:53:23:   epoch 53 batch 1: collate wait 4.9s, fwd+bwd+step 6.1s
+19-10-26 05:53:40:   epoch 53 batch 2: collate wait 6.5s, fwd+bwd+step 10.1s
+19-10-26 05:53:53:   epoch 53 batch 3: collate wait 5.3s, fwd+bwd+step 8.0s
+19-10-26 05:54:05:   epoch 53 batch 4: collate wait 5.2s, fwd+bwd+step 6.6s
+19-10-26 05:54:18:   epoch 53 batch 5: collate wait 5.8s, fwd+bwd+step 6.9s
+19-10-26 05:54:32:   epoch 53 batch 6: collate wait 5.7s, fwd+bwd+step 8.5s
+19-10-26 05:54:43:   epoch 53 batch 7: collate wait 4.8s, fwd+bwd+step 6.7s
+19-10-26 05:54:57:   epoch 53 batch 8: collate wait 5.9s, fwd+bwd+step 7.2s
+19-10-26 05:55:10:   epoch 53 batch 9: collate wait 5.6s, fwd+bwd+step 8.1s
+19-10-26 05:55:21:   epoch 53 batch 10: collate wait 3.0s, fwd+bwd+step 7.6s
+19-10-26 05:55:31:   epoch 53 batch 11: collate wait 3.1s, fwd+bwd+step 7.5s
+19-10-26 05:55:43:   epoch 53 batch 12: collate wait 2.8s, fwd+bwd+step 9.0s
+19-10-26 05:55:55:   epoch 53 batch 13: collate wait 3.2s, fwd+bwd+step 8.9s
+19-10-26 05:56:03:   epoch 53 batch 14: collate wait 2.3s, fwd+bwd+step 5.8s
+19-10-26 05:56:14:   epoch 53 batch 15: collate wait 3.2s, fwd+bwd+step 7.3s
+19-10-26 05:56:14: Trn - Source+Target 53, cls loss: 0.0042, seg loss: 0.9848, defrec loss (src+trgt): 1.2406, kendall s_cls: -0.6524, s_seg: 0.3982, s_defrec: 0.2506
+19-10-26 05:56:40: Val - Source 53, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 1.0217, defrec loss: 1.9034, total loss: 1.4273
+19-10-26 05:56:40: Val - Source 53, Tomato seg: loss=1.4939, mIoU=0.2888, acc=0.5950
+19-10-26 05:56:40: Val - Source 53, Maize seg: loss=0.8500, mIoU=0.3927, acc=0.8188
+19-10-26 05:56:49: Eval(no-train) - Target 53, acc: 0.4603, avg acc: 0.5750, cls loss: 1.5507  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 05:57:00:   epoch 54 batch 0: collate wait 4.9s, fwd+bwd+step 6.6s
+19-10-26 05:57:14:   epoch 54 batch 1: collate wait 5.5s, fwd+bwd+step 8.0s
+19-10-26 05:57:24:   epoch 54 batch 2: collate wait 4.6s, fwd+bwd+step 5.6s
+19-10-26 05:57:36:   epoch 54 batch 3: collate wait 5.4s, fwd+bwd+step 6.9s
+19-10-26 05:57:48:   epoch 54 batch 4: collate wait 5.1s, fwd+bwd+step 6.9s
+19-10-26 05:58:03:   epoch 54 batch 5: collate wait 6.1s, fwd+bwd+step 9.1s
+19-10-26 05:58:17:   epoch 54 batch 6: collate wait 5.1s, fwd+bwd+step 8.2s
+19-10-26 05:58:28:   epoch 54 batch 7: collate wait 5.4s, fwd+bwd+step 6.4s
+19-10-26 05:58:41:   epoch 54 batch 8: collate wait 5.5s, fwd+bwd+step 7.6s
+19-10-26 05:58:54:   epoch 54 batch 9: collate wait 5.5s, fwd+bwd+step 6.6s
+19-10-26 05:59:03:   epoch 54 batch 10: collate wait 2.7s, fwd+bwd+step 6.3s
+19-10-26 05:59:12:   epoch 54 batch 11: collate wait 2.7s, fwd+bwd+step 6.8s
+19-10-26 05:59:21:   epoch 54 batch 12: collate wait 3.2s, fwd+bwd+step 5.7s
+19-10-26 05:59:30:   epoch 54 batch 13: collate wait 2.6s, fwd+bwd+step 6.5s
+19-10-26 05:59:41:   epoch 54 batch 14: collate wait 2.8s, fwd+bwd+step 7.7s
+19-10-26 05:59:51:   epoch 54 batch 15: collate wait 2.8s, fwd+bwd+step 7.3s
+19-10-26 05:59:51: Trn - Source+Target 54, cls loss: 0.0129, seg loss: 0.9803, defrec loss (src+trgt): 1.4123, kendall s_cls: -0.6594, s_seg: 0.4002, s_defrec: 0.2508
+19-10-26 06:00:15: Val - Source 54, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 0.9523, defrec loss: 0.9483, total loss: 1.0038
+19-10-26 06:00:15: Val - Source 54, Tomato seg: loss=1.1733, mIoU=0.2884, acc=0.5960
+19-10-26 06:00:15: Val - Source 54, Maize seg: loss=0.8720, mIoU=0.3918, acc=0.8347
+19-10-26 06:00:24: Eval(no-train) - Target 54, acc: 0.5079, avg acc: 0.6125, cls loss: 1.4725  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:00:35:   epoch 55 batch 0: collate wait 5.0s, fwd+bwd+step 6.4s
+19-10-26 06:00:48:   epoch 55 batch 1: collate wait 5.2s, fwd+bwd+step 7.3s
+19-10-26 06:01:00:   epoch 55 batch 2: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 06:01:14:   epoch 55 batch 3: collate wait 5.9s, fwd+bwd+step 8.4s
+19-10-26 06:01:29:   epoch 55 batch 4: collate wait 6.2s, fwd+bwd+step 8.9s
+19-10-26 06:01:44:   epoch 55 batch 5: collate wait 5.8s, fwd+bwd+step 9.2s
+19-10-26 06:01:58:   epoch 55 batch 6: collate wait 5.5s, fwd+bwd+step 8.6s
+19-10-26 06:02:10:   epoch 55 batch 7: collate wait 5.0s, fwd+bwd+step 6.7s
+19-10-26 06:02:23:   epoch 55 batch 8: collate wait 5.2s, fwd+bwd+step 7.3s
+19-10-26 06:02:35:   epoch 55 batch 9: collate wait 5.6s, fwd+bwd+step 6.9s
+19-10-26 06:02:46:   epoch 55 batch 10: collate wait 2.8s, fwd+bwd+step 7.7s
+19-10-26 06:02:55:   epoch 55 batch 11: collate wait 2.5s, fwd+bwd+step 6.9s
+19-10-26 06:03:06:   epoch 55 batch 12: collate wait 3.2s, fwd+bwd+step 7.7s
+19-10-26 06:03:16:   epoch 55 batch 13: collate wait 3.0s, fwd+bwd+step 6.9s
+19-10-26 06:03:25:   epoch 55 batch 14: collate wait 2.9s, fwd+bwd+step 6.8s
+19-10-26 06:03:36:   epoch 55 batch 15: collate wait 3.2s, fwd+bwd+step 7.7s
+19-10-26 06:03:36: Trn - Source+Target 55, cls loss: 0.0312, seg loss: 1.0147, defrec loss (src+trgt): 1.7933, kendall s_cls: -0.6660, s_seg: 0.4023, s_defrec: 0.2522
+19-10-26 06:04:02: Val - Source 55, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 0.9517, defrec loss: 1.2039, total loss: 1.0990
+19-10-26 06:04:02: Val - Source 55, Tomato seg: loss=1.2311, mIoU=0.3116, acc=0.6401
+19-10-26 06:04:02: Val - Source 55, Maize seg: loss=0.8501, mIoU=0.3953, acc=0.8334
+19-10-26 06:04:10: Eval(no-train) - Target 55, acc: 0.7778, avg acc: 0.8250, cls loss: 0.4257  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:04:26:   epoch 56 batch 0: collate wait 6.2s, fwd+bwd+step 9.5s
+19-10-26 06:04:38:   epoch 56 batch 1: collate wait 5.3s, fwd+bwd+step 6.8s
+19-10-26 06:04:50:   epoch 56 batch 2: collate wait 5.2s, fwd+bwd+step 6.6s
+19-10-26 06:05:03:   epoch 56 batch 3: collate wait 5.5s, fwd+bwd+step 7.6s
+19-10-26 06:05:15:   epoch 56 batch 4: collate wait 4.8s, fwd+bwd+step 6.8s
+19-10-26 06:05:27:   epoch 56 batch 5: collate wait 5.8s, fwd+bwd+step 6.6s
+19-10-26 06:05:39:   epoch 56 batch 6: collate wait 5.0s, fwd+bwd+step 7.0s
+19-10-26 06:05:52:   epoch 56 batch 7: collate wait 4.8s, fwd+bwd+step 7.8s
+19-10-26 06:06:06:   epoch 56 batch 8: collate wait 6.0s, fwd+bwd+step 8.0s
+19-10-26 06:06:18:   epoch 56 batch 9: collate wait 5.4s, fwd+bwd+step 7.1s
+19-10-26 06:06:32:   epoch 56 batch 10: collate wait 3.1s, fwd+bwd+step 10.5s
+19-10-26 06:06:42:   epoch 56 batch 11: collate wait 3.0s, fwd+bwd+step 7.2s
+19-10-26 06:06:52:   epoch 56 batch 12: collate wait 3.0s, fwd+bwd+step 7.5s
+19-10-26 06:07:03:   epoch 56 batch 13: collate wait 2.9s, fwd+bwd+step 7.7s
+19-10-26 06:07:12:   epoch 56 batch 14: collate wait 2.6s, fwd+bwd+step 6.6s
+19-10-26 06:07:24:   epoch 56 batch 15: collate wait 3.5s, fwd+bwd+step 8.2s
+19-10-26 06:07:24: Trn - Source+Target 56, cls loss: 0.0120, seg loss: 1.0161, defrec loss (src+trgt): 1.3060, kendall s_cls: -0.6720, s_seg: 0.4046, s_defrec: 0.2529
+19-10-26 06:07:49: Val - Source 56, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0024, seg loss: 1.1186, defrec loss: 1.2242, total loss: 1.2192
+19-10-26 06:07:49: Val - Source 56, Tomato seg: loss=1.6214, mIoU=0.2816, acc=0.5872
+19-10-26 06:07:49: Val - Source 56, Maize seg: loss=0.9358, mIoU=0.3909, acc=0.8264
+19-10-26 06:07:58: Eval(no-train) - Target 56, acc: 0.9206, avg acc: 0.9005, cls loss: 0.2815  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:08:11:   epoch 57 batch 0: collate wait 5.9s, fwd+bwd+step 7.3s
+19-10-26 06:08:23:   epoch 57 batch 1: collate wait 4.9s, fwd+bwd+step 6.5s
+19-10-26 06:08:35:   epoch 57 batch 2: collate wait 5.4s, fwd+bwd+step 7.4s
+19-10-26 06:08:47:   epoch 57 batch 3: collate wait 5.5s, fwd+bwd+step 6.6s
+19-10-26 06:09:00:   epoch 57 batch 4: collate wait 5.0s, fwd+bwd+step 7.1s
+19-10-26 06:09:11:   epoch 57 batch 5: collate wait 5.0s, fwd+bwd+step 6.1s
+19-10-26 06:09:25:   epoch 57 batch 6: collate wait 5.3s, fwd+bwd+step 8.7s
+19-10-26 06:09:38:   epoch 57 batch 7: collate wait 5.9s, fwd+bwd+step 7.4s
+19-10-26 06:09:53:   epoch 57 batch 8: collate wait 6.2s, fwd+bwd+step 8.4s
+19-10-26 06:10:08:   epoch 57 batch 9: collate wait 5.7s, fwd+bwd+step 9.4s
+19-10-26 06:10:19:   epoch 57 batch 10: collate wait 3.0s, fwd+bwd+step 7.9s
+19-10-26 06:10:27:   epoch 57 batch 11: collate wait 2.2s, fwd+bwd+step 6.1s
+19-10-26 06:10:38:   epoch 57 batch 12: collate wait 3.4s, fwd+bwd+step 8.0s
+19-10-26 06:10:49:   epoch 57 batch 13: collate wait 3.7s, fwd+bwd+step 7.3s
+19-10-26 06:10:59:   epoch 57 batch 14: collate wait 3.0s, fwd+bwd+step 7.1s
+19-10-26 06:11:10:   epoch 57 batch 15: collate wait 3.1s, fwd+bwd+step 7.6s
+19-10-26 06:11:10: Trn - Source+Target 57, cls loss: 0.0280, seg loss: 1.0013, defrec loss (src+trgt): 1.4770, kendall s_cls: -0.6778, s_seg: 0.4066, s_defrec: 0.2532
+19-10-26 06:11:36: Val - Source 57, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0437, defrec loss: 1.3494, total loss: 1.2107
+19-10-26 06:11:36: Val - Source 57, Tomato seg: loss=1.4747, mIoU=0.2879, acc=0.5987
+19-10-26 06:11:36: Val - Source 57, Maize seg: loss=0.8869, mIoU=0.3880, acc=0.8306
+19-10-26 06:11:44: Eval(no-train) - Target 57, acc: 0.8730, avg acc: 0.8630, cls loss: 0.2650  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:11:58:   epoch 58 batch 0: collate wait 5.5s, fwd+bwd+step 8.0s
+19-10-26 06:12:12:   epoch 58 batch 1: collate wait 6.1s, fwd+bwd+step 8.0s
+19-10-26 06:12:25:   epoch 58 batch 2: collate wait 4.9s, fwd+bwd+step 7.9s
+19-10-26 06:12:37:   epoch 58 batch 3: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 06:12:50:   epoch 58 batch 4: collate wait 6.0s, fwd+bwd+step 7.2s
+19-10-26 06:13:04:   epoch 58 batch 5: collate wait 5.7s, fwd+bwd+step 7.9s
+19-10-26 06:13:17:   epoch 58 batch 6: collate wait 5.7s, fwd+bwd+step 7.5s
+19-10-26 06:13:30:   epoch 58 batch 7: collate wait 5.2s, fwd+bwd+step 8.0s
+19-10-26 06:13:45:   epoch 58 batch 8: collate wait 5.5s, fwd+bwd+step 9.4s
+19-10-26 06:13:58:   epoch 58 batch 9: collate wait 4.9s, fwd+bwd+step 8.0s
+19-10-26 06:14:09:   epoch 58 batch 10: collate wait 3.6s, fwd+bwd+step 7.1s
+19-10-26 06:14:22:   epoch 58 batch 11: collate wait 3.0s, fwd+bwd+step 10.5s
+19-10-26 06:14:31:   epoch 58 batch 12: collate wait 2.7s, fwd+bwd+step 6.1s
+19-10-26 06:14:42:   epoch 58 batch 13: collate wait 3.1s, fwd+bwd+step 7.6s
+19-10-26 06:14:52:   epoch 58 batch 14: collate wait 2.5s, fwd+bwd+step 7.4s
+19-10-26 06:15:05:   epoch 58 batch 15: collate wait 3.5s, fwd+bwd+step 9.6s
+19-10-26 06:15:05: Trn - Source+Target 58, cls loss: 0.0106, seg loss: 0.9756, defrec loss (src+trgt): 1.1805, kendall s_cls: -0.6837, s_seg: 0.4084, s_defrec: 0.2532
+19-10-26 06:15:30: Val - Source 58, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.0636, defrec loss: 1.7944, total loss: 1.3945
+19-10-26 06:15:30: Val - Source 58, Tomato seg: loss=1.3855, mIoU=0.2942, acc=0.6107
+19-10-26 06:15:30: Val - Source 58, Maize seg: loss=0.9466, mIoU=0.3917, acc=0.8313
+19-10-26 06:15:39: Eval(no-train) - Target 58, acc: 0.7143, avg acc: 0.7565, cls loss: 0.5356  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:15:50:   epoch 59 batch 0: collate wait 5.0s, fwd+bwd+step 6.5s
+19-10-26 06:16:02:   epoch 59 batch 1: collate wait 5.3s, fwd+bwd+step 6.3s
+19-10-26 06:16:17:   epoch 59 batch 2: collate wait 5.6s, fwd+bwd+step 9.6s
+19-10-26 06:16:28:   epoch 59 batch 3: collate wait 5.0s, fwd+bwd+step 6.3s
+19-10-26 06:16:53:   epoch 59 batch 4: collate wait 5.9s, fwd+bwd+step 18.8s
+19-10-26 06:17:18:   epoch 59 batch 5: collate wait 6.2s, fwd+bwd+step 19.2s
+19-10-26 06:17:32:   epoch 59 batch 6: collate wait 6.0s, fwd+bwd+step 7.4s
+19-10-26 06:17:46:   epoch 59 batch 7: collate wait 6.4s, fwd+bwd+step 7.6s
+19-10-26 06:17:57:   epoch 59 batch 8: collate wait 5.2s, fwd+bwd+step 6.4s
+19-10-26 06:18:11:   epoch 59 batch 9: collate wait 6.2s, fwd+bwd+step 7.8s
+19-10-26 06:18:21:   epoch 59 batch 10: collate wait 2.9s, fwd+bwd+step 6.6s
+19-10-26 06:18:33:   epoch 59 batch 11: collate wait 3.1s, fwd+bwd+step 9.0s
+19-10-26 06:18:44:   epoch 59 batch 12: collate wait 2.9s, fwd+bwd+step 7.8s
+19-10-26 06:18:53:   epoch 59 batch 13: collate wait 3.0s, fwd+bwd+step 6.5s
+19-10-26 06:19:03:   epoch 59 batch 14: collate wait 2.3s, fwd+bwd+step 7.7s
+19-10-26 06:19:14:   epoch 59 batch 15: collate wait 3.4s, fwd+bwd+step 7.5s
+19-10-26 06:19:14: Trn - Source+Target 59, cls loss: 0.0183, seg loss: 1.0339, defrec loss (src+trgt): 1.5225, kendall s_cls: -0.6893, s_seg: 0.4103, s_defrec: 0.2533
+19-10-26 06:19:39: Val - Source 59, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0044, seg loss: 1.0609, defrec loss: 2.1597, total loss: 1.5380
+19-10-26 06:19:39: Val - Source 59, Tomato seg: loss=1.5394, mIoU=0.3152, acc=0.6556
+19-10-26 06:19:39: Val - Source 59, Maize seg: loss=0.8868, mIoU=0.4007, acc=0.8490
+19-10-26 06:19:48: Eval(no-train) - Target 59, acc: 0.7778, avg acc: 0.8158, cls loss: 0.3600  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:20:02:   epoch 60 batch 0: collate wait 5.3s, fwd+bwd+step 8.6s
+19-10-26 06:20:16:   epoch 60 batch 1: collate wait 5.5s, fwd+bwd+step 8.5s
+19-10-26 06:20:32:   epoch 60 batch 2: collate wait 5.5s, fwd+bwd+step 10.2s
+19-10-26 06:20:42:   epoch 60 batch 3: collate wait 4.7s, fwd+bwd+step 6.1s
+19-10-26 06:20:54:   epoch 60 batch 4: collate wait 5.2s, fwd+bwd+step 6.5s
+19-10-26 06:21:04:   epoch 60 batch 5: collate wait 4.4s, fwd+bwd+step 5.2s
+19-10-26 06:21:16:   epoch 60 batch 6: collate wait 5.6s, fwd+bwd+step 6.8s
+19-10-26 06:21:28:   epoch 60 batch 7: collate wait 5.7s, fwd+bwd+step 6.5s
+19-10-26 06:21:39:   epoch 60 batch 8: collate wait 4.7s, fwd+bwd+step 6.3s
+19-10-26 06:21:53:   epoch 60 batch 9: collate wait 5.8s, fwd+bwd+step 7.5s
+19-10-26 06:22:04:   epoch 60 batch 10: collate wait 3.2s, fwd+bwd+step 8.0s
+19-10-26 06:22:13:   epoch 60 batch 11: collate wait 3.1s, fwd+bwd+step 6.0s
+19-10-26 06:22:23:   epoch 60 batch 12: collate wait 3.0s, fwd+bwd+step 6.6s
+19-10-26 06:22:31:   epoch 60 batch 13: collate wait 2.3s, fwd+bwd+step 6.4s
+19-10-26 06:22:41:   epoch 60 batch 14: collate wait 3.0s, fwd+bwd+step 6.4s
+19-10-26 06:22:51:   epoch 60 batch 15: collate wait 3.2s, fwd+bwd+step 6.9s
+19-10-26 06:22:51: Trn - Source+Target 60, cls loss: 0.0325, seg loss: 0.9942, defrec loss (src+trgt): 1.3287, kendall s_cls: -0.6943, s_seg: 0.4122, s_defrec: 0.2537
+19-10-26 06:23:15: Val - Source 60, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0247, defrec loss: 1.4893, total loss: 1.2430
+19-10-26 06:23:15: Val - Source 60, Tomato seg: loss=1.4520, mIoU=0.3091, acc=0.6474
+19-10-26 06:23:15: Val - Source 60, Maize seg: loss=0.8694, mIoU=0.3949, acc=0.8269
+19-10-26 06:23:24: Eval(no-train) - Target 60, acc: 0.4127, avg acc: 0.5375, cls loss: 2.2445  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:23:37:   epoch 61 batch 0: collate wait 4.9s, fwd+bwd+step 8.7s
+19-10-26 06:23:50:   epoch 61 batch 1: collate wait 4.9s, fwd+bwd+step 7.5s
+19-10-26 06:24:03:   epoch 61 batch 2: collate wait 5.7s, fwd+bwd+step 7.3s
+19-10-26 06:24:16:   epoch 61 batch 3: collate wait 5.4s, fwd+bwd+step 7.8s
+19-10-26 06:24:29:   epoch 61 batch 4: collate wait 5.5s, fwd+bwd+step 7.5s
+19-10-26 06:24:40:   epoch 61 batch 5: collate wait 5.3s, fwd+bwd+step 6.1s
+19-10-26 06:24:52:   epoch 61 batch 6: collate wait 4.9s, fwd+bwd+step 6.8s
+19-10-26 06:25:04:   epoch 61 batch 7: collate wait 5.2s, fwd+bwd+step 6.3s
+19-10-26 06:25:16:   epoch 61 batch 8: collate wait 5.2s, fwd+bwd+step 7.0s
+19-10-26 06:25:30:   epoch 61 batch 9: collate wait 5.9s, fwd+bwd+step 8.3s
+19-10-26 06:25:41:   epoch 61 batch 10: collate wait 3.5s, fwd+bwd+step 7.6s
+19-10-26 06:25:52:   epoch 61 batch 11: collate wait 3.0s, fwd+bwd+step 7.7s
+19-10-26 06:26:03:   epoch 61 batch 12: collate wait 3.0s, fwd+bwd+step 7.6s
+19-10-26 06:26:13:   epoch 61 batch 13: collate wait 2.8s, fwd+bwd+step 7.8s
+19-10-26 06:26:25:   epoch 61 batch 14: collate wait 3.0s, fwd+bwd+step 9.3s
+19-10-26 06:26:34:   epoch 61 batch 15: collate wait 2.7s, fwd+bwd+step 5.9s
+19-10-26 06:26:34: Trn - Source+Target 61, cls loss: 0.0083, seg loss: 0.9634, defrec loss (src+trgt): 1.4487, kendall s_cls: -0.6995, s_seg: 0.4137, s_defrec: 0.2541
+19-10-26 06:26:59: Val - Source 61, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0019, seg loss: 1.0880, defrec loss: 1.5710, total loss: 1.3166
+19-10-26 06:26:59: Val - Source 61, Tomato seg: loss=1.4735, mIoU=0.3190, acc=0.6633
+19-10-26 06:26:59: Val - Source 61, Maize seg: loss=0.9478, mIoU=0.3822, acc=0.8120
+19-10-26 06:27:08: Eval(no-train) - Target 61, acc: 0.3968, avg acc: 0.5250, cls loss: 2.1987  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:27:20:   epoch 62 batch 0: collate wait 5.5s, fwd+bwd+step 7.0s
+19-10-26 06:27:32:   epoch 62 batch 1: collate wait 5.4s, fwd+bwd+step 6.8s
+19-10-26 06:27:45:   epoch 62 batch 2: collate wait 6.0s, fwd+bwd+step 7.0s
+19-10-26 06:27:59:   epoch 62 batch 3: collate wait 5.3s, fwd+bwd+step 7.9s
+19-10-26 06:28:11:   epoch 62 batch 4: collate wait 5.5s, fwd+bwd+step 6.8s
+19-10-26 06:28:23:   epoch 62 batch 5: collate wait 5.2s, fwd+bwd+step 6.9s
+19-10-26 06:28:35:   epoch 62 batch 6: collate wait 5.5s, fwd+bwd+step 6.5s
+19-10-26 06:28:48:   epoch 62 batch 7: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 06:29:01:   epoch 62 batch 8: collate wait 5.6s, fwd+bwd+step 7.1s
+19-10-26 06:29:13:   epoch 62 batch 9: collate wait 5.0s, fwd+bwd+step 6.5s
+19-10-26 06:29:22:   epoch 62 batch 10: collate wait 2.7s, fwd+bwd+step 7.0s
+19-10-26 06:29:32:   epoch 62 batch 11: collate wait 2.6s, fwd+bwd+step 6.9s
+19-10-26 06:29:43:   epoch 62 batch 12: collate wait 3.1s, fwd+bwd+step 7.9s
+19-10-26 06:29:52:   epoch 62 batch 13: collate wait 2.7s, fwd+bwd+step 6.4s
+19-10-26 06:30:02:   epoch 62 batch 14: collate wait 3.3s, fwd+bwd+step 6.6s
+19-10-26 06:30:11:   epoch 62 batch 15: collate wait 2.6s, fwd+bwd+step 6.4s
+19-10-26 06:30:11: Trn - Source+Target 62, cls loss: 0.0162, seg loss: 0.9768, defrec loss (src+trgt): 1.5833, kendall s_cls: -0.7044, s_seg: 0.4151, s_defrec: 0.2548
+19-10-26 06:30:37: Val - Source 62, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0015, seg loss: 0.9542, defrec loss: 1.2086, total loss: 1.0842
+19-10-26 06:30:37: Val - Source 62, Tomato seg: loss=1.1475, mIoU=0.3020, acc=0.6271
+19-10-26 06:30:37: Val - Source 62, Maize seg: loss=0.8839, mIoU=0.4018, acc=0.8359
+19-10-26 06:30:45: Eval(no-train) - Target 62, acc: 0.6032, avg acc: 0.6875, cls loss: 0.9498  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:30:58:   epoch 63 batch 0: collate wait 5.6s, fwd+bwd+step 7.2s
+19-10-26 06:31:13:   epoch 63 batch 1: collate wait 5.9s, fwd+bwd+step 8.6s
+19-10-26 06:31:27:   epoch 63 batch 2: collate wait 5.7s, fwd+bwd+step 8.0s
+19-10-26 06:31:40:   epoch 63 batch 3: collate wait 5.3s, fwd+bwd+step 8.0s
+19-10-26 06:31:52:   epoch 63 batch 4: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 06:32:04:   epoch 63 batch 5: collate wait 5.1s, fwd+bwd+step 6.5s
+19-10-26 06:32:18:   epoch 63 batch 6: collate wait 5.9s, fwd+bwd+step 8.5s
+19-10-26 06:32:31:   epoch 63 batch 7: collate wait 5.3s, fwd+bwd+step 7.6s
+19-10-26 06:32:46:   epoch 63 batch 8: collate wait 5.9s, fwd+bwd+step 8.8s
+19-10-26 06:32:59:   epoch 63 batch 9: collate wait 5.0s, fwd+bwd+step 8.4s
+19-10-26 06:33:09:   epoch 63 batch 10: collate wait 2.9s, fwd+bwd+step 7.0s
+19-10-26 06:33:20:   epoch 63 batch 11: collate wait 2.7s, fwd+bwd+step 8.4s
+19-10-26 06:33:32:   epoch 63 batch 12: collate wait 3.2s, fwd+bwd+step 8.9s
+19-10-26 06:33:43:   epoch 63 batch 13: collate wait 3.0s, fwd+bwd+step 7.8s
+19-10-26 06:33:56:   epoch 63 batch 14: collate wait 3.3s, fwd+bwd+step 9.3s
+19-10-26 06:34:07:   epoch 63 batch 15: collate wait 3.4s, fwd+bwd+step 8.0s
+19-10-26 06:34:07: Trn - Source+Target 63, cls loss: 0.0058, seg loss: 0.9958, defrec loss (src+trgt): 0.8698, kendall s_cls: -0.7092, s_seg: 0.4166, s_defrec: 0.2545
+19-10-26 06:34:33: Val - Source 63, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 0.9324, defrec loss: 1.2999, total loss: 1.1006
+19-10-26 06:34:33: Val - Source 63, Tomato seg: loss=1.2016, mIoU=0.3022, acc=0.6314
+19-10-26 06:34:33: Val - Source 63, Maize seg: loss=0.8345, mIoU=0.4024, acc=0.8459
+19-10-26 06:34:41: Eval(no-train) - Target 63, acc: 0.8730, avg acc: 0.8723, cls loss: 0.3745  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:34:55:   epoch 64 batch 0: collate wait 5.9s, fwd+bwd+step 7.4s
+19-10-26 06:35:06:   epoch 64 batch 1: collate wait 5.1s, fwd+bwd+step 6.3s
+19-10-26 06:35:20:   epoch 64 batch 2: collate wait 6.2s, fwd+bwd+step 8.0s
+19-10-26 06:35:31:   epoch 64 batch 3: collate wait 4.7s, fwd+bwd+step 6.3s
+19-10-26 06:35:45:   epoch 64 batch 4: collate wait 6.0s, fwd+bwd+step 7.6s
+19-10-26 06:35:59:   epoch 64 batch 5: collate wait 5.6s, fwd+bwd+step 8.1s
+19-10-26 06:36:11:   epoch 64 batch 6: collate wait 5.4s, fwd+bwd+step 6.3s
+19-10-26 06:36:25:   epoch 64 batch 7: collate wait 5.3s, fwd+bwd+step 9.1s
+19-10-26 06:36:36:   epoch 64 batch 8: collate wait 5.0s, fwd+bwd+step 6.4s
+19-10-26 06:36:48:   epoch 64 batch 9: collate wait 5.0s, fwd+bwd+step 6.8s
+19-10-26 06:36:58:   epoch 64 batch 10: collate wait 2.9s, fwd+bwd+step 7.3s
+19-10-26 06:37:08:   epoch 64 batch 11: collate wait 3.1s, fwd+bwd+step 6.8s
+19-10-26 06:37:20:   epoch 64 batch 12: collate wait 2.8s, fwd+bwd+step 8.6s
+19-10-26 06:37:31:   epoch 64 batch 13: collate wait 3.7s, fwd+bwd+step 7.3s
+19-10-26 06:37:40:   epoch 64 batch 14: collate wait 3.1s, fwd+bwd+step 6.4s
+19-10-26 06:37:53:   epoch 64 batch 15: collate wait 3.1s, fwd+bwd+step 10.0s
+19-10-26 06:37:53: Trn - Source+Target 64, cls loss: 0.0121, seg loss: 0.9705, defrec loss (src+trgt): 1.1883, kendall s_cls: -0.7138, s_seg: 0.4179, s_defrec: 0.2540
+19-10-26 06:38:18: Val - Source 64, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 0.9314, defrec loss: 0.9141, total loss: 0.9477
+19-10-26 06:38:18: Val - Source 64, Tomato seg: loss=1.2513, mIoU=0.3061, acc=0.6336
+19-10-26 06:38:18: Val - Source 64, Maize seg: loss=0.8151, mIoU=0.4081, acc=0.8498
+19-10-26 06:38:27: Eval(no-train) - Target 64, acc: 0.6667, avg acc: 0.7375, cls loss: 0.7097  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:38:40:   epoch 65 batch 0: collate wait 5.5s, fwd+bwd+step 8.0s
+19-10-26 06:38:53:   epoch 65 batch 1: collate wait 5.3s, fwd+bwd+step 7.2s
+19-10-26 06:39:04:   epoch 65 batch 2: collate wait 5.0s, fwd+bwd+step 6.1s
+19-10-26 06:39:16:   epoch 65 batch 3: collate wait 5.3s, fwd+bwd+step 7.4s
+19-10-26 06:39:26:   epoch 65 batch 4: collate wait 4.3s, fwd+bwd+step 5.6s
+19-10-26 06:39:39:   epoch 65 batch 5: collate wait 5.7s, fwd+bwd+step 6.8s
+19-10-26 06:39:51:   epoch 65 batch 6: collate wait 5.0s, fwd+bwd+step 7.4s
+19-10-26 06:40:04:   epoch 65 batch 7: collate wait 4.9s, fwd+bwd+step 7.7s
+19-10-26 06:40:18:   epoch 65 batch 8: collate wait 6.3s, fwd+bwd+step 7.8s
+19-10-26 06:40:32:   epoch 65 batch 9: collate wait 6.1s, fwd+bwd+step 8.5s
+19-10-26 06:40:41:   epoch 65 batch 10: collate wait 2.8s, fwd+bwd+step 6.0s
+19-10-26 06:40:52:   epoch 65 batch 11: collate wait 2.7s, fwd+bwd+step 8.3s
+19-10-26 06:41:03:   epoch 65 batch 12: collate wait 3.5s, fwd+bwd+step 7.9s
+19-10-26 06:41:13:   epoch 65 batch 13: collate wait 3.2s, fwd+bwd+step 6.7s
+19-10-26 06:41:23:   epoch 65 batch 14: collate wait 3.0s, fwd+bwd+step 6.8s
+19-10-26 06:41:33:   epoch 65 batch 15: collate wait 3.2s, fwd+bwd+step 7.0s
+19-10-26 06:41:33: Trn - Source+Target 65, cls loss: 0.1375, seg loss: 1.0005, defrec loss (src+trgt): 1.1422, kendall s_cls: -0.7168, s_seg: 0.4194, s_defrec: 0.2537
+19-10-26 06:41:58: Val - Source 65, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 0.9776, defrec loss: 2.1634, total loss: 1.4612
+19-10-26 06:41:58: Val - Source 65, Tomato seg: loss=1.2475, mIoU=0.3137, acc=0.6513
+19-10-26 06:41:58: Val - Source 65, Maize seg: loss=0.8795, mIoU=0.3906, acc=0.8262
+19-10-26 06:42:07: Eval(no-train) - Target 65, acc: 0.5873, avg acc: 0.6750, cls loss: 0.9371  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:42:22:   epoch 66 batch 0: collate wait 6.2s, fwd+bwd+step 9.8s
+19-10-26 06:42:37:   epoch 66 batch 1: collate wait 6.1s, fwd+bwd+step 8.7s
+19-10-26 06:42:52:   epoch 66 batch 2: collate wait 6.0s, fwd+bwd+step 8.4s
+19-10-26 06:43:03:   epoch 66 batch 3: collate wait 4.8s, fwd+bwd+step 6.4s
+19-10-26 06:43:15:   epoch 66 batch 4: collate wait 5.1s, fwd+bwd+step 7.1s
+19-10-26 06:43:28:   epoch 66 batch 5: collate wait 5.5s, fwd+bwd+step 7.6s
+19-10-26 06:43:41:   epoch 66 batch 6: collate wait 5.4s, fwd+bwd+step 7.0s
+19-10-26 06:44:03:   epoch 66 batch 7: collate wait 5.4s, fwd+bwd+step 17.0s
+19-10-26 06:44:18:   epoch 66 batch 8: collate wait 6.3s, fwd+bwd+step 8.6s
+19-10-26 06:44:30:   epoch 66 batch 9: collate wait 5.4s, fwd+bwd+step 7.2s
+19-10-26 06:44:41:   epoch 66 batch 10: collate wait 3.2s, fwd+bwd+step 7.5s
+19-10-26 06:44:54:   epoch 66 batch 11: collate wait 3.4s, fwd+bwd+step 8.9s
+19-10-26 06:45:06:   epoch 66 batch 12: collate wait 3.4s, fwd+bwd+step 9.5s
+19-10-26 06:45:15:   epoch 66 batch 13: collate wait 2.6s, fwd+bwd+step 5.6s
+19-10-26 06:45:27:   epoch 66 batch 14: collate wait 3.1s, fwd+bwd+step 9.6s
+19-10-26 06:45:36:   epoch 66 batch 15: collate wait 2.5s, fwd+bwd+step 6.1s
+19-10-26 06:45:36: Trn - Source+Target 66, cls loss: 0.0128, seg loss: 0.9988, defrec loss (src+trgt): 1.4943, kendall s_cls: -0.7199, s_seg: 0.4208, s_defrec: 0.2538
+19-10-26 06:46:03: Val - Source 66, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0176, defrec loss: 0.9293, total loss: 1.0069
+19-10-26 06:46:03: Val - Source 66, Tomato seg: loss=1.3927, mIoU=0.3094, acc=0.6430
+19-10-26 06:46:03: Val - Source 66, Maize seg: loss=0.8812, mIoU=0.3992, acc=0.8413
+19-10-26 06:46:11: Eval(no-train) - Target 66, acc: 0.4444, avg acc: 0.5625, cls loss: 1.5397  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:46:24:   epoch 67 batch 0: collate wait 5.6s, fwd+bwd+step 7.1s
+19-10-26 06:46:37:   epoch 67 batch 1: collate wait 5.4s, fwd+bwd+step 7.2s
+19-10-26 06:46:52:   epoch 67 batch 2: collate wait 6.1s, fwd+bwd+step 9.4s
+19-10-26 06:47:03:   epoch 67 batch 3: collate wait 4.7s, fwd+bwd+step 6.1s
+19-10-26 06:47:15:   epoch 67 batch 4: collate wait 5.4s, fwd+bwd+step 6.4s
+19-10-26 06:47:28:   epoch 67 batch 5: collate wait 5.6s, fwd+bwd+step 7.9s
+19-10-26 06:47:40:   epoch 67 batch 6: collate wait 5.1s, fwd+bwd+step 6.2s
+19-10-26 06:47:50:   epoch 67 batch 7: collate wait 4.8s, fwd+bwd+step 5.9s
+19-10-26 06:48:03:   epoch 67 batch 8: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 06:48:15:   epoch 67 batch 9: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 06:48:25:   epoch 67 batch 10: collate wait 2.8s, fwd+bwd+step 7.1s
+19-10-26 06:48:35:   epoch 67 batch 11: collate wait 2.8s, fwd+bwd+step 7.6s
+19-10-26 06:48:46:   epoch 67 batch 12: collate wait 2.6s, fwd+bwd+step 7.9s
+19-10-26 06:48:55:   epoch 67 batch 13: collate wait 2.7s, fwd+bwd+step 6.9s
+19-10-26 06:49:04:   epoch 67 batch 14: collate wait 2.7s, fwd+bwd+step 6.6s
+19-10-26 06:49:15:   epoch 67 batch 15: collate wait 3.0s, fwd+bwd+step 8.1s
+19-10-26 06:49:15: Trn - Source+Target 67, cls loss: 0.0136, seg loss: 0.9657, defrec loss (src+trgt): 1.1559, kendall s_cls: -0.7235, s_seg: 0.4219, s_defrec: 0.2537
+19-10-26 06:49:40: Val - Source 67, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 0.9967, defrec loss: 0.7274, total loss: 0.9137
+19-10-26 06:49:40: Val - Source 67, Tomato seg: loss=1.3058, mIoU=0.3048, acc=0.6400
+19-10-26 06:49:40: Val - Source 67, Maize seg: loss=0.8844, mIoU=0.3995, acc=0.8460
+19-10-26 06:49:48: Eval(no-train) - Target 67, acc: 0.4444, avg acc: 0.5625, cls loss: 1.9188  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:50:00:   epoch 68 batch 0: collate wait 4.8s, fwd+bwd+step 6.6s
+19-10-26 06:50:15:   epoch 68 batch 1: collate wait 6.1s, fwd+bwd+step 8.6s
+19-10-26 06:50:26:   epoch 68 batch 2: collate wait 4.9s, fwd+bwd+step 6.9s
+19-10-26 06:50:37:   epoch 68 batch 3: collate wait 4.8s, fwd+bwd+step 6.0s
+19-10-26 06:50:49:   epoch 68 batch 4: collate wait 5.0s, fwd+bwd+step 6.6s
+19-10-26 06:51:03:   epoch 68 batch 5: collate wait 5.9s, fwd+bwd+step 8.0s
+19-10-26 06:51:15:   epoch 68 batch 6: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 06:51:27:   epoch 68 batch 7: collate wait 4.6s, fwd+bwd+step 7.4s
+19-10-26 06:51:39:   epoch 68 batch 8: collate wait 5.2s, fwd+bwd+step 7.1s
+19-10-26 06:51:53:   epoch 68 batch 9: collate wait 5.8s, fwd+bwd+step 7.6s
+19-10-26 06:52:04:   epoch 68 batch 10: collate wait 3.2s, fwd+bwd+step 8.7s
+19-10-26 06:52:16:   epoch 68 batch 11: collate wait 3.2s, fwd+bwd+step 7.9s
+19-10-26 06:52:28:   epoch 68 batch 12: collate wait 3.2s, fwd+bwd+step 8.9s
+19-10-26 06:52:36:   epoch 68 batch 13: collate wait 2.9s, fwd+bwd+step 5.5s
+19-10-26 06:52:46:   epoch 68 batch 14: collate wait 3.1s, fwd+bwd+step 6.5s
+19-10-26 06:52:57:   epoch 68 batch 15: collate wait 3.6s, fwd+bwd+step 8.1s
+19-10-26 06:52:57: Trn - Source+Target 68, cls loss: 0.1253, seg loss: 1.0066, defrec loss (src+trgt): 1.3030, kendall s_cls: -0.7269, s_seg: 0.4231, s_defrec: 0.2536
+19-10-26 06:53:22: Val - Source 68, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 0.9765, defrec loss: 1.7561, total loss: 1.2968
+19-10-26 06:53:22: Val - Source 68, Tomato seg: loss=1.2959, mIoU=0.3015, acc=0.6285
+19-10-26 06:53:22: Val - Source 68, Maize seg: loss=0.8603, mIoU=0.3991, acc=0.8396
+19-10-26 06:53:30: Eval(no-train) - Target 68, acc: 0.6349, avg acc: 0.7125, cls loss: 0.9494  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:53:42:   epoch 69 batch 0: collate wait 5.3s, fwd+bwd+step 6.5s
+19-10-26 06:53:57:   epoch 69 batch 1: collate wait 5.8s, fwd+bwd+step 8.6s
+19-10-26 06:54:09:   epoch 69 batch 2: collate wait 5.8s, fwd+bwd+step 7.1s
+19-10-26 06:54:21:   epoch 69 batch 3: collate wait 5.1s, fwd+bwd+step 5.9s
+19-10-26 06:54:32:   epoch 69 batch 4: collate wait 4.5s, fwd+bwd+step 7.2s
+19-10-26 06:54:44:   epoch 69 batch 5: collate wait 5.3s, fwd+bwd+step 6.8s
+19-10-26 06:54:56:   epoch 69 batch 6: collate wait 4.9s, fwd+bwd+step 6.5s
+19-10-26 06:55:08:   epoch 69 batch 7: collate wait 5.7s, fwd+bwd+step 6.6s
+19-10-26 06:55:21:   epoch 69 batch 8: collate wait 5.5s, fwd+bwd+step 7.6s
+19-10-26 06:55:35:   epoch 69 batch 9: collate wait 5.2s, fwd+bwd+step 8.4s
+19-10-26 06:55:43:   epoch 69 batch 10: collate wait 2.5s, fwd+bwd+step 6.0s
+19-10-26 06:55:53:   epoch 69 batch 11: collate wait 2.9s, fwd+bwd+step 6.8s
+19-10-26 06:56:05:   epoch 69 batch 12: collate wait 3.1s, fwd+bwd+step 8.6s
+19-10-26 06:56:14:   epoch 69 batch 13: collate wait 3.0s, fwd+bwd+step 6.3s
+19-10-26 06:56:25:   epoch 69 batch 14: collate wait 3.3s, fwd+bwd+step 8.3s
+19-10-26 06:56:38:   epoch 69 batch 15: collate wait 3.3s, fwd+bwd+step 9.0s
+19-10-26 06:56:38: Trn - Source+Target 69, cls loss: 0.0072, seg loss: 0.9405, defrec loss (src+trgt): 1.3664, kendall s_cls: -0.7289, s_seg: 0.4241, s_defrec: 0.2538
+19-10-26 06:57:03: Val - Source 69, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0102, defrec loss: 1.3651, total loss: 1.1663
+19-10-26 06:57:03: Val - Source 69, Tomato seg: loss=1.4877, mIoU=0.3001, acc=0.6274
+19-10-26 06:57:03: Val - Source 69, Maize seg: loss=0.8365, mIoU=0.3939, acc=0.8411
+19-10-26 06:57:11: Eval(no-train) - Target 69, acc: 0.5873, avg acc: 0.6750, cls loss: 1.0830  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 06:57:25:   epoch 70 batch 0: collate wait 5.8s, fwd+bwd+step 8.0s
+19-10-26 06:57:37:   epoch 70 batch 1: collate wait 4.6s, fwd+bwd+step 7.4s
+19-10-26 06:57:51:   epoch 70 batch 2: collate wait 5.2s, fwd+bwd+step 8.4s
+19-10-26 06:58:05:   epoch 70 batch 3: collate wait 5.7s, fwd+bwd+step 8.5s
+19-10-26 06:58:17:   epoch 70 batch 4: collate wait 4.7s, fwd+bwd+step 6.9s
+19-10-26 06:58:31:   epoch 70 batch 5: collate wait 5.7s, fwd+bwd+step 8.1s
+19-10-26 06:58:45:   epoch 70 batch 6: collate wait 5.7s, fwd+bwd+step 8.4s
+19-10-26 06:58:58:   epoch 70 batch 7: collate wait 5.2s, fwd+bwd+step 8.0s
+19-10-26 06:59:11:   epoch 70 batch 8: collate wait 5.9s, fwd+bwd+step 7.0s
+19-10-26 06:59:25:   epoch 70 batch 9: collate wait 5.7s, fwd+bwd+step 8.4s
+19-10-26 06:59:35:   epoch 70 batch 10: collate wait 2.6s, fwd+bwd+step 7.3s
+19-10-26 06:59:43:   epoch 70 batch 11: collate wait 2.8s, fwd+bwd+step 5.7s
+19-10-26 06:59:53:   epoch 70 batch 12: collate wait 3.2s, fwd+bwd+step 6.9s
+19-10-26 07:00:03:   epoch 70 batch 13: collate wait 2.7s, fwd+bwd+step 7.3s
+19-10-26 07:00:12:   epoch 70 batch 14: collate wait 2.5s, fwd+bwd+step 6.1s
+19-10-26 07:00:23:   epoch 70 batch 15: collate wait 2.7s, fwd+bwd+step 8.1s
+19-10-26 07:00:23: Trn - Source+Target 70, cls loss: 0.0045, seg loss: 0.9662, defrec loss (src+trgt): 1.2763, kendall s_cls: -0.7319, s_seg: 0.4250, s_defrec: 0.2537
+19-10-26 07:00:48: Val - Source 70, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 0.9861, defrec loss: 1.0048, total loss: 1.0095
+19-10-26 07:00:48: Val - Source 70, Tomato seg: loss=1.4505, mIoU=0.3040, acc=0.6306
+19-10-26 07:00:48: Val - Source 70, Maize seg: loss=0.8172, mIoU=0.4006, acc=0.8463
+19-10-26 07:00:57: Eval(no-train) - Target 70, acc: 0.5556, avg acc: 0.6500, cls loss: 1.2051  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:01:11:   epoch 71 batch 0: collate wait 5.1s, fwd+bwd+step 8.9s
+19-10-26 07:01:25:   epoch 71 batch 1: collate wait 5.0s, fwd+bwd+step 8.9s
+19-10-26 07:01:36:   epoch 71 batch 2: collate wait 4.4s, fwd+bwd+step 7.2s
+19-10-26 07:01:51:   epoch 71 batch 3: collate wait 5.9s, fwd+bwd+step 9.2s
+19-10-26 07:02:04:   epoch 71 batch 4: collate wait 5.3s, fwd+bwd+step 7.1s
+19-10-26 07:02:16:   epoch 71 batch 5: collate wait 5.5s, fwd+bwd+step 6.7s
+19-10-26 07:02:32:   epoch 71 batch 6: collate wait 6.0s, fwd+bwd+step 9.6s
+19-10-26 07:02:46:   epoch 71 batch 7: collate wait 5.9s, fwd+bwd+step 8.5s
+19-10-26 07:02:58:   epoch 71 batch 8: collate wait 5.2s, fwd+bwd+step 7.0s
+19-10-26 07:03:10:   epoch 71 batch 9: collate wait 4.8s, fwd+bwd+step 6.6s
+19-10-26 07:03:20:   epoch 71 batch 10: collate wait 2.9s, fwd+bwd+step 7.5s
+19-10-26 07:03:29:   epoch 71 batch 11: collate wait 3.0s, fwd+bwd+step 6.4s
+19-10-26 07:03:40:   epoch 71 batch 12: collate wait 3.2s, fwd+bwd+step 7.0s
+19-10-26 07:03:49:   epoch 71 batch 13: collate wait 2.8s, fwd+bwd+step 7.1s
+19-10-26 07:04:01:   epoch 71 batch 14: collate wait 3.4s, fwd+bwd+step 7.7s
+19-10-26 07:04:13:   epoch 71 batch 15: collate wait 3.0s, fwd+bwd+step 9.3s
+19-10-26 07:04:13: Trn - Source+Target 71, cls loss: 0.0056, seg loss: 0.9681, defrec loss (src+trgt): 1.4082, kendall s_cls: -0.7348, s_seg: 0.4259, s_defrec: 0.2539
+19-10-26 07:04:38: Val - Source 71, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 0.9855, defrec loss: 1.0216, total loss: 1.0135
+19-10-26 07:04:38: Val - Source 71, Tomato seg: loss=1.2607, mIoU=0.3056, acc=0.6327
+19-10-26 07:04:38: Val - Source 71, Maize seg: loss=0.8855, mIoU=0.3950, acc=0.8363
+19-10-26 07:04:46: Eval(no-train) - Target 71, acc: 0.5714, avg acc: 0.6625, cls loss: 1.3584  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:04:59:   epoch 72 batch 0: collate wait 5.0s, fwd+bwd+step 8.1s
+19-10-26 07:05:11:   epoch 72 batch 1: collate wait 5.1s, fwd+bwd+step 6.1s
+19-10-26 07:05:23:   epoch 72 batch 2: collate wait 5.3s, fwd+bwd+step 7.2s
+19-10-26 07:05:34:   epoch 72 batch 3: collate wait 4.8s, fwd+bwd+step 5.7s
+19-10-26 07:05:47:   epoch 72 batch 4: collate wait 5.6s, fwd+bwd+step 8.2s
+19-10-26 07:05:59:   epoch 72 batch 5: collate wait 5.2s, fwd+bwd+step 6.2s
+19-10-26 07:06:11:   epoch 72 batch 6: collate wait 5.1s, fwd+bwd+step 7.1s
+19-10-26 07:06:25:   epoch 72 batch 7: collate wait 6.2s, fwd+bwd+step 8.1s
+19-10-26 07:06:37:   epoch 72 batch 8: collate wait 5.3s, fwd+bwd+step 6.3s
+19-10-26 07:06:49:   epoch 72 batch 9: collate wait 5.3s, fwd+bwd+step 7.2s
+19-10-26 07:07:00:   epoch 72 batch 10: collate wait 3.0s, fwd+bwd+step 7.9s
+19-10-26 07:07:10:   epoch 72 batch 11: collate wait 2.9s, fwd+bwd+step 6.8s
+19-10-26 07:07:19:   epoch 72 batch 12: collate wait 2.8s, fwd+bwd+step 6.3s
+19-10-26 07:07:30:   epoch 72 batch 13: collate wait 3.2s, fwd+bwd+step 7.5s
+19-10-26 07:07:39:   epoch 72 batch 14: collate wait 2.7s, fwd+bwd+step 6.7s
+19-10-26 07:07:50:   epoch 72 batch 15: collate wait 3.1s, fwd+bwd+step 7.7s
+19-10-26 07:07:50: Trn - Source+Target 72, cls loss: 0.0029, seg loss: 0.9605, defrec loss (src+trgt): 1.2394, kendall s_cls: -0.7375, s_seg: 0.4268, s_defrec: 0.2539
+19-10-26 07:08:16: Val - Source 72, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 1.0042, defrec loss: 1.1758, total loss: 1.0850
+19-10-26 07:08:16: Val - Source 72, Tomato seg: loss=1.3048, mIoU=0.2731, acc=0.5771
+19-10-26 07:08:16: Val - Source 72, Maize seg: loss=0.8949, mIoU=0.3860, acc=0.8290
+19-10-26 07:08:24: Eval(no-train) - Target 72, acc: 0.4762, avg acc: 0.5875, cls loss: 1.6279  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:08:39:   epoch 73 batch 0: collate wait 5.8s, fwd+bwd+step 8.4s
+19-10-26 07:08:51:   epoch 73 batch 1: collate wait 5.1s, fwd+bwd+step 7.4s
+19-10-26 07:09:03:   epoch 73 batch 2: collate wait 5.0s, fwd+bwd+step 7.4s
+19-10-26 07:09:16:   epoch 73 batch 3: collate wait 5.5s, fwd+bwd+step 7.5s
+19-10-26 07:09:28:   epoch 73 batch 4: collate wait 5.4s, fwd+bwd+step 6.4s
+19-10-26 07:09:41:   epoch 73 batch 5: collate wait 5.2s, fwd+bwd+step 7.8s
+19-10-26 07:09:53:   epoch 73 batch 6: collate wait 5.4s, fwd+bwd+step 6.8s
+19-10-26 07:10:06:   epoch 73 batch 7: collate wait 5.6s, fwd+bwd+step 6.7s
+19-10-26 07:10:17:   epoch 73 batch 8: collate wait 5.2s, fwd+bwd+step 6.0s
+19-10-26 07:10:29:   epoch 73 batch 9: collate wait 5.0s, fwd+bwd+step 7.6s
+19-10-26 07:10:51:   epoch 73 batch 10: collate wait 3.2s, fwd+bwd+step 18.0s
+19-10-26 07:11:15:   epoch 73 batch 11: collate wait 3.4s, fwd+bwd+step 20.9s
+19-10-26 07:11:24:   epoch 73 batch 12: collate wait 2.8s, fwd+bwd+step 6.8s
+19-10-26 07:11:38:   epoch 73 batch 13: collate wait 3.5s, fwd+bwd+step 10.3s
+19-10-26 07:11:49:   epoch 73 batch 14: collate wait 3.3s, fwd+bwd+step 7.4s
+19-10-26 07:11:58:   epoch 73 batch 15: collate wait 2.6s, fwd+bwd+step 6.6s
+19-10-26 07:11:58: Trn - Source+Target 73, cls loss: 0.0078, seg loss: 0.9547, defrec loss (src+trgt): 1.6976, kendall s_cls: -0.7401, s_seg: 0.4275, s_defrec: 0.2542
+19-10-26 07:12:25: Val - Source 73, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0005, seg loss: 1.0368, defrec loss: 0.8521, total loss: 0.9785
+19-10-26 07:12:25: Val - Source 73, Tomato seg: loss=1.4381, mIoU=0.3104, acc=0.6455
+19-10-26 07:12:25: Val - Source 73, Maize seg: loss=0.8909, mIoU=0.4006, acc=0.8445
+19-10-26 07:12:34: Eval(no-train) - Target 73, acc: 0.6667, avg acc: 0.7375, cls loss: 0.7358  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:12:45:   epoch 74 batch 0: collate wait 5.1s, fwd+bwd+step 6.7s
+19-10-26 07:12:59:   epoch 74 batch 1: collate wait 5.7s, fwd+bwd+step 8.3s
+19-10-26 07:13:14:   epoch 74 batch 2: collate wait 6.1s, fwd+bwd+step 8.0s
+19-10-26 07:13:25:   epoch 74 batch 3: collate wait 5.0s, fwd+bwd+step 6.2s
+19-10-26 07:13:38:   epoch 74 batch 4: collate wait 5.1s, fwd+bwd+step 7.8s
+19-10-26 07:13:50:   epoch 74 batch 5: collate wait 5.4s, fwd+bwd+step 6.9s
+19-10-26 07:14:06:   epoch 74 batch 6: collate wait 6.1s, fwd+bwd+step 10.0s
+19-10-26 07:14:20:   epoch 74 batch 7: collate wait 6.0s, fwd+bwd+step 7.8s
+19-10-26 07:14:33:   epoch 74 batch 8: collate wait 5.4s, fwd+bwd+step 7.4s
+19-10-26 07:14:47:   epoch 74 batch 9: collate wait 6.0s, fwd+bwd+step 8.9s
+19-10-26 07:14:57:   epoch 74 batch 10: collate wait 2.9s, fwd+bwd+step 6.3s
+19-10-26 07:15:06:   epoch 74 batch 11: collate wait 2.9s, fwd+bwd+step 6.3s
+19-10-26 07:15:17:   epoch 74 batch 12: collate wait 3.3s, fwd+bwd+step 8.2s
+19-10-26 07:15:27:   epoch 74 batch 13: collate wait 2.8s, fwd+bwd+step 6.4s
+19-10-26 07:15:36:   epoch 74 batch 14: collate wait 2.6s, fwd+bwd+step 7.0s
+19-10-26 07:15:46:   epoch 74 batch 15: collate wait 2.9s, fwd+bwd+step 7.1s
+19-10-26 07:15:46: Trn - Source+Target 74, cls loss: 0.1168, seg loss: 0.9663, defrec loss (src+trgt): 1.3291, kendall s_cls: -0.7420, s_seg: 0.4283, s_defrec: 0.2544
+19-10-26 07:16:12: Val - Source 74, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 0.9128, defrec loss: 1.7214, total loss: 1.2334
+19-10-26 07:16:12: Val - Source 74, Tomato seg: loss=1.1471, mIoU=0.3136, acc=0.6455
+19-10-26 07:16:12: Val - Source 74, Maize seg: loss=0.8276, mIoU=0.4091, acc=0.8544
+19-10-26 07:16:20: Eval(no-train) - Target 74, acc: 0.5714, avg acc: 0.6533, cls loss: 0.8604  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:16:34:   epoch 75 batch 0: collate wait 5.6s, fwd+bwd+step 8.2s
+19-10-26 07:16:48:   epoch 75 batch 1: collate wait 5.2s, fwd+bwd+step 8.7s
+19-10-26 07:17:01:   epoch 75 batch 2: collate wait 5.8s, fwd+bwd+step 7.6s
+19-10-26 07:17:15:   epoch 75 batch 3: collate wait 5.5s, fwd+bwd+step 7.8s
+19-10-26 07:17:26:   epoch 75 batch 4: collate wait 5.2s, fwd+bwd+step 6.6s
+19-10-26 07:17:38:   epoch 75 batch 5: collate wait 5.2s, fwd+bwd+step 6.2s
+19-10-26 07:17:52:   epoch 75 batch 6: collate wait 5.5s, fwd+bwd+step 9.1s
+19-10-26 07:18:07:   epoch 75 batch 7: collate wait 5.4s, fwd+bwd+step 8.8s
+19-10-26 07:18:20:   epoch 75 batch 8: collate wait 5.4s, fwd+bwd+step 8.2s
+19-10-26 07:18:34:   epoch 75 batch 9: collate wait 5.0s, fwd+bwd+step 8.4s
+19-10-26 07:18:44:   epoch 75 batch 10: collate wait 3.0s, fwd+bwd+step 7.5s
+19-10-26 07:18:56:   epoch 75 batch 11: collate wait 3.6s, fwd+bwd+step 8.7s
+19-10-26 07:19:07:   epoch 75 batch 12: collate wait 3.4s, fwd+bwd+step 7.0s
+19-10-26 07:19:17:   epoch 75 batch 13: collate wait 2.7s, fwd+bwd+step 7.8s
+19-10-26 07:19:28:   epoch 75 batch 14: collate wait 2.8s, fwd+bwd+step 8.1s
+19-10-26 07:19:38:   epoch 75 batch 15: collate wait 3.1s, fwd+bwd+step 6.7s
+19-10-26 07:19:38: Trn - Source+Target 75, cls loss: 0.0203, seg loss: 0.9527, defrec loss (src+trgt): 1.1605, kendall s_cls: -0.7436, s_seg: 0.4289, s_defrec: 0.2544
+19-10-26 07:20:05: Val - Source 75, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0017, seg loss: 0.9997, defrec loss: 0.9483, total loss: 0.9920
+19-10-26 07:20:05: Val - Source 75, Tomato seg: loss=1.1876, mIoU=0.2924, acc=0.6134
+19-10-26 07:20:05: Val - Source 75, Maize seg: loss=0.9314, mIoU=0.4114, acc=0.8609
+19-10-26 07:20:14: Eval(no-train) - Target 75, acc: 0.4444, avg acc: 0.5625, cls loss: 1.4728  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:20:26:   epoch 76 batch 0: collate wait 5.1s, fwd+bwd+step 6.5s
+19-10-26 07:20:38:   epoch 76 batch 1: collate wait 5.1s, fwd+bwd+step 7.5s
+19-10-26 07:20:50:   epoch 76 batch 2: collate wait 5.1s, fwd+bwd+step 6.9s
+19-10-26 07:21:02:   epoch 76 batch 3: collate wait 5.5s, fwd+bwd+step 6.8s
+19-10-26 07:21:14:   epoch 76 batch 4: collate wait 5.5s, fwd+bwd+step 6.4s
+19-10-26 07:21:28:   epoch 76 batch 5: collate wait 5.7s, fwd+bwd+step 7.6s
+19-10-26 07:21:39:   epoch 76 batch 6: collate wait 5.1s, fwd+bwd+step 6.2s
+19-10-26 07:21:54:   epoch 76 batch 7: collate wait 6.4s, fwd+bwd+step 8.7s
+19-10-26 07:22:07:   epoch 76 batch 8: collate wait 5.1s, fwd+bwd+step 7.7s
+19-10-26 07:22:18:   epoch 76 batch 9: collate wait 4.6s, fwd+bwd+step 6.3s
+19-10-26 07:22:28:   epoch 76 batch 10: collate wait 2.9s, fwd+bwd+step 7.3s
+19-10-26 07:22:39:   epoch 76 batch 11: collate wait 3.6s, fwd+bwd+step 7.6s
+19-10-26 07:22:51:   epoch 76 batch 12: collate wait 3.2s, fwd+bwd+step 8.5s
+19-10-26 07:23:02:   epoch 76 batch 13: collate wait 2.8s, fwd+bwd+step 8.4s
+19-10-26 07:23:12:   epoch 76 batch 14: collate wait 2.8s, fwd+bwd+step 7.5s
+19-10-26 07:23:23:   epoch 76 batch 15: collate wait 3.2s, fwd+bwd+step 7.4s
+19-10-26 07:23:23: Trn - Source+Target 76, cls loss: 0.0070, seg loss: 0.9735, defrec loss (src+trgt): 1.1887, kendall s_cls: -0.7455, s_seg: 0.4296, s_defrec: 0.2543
+19-10-26 07:23:47: Val - Source 76, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0015, seg loss: 0.9726, defrec loss: 1.7337, total loss: 1.2775
+19-10-26 07:23:47: Val - Source 76, Tomato seg: loss=1.3174, mIoU=0.2981, acc=0.6234
+19-10-26 07:23:47: Val - Source 76, Maize seg: loss=0.8473, mIoU=0.4131, acc=0.8616
+19-10-26 07:23:56: Eval(no-train) - Target 76, acc: 0.5079, avg acc: 0.6033, cls loss: 1.1054  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:24:09:   epoch 77 batch 0: collate wait 5.5s, fwd+bwd+step 7.3s
+19-10-26 07:24:21:   epoch 77 batch 1: collate wait 5.0s, fwd+bwd+step 6.7s
+19-10-26 07:24:32:   epoch 77 batch 2: collate wait 5.3s, fwd+bwd+step 6.6s
+19-10-26 07:24:47:   epoch 77 batch 3: collate wait 6.1s, fwd+bwd+step 8.3s
+19-10-26 07:24:59:   epoch 77 batch 4: collate wait 5.5s, fwd+bwd+step 6.7s
+19-10-26 07:25:12:   epoch 77 batch 5: collate wait 5.8s, fwd+bwd+step 6.7s
+19-10-26 07:25:24:   epoch 77 batch 6: collate wait 5.2s, fwd+bwd+step 7.3s
+19-10-26 07:25:38:   epoch 77 batch 7: collate wait 6.5s, fwd+bwd+step 7.6s
+19-10-26 07:25:53:   epoch 77 batch 8: collate wait 6.0s, fwd+bwd+step 9.2s
+19-10-26 07:26:07:   epoch 77 batch 9: collate wait 5.4s, fwd+bwd+step 8.0s
+19-10-26 07:26:17:   epoch 77 batch 10: collate wait 3.0s, fwd+bwd+step 7.2s
+19-10-26 07:26:27:   epoch 77 batch 11: collate wait 2.9s, fwd+bwd+step 6.9s
+19-10-26 07:26:38:   epoch 77 batch 12: collate wait 2.8s, fwd+bwd+step 8.1s
+19-10-26 07:26:49:   epoch 77 batch 13: collate wait 3.2s, fwd+bwd+step 8.1s
+19-10-26 07:27:00:   epoch 77 batch 14: collate wait 3.0s, fwd+bwd+step 8.0s
+19-10-26 07:27:14:   epoch 77 batch 15: collate wait 3.5s, fwd+bwd+step 10.1s
+19-10-26 07:27:14: Trn - Source+Target 77, cls loss: 0.0154, seg loss: 0.9390, defrec loss (src+trgt): 1.2824, kendall s_cls: -0.7473, s_seg: 0.4301, s_defrec: 0.2542
+19-10-26 07:27:38: Val - Source 77, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 0.9518, defrec loss: 1.4276, total loss: 1.1429
+19-10-26 07:27:38: Val - Source 77, Tomato seg: loss=1.2747, mIoU=0.3021, acc=0.6311
+19-10-26 07:27:38: Val - Source 77, Maize seg: loss=0.8344, mIoU=0.4086, acc=0.8541
+19-10-26 07:27:47: Eval(no-train) - Target 77, acc: 0.6190, avg acc: 0.7000, cls loss: 0.7810  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:27:58:   epoch 78 batch 0: collate wait 5.1s, fwd+bwd+step 6.0s
+19-10-26 07:28:10:   epoch 78 batch 1: collate wait 5.2s, fwd+bwd+step 6.5s
+19-10-26 07:28:21:   epoch 78 batch 2: collate wait 4.6s, fwd+bwd+step 6.9s
+19-10-26 07:28:34:   epoch 78 batch 3: collate wait 5.5s, fwd+bwd+step 7.0s
+19-10-26 07:28:45:   epoch 78 batch 4: collate wait 4.6s, fwd+bwd+step 7.2s
+19-10-26 07:28:58:   epoch 78 batch 5: collate wait 5.2s, fwd+bwd+step 7.8s
+19-10-26 07:29:11:   epoch 78 batch 6: collate wait 5.5s, fwd+bwd+step 7.4s
+19-10-26 07:29:24:   epoch 78 batch 7: collate wait 5.5s, fwd+bwd+step 7.4s
+19-10-26 07:29:38:   epoch 78 batch 8: collate wait 5.9s, fwd+bwd+step 7.7s
+19-10-26 07:29:51:   epoch 78 batch 9: collate wait 6.0s, fwd+bwd+step 7.0s
+19-10-26 07:30:01:   epoch 78 batch 10: collate wait 3.1s, fwd+bwd+step 7.8s
+19-10-26 07:30:12:   epoch 78 batch 11: collate wait 3.4s, fwd+bwd+step 7.2s
+19-10-26 07:30:22:   epoch 78 batch 12: collate wait 3.4s, fwd+bwd+step 6.5s
+19-10-26 07:30:33:   epoch 78 batch 13: collate wait 2.5s, fwd+bwd+step 8.4s
+19-10-26 07:30:41:   epoch 78 batch 14: collate wait 2.6s, fwd+bwd+step 5.4s
+19-10-26 07:30:51:   epoch 78 batch 15: collate wait 2.5s, fwd+bwd+step 7.8s
+19-10-26 07:30:51: Trn - Source+Target 78, cls loss: 0.0073, seg loss: 0.9343, defrec loss (src+trgt): 1.2867, kendall s_cls: -0.7490, s_seg: 0.4306, s_defrec: 0.2543
+19-10-26 07:31:16: Val - Source 78, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0021, seg loss: 0.9835, defrec loss: 1.7060, total loss: 1.2732
+19-10-26 07:31:16: Val - Source 78, Tomato seg: loss=1.4466, mIoU=0.2982, acc=0.6299
+19-10-26 07:31:16: Val - Source 78, Maize seg: loss=0.8151, mIoU=0.3985, acc=0.8442
+19-10-26 07:31:24: Eval(no-train) - Target 78, acc: 0.6825, avg acc: 0.7500, cls loss: 0.6977  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:31:36:   epoch 79 batch 0: collate wait 5.3s, fwd+bwd+step 6.6s
+19-10-26 07:31:50:   epoch 79 batch 1: collate wait 5.7s, fwd+bwd+step 8.0s
+19-10-26 07:32:02:   epoch 79 batch 2: collate wait 5.4s, fwd+bwd+step 6.9s
+19-10-26 07:32:14:   epoch 79 batch 3: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 07:32:27:   epoch 79 batch 4: collate wait 5.4s, fwd+bwd+step 7.4s
+19-10-26 07:32:39:   epoch 79 batch 5: collate wait 5.3s, fwd+bwd+step 6.9s
+19-10-26 07:32:55:   epoch 79 batch 6: collate wait 6.3s, fwd+bwd+step 9.7s
+19-10-26 07:33:08:   epoch 79 batch 7: collate wait 5.0s, fwd+bwd+step 7.8s
+19-10-26 07:33:23:   epoch 79 batch 8: collate wait 5.8s, fwd+bwd+step 8.6s
+19-10-26 07:33:35:   epoch 79 batch 9: collate wait 5.2s, fwd+bwd+step 7.5s
+19-10-26 07:33:44:   epoch 79 batch 10: collate wait 3.0s, fwd+bwd+step 6.1s
+19-10-26 07:33:54:   epoch 79 batch 11: collate wait 3.5s, fwd+bwd+step 6.4s
+19-10-26 07:34:06:   epoch 79 batch 12: collate wait 3.0s, fwd+bwd+step 8.9s
+19-10-26 07:34:18:   epoch 79 batch 13: collate wait 3.3s, fwd+bwd+step 8.1s
+19-10-26 07:34:27:   epoch 79 batch 14: collate wait 2.8s, fwd+bwd+step 6.5s
+19-10-26 07:34:36:   epoch 79 batch 15: collate wait 2.7s, fwd+bwd+step 6.1s
+19-10-26 07:34:36: Trn - Source+Target 79, cls loss: 0.0077, seg loss: 1.0042, defrec loss (src+trgt): 1.9066, kendall s_cls: -0.7505, s_seg: 0.4311, s_defrec: 0.2546
+19-10-26 07:35:01: Val - Source 79, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 1.0580, defrec loss: 1.7333, total loss: 1.3294
+19-10-26 07:35:01: Val - Source 79, Tomato seg: loss=1.5466, mIoU=0.3056, acc=0.6383
+19-10-26 07:35:01: Val - Source 79, Maize seg: loss=0.8804, mIoU=0.3959, acc=0.8390
+19-10-26 07:35:10: Eval(no-train) - Target 79, acc: 0.4921, avg acc: 0.6000, cls loss: 1.2490  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:35:23:   epoch 80 batch 0: collate wait 5.3s, fwd+bwd+step 7.5s
+19-10-26 07:35:35:   epoch 80 batch 1: collate wait 4.9s, fwd+bwd+step 7.2s
+19-10-26 07:35:49:   epoch 80 batch 2: collate wait 5.7s, fwd+bwd+step 8.3s
+19-10-26 07:36:02:   epoch 80 batch 3: collate wait 5.8s, fwd+bwd+step 7.1s
+19-10-26 07:36:13:   epoch 80 batch 4: collate wait 4.9s, fwd+bwd+step 6.9s
+19-10-26 07:36:28:   epoch 80 batch 5: collate wait 5.9s, fwd+bwd+step 8.6s
+19-10-26 07:36:41:   epoch 80 batch 6: collate wait 5.5s, fwd+bwd+step 7.5s
+19-10-26 07:36:55:   epoch 80 batch 7: collate wait 6.3s, fwd+bwd+step 8.0s
+19-10-26 07:37:09:   epoch 80 batch 8: collate wait 6.1s, fwd+bwd+step 8.3s
+19-10-26 07:37:23:   epoch 80 batch 9: collate wait 5.5s, fwd+bwd+step 8.2s
+19-10-26 07:37:34:   epoch 80 batch 10: collate wait 3.0s, fwd+bwd+step 8.1s
+19-10-26 07:37:47:   epoch 80 batch 11: collate wait 2.7s, fwd+bwd+step 9.8s
+19-10-26 07:37:56:   epoch 80 batch 12: collate wait 2.7s, fwd+bwd+step 6.2s
+19-10-26 07:38:07:   epoch 80 batch 13: collate wait 3.4s, fwd+bwd+step 7.5s
+19-10-26 07:38:16:   epoch 80 batch 14: collate wait 3.2s, fwd+bwd+step 6.1s
+19-10-26 07:38:24:   epoch 80 batch 15: collate wait 2.4s, fwd+bwd+step 6.0s
+19-10-26 07:38:24: Trn - Source+Target 80, cls loss: 0.0055, seg loss: 0.9406, defrec loss (src+trgt): 1.0726, kendall s_cls: -0.7520, s_seg: 0.4316, s_defrec: 0.2547
+19-10-26 07:38:50: Val - Source 80, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0024, seg loss: 1.0578, defrec loss: 1.5506, total loss: 1.2603
+19-10-26 07:38:50: Val - Source 80, Tomato seg: loss=1.3366, mIoU=0.2843, acc=0.5996
+19-10-26 07:38:50: Val - Source 80, Maize seg: loss=0.9565, mIoU=0.3955, acc=0.8472
+19-10-26 07:38:59: Eval(no-train) - Target 80, acc: 0.5238, avg acc: 0.6250, cls loss: 1.1665  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:39:10:   epoch 81 batch 0: collate wait 5.3s, fwd+bwd+step 6.2s
+19-10-26 07:39:23:   epoch 81 batch 1: collate wait 5.4s, fwd+bwd+step 7.9s
+19-10-26 07:39:37:   epoch 81 batch 2: collate wait 6.0s, fwd+bwd+step 7.2s
+19-10-26 07:39:50:   epoch 81 batch 3: collate wait 5.5s, fwd+bwd+step 7.4s
+19-10-26 07:40:01:   epoch 81 batch 4: collate wait 4.4s, fwd+bwd+step 6.5s
+19-10-26 07:40:15:   epoch 81 batch 5: collate wait 5.7s, fwd+bwd+step 8.6s
+19-10-26 07:40:30:   epoch 81 batch 6: collate wait 6.1s, fwd+bwd+step 9.6s
+19-10-26 07:40:45:   epoch 81 batch 7: collate wait 6.3s, fwd+bwd+step 8.0s
+19-10-26 07:40:56:   epoch 81 batch 8: collate wait 4.8s, fwd+bwd+step 6.7s
+19-10-26 07:41:09:   epoch 81 batch 9: collate wait 5.7s, fwd+bwd+step 6.9s
+19-10-26 07:41:19:   epoch 81 batch 10: collate wait 3.0s, fwd+bwd+step 7.1s
+19-10-26 07:41:30:   epoch 81 batch 11: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 07:41:41:   epoch 81 batch 12: collate wait 3.5s, fwd+bwd+step 7.5s
+19-10-26 07:41:51:   epoch 81 batch 13: collate wait 3.2s, fwd+bwd+step 7.0s
+19-10-26 07:42:02:   epoch 81 batch 14: collate wait 3.5s, fwd+bwd+step 7.5s
+19-10-26 07:42:11:   epoch 81 batch 15: collate wait 2.8s, fwd+bwd+step 6.2s
+19-10-26 07:42:11: Trn - Source+Target 81, cls loss: 0.0060, seg loss: 0.9723, defrec loss (src+trgt): 0.8631, kendall s_cls: -0.7533, s_seg: 0.4320, s_defrec: 0.2544
+19-10-26 07:42:35: Val - Source 81, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0060, seg loss: 0.9553, defrec loss: 1.1146, total loss: 1.0317
+19-10-26 07:42:35: Val - Source 81, Tomato seg: loss=1.2288, mIoU=0.2864, acc=0.5982
+19-10-26 07:42:35: Val - Source 81, Maize seg: loss=0.8559, mIoU=0.4085, acc=0.8509
+19-10-26 07:42:44: Eval(no-train) - Target 81, acc: 0.5714, avg acc: 0.6625, cls loss: 1.1332  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:42:58:   epoch 82 batch 0: collate wait 5.4s, fwd+bwd+step 9.2s
+19-10-26 07:43:12:   epoch 82 batch 1: collate wait 5.3s, fwd+bwd+step 7.9s
+19-10-26 07:43:24:   epoch 82 batch 2: collate wait 5.7s, fwd+bwd+step 6.5s
+19-10-26 07:43:36:   epoch 82 batch 3: collate wait 5.5s, fwd+bwd+step 6.5s
+19-10-26 07:43:48:   epoch 82 batch 4: collate wait 5.6s, fwd+bwd+step 7.0s
+19-10-26 07:44:02:   epoch 82 batch 5: collate wait 5.5s, fwd+bwd+step 7.9s
+19-10-26 07:44:15:   epoch 82 batch 6: collate wait 5.7s, fwd+bwd+step 7.4s
+19-10-26 07:44:29:   epoch 82 batch 7: collate wait 5.4s, fwd+bwd+step 8.8s
+19-10-26 07:44:40:   epoch 82 batch 8: collate wait 4.8s, fwd+bwd+step 5.7s
+19-10-26 07:44:51:   epoch 82 batch 9: collate wait 5.3s, fwd+bwd+step 6.2s
+19-10-26 07:45:03:   epoch 82 batch 10: collate wait 3.4s, fwd+bwd+step 8.7s
+19-10-26 07:45:13:   epoch 82 batch 11: collate wait 2.6s, fwd+bwd+step 7.3s
+19-10-26 07:45:24:   epoch 82 batch 12: collate wait 3.0s, fwd+bwd+step 7.6s
+19-10-26 07:45:34:   epoch 82 batch 13: collate wait 3.5s, fwd+bwd+step 7.2s
+19-10-26 07:45:46:   epoch 82 batch 14: collate wait 3.3s, fwd+bwd+step 8.1s
+19-10-26 07:45:57:   epoch 82 batch 15: collate wait 3.3s, fwd+bwd+step 8.0s
+19-10-26 07:45:57: Trn - Source+Target 82, cls loss: 0.0029, seg loss: 0.9306, defrec loss (src+trgt): 0.9503, kendall s_cls: -0.7544, s_seg: 0.4324, s_defrec: 0.2542
+19-10-26 07:46:22: Val - Source 82, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 0.9901, defrec loss: 1.1625, total loss: 1.0617
+19-10-26 07:46:22: Val - Source 82, Tomato seg: loss=1.3461, mIoU=0.2874, acc=0.6012
+19-10-26 07:46:22: Val - Source 82, Maize seg: loss=0.8606, mIoU=0.4041, acc=0.8484
+19-10-26 07:46:31: Eval(no-train) - Target 82, acc: 0.5714, avg acc: 0.6625, cls loss: 0.9054  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:46:41:   epoch 83 batch 0: collate wait 5.0s, fwd+bwd+step 5.8s
+19-10-26 07:46:55:   epoch 83 batch 1: collate wait 5.6s, fwd+bwd+step 7.6s
+19-10-26 07:47:09:   epoch 83 batch 2: collate wait 6.2s, fwd+bwd+step 7.9s
+19-10-26 07:47:20:   epoch 83 batch 3: collate wait 5.1s, fwd+bwd+step 6.3s
+19-10-26 07:47:33:   epoch 83 batch 4: collate wait 5.8s, fwd+bwd+step 6.8s
+19-10-26 07:47:44:   epoch 83 batch 5: collate wait 4.8s, fwd+bwd+step 6.8s
+19-10-26 07:47:58:   epoch 83 batch 6: collate wait 5.7s, fwd+bwd+step 7.6s
+19-10-26 07:48:09:   epoch 83 batch 7: collate wait 4.8s, fwd+bwd+step 6.7s
+19-10-26 07:48:22:   epoch 83 batch 8: collate wait 5.8s, fwd+bwd+step 6.8s
+19-10-26 07:48:34:   epoch 83 batch 9: collate wait 5.5s, fwd+bwd+step 6.8s
+19-10-26 07:48:44:   epoch 83 batch 10: collate wait 3.6s, fwd+bwd+step 7.0s
+19-10-26 07:48:55:   epoch 83 batch 11: collate wait 2.4s, fwd+bwd+step 7.9s
+19-10-26 07:49:05:   epoch 83 batch 12: collate wait 2.8s, fwd+bwd+step 7.6s
+19-10-26 07:49:14:   epoch 83 batch 13: collate wait 3.0s, fwd+bwd+step 5.8s
+19-10-26 07:49:27:   epoch 83 batch 14: collate wait 2.9s, fwd+bwd+step 9.8s
+19-10-26 07:49:37:   epoch 83 batch 15: collate wait 3.0s, fwd+bwd+step 6.9s
+19-10-26 07:49:37: Trn - Source+Target 83, cls loss: 0.0053, seg loss: 0.9330, defrec loss (src+trgt): 1.2792, kendall s_cls: -0.7555, s_seg: 0.4327, s_defrec: 0.2540
+19-10-26 07:50:01: Val - Source 83, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 0.9950, defrec loss: 1.4026, total loss: 1.1567
+19-10-26 07:50:01: Val - Source 83, Tomato seg: loss=1.4581, mIoU=0.2946, acc=0.6182
+19-10-26 07:50:01: Val - Source 83, Maize seg: loss=0.8266, mIoU=0.4100, acc=0.8512
+19-10-26 07:50:10: Eval(no-train) - Target 83, acc: 0.5714, avg acc: 0.6533, cls loss: 1.1220  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:50:24:   epoch 84 batch 0: collate wait 5.1s, fwd+bwd+step 9.2s
+19-10-26 07:50:37:   epoch 84 batch 1: collate wait 5.5s, fwd+bwd+step 7.9s
+19-10-26 07:50:51:   epoch 84 batch 2: collate wait 5.7s, fwd+bwd+step 7.5s
+19-10-26 07:51:03:   epoch 84 batch 3: collate wait 5.7s, fwd+bwd+step 7.2s
+19-10-26 07:51:16:   epoch 84 batch 4: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 07:51:29:   epoch 84 batch 5: collate wait 5.9s, fwd+bwd+step 7.4s
+19-10-26 07:51:41:   epoch 84 batch 6: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 07:51:52:   epoch 84 batch 7: collate wait 4.9s, fwd+bwd+step 6.7s
+19-10-26 07:52:06:   epoch 84 batch 8: collate wait 5.2s, fwd+bwd+step 8.4s
+19-10-26 07:52:20:   epoch 84 batch 9: collate wait 6.2s, fwd+bwd+step 7.4s
+19-10-26 07:52:30:   epoch 84 batch 10: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 07:52:41:   epoch 84 batch 11: collate wait 2.5s, fwd+bwd+step 8.9s
+19-10-26 07:52:52:   epoch 84 batch 12: collate wait 2.9s, fwd+bwd+step 7.5s
+19-10-26 07:53:03:   epoch 84 batch 13: collate wait 3.6s, fwd+bwd+step 7.5s
+19-10-26 07:53:14:   epoch 84 batch 14: collate wait 3.6s, fwd+bwd+step 8.1s
+19-10-26 07:53:24:   epoch 84 batch 15: collate wait 2.8s, fwd+bwd+step 7.0s
+19-10-26 07:53:24: Trn - Source+Target 84, cls loss: 0.0147, seg loss: 0.9389, defrec loss (src+trgt): 1.2928, kendall s_cls: -0.7564, s_seg: 0.4329, s_defrec: 0.2541
+19-10-26 07:53:49: Val - Source 84, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0003, seg loss: 0.9540, defrec loss: 1.0711, total loss: 1.0001
+19-10-26 07:53:49: Val - Source 84, Tomato seg: loss=1.4108, mIoU=0.2899, acc=0.6092
+19-10-26 07:53:49: Val - Source 84, Maize seg: loss=0.7879, mIoU=0.4076, acc=0.8475
+19-10-26 07:53:58: Eval(no-train) - Target 84, acc: 0.4603, avg acc: 0.5658, cls loss: 1.2592  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:54:10:   epoch 85 batch 0: collate wait 5.3s, fwd+bwd+step 7.1s
+19-10-26 07:54:23:   epoch 85 batch 1: collate wait 5.1s, fwd+bwd+step 7.5s
+19-10-26 07:54:36:   epoch 85 batch 2: collate wait 5.7s, fwd+bwd+step 6.9s
+19-10-26 07:54:49:   epoch 85 batch 3: collate wait 5.6s, fwd+bwd+step 7.7s
+19-10-26 07:55:03:   epoch 85 batch 4: collate wait 5.5s, fwd+bwd+step 8.9s
+19-10-26 07:55:17:   epoch 85 batch 5: collate wait 5.4s, fwd+bwd+step 8.4s
+19-10-26 07:55:32:   epoch 85 batch 6: collate wait 5.8s, fwd+bwd+step 9.1s
+19-10-26 07:55:45:   epoch 85 batch 7: collate wait 5.5s, fwd+bwd+step 7.2s
+19-10-26 07:55:58:   epoch 85 batch 8: collate wait 5.9s, fwd+bwd+step 7.1s
+19-10-26 07:56:10:   epoch 85 batch 9: collate wait 5.5s, fwd+bwd+step 6.5s
+19-10-26 07:56:20:   epoch 85 batch 10: collate wait 3.2s, fwd+bwd+step 7.3s
+19-10-26 07:56:32:   epoch 85 batch 11: collate wait 3.5s, fwd+bwd+step 8.7s
+19-10-26 07:56:42:   epoch 85 batch 12: collate wait 3.2s, fwd+bwd+step 6.8s
+19-10-26 07:56:54:   epoch 85 batch 13: collate wait 3.1s, fwd+bwd+step 8.8s
+19-10-26 07:57:05:   epoch 85 batch 14: collate wait 3.0s, fwd+bwd+step 8.1s
+19-10-26 07:57:15:   epoch 85 batch 15: collate wait 3.0s, fwd+bwd+step 6.9s
+19-10-26 07:57:15: Trn - Source+Target 85, cls loss: 0.0021, seg loss: 0.9282, defrec loss (src+trgt): 0.9445, kendall s_cls: -0.7572, s_seg: 0.4332, s_defrec: 0.2539
+19-10-26 07:57:41: Val - Source 85, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 1.0410, defrec loss: 1.1679, total loss: 1.0945
+19-10-26 07:57:41: Val - Source 85, Tomato seg: loss=1.3904, mIoU=0.2974, acc=0.6206
+19-10-26 07:57:41: Val - Source 85, Maize seg: loss=0.9140, mIoU=0.4049, acc=0.8485
+19-10-26 07:57:49: Eval(no-train) - Target 85, acc: 0.6508, avg acc: 0.7250, cls loss: 0.7681  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 07:58:04:   epoch 86 batch 0: collate wait 6.1s, fwd+bwd+step 8.8s
+19-10-26 07:58:18:   epoch 86 batch 1: collate wait 5.9s, fwd+bwd+step 7.3s
+19-10-26 07:58:30:   epoch 86 batch 2: collate wait 5.8s, fwd+bwd+step 7.1s
+19-10-26 07:58:45:   epoch 86 batch 3: collate wait 5.8s, fwd+bwd+step 8.9s
+19-10-26 07:58:57:   epoch 86 batch 4: collate wait 5.1s, fwd+bwd+step 6.8s
+19-10-26 07:59:09:   epoch 86 batch 5: collate wait 5.3s, fwd+bwd+step 6.2s
+19-10-26 07:59:22:   epoch 86 batch 6: collate wait 5.2s, fwd+bwd+step 7.8s
+19-10-26 07:59:35:   epoch 86 batch 7: collate wait 5.7s, fwd+bwd+step 7.5s
+19-10-26 07:59:47:   epoch 86 batch 8: collate wait 5.3s, fwd+bwd+step 6.5s
+19-10-26 07:59:58:   epoch 86 batch 9: collate wait 4.7s, fwd+bwd+step 6.4s
+19-10-26 08:00:08:   epoch 86 batch 10: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 08:00:18:   epoch 86 batch 11: collate wait 3.0s, fwd+bwd+step 7.3s
+19-10-26 08:00:29:   epoch 86 batch 12: collate wait 3.3s, fwd+bwd+step 7.5s
+19-10-26 08:00:38:   epoch 86 batch 13: collate wait 2.9s, fwd+bwd+step 6.4s
+19-10-26 08:00:48:   epoch 86 batch 14: collate wait 2.8s, fwd+bwd+step 6.4s
+19-10-26 08:00:57:   epoch 86 batch 15: collate wait 3.0s, fwd+bwd+step 6.7s
+19-10-26 08:00:57: Trn - Source+Target 86, cls loss: 0.0072, seg loss: 0.9209, defrec loss (src+trgt): 1.1155, kendall s_cls: -0.7579, s_seg: 0.4334, s_defrec: 0.2538
+19-10-26 08:01:24: Val - Source 86, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 0.9526, defrec loss: 1.5451, total loss: 1.1835
+19-10-26 08:01:24: Val - Source 86, Tomato seg: loss=1.2589, mIoU=0.2952, acc=0.6203
+19-10-26 08:01:24: Val - Source 86, Maize seg: loss=0.8412, mIoU=0.4078, acc=0.8514
+19-10-26 08:01:32: Eval(no-train) - Target 86, acc: 0.5556, avg acc: 0.6408, cls loss: 1.0079  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:01:45:   epoch 87 batch 0: collate wait 5.7s, fwd+bwd+step 7.4s
+19-10-26 08:02:00:   epoch 87 batch 1: collate wait 6.1s, fwd+bwd+step 8.1s
+19-10-26 08:02:12:   epoch 87 batch 2: collate wait 5.4s, fwd+bwd+step 6.9s
+19-10-26 08:02:24:   epoch 87 batch 3: collate wait 5.2s, fwd+bwd+step 6.3s
+19-10-26 08:02:37:   epoch 87 batch 4: collate wait 5.4s, fwd+bwd+step 7.7s
+19-10-26 08:02:49:   epoch 87 batch 5: collate wait 5.6s, fwd+bwd+step 7.3s
+19-10-26 08:03:04:   epoch 87 batch 6: collate wait 5.7s, fwd+bwd+step 8.7s
+19-10-26 08:03:18:   epoch 87 batch 7: collate wait 5.3s, fwd+bwd+step 8.5s
+19-10-26 08:03:32:   epoch 87 batch 8: collate wait 6.0s, fwd+bwd+step 7.9s
+19-10-26 08:03:44:   epoch 87 batch 9: collate wait 5.7s, fwd+bwd+step 7.1s
+19-10-26 08:03:55:   epoch 87 batch 10: collate wait 3.2s, fwd+bwd+step 7.3s
+19-10-26 08:04:05:   epoch 87 batch 11: collate wait 3.0s, fwd+bwd+step 7.7s
+19-10-26 08:04:14:   epoch 87 batch 12: collate wait 2.4s, fwd+bwd+step 6.0s
+19-10-26 08:04:24:   epoch 87 batch 13: collate wait 2.8s, fwd+bwd+step 7.7s
+19-10-26 08:04:36:   epoch 87 batch 14: collate wait 2.9s, fwd+bwd+step 8.3s
+19-10-26 08:05:05:   epoch 87 batch 15: collate wait 2.6s, fwd+bwd+step 27.1s
+19-10-26 08:05:05: Trn - Source+Target 87, cls loss: 0.0052, seg loss: 0.9450, defrec loss (src+trgt): 0.9773, kendall s_cls: -0.7586, s_seg: 0.4336, s_defrec: 0.2537
+19-10-26 08:05:31: Val - Source 87, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0009, seg loss: 0.9765, defrec loss: 2.3762, total loss: 1.5211
+19-10-26 08:05:31: Val - Source 87, Tomato seg: loss=1.2647, mIoU=0.2894, acc=0.6096
+19-10-26 08:05:31: Val - Source 87, Maize seg: loss=0.8717, mIoU=0.4060, acc=0.8513
+19-10-26 08:05:40: Eval(no-train) - Target 87, acc: 0.6032, avg acc: 0.6875, cls loss: 1.0012  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:05:52:   epoch 88 batch 0: collate wait 5.6s, fwd+bwd+step 7.0s
+19-10-26 08:06:04:   epoch 88 batch 1: collate wait 5.5s, fwd+bwd+step 6.7s
+19-10-26 08:06:16:   epoch 88 batch 2: collate wait 5.3s, fwd+bwd+step 6.3s
+19-10-26 08:06:30:   epoch 88 batch 3: collate wait 6.2s, fwd+bwd+step 7.9s
+19-10-26 08:06:43:   epoch 88 batch 4: collate wait 5.5s, fwd+bwd+step 7.1s
+19-10-26 08:06:54:   epoch 88 batch 5: collate wait 4.9s, fwd+bwd+step 6.5s
+19-10-26 08:07:06:   epoch 88 batch 6: collate wait 5.3s, fwd+bwd+step 6.8s
+19-10-26 08:07:20:   epoch 88 batch 7: collate wait 5.0s, fwd+bwd+step 8.8s
+19-10-26 08:07:33:   epoch 88 batch 8: collate wait 5.8s, fwd+bwd+step 7.6s
+19-10-26 08:07:45:   epoch 88 batch 9: collate wait 5.0s, fwd+bwd+step 6.0s
+19-10-26 08:07:54:   epoch 88 batch 10: collate wait 2.7s, fwd+bwd+step 6.8s
+19-10-26 08:08:03:   epoch 88 batch 11: collate wait 2.6s, fwd+bwd+step 6.5s
+19-10-26 08:08:13:   epoch 88 batch 12: collate wait 3.1s, fwd+bwd+step 6.8s
+19-10-26 08:08:25:   epoch 88 batch 13: collate wait 3.1s, fwd+bwd+step 9.3s
+19-10-26 08:08:43:   epoch 88 batch 14: collate wait 3.1s, fwd+bwd+step 14.4s
+19-10-26 08:08:53:   epoch 88 batch 15: collate wait 3.4s, fwd+bwd+step 6.3s
+19-10-26 08:08:53: Trn - Source+Target 88, cls loss: 0.0087, seg loss: 0.9776, defrec loss (src+trgt): 1.0183, kendall s_cls: -0.7591, s_seg: 0.4337, s_defrec: 0.2536
+19-10-26 08:09:20: Val - Source 88, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0015, seg loss: 1.0044, defrec loss: 0.9276, total loss: 0.9782
+19-10-26 08:09:20: Val - Source 88, Tomato seg: loss=1.4262, mIoU=0.2857, acc=0.5983
+19-10-26 08:09:20: Val - Source 88, Maize seg: loss=0.8511, mIoU=0.4039, acc=0.8486
+19-10-26 08:09:29: Eval(no-train) - Target 88, acc: 0.5556, avg acc: 0.6500, cls loss: 1.0281  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:09:42:   epoch 89 batch 0: collate wait 5.5s, fwd+bwd+step 6.9s
+19-10-26 08:09:52:   epoch 89 batch 1: collate wait 4.5s, fwd+bwd+step 5.7s
+19-10-26 08:10:04:   epoch 89 batch 2: collate wait 5.2s, fwd+bwd+step 6.7s
+19-10-26 08:10:32:   epoch 89 batch 3: collate wait 7.5s, fwd+bwd+step 20.8s
+19-10-26 08:10:45:   epoch 89 batch 4: collate wait 5.3s, fwd+bwd+step 7.6s
+19-10-26 08:10:58:   epoch 89 batch 5: collate wait 6.0s, fwd+bwd+step 7.3s
+19-10-26 08:11:12:   epoch 89 batch 6: collate wait 5.5s, fwd+bwd+step 8.1s
+19-10-26 08:11:27:   epoch 89 batch 7: collate wait 6.3s, fwd+bwd+step 8.7s
+19-10-26 08:11:38:   epoch 89 batch 8: collate wait 4.8s, fwd+bwd+step 5.9s
+19-10-26 08:11:51:   epoch 89 batch 9: collate wait 5.8s, fwd+bwd+step 7.1s
+19-10-26 08:12:00:   epoch 89 batch 10: collate wait 2.9s, fwd+bwd+step 7.0s
+19-10-26 08:12:10:   epoch 89 batch 11: collate wait 3.2s, fwd+bwd+step 6.5s
+19-10-26 08:12:21:   epoch 89 batch 12: collate wait 3.2s, fwd+bwd+step 7.8s
+19-10-26 08:12:33:   epoch 89 batch 13: collate wait 2.6s, fwd+bwd+step 9.2s
+19-10-26 08:12:43:   epoch 89 batch 14: collate wait 3.2s, fwd+bwd+step 6.7s
+19-10-26 08:12:55:   epoch 89 batch 15: collate wait 3.3s, fwd+bwd+step 8.4s
+19-10-26 08:12:55: Trn - Source+Target 89, cls loss: 0.0103, seg loss: 0.9516, defrec loss (src+trgt): 1.1405, kendall s_cls: -0.7595, s_seg: 0.4339, s_defrec: 0.2535
+19-10-26 08:13:19: Val - Source 89, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0011, seg loss: 0.9731, defrec loss: 0.8763, total loss: 0.9369
+19-10-26 08:13:19: Val - Source 89, Tomato seg: loss=1.4373, mIoU=0.2924, acc=0.6151
+19-10-26 08:13:19: Val - Source 89, Maize seg: loss=0.8044, mIoU=0.3976, acc=0.8437
+19-10-26 08:13:28: Eval(no-train) - Target 89, acc: 0.5079, avg acc: 0.6125, cls loss: 1.1781  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:13:42:   epoch 90 batch 0: collate wait 5.0s, fwd+bwd+step 8.5s
+19-10-26 08:13:54:   epoch 90 batch 1: collate wait 5.5s, fwd+bwd+step 6.7s
+19-10-26 08:14:05:   epoch 90 batch 2: collate wait 5.2s, fwd+bwd+step 6.2s
+19-10-26 08:14:19:   epoch 90 batch 3: collate wait 5.6s, fwd+bwd+step 7.8s
+19-10-26 08:14:29:   epoch 90 batch 4: collate wait 4.8s, fwd+bwd+step 6.0s
+19-10-26 08:14:43:   epoch 90 batch 5: collate wait 5.8s, fwd+bwd+step 7.8s
+19-10-26 08:15:01:   epoch 90 batch 6: collate wait 7.4s, fwd+bwd+step 10.8s
+19-10-26 08:15:16:   epoch 90 batch 7: collate wait 6.7s, fwd+bwd+step 7.6s
+19-10-26 08:15:30:   epoch 90 batch 8: collate wait 6.2s, fwd+bwd+step 8.4s
+19-10-26 08:15:43:   epoch 90 batch 9: collate wait 5.7s, fwd+bwd+step 6.6s
+19-10-26 08:15:54:   epoch 90 batch 10: collate wait 3.2s, fwd+bwd+step 8.6s
+19-10-26 08:16:04:   epoch 90 batch 11: collate wait 3.0s, fwd+bwd+step 6.6s
+19-10-26 08:16:16:   epoch 90 batch 12: collate wait 3.0s, fwd+bwd+step 9.4s
+19-10-26 08:16:27:   epoch 90 batch 13: collate wait 3.2s, fwd+bwd+step 7.6s
+19-10-26 08:16:37:   epoch 90 batch 14: collate wait 3.2s, fwd+bwd+step 6.6s
+19-10-26 08:16:48:   epoch 90 batch 15: collate wait 3.1s, fwd+bwd+step 7.8s
+19-10-26 08:16:48: Trn - Source+Target 90, cls loss: 0.0022, seg loss: 0.9550, defrec loss (src+trgt): 0.8699, kendall s_cls: -0.7599, s_seg: 0.4340, s_defrec: 0.2534
+19-10-26 08:17:12: Val - Source 90, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0106, seg loss: 1.0458, defrec loss: 1.2288, total loss: 1.1410
+19-10-26 08:17:12: Val - Source 90, Tomato seg: loss=1.4465, mIoU=0.2931, acc=0.6166
+19-10-26 08:17:12: Val - Source 90, Maize seg: loss=0.9001, mIoU=0.4062, acc=0.8523
+19-10-26 08:17:21: Eval(no-train) - Target 90, acc: 0.5238, avg acc: 0.6250, cls loss: 1.0133  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:17:33:   epoch 91 batch 0: collate wait 4.6s, fwd+bwd+step 6.8s
+19-10-26 08:17:46:   epoch 91 batch 1: collate wait 5.7s, fwd+bwd+step 7.3s
+19-10-26 08:17:59:   epoch 91 batch 2: collate wait 5.7s, fwd+bwd+step 7.8s
+19-10-26 08:18:14:   epoch 91 batch 3: collate wait 5.8s, fwd+bwd+step 9.5s
+19-10-26 08:18:29:   epoch 91 batch 4: collate wait 5.9s, fwd+bwd+step 8.4s
+19-10-26 08:18:41:   epoch 91 batch 5: collate wait 5.7s, fwd+bwd+step 7.0s
+19-10-26 08:18:51:   epoch 91 batch 6: collate wait 4.4s, fwd+bwd+step 5.3s
+19-10-26 08:19:06:   epoch 91 batch 7: collate wait 5.9s, fwd+bwd+step 8.6s
+19-10-26 08:19:32:   epoch 91 batch 8: collate wait 5.6s, fwd+bwd+step 21.1s
+19-10-26 08:19:46:   epoch 91 batch 9: collate wait 5.6s, fwd+bwd+step 8.1s
+19-10-26 08:19:58:   epoch 91 batch 10: collate wait 3.6s, fwd+bwd+step 8.1s
+19-10-26 08:20:09:   epoch 91 batch 11: collate wait 3.4s, fwd+bwd+step 8.0s
+19-10-26 08:20:23:   epoch 91 batch 12: collate wait 3.8s, fwd+bwd+step 10.1s
+19-10-26 08:20:34:   epoch 91 batch 13: collate wait 3.2s, fwd+bwd+step 7.5s
+19-10-26 08:20:45:   epoch 91 batch 14: collate wait 3.6s, fwd+bwd+step 7.5s
+19-10-26 08:20:56:   epoch 91 batch 15: collate wait 3.1s, fwd+bwd+step 7.9s
+19-10-26 08:20:56: Trn - Source+Target 91, cls loss: 0.0028, seg loss: 0.9083, defrec loss (src+trgt): 1.0515, kendall s_cls: -0.7602, s_seg: 0.4341, s_defrec: 0.2534
+19-10-26 08:21:23: Val - Source 91, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.1069, defrec loss: 0.9024, total loss: 1.0326
+19-10-26 08:21:23: Val - Source 91, Tomato seg: loss=1.6274, mIoU=0.2912, acc=0.6170
+19-10-26 08:21:23: Val - Source 91, Maize seg: loss=0.9177, mIoU=0.4049, acc=0.8466
+19-10-26 08:21:32: Eval(no-train) - Target 91, acc: 0.6190, avg acc: 0.7000, cls loss: 0.8265  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:21:45:   epoch 92 batch 0: collate wait 5.7s, fwd+bwd+step 7.5s
+19-10-26 08:21:59:   epoch 92 batch 1: collate wait 5.8s, fwd+bwd+step 8.2s
+19-10-26 08:22:14:   epoch 92 batch 2: collate wait 6.2s, fwd+bwd+step 8.5s
+19-10-26 08:22:27:   epoch 92 batch 3: collate wait 6.1s, fwd+bwd+step 7.3s
+19-10-26 08:22:43:   epoch 92 batch 4: collate wait 5.7s, fwd+bwd+step 9.7s
+19-10-26 08:22:57:   epoch 92 batch 5: collate wait 5.6s, fwd+bwd+step 8.3s
+19-10-26 08:23:10:   epoch 92 batch 6: collate wait 5.6s, fwd+bwd+step 7.3s
+19-10-26 08:23:22:   epoch 92 batch 7: collate wait 5.4s, fwd+bwd+step 6.6s
+19-10-26 08:23:35:   epoch 92 batch 8: collate wait 5.5s, fwd+bwd+step 7.4s
+19-10-26 08:23:48:   epoch 92 batch 9: collate wait 6.2s, fwd+bwd+step 7.7s
+19-10-26 08:24:00:   epoch 92 batch 10: collate wait 2.8s, fwd+bwd+step 8.2s
+19-10-26 08:24:11:   epoch 92 batch 11: collate wait 3.6s, fwd+bwd+step 7.7s
+19-10-26 08:24:22:   epoch 92 batch 12: collate wait 3.0s, fwd+bwd+step 7.8s
+19-10-26 08:24:35:   epoch 92 batch 13: collate wait 3.4s, fwd+bwd+step 10.1s
+19-10-26 08:24:46:   epoch 92 batch 14: collate wait 2.8s, fwd+bwd+step 7.6s
+19-10-26 08:24:56:   epoch 92 batch 15: collate wait 2.8s, fwd+bwd+step 7.9s
+19-10-26 08:24:56: Trn - Source+Target 92, cls loss: 0.0924, seg loss: 0.9374, defrec loss (src+trgt): 0.9436, kendall s_cls: -0.7604, s_seg: 0.4342, s_defrec: 0.2533
+19-10-26 08:25:21: Val - Source 92, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0006, seg loss: 1.0271, defrec loss: 1.6447, total loss: 1.2686
+19-10-26 08:25:21: Val - Source 92, Tomato seg: loss=1.3731, mIoU=0.2976, acc=0.6210
+19-10-26 08:25:21: Val - Source 92, Maize seg: loss=0.9013, mIoU=0.3989, acc=0.8455
+19-10-26 08:25:30: Eval(no-train) - Target 92, acc: 0.5556, avg acc: 0.6500, cls loss: 0.9887  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:25:44:   epoch 93 batch 0: collate wait 5.4s, fwd+bwd+step 8.7s
+19-10-26 08:25:58:   epoch 93 batch 1: collate wait 5.7s, fwd+bwd+step 8.3s
+19-10-26 08:26:11:   epoch 93 batch 2: collate wait 5.7s, fwd+bwd+step 7.4s
+19-10-26 08:26:24:   epoch 93 batch 3: collate wait 5.4s, fwd+bwd+step 7.0s
+19-10-26 08:26:37:   epoch 93 batch 4: collate wait 5.5s, fwd+bwd+step 7.8s
+19-10-26 08:26:51:   epoch 93 batch 5: collate wait 5.5s, fwd+bwd+step 8.3s
+19-10-26 08:27:04:   epoch 93 batch 6: collate wait 5.4s, fwd+bwd+step 8.0s
+19-10-26 08:27:17:   epoch 93 batch 7: collate wait 5.6s, fwd+bwd+step 7.4s
+19-10-26 08:27:29:   epoch 93 batch 8: collate wait 4.9s, fwd+bwd+step 7.4s
+19-10-26 08:27:42:   epoch 93 batch 9: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 08:27:53:   epoch 93 batch 10: collate wait 3.2s, fwd+bwd+step 8.3s
+19-10-26 08:28:05:   epoch 93 batch 11: collate wait 3.2s, fwd+bwd+step 9.0s
+19-10-26 08:28:16:   epoch 93 batch 12: collate wait 2.8s, fwd+bwd+step 8.5s
+19-10-26 08:28:30:   epoch 93 batch 13: collate wait 3.6s, fwd+bwd+step 9.5s
+19-10-26 08:28:42:   epoch 93 batch 14: collate wait 3.6s, fwd+bwd+step 9.0s
+19-10-26 08:28:53:   epoch 93 batch 15: collate wait 3.0s, fwd+bwd+step 7.4s
+19-10-26 08:28:53: Trn - Source+Target 93, cls loss: 0.0077, seg loss: 0.9363, defrec loss (src+trgt): 1.1528, kendall s_cls: -0.7606, s_seg: 0.4342, s_defrec: 0.2533
+19-10-26 08:29:18: Val - Source 93, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0007, seg loss: 0.9488, defrec loss: 1.3262, total loss: 1.0942
+19-10-26 08:29:18: Val - Source 93, Tomato seg: loss=1.2204, mIoU=0.2928, acc=0.6113
+19-10-26 08:29:18: Val - Source 93, Maize seg: loss=0.8500, mIoU=0.4140, acc=0.8606
+19-10-26 08:29:27: Eval(no-train) - Target 93, acc: 0.6190, avg acc: 0.7000, cls loss: 0.9052  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:29:40:   epoch 94 batch 0: collate wait 5.6s, fwd+bwd+step 7.4s
+19-10-26 08:29:52:   epoch 94 batch 1: collate wait 5.3s, fwd+bwd+step 6.8s
+19-10-26 08:30:06:   epoch 94 batch 2: collate wait 6.0s, fwd+bwd+step 7.8s
+19-10-26 08:30:18:   epoch 94 batch 3: collate wait 5.1s, fwd+bwd+step 6.9s
+19-10-26 08:30:32:   epoch 94 batch 4: collate wait 6.2s, fwd+bwd+step 7.9s
+19-10-26 08:30:44:   epoch 94 batch 5: collate wait 4.5s, fwd+bwd+step 7.8s
+19-10-26 08:30:56:   epoch 94 batch 6: collate wait 5.2s, fwd+bwd+step 6.4s
+19-10-26 08:31:09:   epoch 94 batch 7: collate wait 5.5s, fwd+bwd+step 7.3s
+19-10-26 08:31:21:   epoch 94 batch 8: collate wait 5.4s, fwd+bwd+step 6.7s
+19-10-26 08:31:35:   epoch 94 batch 9: collate wait 5.9s, fwd+bwd+step 8.2s
+19-10-26 08:31:46:   epoch 94 batch 10: collate wait 2.8s, fwd+bwd+step 8.0s
+19-10-26 08:31:55:   epoch 94 batch 11: collate wait 2.9s, fwd+bwd+step 6.9s
+19-10-26 08:32:06:   epoch 94 batch 12: collate wait 3.0s, fwd+bwd+step 7.9s
+19-10-26 08:32:18:   epoch 94 batch 13: collate wait 3.6s, fwd+bwd+step 8.3s
+19-10-26 08:32:28:   epoch 94 batch 14: collate wait 2.5s, fwd+bwd+step 6.8s
+19-10-26 08:32:39:   epoch 94 batch 15: collate wait 3.8s, fwd+bwd+step 8.0s
+19-10-26 08:32:39: Trn - Source+Target 94, cls loss: 0.0049, seg loss: 0.9366, defrec loss (src+trgt): 1.1012, kendall s_cls: -0.7607, s_seg: 0.4343, s_defrec: 0.2533
+19-10-26 08:33:04: Val - Source 94, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0010, seg loss: 1.0449, defrec loss: 1.8780, total loss: 1.3713
+19-10-26 08:33:04: Val - Source 94, Tomato seg: loss=1.5763, mIoU=0.2931, acc=0.6165
+19-10-26 08:33:04: Val - Source 94, Maize seg: loss=0.8517, mIoU=0.4007, acc=0.8498
+19-10-26 08:33:13: Eval(no-train) - Target 94, acc: 0.4921, avg acc: 0.6000, cls loss: 1.3563  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:33:23:   epoch 95 batch 0: collate wait 4.6s, fwd+bwd+step 5.9s
+19-10-26 08:33:35:   epoch 95 batch 1: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 08:33:50:   epoch 95 batch 2: collate wait 6.0s, fwd+bwd+step 9.0s
+19-10-26 08:34:00:   epoch 95 batch 3: collate wait 4.6s, fwd+bwd+step 5.3s
+19-10-26 08:34:14:   epoch 95 batch 4: collate wait 5.7s, fwd+bwd+step 8.1s
+19-10-26 08:34:26:   epoch 95 batch 5: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 08:34:40:   epoch 95 batch 6: collate wait 5.6s, fwd+bwd+step 9.1s
+19-10-26 08:34:53:   epoch 95 batch 7: collate wait 5.3s, fwd+bwd+step 6.9s
+19-10-26 08:35:06:   epoch 95 batch 8: collate wait 5.7s, fwd+bwd+step 7.6s
+19-10-26 08:35:19:   epoch 95 batch 9: collate wait 6.0s, fwd+bwd+step 7.4s
+19-10-26 08:35:30:   epoch 95 batch 10: collate wait 2.9s, fwd+bwd+step 7.4s
+19-10-26 08:35:42:   epoch 95 batch 11: collate wait 3.2s, fwd+bwd+step 8.9s
+19-10-26 08:35:54:   epoch 95 batch 12: collate wait 3.7s, fwd+bwd+step 8.6s
+19-10-26 08:36:05:   epoch 95 batch 13: collate wait 3.1s, fwd+bwd+step 7.6s
+19-10-26 08:36:15:   epoch 95 batch 14: collate wait 2.9s, fwd+bwd+step 7.6s
+19-10-26 08:36:25:   epoch 95 batch 15: collate wait 3.0s, fwd+bwd+step 6.9s
+19-10-26 08:36:25: Trn - Source+Target 95, cls loss: 0.0018, seg loss: 0.9204, defrec loss (src+trgt): 1.2000, kendall s_cls: -0.7608, s_seg: 0.4343, s_defrec: 0.2533
+19-10-26 08:36:50: Val - Source 95, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 0.9529, defrec loss: 1.5933, total loss: 1.2015
+19-10-26 08:36:50: Val - Source 95, Tomato seg: loss=1.3539, mIoU=0.2962, acc=0.6199
+19-10-26 08:36:50: Val - Source 95, Maize seg: loss=0.8071, mIoU=0.4077, acc=0.8503
+19-10-26 08:36:59: Eval(no-train) - Target 95, acc: 0.6032, avg acc: 0.6875, cls loss: 0.9892  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:37:13:   epoch 96 batch 0: collate wait 5.7s, fwd+bwd+step 8.9s
+19-10-26 08:37:25:   epoch 96 batch 1: collate wait 5.3s, fwd+bwd+step 6.0s
+19-10-26 08:37:39:   epoch 96 batch 2: collate wait 6.0s, fwd+bwd+step 8.4s
+19-10-26 08:37:52:   epoch 96 batch 3: collate wait 5.1s, fwd+bwd+step 8.0s
+19-10-26 08:38:07:   epoch 96 batch 4: collate wait 5.9s, fwd+bwd+step 8.9s
+19-10-26 08:38:19:   epoch 96 batch 5: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 08:38:30:   epoch 96 batch 6: collate wait 4.9s, fwd+bwd+step 5.9s
+19-10-26 08:38:42:   epoch 96 batch 7: collate wait 5.1s, fwd+bwd+step 6.3s
+19-10-26 08:38:56:   epoch 96 batch 8: collate wait 5.4s, fwd+bwd+step 8.7s
+19-10-26 08:39:09:   epoch 96 batch 9: collate wait 6.1s, fwd+bwd+step 7.3s
+19-10-26 08:39:20:   epoch 96 batch 10: collate wait 3.6s, fwd+bwd+step 7.4s
+19-10-26 08:39:31:   epoch 96 batch 11: collate wait 3.3s, fwd+bwd+step 7.8s
+19-10-26 08:39:42:   epoch 96 batch 12: collate wait 3.4s, fwd+bwd+step 7.9s
+19-10-26 08:39:52:   epoch 96 batch 13: collate wait 2.2s, fwd+bwd+step 7.5s
+19-10-26 08:40:01:   epoch 96 batch 14: collate wait 2.6s, fwd+bwd+step 6.7s
+19-10-26 08:40:11:   epoch 96 batch 15: collate wait 2.6s, fwd+bwd+step 6.6s
+19-10-26 08:40:11: Trn - Source+Target 96, cls loss: 0.0106, seg loss: 0.9635, defrec loss (src+trgt): 1.3060, kendall s_cls: -0.7608, s_seg: 0.4343, s_defrec: 0.2533
+19-10-26 08:40:36: Val - Source 96, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0012, seg loss: 0.9746, defrec loss: 1.0014, total loss: 0.9859
+19-10-26 08:40:36: Val - Source 96, Tomato seg: loss=1.4726, mIoU=0.2864, acc=0.6009
+19-10-26 08:40:36: Val - Source 96, Maize seg: loss=0.7935, mIoU=0.4099, acc=0.8541
+19-10-26 08:40:44: Eval(no-train) - Target 96, acc: 0.6190, avg acc: 0.7000, cls loss: 0.8172  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:40:57:   epoch 97 batch 0: collate wait 5.6s, fwd+bwd+step 6.8s
+19-10-26 08:41:12:   epoch 97 batch 1: collate wait 6.0s, fwd+bwd+step 9.3s
+19-10-26 08:41:26:   epoch 97 batch 2: collate wait 6.3s, fwd+bwd+step 8.1s
+19-10-26 08:41:39:   epoch 97 batch 3: collate wait 5.7s, fwd+bwd+step 6.4s
+19-10-26 08:41:50:   epoch 97 batch 4: collate wait 4.9s, fwd+bwd+step 6.1s
+19-10-26 08:42:03:   epoch 97 batch 5: collate wait 5.2s, fwd+bwd+step 8.4s
+19-10-26 08:42:20:   epoch 97 batch 6: collate wait 6.6s, fwd+bwd+step 10.0s
+19-10-26 08:42:32:   epoch 97 batch 7: collate wait 5.9s, fwd+bwd+step 6.9s
+19-10-26 08:42:44:   epoch 97 batch 8: collate wait 4.9s, fwd+bwd+step 6.3s
+19-10-26 08:42:56:   epoch 97 batch 9: collate wait 5.3s, fwd+bwd+step 6.7s
+19-10-26 08:43:06:   epoch 97 batch 10: collate wait 2.9s, fwd+bwd+step 7.0s
+19-10-26 08:43:16:   epoch 97 batch 11: collate wait 3.3s, fwd+bwd+step 7.1s
+19-10-26 08:43:27:   epoch 97 batch 12: collate wait 2.8s, fwd+bwd+step 7.9s
+19-10-26 08:43:37:   epoch 97 batch 13: collate wait 3.2s, fwd+bwd+step 7.3s
+19-10-26 08:43:48:   epoch 97 batch 14: collate wait 2.6s, fwd+bwd+step 7.9s
+19-10-26 08:43:57:   epoch 97 batch 15: collate wait 3.0s, fwd+bwd+step 6.6s
+19-10-26 08:43:57: Trn - Source+Target 97, cls loss: 0.0049, seg loss: 0.9258, defrec loss (src+trgt): 0.7632, kendall s_cls: -0.7609, s_seg: 0.4343, s_defrec: 0.2533
+19-10-26 08:44:22: Val - Source 97, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0008, seg loss: 1.0022, defrec loss: 1.4268, total loss: 1.1679
+19-10-26 08:44:22: Val - Source 97, Tomato seg: loss=1.4349, mIoU=0.2918, acc=0.6110
+19-10-26 08:44:22: Val - Source 97, Maize seg: loss=0.8448, mIoU=0.4044, acc=0.8527
+19-10-26 08:44:30: Eval(no-train) - Target 97, acc: 0.4921, avg acc: 0.5908, cls loss: 1.3015  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:44:44:   epoch 98 batch 0: collate wait 6.0s, fwd+bwd+step 7.1s
+19-10-26 08:44:55:   epoch 98 batch 1: collate wait 4.9s, fwd+bwd+step 6.7s
+19-10-26 08:45:07:   epoch 98 batch 2: collate wait 5.3s, fwd+bwd+step 6.9s
+19-10-26 08:45:21:   epoch 98 batch 3: collate wait 5.8s, fwd+bwd+step 8.2s
+19-10-26 08:45:35:   epoch 98 batch 4: collate wait 5.3s, fwd+bwd+step 8.6s
+19-10-26 08:45:47:   epoch 98 batch 5: collate wait 5.3s, fwd+bwd+step 6.2s
+19-10-26 08:45:58:   epoch 98 batch 6: collate wait 5.1s, fwd+bwd+step 6.0s
+19-10-26 08:46:10:   epoch 98 batch 7: collate wait 4.8s, fwd+bwd+step 7.4s
+19-10-26 08:46:22:   epoch 98 batch 8: collate wait 5.1s, fwd+bwd+step 6.8s
+19-10-26 08:46:37:   epoch 98 batch 9: collate wait 6.4s, fwd+bwd+step 8.7s
+19-10-26 08:46:48:   epoch 98 batch 10: collate wait 3.5s, fwd+bwd+step 7.7s
+19-10-26 08:46:59:   epoch 98 batch 11: collate wait 3.1s, fwd+bwd+step 7.6s
+19-10-26 08:47:09:   epoch 98 batch 12: collate wait 2.8s, fwd+bwd+step 7.0s
+19-10-26 08:47:20:   epoch 98 batch 13: collate wait 3.1s, fwd+bwd+step 8.7s
+19-10-26 08:47:30:   epoch 98 batch 14: collate wait 2.9s, fwd+bwd+step 6.7s
+19-10-26 08:47:41:   epoch 98 batch 15: collate wait 3.2s, fwd+bwd+step 7.4s
+19-10-26 08:47:41: Trn - Source+Target 98, cls loss: 0.0115, seg loss: 0.9409, defrec loss (src+trgt): 0.9561, kendall s_cls: -0.7609, s_seg: 0.4343, s_defrec: 0.2533
+19-10-26 08:48:06: Val - Source 98, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0004, seg loss: 1.0480, defrec loss: 1.3250, total loss: 1.1573
+19-10-26 08:48:06: Val - Source 98, Tomato seg: loss=1.6088, mIoU=0.2928, acc=0.6147
+19-10-26 08:48:06: Val - Source 98, Maize seg: loss=0.8441, mIoU=0.4093, acc=0.8562
+19-10-26 08:48:15: Eval(no-train) - Target 98, acc: 0.6508, avg acc: 0.7250, cls loss: 0.8812  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:48:27:   epoch 99 batch 0: collate wait 5.3s, fwd+bwd+step 7.0s
+19-10-26 08:48:40:   epoch 99 batch 1: collate wait 5.9s, fwd+bwd+step 6.8s
+19-10-26 08:48:51:   epoch 99 batch 2: collate wait 5.0s, fwd+bwd+step 5.7s
+19-10-26 08:49:05:   epoch 99 batch 3: collate wait 6.0s, fwd+bwd+step 8.2s
+19-10-26 08:49:21:   epoch 99 batch 4: collate wait 5.9s, fwd+bwd+step 10.3s
+19-10-26 08:49:34:   epoch 99 batch 5: collate wait 5.1s, fwd+bwd+step 7.8s
+19-10-26 08:49:45:   epoch 99 batch 6: collate wait 4.7s, fwd+bwd+step 6.1s
+19-10-26 08:50:00:   epoch 99 batch 7: collate wait 5.9s, fwd+bwd+step 9.0s
+19-10-26 08:50:11:   epoch 99 batch 8: collate wait 5.1s, fwd+bwd+step 6.0s
+19-10-26 08:50:23:   epoch 99 batch 9: collate wait 5.1s, fwd+bwd+step 6.7s
+19-10-26 08:50:31:   epoch 99 batch 10: collate wait 2.5s, fwd+bwd+step 6.2s
+19-10-26 08:50:41:   epoch 99 batch 11: collate wait 2.6s, fwd+bwd+step 6.8s
+19-10-26 08:50:53:   epoch 99 batch 12: collate wait 3.2s, fwd+bwd+step 8.9s
+19-10-26 08:51:04:   epoch 99 batch 13: collate wait 3.1s, fwd+bwd+step 7.9s
+19-10-26 08:51:13:   epoch 99 batch 14: collate wait 2.9s, fwd+bwd+step 6.3s
+19-10-26 08:51:23:   epoch 99 batch 15: collate wait 2.5s, fwd+bwd+step 7.6s
+19-10-26 08:51:23: Trn - Source+Target 99, cls loss: 0.0070, seg loss: 0.9319, defrec loss (src+trgt): 1.2758, kendall s_cls: -0.7609, s_seg: 0.4343, s_defrec: 0.2533
+19-10-26 08:51:48: Val - Source 99, cls acc: 1.0000, cls avg acc: 1.0000, cls loss: 0.0018, seg loss: 1.0131, defrec loss: 0.9713, total loss: 1.0005
+19-10-26 08:51:48: Val - Source 99, Tomato seg: loss=1.4160, mIoU=0.2817, acc=0.5938
+19-10-26 08:51:48: Val - Source 99, Maize seg: loss=0.8666, mIoU=0.4083, acc=0.8547
+19-10-26 08:51:57: Eval(no-train) - Target 99, acc: 0.5079, avg acc: 0.6033, cls loss: 1.0694  <- domain gap indicator (DA-S, cls-only, held-out -- never trained on)
+19-10-26 08:51:57: Best model at epoch 67, source val total loss 0.9137
+19-10-26 08:52:05: FINAL best-model source val: cls acc: 1.0000, cls avg acc: 1.0000, seg loss: 0.9703
+19-10-26 08:52:05: FINAL best-model source val, Tomato seg: loss=1.3845, mIoU=0.3100, acc=0.6443
+19-10-26 08:52:05: FINAL best-model source val, Maize seg: loss=0.8197, mIoU=0.4074, acc=0.8540
+19-10-26 08:52:14: FINAL target (Pheno4D held-out) test accuracy: 0.4921, avg acc: 0.6000, loss: 1.7318  <- classification-only; target segmentation not evaluated (see module docstring)
+19-10-26 08:52:14: Confusion matrix (rows=true, cols=pred, order=['Tomato', 'Maize']):
+[[ 8 32]
+ [ 0 23]]
+19-10-26 08:52:14: Per-class precision/recall/F1 on target test:
+              precision    recall  f1-score   support
+
+      Tomato     1.0000    0.2000    0.3333        40
+       Maize     0.4182    1.0000    0.5897        23
+
+    accuracy                         0.4921        63
+   macro avg     0.7091    0.6000    0.4615        63
+weighted avg     0.7876    0.4921    0.4269        63
+
