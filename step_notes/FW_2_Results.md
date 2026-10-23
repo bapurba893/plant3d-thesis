@@ -132,13 +132,13 @@ cause, but this has not been tested. The FINAL value is used, as in all earlier 
 
 - **Soil cue.** P4a keeps soil and pot. As in `FW_1_Results.md` section 3.3, all P4a numbers may
   partly reflect a soil/pot cue rather than plant shape; no FW row was evaluated on the
-  soil-removed target cache.
+  soil-removed target cache at the time (done later, see `step_notes/FW_4_Results.md`).
 - **Single-seed originals.** Every comparison in section 2 is against one P0 seed.
 
 ## 7. Not done yet
 
 - Block D on P4a: run later (job 359157), see `step_notes/FW_3_Results.md`.
-- No FW row has been cross-evaluated on the soil-removed target cache.
+- Cross-evaluation of the FW rows on the soil-removed target cache: done later, see `step_notes/FW_4_Results.md`.
 - Cause of the KPConv selected-checkpoint mismatch: not investigated.
 
 ## Reproducing

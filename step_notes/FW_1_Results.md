@@ -157,7 +157,7 @@ P4a keeps soil and pot in both datasets. Block PP found (`PP_2_Results.md` 3.6, 
 that soil-kept models drop to about the majority baseline when target soil is removed at test time
 (P4a: 0.651), and that early-season clouds are close to species-blind under both P4 and P4a. **All
 P4a numbers above may therefore partly reflect a soil/pot cue rather than plant shape.** This rerun
-does not test that: no FW row was evaluated on the soil-removed target cache. The comparisons in 3.1
+did not test that at the time; it was tested later on the soil-removed target cache (`step_notes/FW_4_Results.md`). The comparisons in 3.1
 are between rows that all see the same soil-kept data, so the cue is shared by both sides of each
 comparison, but it can still inflate the absolute accuracies and the C1–C5 gap.
 
@@ -167,7 +167,7 @@ comparison, but it can still inflate the absolute accuracies and the C1–C5 gap
 
 - KPConv rows B1–B5 and B3b on P4a (rounds 3 and 4 of `jobs/fw/README.md`, except C3): not started.
 - Block D on P4a: run later (job 359157), see `step_notes/FW_3_Results.md`.
-- No FW row has been cross-evaluated on the soil-removed target cache (would test 3.3).
+- Cross-evaluation of the FW rows on the soil-removed target cache (tests 3.3): done later, see `step_notes/FW_4_Results.md`.
 - Segmentation mIoU: not reported (not comparable across rows).
 
 ## Reproducing

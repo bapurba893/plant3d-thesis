@@ -233,5 +233,5 @@ Each statement is labelled **[measured]** (read directly from the logs above) or
   features).
 - Extra seeds, including seeds that separate the backbone seed from the Block D training seed
   (see f).
-- Block D on the soil-removed target (no Block D run and no FW row has been evaluated on the
-  soil-removed target cache).
+- Block D on the soil-removed target (no Block D run has been evaluated on the soil-removed target
+  cache; the FW A–C rows were cross-evaluated on it later, see `step_notes/FW_4_Results.md`).
