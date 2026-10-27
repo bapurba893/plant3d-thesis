@@ -293,9 +293,62 @@ mean number of P4s clouds misclassified as each species (of 40 tomato and 23 mai
   A4 seed is still below 0.70 on P4s. [inferred] A1's rise matches the change of bias FW_4
   described for P4 (with soil, A1 called almost every tomato maize), not a real improvement.
 
-## 5. Not done yet
+## 5. C1 (DGCNN, DA-0, ALL) trained on P4s
 
-- A DGCNN C1 trained on P4s (proposed separately; not run at the time of writing).
+**This is a model trained without soil, unlike every row in sections 2–4.** Those rows were all
+trained on P4a (soil kept) and only evaluated without soil. [measured] In the P4s manifest, soil
+and pot are removed from all 223 Pheno4D clouds and from 216 of the 225 Crops3D maize clouds. The
+other 9 have no soil or pot label (`step_notes/PP_0_Prerequisite_Checks.md`), and Crops3D tomato
+has no soil. So PP_P4s trains and tests on soil-free clouds that keep the P4a centre and scale.
+
+Job 366337 (`jobs/pp_compare.sbatch`, array task 9, added in commit 434e90e) trained seeds 1, 2
+and 3 in turn: `COMPLETED`, 31m06s, every seed `OK`. The script and arguments are the same as
+PP_P4a (`adapters/train_c1_dgcnn_da0.py --epochs 100 --batch_size 32 --lr 1e-3 --wd 5e-5
+--dropout 0.5 --seed <s>`). Only `--manifest data/preprocessed_variants/P4s/preprocessed_manifest.csv`
+differs, as each run.log's Namespace line confirms. Results: `results/PP_P4s_s{1,2,3}/`.
+
+[measured] Parsed from each run.log with `scripts/10_pp_summarize.py`'s parser. All 9 runs are
+complete: 100 epochs, counts 263 / 45 / 63, no warnings. Target = Pheno4D held-out (63 clouds) of
+each run's own cache. Selected = lowest source validation loss. SD = sample SD over 3 seeds.
+
+| Training/test cache | Metric | s1 / s2 / s3 | Mean ± SD |
+|---|---|---|---|
+| PP_P4a (soil kept) | Full-run mean acc | 0.8467 / 0.8656 / 0.8773 | 0.8632 ± 0.0155 |
+| | Selected acc | 0.8413 / 0.9048 / 0.9048 | 0.8836 ± 0.0367 |
+| | Full-run mean bal. acc | 0.8403 / 0.8363 / 0.8621 | 0.8462 ± 0.0139 |
+| | Selected bal. acc | 0.8380 / 0.8696 / 0.8880 | 0.8652 ± 0.0253 |
+| PP_P4 (soil removed, re-centred and re-scaled) | Full-run mean acc | 0.7149 / 0.6879 / 0.7070 | 0.7033 ± 0.0139 |
+| | Selected acc | 0.7778 / 0.6508 / 0.7619 | 0.7302 ± 0.0692 |
+| | Full-run mean bal. acc | 0.7742 / 0.7539 / 0.7685 | 0.7655 ± 0.0105 |
+| | Selected bal. acc | 0.8250 / 0.7250 / 0.8125 | 0.7875 ± 0.0545 |
+| **PP_P4s (soil removed, P4a centre and scale)** | Full-run mean acc | 0.6091 / 0.5705 / 0.4975 | **0.5590 ± 0.0567** |
+| | Selected acc | 0.6190 / 0.5238 / 0.4762 | **0.5397 ± 0.0727** |
+| | Full-run mean bal. acc | 0.6918 / 0.6617 / 0.6013 | **0.6516 ± 0.0461** |
+| | Selected bal. acc | 0.7000 / 0.6250 / 0.5875 | **0.6375 ± 0.0573** |
+
+Selected epochs: P4a 95 / 99 / 92, P4 81 / 81 / 80, P4s 78 / 69 / 87. Confusion matrices of the
+selected checkpoints, tomato clouds predicted maize (of 40): P4a 6 / 0 / 2, P4 14 / 22 / 15,
+P4s 24 / 30 / 33. No maize cloud is predicted tomato on P4 or P4s in any seed.
+
+- **Training without soil on P4s gives the lowest C1 accuracy of the three caches.** [measured]
+  All 3 P4s seeds are below every P4 seed and every P4a seed, on both full-run mean and selected
+  accuracy. All 3 P4s seeds are below the always-tomato level of 0.635 on full-run mean and on
+  selected accuracy.
+- **The errors are all tomato called maize.** [measured] 24–33 of the 40 tomato clouds are called
+  maize in every P4s seed. That is the same direction as P4, and stronger.
+- **Training on P4s barely beats evaluating the P4a-trained C1 on P4s.** [measured] The P4a-trained
+  C1 scores 0.4709 ± 0.0733 on P4s (section 4b, selected checkpoints). The P4s-trained C1 scores
+  0.5397 ± 0.0727 (selected). [inferred] Training without soil does not recover the soil-kept
+  accuracy (0.8836). On this backbone, the soil-free clouds at P4a scale seem harder to separate
+  than P4's re-scaled ones (0.7302). Possible reasons, none tested: the density change, or
+  absolute size at P4a scale (plants occupy a smaller, varying part of the unit sphere once soil
+  is gone) acting as a misleading species cue. Not separated by any run so far.
+- **Not done:** evaluating the PP_P4s checkpoints with `scripts/16_fw_cross_eval.py`. This needs
+  code changes: the script maps C1 to `PP_P4a_s<seed>` and assumes P4a is the training cache for
+  its own-cache and Block PP checks.
+
+## 6. Not done yet
+
 - A cache that removes soil without changing point density, to separate those two effects (4a).
 - The evaluation pooled over all rows of one backbone, or a bootstrap that resamples within
   species (with 2 plants per species, it would have only 3 distinct resamples per species).
