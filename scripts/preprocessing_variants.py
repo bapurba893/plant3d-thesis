@@ -632,6 +632,110 @@ def pipeline_P4d(pts, labels=None, dataset=None, species=None, target_n=DEFAULT_
     return pts_out.astype(np.float32), center, scale, info
 
 
+_p4a_lookup_cache = None  # lazy, module-level: {(dataset, species, stem): (center(3,) float64, scale float)}
+
+
+_P4A_CACHE_ROOT = _THIS_DIR.parent / "data" / "preprocessed_variants" / "P4a"
+
+
+def _load_p4a_lookup():
+    """
+    Lazily builds a {(dataset, species, stem): (center, scale)} dict for
+    pipeline_P4s, keyed the same way cache_path_for() in
+    07_preprocess_variants.py builds a cache path (dataset/species/<stem>.npz)
+    -- no dependence on absolute paths, which differ between the laptop and
+    the cluster.
+
+    Reads center/scale from each P4a .npz CACHE FILE directly, not from
+    data/preprocessed_variants/P4a/preprocessed_manifest.csv. Found 2026-10-27
+    while verifying P4s: P4a's own CSV manifest loses the last 1-2 bits of
+    the float64 norm_center/norm_scale values relative to what's actually
+    stored in P4a's own .npz files (confirmed on 257/531 rows, diffs of
+    ~1e-17 to 1e-14 absolute -- an ordinary text round-trip artifact of
+    writing/reading float64 via CSV, not a bug in P4a's pipeline itself).
+    Reading the .npz directly avoids inheriting that same loss, so P4s's
+    stored center/scale are bit-exactly equal to P4a's, not merely equal to
+    full double precision.
+    """
+    global _p4a_lookup_cache
+    if _p4a_lookup_cache is not None:
+        return _p4a_lookup_cache
+    manifest_path = _P4A_CACHE_ROOT / "preprocessed_manifest.csv"
+    if not manifest_path.exists():
+        raise FileNotFoundError(
+            f"pipeline_P4s requires the soil-kept P4a cache at {_P4A_CACHE_ROOT}, "
+            f"but {manifest_path} does not exist. Generate P4a first (--pipeline P4a).")
+    import pandas as pd
+    df = pd.read_csv(manifest_path)
+    lookup = {}
+    for _, r in df.iterrows():
+        stem = Path(str(r["source_filepath"])).stem
+        dataset, species = str(r["dataset"]), str(r["species"])
+        key = (dataset, species, stem)
+        npz_path = _P4A_CACHE_ROOT / dataset / species / f"{stem}.npz"
+        with np.load(npz_path) as d:
+            center = np.array([d["norm_center_x"].item(), d["norm_center_y"].item(),
+                                d["norm_center_z"].item()], dtype=np.float64)
+            scale = float(d["norm_scale"].item())
+        lookup[key] = (center, scale)
+    _p4a_lookup_cache = lookup
+    return lookup
+
+
+def pipeline_P4s(pts, labels=None, dataset=None, species=None, target_n=DEFAULT_TARGET_N,
+                  sor_k=DEFAULT_SOR_K, sor_std_ratio=DEFAULT_SOR_STD_RATIO, seed=DEFAULT_SEED,
+                  shared_cache_dir=None, stem=None):
+    """P4s -- clean soil ablation requested 2026-10-27: do soil/pot removal,
+    up-axis alignment, height-relative voxelling and FPS to target_n exactly
+    as pipeline_P4 does, but DO NOT recompute norm_center/norm_scale from the
+    post-cut, post-FPS cloud. Instead reuse the center/scale that pipeline_P4a
+    (same cloud, soil/pot KEPT) already stored for this exact file, via
+    _load_p4a_lookup() above. This isolates "soil removed from the geometry"
+    from "soil removed from the normalisation statistics" -- P4 confounds the
+    two (its own normalize_and_center() runs on the already-soil-removed,
+    already-FPS'd cloud), so P4s is the control that holds normalisation
+    fixed to the soil-kept reference frame while still cutting soil/pot out
+    of the points themselves.
+
+    `stem` is REQUIRED (unlike the other pipelines, where it's only used for
+    shared_cache_dir) -- it is the P4a lookup key together with dataset/species.
+    Raises KeyError if this exact (dataset, species, stem) has no P4a entry,
+    rather than silently falling back to a self-computed normalisation.
+
+    shared_cache_dir: see outlier_and_soil_removed()'s docstring."""
+    _check_args(dataset, species, "pipeline_P4s")
+    if stem is None:
+        raise ValueError("pipeline_P4s requires `stem` to look up P4a's stored center/scale "
+                          "for this same cloud.")
+    p4a_lookup = _load_p4a_lookup()
+    key = (dataset, species, stem)
+    if key not in p4a_lookup:
+        raise KeyError(f"No P4a manifest entry found for {key} -- cannot borrow its "
+                        f"norm_center/norm_scale. Regenerate P4a first.")
+    ext_center, ext_scale = p4a_lookup[key]
+
+    shared = outlier_and_soil_removed(pts, labels, dataset, species, sor_k, sor_std_ratio,
+                                       shared_cache_dir, stem)
+    n_raw, n_rm = shared["n_raw"], shared["n_outliers_removed"]
+    pts_c = shared["pts_after_outlier"]
+    pts_s, labels_s, n_soil = shared["pts_after_soil"], shared["labels_after_soil"], shared["n_soil_pot_removed"]
+    pts_a = align_up_axis(pts_s, dataset, species)
+    pts_v, labels_v, voxel_size = voxel_downsample_height_relative(pts_a, labels_s)
+    pts_f, labels_f = fps_to_target(pts_v, labels_v, target_n, seed)
+
+    pts_out = (pts_f.astype(np.float32) - ext_center.astype(np.float32)) / (ext_scale + 1e-8)
+    center, scale = ext_center, ext_scale
+
+    info = _base_info("P4s", n_raw, len(pts_c), n_rm)
+    info.update(n_after_soil_removal=len(pts_s), n_soil_pot_removed=n_soil,
+                voxel_size_mm=voxel_size, voxel_size_basis="height/200_every_cloud",
+                n_predecimated=len(pts_v), sampling_method="fps",
+                n_final=len(pts_out), up_axis_aligned=True,
+                norm_kind="unit_sphere_from_P4a",
+                labels_out=labels_f)
+    return pts_out.astype(np.float32), center, scale, info
+
+
 PIPELINES = {
     "P1": pipeline_P1,
     "P2": pipeline_P2,
@@ -641,4 +745,5 @@ PIPELINES = {
     "P4b": pipeline_P4b,
     "P4c": pipeline_P4c,
     "P4d": pipeline_P4d,
+    "P4s": pipeline_P4s,
 }
