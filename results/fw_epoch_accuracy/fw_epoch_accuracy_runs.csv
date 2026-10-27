@@ -1,0 +1,55 @@
+row,seed,run_dir,oracle,complete,n_epochs,final_epoch,final_epoch_acc,best_epoch,best_epoch_acc,best_epoch_ties,selected_epoch,selected_acc,full_run_mean_acc,warnings
+A1,1,results/FW_A1_s1,False,True,100,99,0.3968,13,0.9683,1,97,0.4127,0.501437,
+A1,2,results/FW_A1_s2,False,True,100,99,0.3968,13,0.9206,1,81,0.3968,0.51428,
+A1,3,results/FW_A1_s3,False,True,100,99,0.4921,24,0.9524,1,92,0.4603,0.474771,FINAL target acc 0.4603 != epoch 92's logged 0.4762 (PointNet++ eval nondeterminism)
+A2,1,results/FW_A2_s1,False,True,100,99,0.6667,19,0.9524,1,66,0.6349,0.63333,
+A2,2,results/FW_A2_s2,False,True,100,99,0.381,12,0.9683,1,40,0.3968,0.498583,
+A2,3,results/FW_A2_s3,False,True,100,99,0.4603,36,0.9048,1,54,0.5079,0.563491,FINAL target acc 0.5079 != epoch 54's logged 0.4921 (PointNet++ eval nondeterminism)
+A3,1,results/FW_A3_s1,False,True,100,99,0.7143,11,0.9841,1,77,0.8889,0.793173,FINAL target acc 0.8889 != epoch 77's logged 0.9206 (PointNet++ eval nondeterminism)
+A3,2,results/FW_A3_s2,False,True,100,99,0.3651,67,0.9206,1,88,0.4762,0.613016,FINAL target acc 0.4762 != epoch 88's logged 0.4444 (PointNet++ eval nondeterminism)
+A3,3,results/FW_A3_s3,False,True,100,99,0.9048,24,0.9841,2,82,0.9524,0.787619,FINAL target acc 0.9524 != epoch 82's logged 0.9365 (PointNet++ eval nondeterminism)
+A4,1,results/FW_A4_s1,False,True,100,99,0.3651,28,0.9683,2,41,0.3968,0.500013,
+A4,2,results/FW_A4_s2,False,True,100,99,0.5873,26,0.9206,1,51,0.6032,0.573813,
+A4,3,results/FW_A4_s3,False,True,100,99,0.5873,57,0.8254,1,54,0.5556,0.55698,FINAL target acc 0.5556 != epoch 54's logged 0.5397 (PointNet++ eval nondeterminism)
+A5,1,results/FW_A5_s1,True,True,100,99,0.9841,10,1.0,21,93,0.9841,0.931429,FINAL target acc 0.9841 != epoch 93's logged 1.0000 (PointNet++ eval nondeterminism)
+A5,2,results/FW_A5_s2,True,True,100,99,0.9841,8,1.0,36,95,0.9841,0.9363469999999999,
+A5,3,results/FW_A5_s3,True,True,100,99,1.0,31,1.0,60,95,1.0,0.914764,
+A6,1,results/FW_A6_s1,False,True,100,99,0.619,5,0.9206,1,97,0.6825,0.649528,FINAL target acc 0.6825 != epoch 97's logged 0.6508 (PointNet++ eval nondeterminism)
+A6,2,results/FW_A6_s2,False,True,100,99,0.873,29,0.9841,1,72,0.8254,0.776512,FINAL target acc 0.8254 != epoch 72's logged 0.7778 (PointNet++ eval nondeterminism)
+A6,3,results/FW_A6_s3,False,True,100,99,0.8254,23,0.9365,2,84,0.8095,0.662381,
+B1,1,results/FW_B1_s1,False,True,100,99,0.6984,7,0.9365,4,96,0.6508,0.663651,FINAL target acc 0.6508 != epoch 96's logged 0.7143
+B1,2,results/FW_B1_s2,False,True,100,99,0.6825,4,0.9365,9,86,0.7619,0.6846,FINAL target acc 0.7619 != epoch 86's logged 0.7302
+B1,3,results/FW_B1_s3,False,True,100,99,0.619,7,0.9365,8,84,0.746,0.670315,FINAL target acc 0.7460 != epoch 84's logged 0.7143
+B2,1,results/FW_B2_s1,False,True,100,99,0.746,4,0.9365,3,60,0.6984,0.727461,
+B2,2,results/FW_B2_s2,False,True,100,99,0.619,6,0.9365,2,55,0.6667,0.7138070000000001,FINAL target acc 0.6667 != epoch 55's logged 0.6825
+B2,3,results/FW_B2_s3,False,True,100,99,0.619,3,0.9365,2,72,0.6508,0.612061,FINAL target acc 0.6508 != epoch 72's logged 0.6190
+B3,1,results/FW_B3_s1,False,True,100,99,0.6825,2,0.9206,4,94,0.7302,0.691275,FINAL target acc 0.7302 != epoch 94's logged 0.7143
+B3,2,results/FW_B3_s2,False,True,100,99,0.5397,5,0.9365,3,93,0.5714,0.6901579999999999,FINAL target acc 0.5714 != epoch 93's logged 0.5397
+B3,3,results/FW_B3_s3,False,True,100,99,0.6825,2,0.9365,2,83,0.6349,0.7246049999999999,logged best epoch 83 != argmin of logged val total loss 87 (4-dp rounding tie?)
+B3b,1,results/FW_B3b_s1,False,True,100,99,0.8889,4,0.9365,33,92,0.7937,0.875394,FINAL target acc 0.7937 != epoch 92's logged 0.7460
+B3b,2,results/FW_B3b_s2,False,True,100,99,0.9048,6,0.9365,18,96,0.9048,0.907942,
+B3b,3,results/FW_B3b_s3,False,True,100,99,0.5079,10,0.9524,1,67,0.4921,0.711426,FINAL target acc 0.4921 != epoch 67's logged 0.4444
+B4,1,results/FW_B4_s1,False,True,100,99,0.873,11,0.9365,4,82,0.8413,0.830165,FINAL target acc 0.8413 != epoch 82's logged 0.9206
+B4,2,results/FW_B4_s2,False,True,100,99,0.7778,60,0.9524,1,31,0.4921,0.7507980000000001,
+B4,3,results/FW_B4_s3,False,True,100,99,0.9048,13,0.9683,3,44,0.5556,0.778892,FINAL target acc 0.5556 != epoch 44's logged 0.5714
+B5,1,results/FW_B5_s1,True,True,100,99,1.0,17,1.0,52,74,0.9841,0.960317,FINAL target acc 0.9841 != epoch 74's logged 1.0000
+B5,2,results/FW_B5_s2,True,True,100,99,1.0,15,1.0,66,88,1.0,0.94857,
+B5,3,results/FW_B5_s3,True,True,100,99,1.0,16,1.0,73,69,1.0,0.9541280000000001,
+C1,1,results/PP_P4a_s1,False,True,100,99,0.873,6,0.9683,1,95,0.8413,0.8466670000000001,
+C1,2,results/PP_P4a_s2,False,True,100,99,0.9048,5,0.9206,2,99,0.9048,0.865568,
+C1,3,results/PP_P4a_s3,False,True,100,99,0.9048,38,0.9683,2,92,0.9048,0.877314,
+C2,1,results/FW_C2_s1,False,True,100,99,0.4603,6,0.9683,1,67,0.5714,0.605718,
+C2,2,results/FW_C2_s2,False,True,100,99,0.4286,7,0.9206,3,62,0.9206,0.626981,
+C2,3,results/FW_C2_s3,False,True,100,99,0.5079,7,0.9365,1,70,0.9048,0.6958759999999999,
+C3,1,results/FW_C3_s1,False,True,100,99,0.9048,45,0.9683,1,99,0.9048,0.840642,
+C3,2,results/FW_C3_s2,False,True,100,99,0.9683,99,0.9683,1,79,0.9365,0.8649169999999999,
+C3,3,results/FW_C3_s3,False,True,100,99,0.9206,52,0.9683,1,85,0.9524,0.851908,
+C4,1,results/FW_C4_s1,False,True,100,99,0.5397,9,0.9206,1,55,0.5873,0.619212,
+C4,2,results/FW_C4_s2,False,True,100,99,0.5238,52,0.873,1,58,0.619,0.612218,
+C4,3,results/FW_C4_s3,False,True,100,99,0.6349,12,0.9365,1,32,0.746,0.663641,
+C5,1,results/FW_C5_s1,True,True,100,99,1.0,19,1.0,12,97,1.0,0.8901640000000001,
+C5,2,results/FW_C5_s2,True,True,100,99,0.9365,45,1.0,3,99,0.9365,0.8877809999999999,
+C5,3,results/FW_C5_s3,True,True,100,99,0.9206,36,1.0,5,99,0.9206,0.8963460000000001,
+C6,1,results/FW_C6_s1,False,True,100,99,0.9524,36,0.9683,5,98,0.9683,0.875399,
+C6,2,results/FW_C6_s2,False,True,100,99,0.873,2,0.9365,9,95,0.8889,0.8247620000000001,
+C6,3,results/FW_C6_s3,False,True,100,99,0.9365,45,0.9683,2,97,0.9524,0.905878,
