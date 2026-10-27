@@ -240,9 +240,12 @@ All of the following is [measured] by comparing `data/preprocessed_variants/{P4a
   FPS is 107,873 in P4a and 37,591 in P4s (the same as P4). The 4096 FPS points are therefore
   drawn from the plant only, so the plant is sampled more densely than in P4a. `voxel_size_mm`
   also differs from P4a by up to 0.35 mm, the same difference P4 shows.
-- **How P4s was built is not recorded here.** No script in the repo mentions P4s other than
-  `16_fw_cross_eval.py`'s usage example. [inferred] It was presumably generated outside this
-  session; its build steps should be recorded next to the other variants.
+- **How P4s was built.** [measured] `scripts/preprocessing_variants.py::pipeline_P4s`, added in
+  commit `c9f72f1` and registered as `"P4s"` in that file's `PIPELINES`, so it is run through
+  `scripts/07_preprocess_variants.py --pipeline P4s`. The cache was built on the laptop, because
+  the raw Crops3D/Pheno4D clouds are only there, and transferred to the cluster. `pipeline_P4s`
+  reads each cloud's stored centre and scale from the soil-kept P4a cache, which is why they
+  match P4a exactly.
 
 [inferred] So P4s separates "soil removed" from "re-centred and re-scaled", but not from "point
 density changed". A P4a → P4s difference is the soil plus the density change, not the soil alone.
