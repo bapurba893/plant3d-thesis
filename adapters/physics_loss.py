@@ -56,10 +56,11 @@ findings and design reasoning in step_notes/D5_D6_Physics_Loss.md:
    per-species (a categorical structure nowhere mentioned in either
    doc). SEPARATE scalars per trait (not shared between height and
    stem_diameter), matching D0's own convention of always fitting them
-   as two independent curves per plant. Initialized from D0's
-   population-average fitted values (a reasonable starting point, not a
-   fixed target -- they remain fully trainable throughout D5/D6
-   training) rather than an arbitrary guess. The rate parameter (rho for
+   as two independent curves per plant. Initialized from the average of
+   D0's fitted values over the TRAINING plants only (since 2026-10-27;
+   earlier runs averaged all 14 plants, val and test included) -- a
+   reasonable starting point, not a fixed target: they remain fully
+   trainable throughout D5/D6 training. The rate parameter (rho for
    Logistic, beta for Gompertz) is softplus-bounded (effective_rate_param)
    to keep it strictly positive -- found necessary (not sufficient on its
    own, see point 1) via the same synthetic recovery test: an

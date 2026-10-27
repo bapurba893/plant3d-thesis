@@ -5,6 +5,13 @@ D0 (trait-extraction pipeline, Block D prerequisite): fits Logistic and
 Gompertz growth curves per plant to `data/traits/pheno4d_traits_
 timeseries_long.csv` (from `scripts/assemble_trait_timeseries.py`).
 
+Two modes: the default (`fit_all`) fits one curve per plant on the whole
+trajectory; `--causal` (`fit_all_causal`) fits one curve per scan on that
+plant's strictly earlier scans only. Block D's growth-curve inputs
+(D2-D6) use the causal file since 2026-10-27; the whole-trajectory file
+gave each test scan curve parameters fitted on its own and later trait
+values (see step_notes/FW_5_Results.md).
+
 **Scope, confirmed with the user before this pipeline was built**:
 curve-fitting applies ONLY to height and stem_diameter -- the two traits
 CLAUDE.md's `L_mono` monotonicity rule already singles out. leaf_area,
@@ -185,14 +192,88 @@ def fit_all(timeseries_csv, out_csv):
     return out_df
 
 
+def fit_all_causal(timeseries_csv, out_csv):
+    """Causal (expanding-window) version of fit_all, used as the Block D
+    growth-curve INPUT (D2-D6) since 2026-10-27. For every scan of every
+    plant and each trait in TRAITS_TO_FIT, fits Logistic and Gompertz
+    using ONLY that plant's scans strictly earlier than the scan
+    (elapsed_days < t), so a scan's curve parameters never contain its
+    own or any later trait value. fit_all (whole-trajectory fits,
+    data/traits/pheno4d_growth_curves.csv) is kept unchanged: it is the
+    D0 record, is read by compute_growth_rate_targets.py for the
+    height_rate targets, and (training plants only) supplies D2's
+    fallback values and D5/D6's starting values.
+
+    Same exclusions and thresholds as fit_all: stem_diameter windows
+    drop low-confidence scans, NaN values are dropped, and a window with
+    fewer than MIN_POINTS_TO_FIT points is written as
+    "insufficient_points" with no parameters (D2 then uses the fallback,
+    see train_d2_fusion_growth_curves.py::build_growth_feature_table).
+    Output: one row per (plant_id, scan_date, trait)."""
+    df = pd.read_csv(timeseries_csv)
+
+    rows = []
+    for (plant_id, species), group in df.groupby(["plant_id", "species"]):
+        group = group.sort_values("elapsed_days")
+        for _, scan in group.iterrows():
+            t_now = scan["elapsed_days"]
+            earlier = group[group["elapsed_days"] < t_now]
+            for trait in TRAITS_TO_FIT:
+                sub = earlier
+                if trait == "stem_diameter":
+                    sub = sub[~sub["stem_leaf_boundary_low_confidence"]]
+                t = sub["elapsed_days"].to_numpy(dtype=np.float64)
+                y = sub[trait].to_numpy(dtype=np.float64)
+                valid = ~np.isnan(y)
+                t, y = t[valid], y[valid]
+
+                row = {"plant_id": plant_id, "species": species, "scan_date": scan["scan_date"],
+                       "elapsed_days": t_now, "trait": trait, "n_points_fit": len(t)}
+                if len(t) < MIN_POINTS_TO_FIT:
+                    row["fit_quality"] = "insufficient_points"
+                    rows.append(row)
+                    continue
+
+                logi = fit_logistic(t, y)
+                gomp = fit_gompertz(t, y)
+                if logi is None or gomp is None:
+                    row["fit_quality"] = "non_convergent"
+                    rows.append(row)
+                    continue
+
+                row["fit_quality"] = "fitted"
+                for k, v in logi.items():
+                    row[f"logistic_{k}" if k in ("R2", "fit_quality") else k] = v
+                for k, v in gomp.items():
+                    row[f"gompertz_{k}" if k in ("R2", "fit_quality") else k] = v
+                rows.append(row)
+
+    out_df = pd.DataFrame(rows)
+    out_path = Path(out_csv)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_df.to_csv(out_path, index=False)
+    print(f"Wrote {len(out_df)} rows to {out_path}")
+    print(out_df.groupby(["trait", "species"])["fit_quality"].value_counts().unstack(fill_value=0))
+    return out_df
+
+
 def main():
     ap = argparse.ArgumentParser(description="D0: fit Logistic/Gompertz growth curves (height, stem_diameter only)")
     ap.add_argument("--timeseries_csv", type=str,
                      default=str(_REPO_ROOT / "data" / "traits" / "pheno4d_traits_timeseries_long.csv"))
-    ap.add_argument("--out", type=str,
-                     default=str(_REPO_ROOT / "data" / "traits" / "pheno4d_growth_curves.csv"))
+    ap.add_argument("--out", type=str, default=None,
+                     help="default: data/traits/pheno4d_growth_curves.csv, or "
+                          "data/traits/pheno4d_growth_curves_causal.csv with --causal")
+    ap.add_argument("--causal", action="store_true",
+                     help="fit each scan's curves on that plant's strictly earlier scans only "
+                          "(fit_all_causal), instead of one whole-trajectory fit per plant")
     args = ap.parse_args()
-    fit_all(args.timeseries_csv, args.out)
+    if args.causal:
+        out = args.out or str(_REPO_ROOT / "data" / "traits" / "pheno4d_growth_curves_causal.csv")
+        fit_all_causal(args.timeseries_csv, out)
+    else:
+        out = args.out or str(_REPO_ROOT / "data" / "traits" / "pheno4d_growth_curves.csv")
+        fit_all(args.timeseries_csv, out)
 
 
 if __name__ == "__main__":

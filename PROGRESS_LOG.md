@@ -1536,6 +1536,41 @@ part of that change may come from the rescaling rather than the soil itself.
 
 ---
 
+## 47. A Leak in the Growth-Curve Inputs Found, Fixed, and Block D Rerun — 2026-10-27
+
+A check of the Block D code found that the growth-curve inputs of D2–D6 leaked within each plant.
+Every scan of a plant, test plants included, was given that plant's growth curve fitted on its
+**whole** season, so a test scan's inputs already contained its own and later measurements (the
+fitted final height, for example). The plant split itself was clean; nothing leaked between plants.
+The starting values of D5/D6's growth-law parameters were also averaged over all 14 plants, test
+plants included.
+
+The fix: each scan now gets curves fitted only on its plant's **earlier** scans. The first four
+scans of each plant have too few earlier points for a fit, so they get the average of the training
+plants (per species) plus a yes/no "fit available" input. D5/D6 now start from the training plants'
+average only. D2–D6 and the control were rerun three times as job 366279 (all three tasks finished
+on 2026-10-27); D1 has no growth-curve input and was not rerun. The old results (job 359157) were
+kept unchanged. Results: `step_notes/FW_5_Results.md`.
+
+What was measured: the one clear gain the growth-curve inputs had shown (D2 better than D1 on stem
+growth rate in all three runs) disappears and turns into a loss in all three runs, so that gain came
+from the leak. On height, D2 is now level with D1. D2 and D3 are now better than D1 on stem
+diameter in all three runs, but at a low level (R² about 0.14) and for an unknown reason. The
+conclusions about D4–D6 do not change: D5, D6 and the control beat D4 on leaf area and volume, and
+the physics loss still does not beat the control on any trait in all three runs. Elsewhere the
+averages moved by less than 0.04.
+
+Caveats. The height growth-rate targets are still computed from whole-season curves; that is how
+the label is defined, not an input, and it was kept as a known limitation. Most early-season curve
+fits are poor quality (few points). Three runs only, with the backbone run and the Block D run
+varying together.
+
+**In one sentence**: after removing a within-plant leak from the growth-curve inputs, the
+growth-curve parameters no longer give any clear gain, and the D4–D6 and physics-loss conclusions
+are unchanged.
+
+---
+
 ## Current Status: the 24-Row Strategy Table
 
 The full experiment plan is a 24-row table (5 blocks: three model architectures each tested
@@ -1563,7 +1598,7 @@ at-a-glance status.
 | C (DGCNN) | C4 | Adversarial, jitter-noise augmentation only | **Done** — same underperformance vs. no-adaptation as C2, confirming it's not an augmentation-mix artifact (Milestone 14) | 0.632 ± 0.028 |
 | C (DGCNN) | C5 | Oracle (upper-bound reference) | **Done** — Block C complete. Near-perfect ceiling (0.925 full-run mean / 1.0000 selected) confirms real, ~13-25 point headroom above the no-adaptation baseline (Milestone 15) | 0.891 ± 0.004 (ceiling) |
 | C (DGCNN) | C6 (added) | Discrepancy-based adaptation | **Done** — added row (Milestone 39) | 0.869 ± 0.041 |
-| D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | **Done** — original Block D run (Milestones 36–38) | Not started |
+| D (fusion) | D1–D6 | Combining the best backbone/strategy with growth-curve features | **Done** — original Block D run (Milestones 36–38) | Rerun on P4a features (Milestone 45), then with leak-free growth-curve inputs (Milestone 47, `step_notes/FW_5_Results.md`); trait R², not accuracy |
 | E (deployment, optional) | E1–E3 | Model compression / distillation | Not started | – |
 
 The last column is from the full-workflow rerun (Milestones 43 and 44,
@@ -1572,7 +1607,9 @@ runs of the preprocessing comparison. On the rerun, no adaptation row clearly be
 no-adaptation baseline C1 (0.863); C3 is about equal to it, C6 has 2 of 3 runs above it, and C2/C4
 are below it. On KPConv, B3b and B3 beat their like-for-like baseline B1 (0.673) in all 3 runs;
 B3b has 2 of 3 runs above C1, C6 and B4 (B4 uses cropping/dropout augmentation only). A5, B5 and
-C5 are upper-bound references. Block D was rerun as job 359157 (`step_notes/FW_3_Results.md`).
+C5 are upper-bound references. Block D was rerun as job 359157 (`step_notes/FW_3_Results.md`),
+and D2–D6 again as job 366279 with growth-curve inputs fitted on earlier scans only
+(`step_notes/FW_5_Results.md`).
 
 **In one sentence:** On the soil-kept preprocessing with three runs per row (Milestone 43,
 `step_notes/FW_1_Results.md`), no adaptation method clearly beats the DGCNN no-adaptation
@@ -1587,7 +1624,8 @@ one weak run (71.1%) and so does not clearly beat the DGCNN baseline, the DGCNN 
 row or the cropping-only KPConv baseline (78.7%), and the discrepancy-based method falls to 70.2%
 from its original 80.8%; the KPConv upper-bound reference reaches 95.4%. Only the DGCNN baseline is
 a fair before/after preprocessing test, the soil-kept recipe may let models use the soil rather
-than plant shape, and Block D was rerun as job 359157 (`step_notes/FW_3_Results.md`).
+than plant shape, and Block D was rerun as job 359157 (`step_notes/FW_3_Results.md`) and, after a
+growth-curve input leak was fixed, as job 366279 (`step_notes/FW_5_Results.md`).
 
 ---
 

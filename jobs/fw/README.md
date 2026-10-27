@@ -4,6 +4,9 @@ Status (2026-10-21): **rounds 1 to 4 done** (all seeds OK; C1 = reused `PP_P4a`)
 `step_notes/FW_1_Results.md` (PointNet++, DGCNN) and `step_notes/FW_2_Results.md` (KPConv).
 **Block D was run as job 359157** (3-task array, seeds 1, 2, 3, all finished; elapsed 32:48,
 19:14 and 36:42 per sacct); results in `step_notes/FW_3_Results.md`.
+**D2–D6 and the control were rerun with causal growth-curve inputs as job 366279** (2026-10-27,
+3-task array, all finished); results in `step_notes/FW_5_Results.md`. See "Block D rerun with
+causal growth-curve inputs" below.
 Every A/B/C row is retrained with seeds 1, 2, 3 on
 `data/preprocessed_variants/P4a/preprocessed_manifest.csv` (soil kept; best baseline in Block PP,
 see `step_notes/PP_2_Results.md` and `PP_3_Results.md`). Results go to `results/FW_<row>_s<seed>/`.
@@ -52,11 +55,11 @@ Every A/B/C row needs 1 GPU (A100); D rows ran on CPU.
 | C5 | `train_c5_dgcnn_da_o.py` | DGCNN | DA-O | ALL | added | 0.39 h | 1.2 h | 12 h |
 | C6 | `train_c6_dgcnn_da_d.py` | DGCNN | DA-D | ALL | added | 0.25 h | 0.8 h | 12 h |
 | D1 | `train_d1_fusion_baseline.py` | MLP head on frozen B3b features | (B3b: DA-S) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished |
-| D2 | `train_d2_fusion_growth_curves.py` | same + growth-curve params | (B3b) | – | not applicable | ~1 min (CPU) | – | job 359157: 3 seeds, all finished |
-| D3 | `train_d3_fusion_temporal.py` | same + temporal info | (B3b) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished |
-| D4 | `train_d4_fusion_previous_stage.py` | same + previous stage | (B3b) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished |
-| D5 | `train_d5_fusion_physics_logistic.py` | D4 + Logistic ODE loss | (B3b) | – | not applicable | ~2 min (CPU) | – | job 359157: 3 seeds, all finished |
-| D6 | `train_d6_fusion_physics_gompertz.py` | D4 + Gompertz ODE loss | (B3b) | – | not applicable | ~1 min (CPU) | – | job 359157: 3 seeds, all finished |
+| D2 | `train_d2_fusion_growth_curves.py` | same + growth-curve params | (B3b) | – | not applicable | ~1 min (CPU) | – | job 359157: 3 seeds, all finished; causal rerun job 366279: 3 seeds, all finished |
+| D3 | `train_d3_fusion_temporal.py` | same + temporal info | (B3b) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished; causal rerun job 366279: 3 seeds, all finished |
+| D4 | `train_d4_fusion_previous_stage.py` | same + previous stage | (B3b) | – | not applicable | < 1 min (CPU) | – | job 359157: 3 seeds, all finished; causal rerun job 366279: 3 seeds, all finished |
+| D5 | `train_d5_fusion_physics_logistic.py` | D4 + Logistic ODE loss | (B3b) | – | not applicable | ~2 min (CPU) | – | job 359157: 3 seeds, all finished; causal rerun job 366279: 3 seeds, all finished |
+| D6 | `train_d6_fusion_physics_gompertz.py` | D4 + Gompertz ODE loss | (B3b) | – | not applicable | ~1 min (CPU) | – | job 359157: 3 seeds, all finished; causal rerun job 366279: 3 seeds, all finished |
 
 The 24 rows are the strategy table's 21 A–D rows plus the three added rows B3b, A6 and C6.
 Block E (optional) is not included.
@@ -108,6 +111,29 @@ changed.
 
 The original Block D files were **not overwritten**: `data/features/Pheno4D/`, `data/traits/` and
 `results/D*/` are unchanged (no diff in git).
+
+## Block D rerun with causal growth-curve inputs (job 366279)
+
+The growth-curve inputs of D2–D6 in job 359157 leaked within each plant: every scan, test plants
+included, got its plant's curve fitted on the whole season, its own and later scans included. Fix
+(`step_notes/FW_5_Results.md` section 0): `scripts/growth_curves.py --causal` writes
+`data/traits/pheno4d_growth_curves_causal.csv` (one fit per scan, on that plant's strictly earlier
+scans only); scans with fewer than 4 earlier points get the per-species mean of the training
+plants' fits plus a 0/1 `<trait>_fit_available` input (D2/D3/D4 inputs 270/271/276); D5/D6 start
+their ODE parameters from the training plants' mean only. `data/traits/pheno4d_growth_curves.csv`
+and the `height_rate` targets are unchanged.
+
+`fw_D_causal.sbatch`, submitted as one 3-task array, job **366279** (one seed per task; 2026-10-27,
+tasks took 8m14s, 8m13s and 4m55s; every step `OK` in `results/logs/fw_D_causal_366279_<task>.log`).
+Per seed: D2, D3, D4, D5, the D5 control, D6 and the D6 control, with
+`--out_path results/FW_D_causal_s<seed> --exp_name <row> --features_dir
+data/features_fw/P4a_B3b_s<seed> --seed <seed>` (controls add `--lambda_phys 0 --lambda_mono 0`;
+D5/D6 and controls warm-start from `results/FW_D_causal_s<seed>/D4/model.pt`). No feature
+extraction (359157's features reused). D1 was not rerun (no growth-curve input).
+
+Results: `results/FW_D_causal_s<seed>/<row>/`; smoke test (D2, seed 1, login node):
+`results/FW_D_causal_smoke_s1/D2/`. Job 359157's result folders were checksummed before and after
+the job: unchanged.
 
 ## Open flags for the rerun
 

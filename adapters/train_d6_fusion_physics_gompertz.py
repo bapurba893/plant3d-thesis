@@ -56,7 +56,7 @@ from losses import KendallUncertaintyWeighting  # noqa: E402
 from train_d1_fusion_baseline import (  # noqa: E402
     IOStream, ALL_TERMS, compute_norm_stats, compute_metrics, run_epoch,
 )
-from train_d2_fusion_growth_curves import compute_feature_norm_stats  # noqa: E402
+from train_d2_fusion_growth_curves import compute_feature_norm_stats, train_plant_ids  # noqa: E402
 from train_d3_fusion_temporal import compute_temporal_norm_stats  # noqa: E402
 from train_d4_fusion_previous_stage import (  # noqa: E402
     PerTermFusionHeadD4, build_scan_table_d4, compute_prev_stage_norm_stats, D4FusionDataset,
@@ -69,11 +69,14 @@ from physics_loss import (  # noqa: E402
 ODE_FAMILY = "gompertz"
 
 
-def load_d0_population_init(growth_curves_csv):
+def load_d0_population_init(growth_curves_csv, train_ids):
     """(alpha, beta) initial values -- D0's own already-derived gompertz_alpha_hat/gompertz_beta
     columns (population mean), NOT a fixed target; both remain nn.Parameter and get updated
     during D6 training. See this file's module docstring point 3."""
     gc = pd.read_csv(growth_curves_csv)
+    # Training plants only (2026-10-27): the mean used to include the val
+    # and test plants' whole-trajectory fits.
+    gc = gc[gc.plant_id.isin(train_ids)]
     init = {}
     for term in PHYSICS_TERMS:
         sub = gc[gc.trait == term]
@@ -175,8 +178,9 @@ def main():
     else:
         io.cprint("training model weights from scratch (no D4 checkpoint found)")
 
-    init_params = load_d0_population_init(growth_curves_csv)
-    io.cprint(f"D0 population-average init for (alpha, beta): {init_params}")
+    init_ids = train_plant_ids(data_dir / "pheno4d_oracle_train.csv")
+    init_params = load_d0_population_init(growth_curves_csv, init_ids)
+    io.cprint(f"D0 training-plant-average init for (alpha, beta) (plants {init_ids}): {init_params}")
     io.cprint("beta is softplus-bounded (effective_rate_param) to prevent the degenerate beta->0 "
               "collapse (same rationale as D5's rho) -- see physics_loss.py's module docstring "
               "and step_notes/D5_D6_Physics_Loss.md")

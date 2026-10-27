@@ -1059,7 +1059,11 @@ otherwise. (These are original single-seed, old-preprocessing numbers. On P4a wi
 **Next (in order):**
 1. Block D status: run on the P4a B3b features (FW B3b backbone, KPConv+DA-S) with 3 seeds, job
    359157 — see `step_notes/FW_3_Results.md`. The result showed no clear gain from the fusion
-   inputs or the physics loss.
+   inputs or the physics loss. D2–D6's growth-curve inputs leaked within each plant (whole-season
+   fits, test plants included); fixed 2026-10-27 with fits on earlier scans only and rerun as job
+   366279 — see `step_notes/FW_5_Results.md`. The leak-free rerun removes D2's only clear gain
+   (stem_diameter_rate) and leaves the D4–D6 and physics-loss conclusions unchanged. Cite FW_5,
+   not FW_3, for D2–D6.
 
 ## Style notes
 - Documents/reports: black and white only, no color.

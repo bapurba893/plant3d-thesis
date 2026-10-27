@@ -7,6 +7,15 @@ plant-disjoint split) except the fusion input, per CLAUDE.md's Block D isolation
 concatenates each plant's already-fit D0 growth-curve parameters onto B3b's 256-dim pooled
 feature (268-dim total input).
 
+> **Superseded input, 2026-10-27 — see `step_notes/FW_5_Results.md`.** The whole-trajectory,
+> per-plant broadcast described below leaked within each plant: a test scan's growth-curve inputs
+> were fitted on its own and later scans. It did not leak across plants, which is all the "does
+> not leak" sentence below checked. D2 now uses per-scan fits on the plant's strictly earlier scans
+> (`data/traits/pheno4d_growth_curves_causal.csv`), with a per-species training-plant fallback
+> and a 0/1 fit-available column (270-dim input). The numbers in this note are from the old,
+> leaking input; for D2–D6 cite FW_5 (job 366279). With the fix, D2's gain over D1 on
+> stem_diameter_rate disappears.
+
 ## Design decision (flagged as inference, not spec text)
 
 The design docs say "F2: + growth curve params" but never specify which parameters or how they

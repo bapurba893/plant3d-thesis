@@ -84,19 +84,19 @@ from train_d1_fusion_baseline import (  # noqa: E402
     run_epoch, compute_metrics,
 )
 from train_d2_fusion_growth_curves import (  # noqa: E402
-    compute_feature_norm_stats, GROWTH_PARAM_COLS, CLIP_STD,
+    compute_feature_norm_stats, growth_feature_vector,
     _GROWTH_RELEVANT_SLICE, _N_B3B, _N_GROWTH_PER_TRAIT,
 )
 from train_d3_fusion_temporal import (  # noqa: E402
     build_scan_table_d3, compute_temporal_norm_stats, _TEMPORAL_COL_IDX,
 )
 
-_N_GROWTH_TOTAL = len(GROWTH_PARAM_COLS)  # 12
 PREV_STAGE_COLS = [f"prev_{t}" for t in TRAIT_TERMS]  # prev_height, ..., prev_volume
-# Column layout of the 274-dim feat vector this file produces:
-# [0:256]=B3b, [256:262]=height growth params, [262:268]=stem growth params,
-# [268]=elapsed_days, [269:274]=prev_height..prev_volume (TRAIT_TERMS order).
-_PREV_STAGE_START = _TEMPORAL_COL_IDX + 1  # 269
+# Column layout of the 276-dim feat vector this file produces:
+# [0:256]=B3b, [256:263]=height growth block (6 params + fit-available),
+# [263:270]=stem growth block, [270]=elapsed_days,
+# [271:276]=prev_height..prev_volume (TRAIT_TERMS order).
+_PREV_STAGE_START = _TEMPORAL_COL_IDX + 1  # 271
 _TERM_TO_PREV_IDX = {term: _PREV_STAGE_START + TRAIT_TERMS.index(term) for term in TRAIT_TERMS}
 _TERM_TO_PREV_IDX["height_rate"] = _TERM_TO_PREV_IDX["height"]
 _TERM_TO_PREV_IDX["stem_diameter_rate"] = _TERM_TO_PREV_IDX["stem_diameter"]
@@ -104,8 +104,8 @@ _TERM_TO_PREV_IDX["stem_diameter_rate"] = _TERM_TO_PREV_IDX["stem_diameter"]
 
 def build_scan_table_d4(split_csv, traits_csv, growth_csv, growth_curves_csv,
                          timeseries_csv, features_dir):
-    """D3's scan table (feat_path + 7 targets/valid + 12 growth-curve
-    params + elapsed_days) with 5 previous-growth-stage columns attached,
+    """D3's scan table (feat_path + 7 targets/valid + per-scan causal
+    growth-curve columns + elapsed_days) with 5 previous-growth-stage columns attached,
     EXCLUDING rows whose previous scan doesn't exist or isn't fully
     trustworthy (see module docstring)."""
     table = build_scan_table_d3(split_csv, traits_csv, growth_csv, growth_curves_csv, features_dir)
@@ -152,8 +152,8 @@ def compute_prev_stage_norm_stats(table: pd.DataFrame) -> dict:
 
 
 class D4FusionDataset(Dataset):
-    """D3's 269-dim feat with 5 more standardized columns appended
-    (274-dim total): prev_height, prev_stem_diameter, prev_leaf_area,
+    """D3's 271-dim feat with 5 more standardized columns appended
+    (276-dim total): prev_height, prev_stem_diameter, prev_leaf_area,
     prev_leaf_count, prev_volume, in that fixed order."""
 
     def __init__(self, table: pd.DataFrame, target_norm_stats: dict, feature_norm_stats: dict,
@@ -171,10 +171,7 @@ class D4FusionDataset(Dataset):
         row = self.table.iloc[idx]
         with np.load(row["feat_path"]) as d:
             b3b_feat = d["feat"].astype(np.float32)
-        growth_feat = np.array(
-            [(row[col] - self.feature_norm_stats[col][0]) / self.feature_norm_stats[col][1]
-             for col in GROWTH_PARAM_COLS], dtype=np.float32)
-        growth_feat = np.clip(growth_feat, -CLIP_STD, CLIP_STD)
+        growth_feat = growth_feature_vector(row, self.feature_norm_stats)
         t_mean, t_std = self.temporal_norm_stats["elapsed_days"]
         temporal_feat = np.array([(row["elapsed_days"] - t_mean) / t_std], dtype=np.float32)
         prev_feat = np.array(
@@ -197,7 +194,7 @@ class PerTermFusionHeadD4(nn.Module):
     trait value (see module docstring's per-term relevance note -- own
     trait lag-1 only, not all 5 previous-stage columns). Per-term
     in_dim: leaf_area/leaf_count/volume = 257(D3)+1=258;
-    height/height_rate/stem_diameter/stem_diameter_rate = 263(D3)+1=264."""
+    height/height_rate/stem_diameter/stem_diameter_rate = 264(D3)+1=265."""
 
     def __init__(self, dropout=0.3):
         super().__init__()

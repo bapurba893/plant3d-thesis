@@ -270,6 +270,17 @@ same way the existing cache was transferred (via git, as for `data/preprocessed/
       soil-removal inspection (`scripts/14_pheno4d_inspection.py`,
       `results/pp_checks/pheno4d_before_after/`, commit a91dc3a)
 - [x] PROGRESS_LOG.md milestone added (milestone 42)
+### Stage 6 — Full-workflow rerun follow-ups (Block D) -> `step_notes/FW_5_Results.md`
+- [x] Growth-curve input leak in D2–D6 fixed (2026-10-27): each scan's curves are fitted on its
+      plant's earlier scans only (`scripts/growth_curves.py --causal`,
+      `data/traits/pheno4d_growth_curves_causal.csv`); fallback = per-species training-plant mean
+      plus a 0/1 fit-available input; D5/D6 start from the training plants' mean only. This
+      changes Block D scripts, outside rule 4 of section 10; done on the user's explicit approval.
+      `data/traits/pheno4d_growth_curves.csv` and the `height_rate` targets unchanged (listed
+      limitation)
+- [x] D2–D6 and the λ=0 control rerun, 3 seeds, job 366279 (all finished; 359157's results kept
+      and checksummed unchanged); old vs new tables and changed conclusions in FW_5
+- [x] PROGRESS_LOG.md milestone added (milestone 47)
 
 ## 10. Rules for this block
 

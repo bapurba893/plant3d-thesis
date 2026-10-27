@@ -6,8 +6,9 @@ respect (frozen B3b/KPConv+DA-S pooled feature, TraitFusionHead's linear-
 head architecture, masked_regression_loss/run_epoch/compute_metrics, the
 7-term L_trait+L_growth Kendall-weighted loss, the same Oracle-style
 plant-disjoint split) EXCEPT the fusion input: D2 concatenates each
-plant's already-fit Logistic/Gompertz growth-curve parameters (from D0's
-scripts/growth_curves.py, data/traits/pheno4d_growth_curves.csv) onto
+scan's Logistic/Gompertz growth-curve parameters, fitted on that plant's
+earlier scans only (scripts/growth_curves.py --causal, data/traits/
+pheno4d_growth_curves_causal.csv; see "Causal fits" below), onto
 B3b's 256-dim pooled feature, per CLAUDE.md's Block D isolation rule
 (backbone/DA/augmentation/architecture/loss stay identical across
 D1-D6 -- only the fusion input changes).
@@ -31,14 +32,23 @@ useful rather than hand-engineering a reduction. Confirmed via D0's
 growth_curves.csv (2026-09-27): all 14 plants x 2 traits converged for
 BOTH families with no NaNs, so no missing-value handling was needed.
 
-Each plant's growth-curve parameters are a property of the WHOLE fitted
-trajectory (an ODE's own shape/rate/asymptote constants, not a specific
-scan's future measurement), so the same 12-dim vector is broadcast
-identically to every scan belonging to that plant -- this is standard
-practice for panel/hierarchical growth-curve features and does not leak
-information ACROSS plants (the Oracle split stays fully plant-disjoint;
-each held-out plant's own curve was fit only from its own scans, the
-same way D0 always fit it, never from another plant's data).
+**Causal fits, changed 2026-10-27 (step_notes/FW_5_Results.md)**: the
+original version broadcast each plant's WHOLE-trajectory fit (data/
+traits/pheno4d_growth_curves.csv) to every scan of that plant. That did
+not leak across plants, but it did leak within a plant: a test scan's
+inputs were fitted on that scan's own and later trait values (e.g. the
+Logistic K is roughly the plant's final height). Now each scan gets
+curves fitted ONLY on its plant's strictly earlier scans (data/traits/
+pheno4d_growth_curves_causal.csv, scripts/growth_curves.py --causal),
+for every split alike so train and test inputs come from the same
+procedure. Scans with too few earlier points (< MIN_POINTS_TO_FIT = 4,
+i.e. each plant's first 4 scans) or a non-convergent fit get the
+per-species mean of the TRAINING plants' whole-trajectory fits, and a
+per-trait 0/1 "fit available" column tells the model which case it is.
+Each trait's block is therefore 7 columns (6 params + indicator), 14 in
+total. The whole-trajectory file itself is unchanged (it still defines
+the height_rate targets via compute_growth_rate_targets.py -- a known,
+listed limitation, not an input).
 
 stem_diameter's curve fits were already confirmed POOR project-wide in
 D0 (R^2 as low as 0.025, see growth_curves.py's module docstring) --
@@ -140,40 +150,128 @@ GROWTH_PARAM_FIELDS = ["logistic_K", "logistic_B", "logistic_rho",
 GROWTH_PARAM_TRAITS = ["height", "stem_diameter"]
 GROWTH_PARAM_COLS = [f"{trait}_{field}" for trait in GROWTH_PARAM_TRAITS for field in GROWTH_PARAM_FIELDS]
 N_GROWTH_PARAMS = len(GROWTH_PARAM_COLS)  # 12
+# One 0/1 column per trait: 1 = this scan's curve was fitted on its own earlier
+# scans, 0 = too few earlier points (or no convergence), fallback values used.
+GROWTH_FIT_AVAILABLE_COLS = {trait: f"{trait}_fit_available" for trait in GROWTH_PARAM_TRAITS}
+
+_DATA_DIR = _REPO_ROOT / "data"
+CAUSAL_GROWTH_CURVES_CSV = _DATA_DIR / "traits" / "pheno4d_growth_curves_causal.csv"
+TRAIN_SPLIT_CSV = _DATA_DIR / "pheno4d_oracle_train.csv"
 
 
-def build_growth_param_table(growth_curves_csv):
-    """Pivots data/traits/pheno4d_growth_curves.csv (one row per
-    plant_id x trait) into one row per plant_id with 12 columns
-    (GROWTH_PARAM_COLS), e.g. height_logistic_K, stem_diameter_gompertz_beta."""
+def train_plant_ids(train_split_csv=TRAIN_SPLIT_CSV):
+    """Plant ids of the Block D training split (the 8 Oracle-train plants)."""
+    return sorted(pd.read_csv(train_split_csv)["plant_id"].unique())
+
+
+def build_growth_fallback_table(growth_curves_csv, train_ids):
+    """Per-species mean of the whole-trajectory fits (data/traits/
+    pheno4d_growth_curves.csv) over TRAINING plants only, one row per
+    species with the 12 GROWTH_PARAM_COLS. Used for scans whose own
+    causal fit is unavailable."""
     curves = pd.read_csv(growth_curves_csv)
-    wide = curves.pivot(index="plant_id", columns="trait", values=GROWTH_PARAM_FIELDS)
-    wide.columns = [f"{trait}_{field}" for field, trait in wide.columns]
-    wide = wide.reset_index()
-    missing = [c for c in GROWTH_PARAM_COLS if c not in wide.columns]
-    assert not missing, f"growth_curves.csv missing expected trait/field combos: {missing}"
-    assert wide[GROWTH_PARAM_COLS].isna().sum().sum() == 0, \
-        "unexpected NaN in growth-curve params -- D0's fits were confirmed all-convergent; investigate"
-    return wide[["plant_id"] + GROWTH_PARAM_COLS]
+    curves = curves[curves["plant_id"].isin(train_ids)]
+    out = {}
+    for species, g in curves.groupby("species"):
+        row = {}
+        for trait in GROWTH_PARAM_TRAITS:
+            sub = g[g["trait"] == trait]
+            assert len(sub) > 0, f"no training-plant {trait} fit for {species}"
+            for field in GROWTH_PARAM_FIELDS:
+                row[f"{trait}_{field}"] = float(sub[field].mean())
+        out[species] = row
+    return pd.DataFrame.from_dict(out, orient="index")[GROWTH_PARAM_COLS]
 
 
-def build_scan_table_d2(split_csv, traits_csv, growth_csv, growth_curves_csv, features_dir):
+def build_growth_feature_table(causal_growth_curves_csv, growth_curves_csv, train_ids):
+    """One row per (plant_id, scan_date): the 12 GROWTH_PARAM_COLS from
+    that scan's CAUSAL fit (scripts/growth_curves.py --causal: fitted on
+    the plant's strictly earlier scans only), plus the 2
+    GROWTH_FIT_AVAILABLE_COLS and, per trait, the causal fit's
+    Logistic/Gompertz quality labels (for logging only, never a model
+    input). Where a trait's causal fit is unavailable (fewer than
+    MIN_POINTS_TO_FIT earlier points, or either family did not
+    converge), all 6 of that trait's params come from the per-species
+    training-plant fallback (build_growth_fallback_table) and its
+    indicator is 0."""
+    causal = pd.read_csv(causal_growth_curves_csv)
+    fallback = build_growth_fallback_table(growth_curves_csv, train_ids)
+
+    rows = []
+    for (plant_id, scan_date, species), g in causal.groupby(["plant_id", "scan_date", "species"]):
+        entry = {"plant_id": plant_id, "scan_date": scan_date}
+        for trait in GROWTH_PARAM_TRAITS:
+            r = g[g["trait"] == trait]
+            assert len(r) == 1, f"expected 1 causal {trait} row for {plant_id}/{scan_date}, got {len(r)}"
+            r = r.iloc[0]
+            available = r["fit_quality"] == "fitted"
+            for field in GROWTH_PARAM_FIELDS:
+                col = f"{trait}_{field}"
+                entry[col] = float(r[field]) if available else float(fallback.loc[species, col])
+            entry[GROWTH_FIT_AVAILABLE_COLS[trait]] = 1.0 if available else 0.0
+            entry[f"{trait}_logistic_quality"] = r["logistic_fit_quality"] if available else "fallback"
+            entry[f"{trait}_gompertz_quality"] = r["gompertz_fit_quality"] if available else "fallback"
+        rows.append(entry)
+    return pd.DataFrame(rows)
+
+
+def build_scan_table_d2(split_csv, traits_csv, growth_csv, growth_curves_csv, features_dir,
+                        causal_growth_curves_csv=CAUSAL_GROWTH_CURVES_CSV, train_split_csv=TRAIN_SPLIT_CSV):
     """D1's build_scan_table (feat_path + 7 targets + valid flags) with
-    each plant's 12 growth-curve parameters merged on -- same value for
-    every scan belonging to that plant."""
+    each SCAN's growth-curve features merged on by (plant_id, scan_date):
+    12 params from that scan's causal fit (or the training-plant
+    fallback) + 2 fit-available indicators. growth_curves_csv is the
+    whole-trajectory D0 file, used here only for the fallback (training
+    plants only)."""
     table = build_scan_table(split_csv, traits_csv, growth_csv, features_dir)
-    growth_params = build_growth_param_table(growth_curves_csv)
-    merged = table.merge(growth_params, on="plant_id", how="left")
-    assert merged[GROWTH_PARAM_COLS].isna().sum().sum() == 0, \
-        "some scans' plant_id had no matching growth-curve params -- check plant_id consistency"
+    growth_feats = build_growth_feature_table(causal_growth_curves_csv, growth_curves_csv,
+                                              train_plant_ids(train_split_csv))
+    merged = table.merge(growth_feats, on=["plant_id", "scan_date"], how="left")
+    feat_cols = GROWTH_PARAM_COLS + list(GROWTH_FIT_AVAILABLE_COLS.values())
+    assert merged[feat_cols].isna().sum().sum() == 0, \
+        "some scans had no matching causal growth-curve row -- check plant_id/scan_date consistency"
     return merged
+
+
+def growth_fit_summary(table: pd.DataFrame) -> str:
+    """Per trait: scans, causal fits used, fallbacks, and how many of the
+    used fits D0's quality check flags 'poor' (R2 < 0.8 or K/A near its
+    bound), separately for Logistic and Gompertz."""
+    parts = []
+    for trait in GROWTH_PARAM_TRAITS:
+        n = len(table)
+        n_fit = int(table[GROWTH_FIT_AVAILABLE_COLS[trait]].sum())
+        n_lp = int((table[f"{trait}_logistic_quality"] == "poor").sum())
+        n_gp = int((table[f"{trait}_gompertz_quality"] == "poor").sum())
+        parts.append(f"{trait}: {n} scans, {n_fit} causal fits, {n - n_fit} fallback, "
+                     f"poor among fits: logistic {n_lp}/{n_fit}, gompertz {n_gp}/{n_fit}")
+    return "; ".join(parts)
+
+
+def growth_feature_vector(row, feature_norm_stats: dict) -> np.ndarray:
+    """The 14 growth columns of the model input, in trait-major blocks of
+    _N_GROWTH_PER_TRAIT=7: [height's 6 standardized+clipped params,
+    height_fit_available, stem_diameter's 6, stem_diameter_fit_available].
+    The indicators are passed as raw 0/1 (not standardized). Shared by
+    D2/D3/D4's datasets so the layout is defined once."""
+    parts = []
+    for trait in GROWTH_PARAM_TRAITS:
+        z = [(row[f"{trait}_{field}"] - feature_norm_stats[f"{trait}_{field}"][0])
+             / feature_norm_stats[f"{trait}_{field}"][1] for field in GROWTH_PARAM_FIELDS]
+        # Clip to +/-CLIP_STD -- see module docstring's "Bug found and fixed" note:
+        # unconstrained curve-fit shape params (B/Bg) can take pathological values
+        # that a linear model with no saturation would otherwise extrapolate.
+        parts.extend(np.clip(z, -CLIP_STD, CLIP_STD))
+        parts.append(float(row[GROWTH_FIT_AVAILABLE_COLS[trait]]))
+    return np.array(parts, dtype=np.float32)
 
 
 def compute_feature_norm_stats(table: pd.DataFrame) -> dict:
     """Same z-score convention as D1's compute_norm_stats, but for the 12
     growth-curve-parameter INPUT columns (not the 7 target columns) --
-    fit on train split only, no validity masking needed since D0's fits
-    were confirmed all-convergent (no NaNs to mask)."""
+    fit on train split only (fallback-filled rows included). No masking
+    needed: build_scan_table_d2 fills every unavailable fit, so there are
+    no NaNs. The 0/1 indicator columns are not standardized."""
     stats = {}
     for col in GROWTH_PARAM_COLS:
         vals = table[col]
@@ -187,8 +285,10 @@ def compute_feature_norm_stats(table: pd.DataFrame) -> dict:
 
 class D2FusionDataset(Dataset):
     """Like D1FusionDataset, but the model input is B3b's cached 256-dim
-    feature CONCATENATED with the plant's 12 standardized growth-curve
-    parameters (268-dim total). Targets/valids unchanged from D1."""
+    feature CONCATENATED with the scan's 14 growth columns
+    (growth_feature_vector: 12 standardized causal-fit params + 2
+    fit-available indicators; 270-dim total). Targets/valids unchanged
+    from D1."""
 
     def __init__(self, table: pd.DataFrame, target_norm_stats: dict, feature_norm_stats: dict):
         self.table = table.reset_index(drop=True)
@@ -202,14 +302,7 @@ class D2FusionDataset(Dataset):
         row = self.table.iloc[idx]
         with np.load(row["feat_path"]) as d:
             b3b_feat = d["feat"].astype(np.float32)
-        growth_feat = np.array(
-            [(row[col] - self.feature_norm_stats[col][0]) / self.feature_norm_stats[col][1]
-             for col in GROWTH_PARAM_COLS], dtype=np.float32)
-        # Clip to +/-CLIP_STD -- see module docstring's "Bug found and fixed" note:
-        # unconstrained curve-fit shape params (B/Bg) can take pathological values
-        # (one test plant's stem_diameter_logistic_B hit z=+2254) that a linear
-        # model with no saturation would otherwise extrapolate catastrophically.
-        growth_feat = np.clip(growth_feat, -CLIP_STD, CLIP_STD)
+        growth_feat = growth_feature_vector(row, self.feature_norm_stats)
         feat = np.concatenate([b3b_feat, growth_feat])
 
         targets, valids = [], []
@@ -223,11 +316,12 @@ class D2FusionDataset(Dataset):
 
 
 _N_B3B = 256
-_N_GROWTH_PER_TRAIT = len(GROWTH_PARAM_FIELDS)  # 6
+_N_GROWTH_PER_TRAIT = len(GROWTH_PARAM_FIELDS) + 1  # 7: 6 params + fit-available indicator
+_N_GROWTH_TOTAL = len(GROWTH_PARAM_TRAITS) * _N_GROWTH_PER_TRAIT  # 14
 # Which terms' own head is allowed to see growth-curve columns at all, and
-# which trait's 6-column block (see D2FusionDataset -- GROWTH_PARAM_COLS'
-# construction order guarantees feat[:, 256:262]=height's block,
-# feat[:, 262:268]=stem_diameter's block). leaf_area/leaf_count/volume are
+# which trait's 7-column block (see growth_feature_vector -- trait-major
+# order gives feat[:, 256:263]=height's block, feat[:, 263:270]=
+# stem_diameter's block). leaf_area/leaf_count/volume are
 # deliberately absent -- see module docstring's "PerTermFusionHead" note.
 _GROWTH_RELEVANT_SLICE = {
     "height": slice(_N_B3B, _N_B3B + _N_GROWTH_PER_TRAIT),
@@ -246,12 +340,13 @@ class PerTermFusionHead(nn.Module):
     - leaf_area, leaf_count, volume: Linear(256, 1) -- B3b feature only,
       growth-curve columns never concatenated at all (no growth-curve fit
       of their own exists in D0's scope for these 3 traits).
-    - height, height_rate: Linear(262, 1) -- B3b feature + height's own
-      6 curve params (columns 256:262 of the cached 268-dim feat).
-    - stem_diameter, stem_diameter_rate: Linear(262, 1) -- B3b feature +
-      stem_diameter's own 6 curve params (columns 262:268).
+    - height, height_rate: Linear(263, 1) -- B3b feature + height's own
+      6 curve params + its fit-available indicator (columns 256:263 of
+      the 270-dim feat).
+    - stem_diameter, stem_diameter_rate: Linear(263, 1) -- B3b feature +
+      stem_diameter's own 7-column block (columns 263:270).
 
-    forward() still takes the SAME (B, 268) feat tensor D2FusionDataset
+    forward() still takes the SAME (B, 270) feat tensor D2FusionDataset
     already produces (no dataset change needed) and slices internally --
     the isolation is in which columns reach each nn.Linear's weight
     matrix, not in the data pipeline."""
@@ -322,6 +417,8 @@ def main():
     test_table = build_scan_table_d2(data_dir / "pheno4d_heldout_eval.csv", traits_csv, growth_csv,
                                       growth_curves_csv, features_dir)
     io.cprint(f"train: {len(train_table)} scans, val: {len(val_table)}, test: {len(test_table)}")
+    for split_name, tbl in [("train", train_table), ("val", val_table), ("test", test_table)]:
+        io.cprint(f"causal growth-curve fits, {split_name}: {growth_fit_summary(tbl)}")
 
     target_norm_stats = compute_norm_stats(train_table)
     feature_norm_stats = compute_feature_norm_stats(train_table)
@@ -340,8 +437,8 @@ def main():
     per_term_in_dims = {term: (_N_B3B + _N_GROWTH_PER_TRAIT if term in _GROWTH_RELEVANT_SLICE else _N_B3B)
                          for term in ALL_TERMS}
     io.cprint(f"PerTermFusionHead parameter count: {n_params} -- per-term in_dim: {per_term_in_dims} "
-              f"(leaf_area/leaf_count/volume NEVER see the 12 growth-curve columns; height/height_rate "
-              f"see only height's own 6; stem_diameter/stem_diameter_rate see only stem_diameter's own 6 "
+              f"(leaf_area/leaf_count/volume NEVER see the 14 growth-curve columns; height/height_rate "
+              f"see only height's own 7; stem_diameter/stem_diameter_rate see only stem_diameter's own 7 "
               f"-- structural isolation, see module docstring's 'Architecture corrected' note)")
 
     kendall = KendallUncertaintyWeighting({term: "regression" for term in ALL_TERMS}).to(device)

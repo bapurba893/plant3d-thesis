@@ -64,17 +64,16 @@ from train_d1_fusion_baseline import (  # noqa: E402
     run_epoch, compute_metrics,
 )
 from train_d2_fusion_growth_curves import (  # noqa: E402
-    build_scan_table_d2, compute_feature_norm_stats, GROWTH_PARAM_COLS,
-    CLIP_STD, _GROWTH_RELEVANT_SLICE, _N_B3B, _N_GROWTH_PER_TRAIT,
+    build_scan_table_d2, compute_feature_norm_stats, growth_feature_vector,
+    _GROWTH_RELEVANT_SLICE, _N_B3B, _N_GROWTH_PER_TRAIT, _N_GROWTH_TOTAL,
 )
 
-_N_GROWTH_TOTAL = len(GROWTH_PARAM_COLS)  # 12
-_TEMPORAL_COL_IDX = _N_B3B + _N_GROWTH_TOTAL  # column 268 in the 269-dim feat vector
+_TEMPORAL_COL_IDX = _N_B3B + _N_GROWTH_TOTAL  # column 270 in the 271-dim feat vector
 
 
 def build_scan_table_d3(split_csv, traits_csv, growth_csv, growth_curves_csv, features_dir):
-    """D2's scan table (feat_path + 7 targets/valid flags + 12 growth-curve
-    param columns) with elapsed_days merged on from growth_csv (already
+    """D2's scan table (feat_path + 7 targets/valid flags + per-scan
+    causal growth-curve columns) with elapsed_days merged on from growth_csv (already
     computed there by compute_growth_rate_targets.py -- same file D2
     already reads for L_growth targets, re-read here just for this one
     extra column rather than threading it through D1/D2's functions)."""
@@ -98,10 +97,11 @@ def compute_temporal_norm_stats(table: pd.DataFrame) -> dict:
 
 
 class D3FusionDataset(Dataset):
-    """D2's feature vector (256 B3b + 12 growth-curve params, clipped)
-    with 1 more standardized column appended: elapsed_days. Resulting
-    feat is (269,): [0:256]=B3b, [256:262]=height's growth params,
-    [262:268]=stem_diameter's growth params, [268]=elapsed_days."""
+    """D2's feature vector (256 B3b + 14 growth columns: 6 clipped params
+    + 1 fit-available indicator per trait) with 1 more standardized
+    column appended: elapsed_days. Resulting feat is (271,): [0:256]=B3b,
+    [256:263]=height's growth block, [263:270]=stem_diameter's growth
+    block, [270]=elapsed_days."""
 
     def __init__(self, table: pd.DataFrame, target_norm_stats: dict,
                  feature_norm_stats: dict, temporal_norm_stats: dict):
@@ -117,10 +117,7 @@ class D3FusionDataset(Dataset):
         row = self.table.iloc[idx]
         with np.load(row["feat_path"]) as d:
             b3b_feat = d["feat"].astype(np.float32)
-        growth_feat = np.array(
-            [(row[col] - self.feature_norm_stats[col][0]) / self.feature_norm_stats[col][1]
-             for col in GROWTH_PARAM_COLS], dtype=np.float32)
-        growth_feat = np.clip(growth_feat, -CLIP_STD, CLIP_STD)
+        growth_feat = growth_feature_vector(row, self.feature_norm_stats)
         t_mean, t_std = self.temporal_norm_stats["elapsed_days"]
         temporal_feat = np.array([(row["elapsed_days"] - t_mean) / t_std], dtype=np.float32)
         feat = np.concatenate([b3b_feat, growth_feat, temporal_feat])
@@ -141,7 +138,7 @@ class PerTermFusionHeadD3(nn.Module):
     elapsed_days has a principled claim on all 7 terms, so no term is
     excluded from it). Per-term in_dim: leaf_area/leaf_count/volume =
     256+1=257; height/height_rate/stem_diameter/stem_diameter_rate =
-    262+1=263."""
+    263+1=264."""
 
     def __init__(self, dropout=0.3):
         super().__init__()

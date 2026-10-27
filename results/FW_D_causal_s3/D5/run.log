@@ -1,0 +1,56 @@
+27-10-26 14:34:44: Namespace(exp_name='D5', out_path='results/FW_D_causal_s3', epochs=200, batch_size=16, lr=0.001, wd=0.01, dropout=0.3, lambda_corr=0.5, lambda_phys=0.0001, lambda_mono=0.1, lr_ode=0.02, lr_K=0.1, init_from_d4='results/FW_D_causal_s3/D4/model.pt', seed=3, gpu=-1, features_dir='data/features_fw/P4a_B3b_s3')
+27-10-26 14:34:44: Using CPU
+27-10-26 14:34:45: train: 59 scans, val: 15, test: 54 (same D4-filtered tables, unmodified -- comparable to D4 on the SAME 54-scan test subset, not D1-D3's 63)
+27-10-26 14:34:45: warm-started model weights from results/FW_D_causal_s3/D4/model.pt
+27-10-26 14:34:45: D0 training-plant-average init for (rho, K) (plants ['M01', 'M02', 'M05', 'M06', 'T02', 'T04', 'T05', 'T06']): {'height': (0.2312294642573468, 488.78295415557164), 'stem_diameter': (0.2263918669066479, 138.7537644925406)}
+27-10-26 14:34:45: rho is softplus-bounded (effective_rate_param) to prevent the degenerate rho->0 collapse found via synthetic verification -- see physics_loss.py's module docstring and step_notes/D5_D6_Physics_Loss.md
+27-10-26 14:34:47: Epoch 0: train_loss=0.9317 (phys=1084.9188, mono=2.8175), val_loss=2.1101 (phys=541.4191, mono=1.0249) val_total=2.2667, rho_h=0.2271 K_h=488.68 rho_s=0.2224 K_s=138.66
+27-10-26 14:34:50: Epoch 10: train_loss=0.8236 (phys=868.9412, mono=3.5964), val_loss=1.9456 (phys=557.3754, mono=1.1110) val_total=2.1125, rho_h=0.1961 K_h=488.00 rho_s=0.2013 K_s=138.22
+27-10-26 14:34:52: Epoch 20: train_loss=0.6920 (phys=136.2079, mono=2.0778), val_loss=1.9471 (phys=561.1565, mono=1.1469) val_total=2.1179, rho_h=0.1790 K_h=487.52 rho_s=0.1914 K_s=138.04
+27-10-26 14:34:54: Epoch 30: train_loss=0.6308 (phys=580.0374, mono=2.3339), val_loss=1.9144 (phys=344.9953, mono=0.7423) val_total=2.0232, rho_h=0.1713 K_h=487.31 rho_s=0.1810 K_s=137.91
+27-10-26 14:34:57: Epoch 40: train_loss=0.5156 (phys=642.0890, mono=1.7131), val_loss=1.8063 (phys=323.0495, mono=0.8585) val_total=1.9244, rho_h=0.1597 K_h=486.97 rho_s=0.1688 K_s=137.67
+27-10-26 14:34:59: Epoch 50: train_loss=0.3709 (phys=337.6069, mono=2.1768), val_loss=1.7495 (phys=370.7527, mono=0.9691) val_total=1.8835, rho_h=0.1501 K_h=486.66 rho_s=0.1611 K_s=137.66
+27-10-26 14:35:01: Epoch 60: train_loss=0.4713 (phys=348.2440, mono=2.1168), val_loss=1.7175 (phys=364.1022, mono=0.8915) val_total=1.8431, rho_h=0.1469 K_h=486.50 rho_s=0.1631 K_s=137.91
+27-10-26 14:35:04: Epoch 70: train_loss=0.2044 (phys=209.7408, mono=3.1402), val_loss=1.7060 (phys=279.7549, mono=0.8251) val_total=1.8165, rho_h=0.1453 K_h=486.43 rho_s=0.1630 K_s=138.09
+27-10-26 14:35:06: Epoch 80: train_loss=0.2821 (phys=352.9132, mono=2.8412), val_loss=1.6285 (phys=337.9943, mono=0.9227) val_total=1.7546, rho_h=0.1428 K_h=486.30 rho_s=0.1627 K_s=138.18
+27-10-26 14:35:08: Epoch 90: train_loss=0.2863 (phys=325.4591, mono=2.3638), val_loss=1.5391 (phys=329.1364, mono=0.9959) val_total=1.6716, rho_h=0.1398 K_h=486.14 rho_s=0.1631 K_s=138.24
+27-10-26 14:35:11: Epoch 100: train_loss=0.1692 (phys=381.7540, mono=3.0218), val_loss=1.5763 (phys=306.0287, mono=0.9492) val_total=1.7019, rho_h=0.1371 K_h=486.01 rho_s=0.1647 K_s=138.38
+27-10-26 14:35:13: Epoch 110: train_loss=0.0908 (phys=162.3256, mono=2.6001), val_loss=1.5612 (phys=267.4811, mono=0.9265) val_total=1.6806, rho_h=0.1348 K_h=485.89 rho_s=0.1677 K_s=138.56
+27-10-26 14:35:15: Epoch 120: train_loss=-0.0151 (phys=544.5867, mono=2.1077), val_loss=1.5254 (phys=226.6917, mono=0.7740) val_total=1.6255, rho_h=0.1337 K_h=485.87 rho_s=0.1684 K_s=138.65
+27-10-26 14:35:18: Epoch 130: train_loss=0.0560 (phys=180.2413, mono=1.9619), val_loss=1.5252 (phys=227.9797, mono=0.8130) val_total=1.6293, rho_h=0.1324 K_h=485.81 rho_s=0.1661 K_s=138.63
+27-10-26 14:35:20: Epoch 140: train_loss=0.0273 (phys=464.2093, mono=1.6622), val_loss=1.5348 (phys=227.9495, mono=0.7927) val_total=1.6369, rho_h=0.1312 K_h=485.78 rho_s=0.1646 K_s=138.63
+27-10-26 14:35:22: Epoch 150: train_loss=-0.0870 (phys=375.5254, mono=2.0337), val_loss=1.4482 (phys=223.0468, mono=0.7557) val_total=1.5461, rho_h=0.1302 K_h=485.75 rho_s=0.1649 K_s=138.67
+27-10-26 14:35:25: Epoch 160: train_loss=-0.0527 (phys=221.5504, mono=2.0631), val_loss=1.4950 (phys=219.6857, mono=0.7306) val_total=1.5900, rho_h=0.1301 K_h=485.74 rho_s=0.1651 K_s=138.69
+27-10-26 14:35:27: Epoch 170: train_loss=-0.0059 (phys=401.2270, mono=2.3218), val_loss=1.4965 (phys=216.3730, mono=0.7374) val_total=1.5918, rho_h=0.1300 K_h=485.73 rho_s=0.1650 K_s=138.70
+27-10-26 14:35:29: Epoch 180: train_loss=-0.1073 (phys=83.4655, mono=1.5570), val_loss=1.4921 (phys=216.9329, mono=0.7466) val_total=1.5885, rho_h=0.1300 K_h=485.72 rho_s=0.1649 K_s=138.70
+27-10-26 14:35:32: Epoch 190: train_loss=-0.1230 (phys=376.0889, mono=2.7907), val_loss=1.4864 (phys=218.5476, mono=0.7462) val_total=1.5828, rho_h=0.1299 K_h=485.72 rho_s=0.1649 K_s=138.70
+27-10-26 14:35:34: Epoch 199: train_loss=-0.1761 (phys=276.0404, mono=2.1616), val_loss=1.4840 (phys=218.3697, mono=0.7464) val_total=1.5805, rho_h=0.1299 K_h=485.72 rho_s=0.1649 K_s=138.70
+27-10-26 14:35:34: Best model at epoch 151, val total loss 1.5364
+27-10-26 14:35:34: Best (rho, K) per trait: {'height': (0.1302161067724228, 485.74835205078125), 'stem_diameter': (0.16490645706653595, 138.6697235107422)}
+27-10-26 14:35:34: 
+=== FINAL train metrics (best epoch 151) === L_phys=51.0567, L_mono=0.5572
+27-10-26 14:35:34:   height              : n= 59, RMSE=26.1495, MAE=18.6830, R2=0.9433
+27-10-26 14:35:34:   stem_diameter       : n= 58, RMSE=8.6714, MAE=5.2383, R2=0.4623
+27-10-26 14:35:34:   leaf_area           : n= 58, RMSE=1769.5244, MAE=1256.3052, R2=0.8518
+27-10-26 14:35:34:   leaf_count          : n= 58, RMSE=1.8962, MAE=1.2692, R2=0.5558
+27-10-26 14:35:34:   volume              : n= 59, RMSE=494851.2812, MAE=285590.6875, R2=0.9114
+27-10-26 14:35:34:   height_rate         : n= 59, RMSE=2.8375, MAE=1.9880, R2=0.9377
+27-10-26 14:35:34:   stem_diameter_rate  : n= 58, RMSE=6.8932, MAE=4.2135, R2=0.5376
+27-10-26 14:35:34: 
+=== FINAL val metrics (best epoch 151) === L_phys=224.6896, L_mono=0.7494
+27-10-26 14:35:34:   height              : n= 15, RMSE=39.1355, MAE=27.9324, R2=0.9108
+27-10-26 14:35:34:   stem_diameter       : n= 14, RMSE=8.4951, MAE=7.1466, R2=-0.0685
+27-10-26 14:35:34:   leaf_area           : n= 14, RMSE=1512.4618, MAE=1301.7073, R2=0.2703
+27-10-26 14:35:34:   leaf_count          : n= 14, RMSE=3.3642, MAE=2.3038, R2=0.1536
+27-10-26 14:35:34:   volume              : n= 15, RMSE=703269.6875, MAE=472649.6562, R2=0.8571
+27-10-26 14:35:34:   height_rate         : n= 15, RMSE=5.8879, MAE=3.8656, R2=0.7458
+27-10-26 14:35:34:   stem_diameter_rate  : n= 14, RMSE=14.8741, MAE=9.4184, R2=0.0317
+27-10-26 14:35:34: 
+=== FINAL test metrics (best epoch 151) === L_phys=555.0624, L_mono=2.3072
+27-10-26 14:35:34:   height              : n= 54, RMSE=29.7232, MAE=19.6213, R2=0.9297
+27-10-26 14:35:34:   stem_diameter       : n= 52, RMSE=23.1613, MAE=12.2445, R2=0.1123
+27-10-26 14:35:34:   leaf_area           : n= 51, RMSE=1508.1512, MAE=1058.2556, R2=0.7652
+27-10-26 14:35:34:   leaf_count          : n= 51, RMSE=2.0950, MAE=1.6596, R2=0.4514
+27-10-26 14:35:34:   volume              : n= 54, RMSE=446676.5625, MAE=317526.0312, R2=0.7686
+27-10-26 14:35:34:   height_rate         : n= 54, RMSE=8.0019, MAE=4.7914, R2=0.6575
+27-10-26 14:35:34:   stem_diameter_rate  : n= 52, RMSE=19.2388, MAE=9.1047, R2=0.0729

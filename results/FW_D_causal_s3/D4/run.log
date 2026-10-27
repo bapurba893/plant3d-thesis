@@ -1,0 +1,57 @@
+27-10-26 14:34:20: Namespace(exp_name='D4', out_path='results/FW_D_causal_s3', epochs=200, batch_size=16, lr=0.001, wd=0.01, dropout=0.3, lambda_corr=0.5, seed=3, gpu=-1, features_dir='data/features_fw/P4a_B3b_s3')
+27-10-26 14:34:20: Using CPU
+27-10-26 14:34:21: train: 59 scans, val: 15, test: 54 (reduced from D1-D3's 72/18/63 -- see module docstring's exclusion note)
+27-10-26 14:34:21: target norm_stats: {'height': (140.0266115719023, 110.807179494905), 'stem_diameter': (18.1531017207525, 11.92919688077935), 'leaf_area': (4481.6189466969, 4636.329594463845), 'leaf_count': (4.793103448275862, 2.8700426104157297), 'volume': (999043.2924651195, 1676541.237090489), 'height_rate': (12.264723496974103, 11.469439695307887), 'stem_diameter_rate': (3.3903344371138258, 10.22602684269986)}
+27-10-26 14:34:21: growth-curve-param feature norm_stats: {'height_logistic_K': (390.9388339051684, 258.04471123100507), 'height_logistic_B': (9.63175078728246, 5.832191158778307), 'height_logistic_rho': (0.31634145567789645, 0.4230124471249549), 'height_gompertz_A': (454.40912077945814, 289.6337490926562), 'height_gompertz_Bg': (2.351854261055424, 0.8461439267531858), 'height_gompertz_beta': (0.2073054036682357, 0.40857602896898143), 'stem_diameter_logistic_K': (84.23699234463905, 93.60625721485076), 'stem_diameter_logistic_B': (136.28166197385357, 916.1979100696959), 'stem_diameter_logistic_rho': (0.1727611595848206, 0.2528486374008628), 'stem_diameter_gompertz_A': (88.124623320469, 94.58655979099937), 'stem_diameter_gompertz_Bg': (3.3347601610599034, 7.755059527185148), 'stem_diameter_gompertz_beta': (0.09777429907391036, 0.15316212703180765)}
+27-10-26 14:34:21: temporal norm_stats: {'elapsed_days': (9.64406779661017, 5.211931642260884)}
+27-10-26 14:34:21: prev-stage norm_stats: {'prev_height': (128.31159185733063, 105.26909775031108), 'prev_stem_diameter': (17.79321859536735, 13.370607154350404), 'prev_leaf_area': (4150.75534853459, 3822.023366889381), 'prev_leaf_count': (5.067796610169491, 2.9353047587746084), 'prev_volume': (717911.6740647221, 1141560.8656682214)}
+27-10-26 14:34:21: PerTermFusionHeadD4 parameter count: 1841 -- per-term in_dim: {'height': 265, 'stem_diameter': 265, 'leaf_area': 258, 'leaf_count': 258, 'volume': 258, 'height_rate': 265, 'stem_diameter_rate': 265} (every term gets elapsed_days + its OWN previous-trait value only)
+27-10-26 14:34:23: Epoch 0: train_loss=3.1845, val_loss=3.0841
+27-10-26 14:34:24: Epoch 10: train_loss=1.6916, val_loss=2.1910
+27-10-26 14:34:25: Epoch 20: train_loss=1.3535, val_loss=2.0862
+27-10-26 14:34:26: Epoch 30: train_loss=0.9674, val_loss=2.0003
+27-10-26 14:34:27: Epoch 40: train_loss=0.9648, val_loss=1.8441
+27-10-26 14:34:27: Epoch 50: train_loss=0.8063, val_loss=1.7238
+27-10-26 14:34:28: Epoch 60: train_loss=0.7591, val_loss=1.7419
+27-10-26 14:34:29: Epoch 70: train_loss=0.5078, val_loss=1.7104
+27-10-26 14:34:30: Epoch 80: train_loss=0.3791, val_loss=1.5951
+27-10-26 14:34:31: Epoch 90: train_loss=0.4105, val_loss=1.6139
+27-10-26 14:34:32: Epoch 100: train_loss=0.3533, val_loss=1.5793
+27-10-26 14:34:32: Epoch 110: train_loss=0.1098, val_loss=1.5055
+27-10-26 14:34:33: Epoch 120: train_loss=0.2394, val_loss=1.4716
+27-10-26 14:34:34: Epoch 130: train_loss=0.0001, val_loss=1.4679
+27-10-26 14:34:35: Epoch 140: train_loss=0.0721, val_loss=1.3995
+27-10-26 14:34:36: Epoch 150: train_loss=0.1089, val_loss=1.4250
+27-10-26 14:34:37: Epoch 160: train_loss=0.0324, val_loss=1.4309
+27-10-26 14:34:38: Epoch 170: train_loss=-0.0908, val_loss=1.3846
+27-10-26 14:34:38: Epoch 180: train_loss=0.0239, val_loss=1.3814
+27-10-26 14:34:39: Epoch 190: train_loss=0.2035, val_loss=1.3789
+27-10-26 14:34:40: Epoch 199: train_loss=-0.0120, val_loss=1.3790
+27-10-26 14:34:40: Best model at epoch 186, val total loss 1.3777
+27-10-26 14:34:40: 
+=== FINAL train metrics (best epoch 186) ===
+27-10-26 14:34:40:   height              : n= 59, RMSE=19.5462, MAE=14.1174, R2=0.9683
+27-10-26 14:34:40:   stem_diameter       : n= 58, RMSE=8.8241, MAE=5.4750, R2=0.4432
+27-10-26 14:34:40:   leaf_area           : n= 58, RMSE=2231.3867, MAE=1581.1510, R2=0.7643
+27-10-26 14:34:40:   leaf_count          : n= 58, RMSE=1.9697, MAE=1.3266, R2=0.5207
+27-10-26 14:34:40:   volume              : n= 59, RMSE=703136.6875, MAE=386076.0000, R2=0.8211
+27-10-26 14:34:40:   height_rate         : n= 59, RMSE=3.1806, MAE=2.3218, R2=0.9218
+27-10-26 14:34:40:   stem_diameter_rate  : n= 58, RMSE=7.5352, MAE=4.6193, R2=0.4475
+27-10-26 14:34:40: 
+=== FINAL val metrics (best epoch 186) ===
+27-10-26 14:34:40:   height              : n= 15, RMSE=29.1216, MAE=21.6153, R2=0.9506
+27-10-26 14:34:40:   stem_diameter       : n= 14, RMSE=8.4704, MAE=7.0495, R2=-0.0622
+27-10-26 14:34:40:   leaf_area           : n= 14, RMSE=1845.3502, MAE=1528.6895, R2=-0.0863
+27-10-26 14:34:40:   leaf_count          : n= 14, RMSE=3.3966, MAE=2.3135, R2=0.1372
+27-10-26 14:34:40:   volume              : n= 15, RMSE=905609.0000, MAE=605171.8750, R2=0.7630
+27-10-26 14:34:40:   height_rate         : n= 15, RMSE=6.3178, MAE=4.3460, R2=0.7073
+27-10-26 14:34:40:   stem_diameter_rate  : n= 14, RMSE=14.8612, MAE=9.6253, R2=0.0334
+27-10-26 14:34:40: 
+=== FINAL test metrics (best epoch 186) ===
+27-10-26 14:34:40:   height              : n= 54, RMSE=28.6543, MAE=17.3214, R2=0.9347
+27-10-26 14:34:40:   stem_diameter       : n= 52, RMSE=23.1657, MAE=12.5031, R2=0.1119
+27-10-26 14:34:40:   leaf_area           : n= 51, RMSE=1763.4141, MAE=1315.4833, R2=0.6789
+27-10-26 14:34:40:   leaf_count          : n= 51, RMSE=2.1318, MAE=1.6751, R2=0.4320
+27-10-26 14:34:40:   volume              : n= 54, RMSE=521226.1875, MAE=342653.1562, R2=0.6850
+27-10-26 14:34:40:   height_rate         : n= 54, RMSE=8.3629, MAE=5.0295, R2=0.6259
+27-10-26 14:34:40:   stem_diameter_rate  : n= 52, RMSE=19.3690, MAE=9.1668, R2=0.0603
