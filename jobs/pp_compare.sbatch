@@ -4,7 +4,7 @@
 #SBATCH --qos=dgx
 #SBATCH --gres=gpu:1
 #SBATCH --time=02:00:00
-#SBATCH --array=0-8
+#SBATCH --array=0-9
 #SBATCH --output=/home/pearl/25m0301/plant3d-thesis/results/logs/pp_compare_%A_%a.log
 
 # Block PP (docs/PREPROCESSING_COMPARISON_PLAN.md): row C1 (DGCNN, DA-0, ALL, L_cls+L_seg)
@@ -16,7 +16,7 @@
 #
 # Array index -> pipeline:
 #   0 P0 (default cache, data/preprocessed/)   1 P1   2 P2   3 P3   4 P4
-#   5 P4a   6 P4b   7 P4c   8 P4d
+#   5 P4a   6 P4b   7 P4c   8 P4d   9 P4s (added 2026-10-27: soil removed, P4a centre and scale kept)
 #
 # Submit in two rounds (5-job limit):
 #   round 1: sbatch --array=0-4 jobs/pp_compare.sbatch
@@ -39,7 +39,7 @@
 # all 8 variant caches ship preprocessed_manifest.csv).
 VARIANT_MANIFEST_NAME=preprocessed_manifest.csv
 
-PIPELINES=(P0 P1 P2 P3 P4 P4a P4b P4c P4d)
+PIPELINES=(P0 P1 P2 P3 P4 P4a P4b P4c P4d P4s)
 SEEDS=(1 2 3)
 
 REPO_ROOT=/home/pearl/25m0301/plant3d-thesis
